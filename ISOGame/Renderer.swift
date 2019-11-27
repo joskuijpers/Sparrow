@@ -10,90 +10,124 @@ import MetalKit
 
 class Renderer: NSObject {
     static var device: MTLDevice!
+    static var library: MTLLibrary?
     let commandQueue: MTLCommandQueue!
     
     
-    var mesh: MTKMesh!
-    var vertexBuffer: MTLBuffer!
-    var pipelineState: MTLRenderPipelineState!
+    var uniforms = Uniforms()
+//    var fragmentUniforms: FragmentUniforms()
+    let depthStencilState: MTLDepthStencilState
+//    let lighting = Lighting()
+    
+    lazy var camera: Camera = {
+        let camera = ArcballCamera()
+        
+        camera.distance = 4.3
+        camera.target = [0, 1.2, 0]
+        camera.rotation.x = Float(-10).degreesToRadians
+        
+        return camera
+    }()
+    
+    // List of models
+    var models: [Model] = []
     
     
     
     init(metalView: MTKView) {
-        guard let device = MTLCreateSystemDefaultDevice(),
+        guard
+            let device = MTLCreateSystemDefaultDevice(),
             let commandQueue = device.makeCommandQueue() else {
-            fatalError("Metal GPU not available")
+                fatalError("Metal GPU not available")
         }
         
         Renderer.device = device
+        Renderer.library = device.makeDefaultLibrary()
         metalView.device = device
-        
+        metalView.depthStencilPixelFormat = .depth32Float
         self.commandQueue = commandQueue
-
         
-        
-        let mdlMesh = Primitive.makeCube(device: device, size: 1)
-        do {
-            mesh = try MTKMesh(mesh: mdlMesh, device: device)
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        
-        vertexBuffer = mesh.vertexBuffers[0].buffer
-        
-        let library = device.makeDefaultLibrary()
-        let vertexFunction = library?.makeFunction(name: "vertex_main")
-        let fragmentFunction = library?.makeFunction(name: "fragment_main")
-        
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mdlMesh.vertexDescriptor)
-        pipelineDescriptor.colorAttachments[0].pixelFormat = metalView.colorPixelFormat
-        
-        do {
-            pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
-        } catch let error {
-            fatalError(error.localizedDescription)
-        }
-        
+        depthStencilState = Renderer.buildDepthStencilState()!
         
         super.init()
         
-        metalView.clearColor = MTLClearColor(red: 1, green: 1, blue: 0, alpha: 1)
+        metalView.clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         metalView.delegate = self
         
-        mtkView(metalView, drawableSizeWillChange: metalView.frame.size)
+        mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
+        
+        
+        
+        
+        let house = Model(name: "lowpoly-house.obj")
+        house.position = [0, 0, 0]
+        house.rotation = [0, Float(45).degreesToRadians, 0]
+        models.append(house)
+        
+        print(metalView.preferredFramesPerSecond)
     }
     
+    
+    /// Create a simple depth stencil state that writes to the depth buffer
+    static func buildDepthStencilState() -> MTLDepthStencilState? {
+        let descriptor = MTLDepthStencilDescriptor()
+        
+        descriptor.depthCompareFunction = .less
+        descriptor.isDepthWriteEnabled = true
+        
+        return Renderer.device.makeDepthStencilState(descriptor: descriptor)
+    }
 }
 
 extension Renderer: MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        
+        camera.aspect = Float(view.bounds.width) / Float(view.bounds.height)
     }
     
     func draw(in view: MTKView) {
         guard let descriptor = view.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
             let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
-            return
+                return
         }
         
+        renderEncoder.setDepthStencilState(depthStencilState)
         
-        
-        renderEncoder.setRenderPipelineState(pipelineState)
-        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        for submesh in mesh.submeshes {
-            renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                indexCount: submesh.indexCount,
-                                                indexType: submesh.indexType,
-                                                indexBuffer: submesh.indexBuffer.buffer,
-                                                indexBufferOffset: submesh.indexBuffer.offset)
+        uniforms.projectionMatrix = camera.projectionMatrix
+        uniforms.viewMatrix = camera.viewMatrix
+//        fragmentUniforms.cameraPosition = camera.position
+    
+        for model in models {
+            renderEncoder.pushDebugGroup(model.name)
+            
+            uniforms.modelMatrix = model.modelMatrix
+            uniforms.normalMatrix = uniforms.modelMatrix.upperLeft
+            
+            renderEncoder.setVertexBytes(&uniforms,
+                                         length: MemoryLayout<Uniforms>.stride,
+                                         index: 1)
+            
+            renderEncoder.setRenderPipelineState(model.pipelineState)
+            
+            for mesh in model.meshes {
+                let vertexBuffer = mesh.mtkMesh.vertexBuffers[0].buffer
+                renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+                
+                for submesh in mesh.submeshes {
+//                    renderEncoder.setFragmentTexture(submesh.textures.albedo, index: 0)
+                    
+                    let mtkSubmesh = submesh.mtkSubmesh
+                    renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                                        indexCount: mtkSubmesh.indexCount,
+                                                        indexType: mtkSubmesh.indexType,
+                                                        indexBuffer: mtkSubmesh.indexBuffer.buffer,
+                                                        indexBufferOffset: mtkSubmesh.indexBuffer.offset)
+                }
+            }
+            
+            renderEncoder.popDebugGroup()
         }
-        
-        
         
         
         

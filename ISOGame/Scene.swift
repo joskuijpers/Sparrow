@@ -6,4 +6,8 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
+import MetalKit
+
+class Scene {
+    
+}
