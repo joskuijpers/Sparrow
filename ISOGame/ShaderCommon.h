@@ -18,4 +18,17 @@ typedef struct {
     matrix_float3x3 normalMatrix;
 } Uniforms;
 
+
+typedef enum {
+    BufferIndexVertices = 0,
+    BufferIndexUniforms = 1
+} BufferIndex;
+
+typedef enum {
+    VertexAttributePosition = 0,
+    VertexAttributeNormal = 1,
+    VertexAttributeUV = 2
+} VertexAttributes;
+
+
 #endif /* ShaderCommon_h */

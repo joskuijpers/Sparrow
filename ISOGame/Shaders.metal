@@ -11,9 +11,9 @@ using namespace metal;
 #import "ShaderCommon.h"
 
 struct VertexIn {
-    float4 position     [[ attribute(0) ]];
-    float3 normal       [[ attribute(1) ]];
-    float2 uv           [[ attribute(2) ]];
+    float4 position     [[ attribute(VertexAttributePosition) ]];
+    float3 normal       [[ attribute(VertexAttributeNormal) ]];
+    float2 uv           [[ attribute(VertexAttributeUV) ]];
 };
 
 struct VertexOut {
@@ -25,7 +25,7 @@ struct VertexOut {
 
 vertex VertexOut vertex_main(
                              const VertexIn in [[ stage_in ]],
-                             constant Uniforms &uniforms [[ buffer(1) ]]
+                             constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]]
                              ) {
     VertexOut out;
     

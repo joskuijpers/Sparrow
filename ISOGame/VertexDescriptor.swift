@@ -15,24 +15,27 @@ extension MDLVertexDescriptor {
         var offset = 0
         
         // Position
-        vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
-                                                            format: .float3,
-                                                            offset: offset,
-                                                            bufferIndex: 0)
+        let positionAttribute = MDLVertexAttribute(name: MDLVertexAttributePosition,
+                                                   format: .float3,
+                                                   offset: offset,
+                                                   bufferIndex: 0)
+        vertexDescriptor.attributes[VertexAttributePosition.asInt()] = positionAttribute
         offset += MemoryLayout<float3>.stride
         
         // Normal
-        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
-                                                            format: .float3,
-                                                            offset: offset,
-                                                            bufferIndex: 0)
+        let normalAttribute = MDLVertexAttribute(name: MDLVertexAttributeNormal,
+                                                 format: .float3,
+                                                 offset: offset,
+                                                 bufferIndex: 0)
+        vertexDescriptor.attributes[VertexAttributeNormal.asInt()] = normalAttribute
         offset += MemoryLayout<float3>.stride
         
         // UV
-        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
-                                                            format: .float2,
-                                                            offset: offset,
-                                                            bufferIndex: 0)
+        let uvAttribute = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+                                             format: .float2,
+                                             offset: offset,
+                                             bufferIndex: 0)
+        vertexDescriptor.attributes[VertexAttributeUV.asInt()] = uvAttribute
         offset += MemoryLayout<float2>.stride
         
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: offset)
