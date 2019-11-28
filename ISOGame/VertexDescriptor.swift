@@ -19,7 +19,7 @@ extension MDLVertexDescriptor {
                                                    format: .float3,
                                                    offset: offset,
                                                    bufferIndex: 0)
-        vertexDescriptor.attributes[VertexAttributePosition.asInt()] = positionAttribute
+        vertexDescriptor.attributes[Int(VertexAttributePosition.rawValue)] = positionAttribute
         offset += MemoryLayout<float3>.stride
         
         // Normal
@@ -27,7 +27,7 @@ extension MDLVertexDescriptor {
                                                  format: .float3,
                                                  offset: offset,
                                                  bufferIndex: 0)
-        vertexDescriptor.attributes[VertexAttributeNormal.asInt()] = normalAttribute
+        vertexDescriptor.attributes[Int(VertexAttributeNormal.rawValue)] = normalAttribute
         offset += MemoryLayout<float3>.stride
         
         // UV
@@ -35,7 +35,7 @@ extension MDLVertexDescriptor {
                                              format: .float2,
                                              offset: offset,
                                              bufferIndex: 0)
-        vertexDescriptor.attributes[VertexAttributeUV.asInt()] = uvAttribute
+        vertexDescriptor.attributes[Int(VertexAttributeUV.rawValue)] = uvAttribute
         offset += MemoryLayout<float2>.stride
         
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: offset)

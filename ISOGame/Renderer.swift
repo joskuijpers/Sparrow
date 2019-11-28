@@ -119,16 +119,16 @@ extension Renderer: MTKViewDelegate {
             
             renderEncoder.setVertexBytes(&uniforms,
                                          length: MemoryLayout<Uniforms>.stride,
-                                         index: BufferIndexUniforms.asInt())
+                                         index: Int(BufferIndexUniforms.rawValue))
             
             renderEncoder.setRenderPipelineState(model.pipelineState)
             
             for mesh in model.meshes {
                 let vertexBuffer = mesh.mtkMesh.vertexBuffers[0].buffer
-                renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: BufferIndexVertices.asInt())
+                renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: Int(BufferIndexVertices.rawValue))
                 
                 for submesh in mesh.submeshes {
-//                    renderEncoder.setFragmentTexture(submesh.textures.albedo, index: 0)
+                    renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
                     
                     let mtkSubmesh = submesh.mtkSubmesh
                     renderEncoder.drawIndexedPrimitives(type: .triangle,
@@ -153,16 +153,4 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.commit()
     }
     
-}
-
-extension BufferIndex {
-    @inlinable func asInt() -> Int {
-        return Int(self.rawValue)
-    }
-}
-
-extension VertexAttributes {
-    @inlinable func asInt() -> Int {
-        return Int(self.rawValue)
-    }
 }

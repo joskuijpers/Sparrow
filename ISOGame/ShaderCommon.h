@@ -30,5 +30,11 @@ typedef enum {
     VertexAttributeUV = 2
 } VertexAttributes;
 
+typedef enum {
+    TextureAlbedo = 0,
+    TextureNormal = 1,
+    TextureSpecular = 2,
+} Textures;
+
 
 #endif /* ShaderCommon_h */

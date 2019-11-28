@@ -39,11 +39,15 @@ vertex VertexOut vertex_main(
 
 fragment float4 fragment_main(
                               VertexOut in [[ stage_in ]],
-                              texture2d<float> albedoTexture [[ texture(0) ]]
+                              texture2d<float> albedoTexture [[ texture(TextureAlbedo) ]]
                               ) {
-    float3 albedo = float3(0.5, 0.2, 0.5);
+    constexpr sampler textureSampler(address::repeat, filter::linear, mip_filter::linear);
     
     // albedo = color
+    float3 albedo = float3(0.5, 0.2, 0.5);
+    
+    albedo = albedoTexture.sample(textureSampler, in.uv).rgb;
+    
     // if hasALbedoTexture
         // albedo = sample
 
@@ -64,7 +68,7 @@ fragment float4 fragment_main(
     diffuse += float3(1, 1, 1) * albedo * diffuseIntensity;
     
     // Ambient
-    diffuse += float3(1, 1, 1) * 0.1;
+    diffuse += albedo * float3(1, 1, 1) * 0.1;
     
     return float4(diffuse, 1);
 }

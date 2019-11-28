@@ -17,7 +17,7 @@ extension Texturable {
         let textureLoaderOptions: [MTKTextureLoader.Option: Any] = [
             .origin: MTKTextureLoader.Origin.bottomLeft,
             .SRGB: false,
-            .generateMipmaps: NSNumber(booleanLiteral: true),
+            .generateMipmaps: true,
         ]
         
         let fileExtension = URL(fileURLWithPath: imageName).pathExtension.isEmpty ? "png" : nil
