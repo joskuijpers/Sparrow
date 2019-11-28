@@ -64,18 +64,18 @@ class Renderer: NSObject {
         house.rotation = [0, Float(45).degreesToRadians, 0]
         models.append(house)
         
-        let house2 = Model(name: "lowpoly-house.obj")
+        let house2 = Model(name: "cottage1.obj")
         house2.position = [0, 0, 4]
         house2.rotation = [0, Float(45).degreesToRadians, 0]
         models.append(house2)
         
-        let house3 = Model(name: "lowpoly-house.obj")
-        house3.position = [4, 0, 4]
+        let house3 = Model(name: "cottage2.obj")
+        house3.position = [8, 0, 4]
         house3.rotation = [0, Float(45).degreesToRadians, 0]
         models.append(house3)
         
-        let house4 = Model(name: "lowpoly-house.obj")
-        house4.position = [4, 0, 8]
+        let house4 = Model(name: "chest.obj")
+        house4.position = [-4, 0, 8]
         house4.rotation = [0, Float(45).degreesToRadians, 0]
         models.append(house4)
     }

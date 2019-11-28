@@ -13,6 +13,7 @@ class Submesh {
     
     struct Textures {
         let albedo: MTLTexture?
+        let normal: MTLTexture?
     }
     
     let textures: Textures
@@ -43,5 +44,6 @@ private extension Submesh.Textures {
         }
         
         albedo = property(with: .baseColor)
+        normal = property(with: .tangentSpaceNormal)
     }
 }
