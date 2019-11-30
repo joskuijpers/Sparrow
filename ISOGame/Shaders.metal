@@ -10,6 +10,9 @@
 using namespace metal;
 #import "ShaderCommon.h"
 
+constant bool hasAlbedoTexture [[ function_constant(0) ]];
+constant bool hasNormalTexture [[ function_constant(1) ]];
+
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
     float3 normal       [[ attribute(VertexAttributeNormal) ]];
@@ -47,29 +50,27 @@ fragment float4 fragment_main(
                               VertexOut in [[ stage_in ]],
                               constant FragmentUniforms &fragmentUniforms [[ buffer(BufferIndexFragmentUniforms) ]],
                               constant Material &material [[ buffer(BufferIndexMaterials) ]],
-                              texture2d<float> albedoTexture [[ texture(TextureAlbedo) ]],
-                              texture2d<float> normalTexture [[ texture(TextureNormal) ]]
+                              texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]],
+                              texture2d<float> normalTexture [[ texture(TextureNormal), function_constant(hasNormalTexture) ]]
                               ) {
     constexpr sampler textureSampler(address::repeat, filter::linear, mip_filter::linear);
     
     // albedo = color
-    float3 albedo = float3(0.5, 0.2, 0.5);
+    float3 albedo;
+    if (hasAlbedoTexture) {
+        albedo = albedoTexture.sample(textureSampler, in.uv).rgb;
+    } else {
+        albedo = material.albedo;
+    }
     
-    
-//    albedo = albedoTexture.sample(textureSampler, in.uv).rgb;
-    albedo = material.albedo;
-    
-    // if hasALbedoTexture
-        // albedo = sample
-    float3 normal = normalTexture.sample(textureSampler, in.uv).xyz;
-    normal = normal * 2 - 1;
+    float3 normal;
+    if (hasNormalTexture) {
+        normal = normalTexture.sample(textureSampler, in.uv).xyz;
+        normal = normal * 2 - 1;
+    } else {
+        normal = in.worldNormal;
+    }
     normal = normalize(normal);
-
-    // normal = vetex normal
-    // if hasNormalTexture
-        // normal = sample
-    
-    //
     
     float materialShininess = material.shininess;
     float3 materialSpecularColor = material.specular;

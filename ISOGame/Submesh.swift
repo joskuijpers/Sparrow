@@ -30,11 +30,20 @@ class Submesh {
 }
 
 private extension Submesh {
+    /// Create a pipeline state for this submesh, using the vertex descriptor from the model
+    // TODO: add configuration of vertex function for the model
     static func makePipelineState(textures: Textures) -> MTLRenderPipelineState {
         let library = Renderer.library
         
         let vertexFunction = library?.makeFunction(name: "vertex_main")
-        let fragmentFunction = library?.makeFunction(name: "fragment_main")
+        
+        let functionConstants = makeFunctionConstants(textures: textures)
+        let fragmentFunction: MTLFunction?
+        do {
+            fragmentFunction = try library?.makeFunction(name: "fragment_main", constantValues: functionConstants)
+        } catch {
+            fatalError("No Metal function exists")
+        }
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.vertexFunction = vertexFunction
@@ -53,6 +62,20 @@ private extension Submesh {
         }
         
         return pipelineState
+    }
+    
+    /// Function constants that define whether a texture is used, or a fallback to the material
+    static func makeFunctionConstants(textures: Textures) -> MTLFunctionConstantValues {
+        let functionConstants = MTLFunctionConstantValues()
+        
+        var property = textures.albedo != nil
+        functionConstants.setConstantValue(&property, type: .bool, index: 0)
+        
+        property = textures.normal != nil
+        functionConstants.setConstantValue(&property, type: .bool, index: 1)
+        
+        
+        return functionConstants
     }
 }
 
