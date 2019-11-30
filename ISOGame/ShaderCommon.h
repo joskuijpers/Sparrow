@@ -18,16 +18,22 @@ typedef struct {
     matrix_float3x3 normalMatrix;
 } Uniforms;
 
+typedef struct {
+    vector_float3 cameraPosition;
+} FragmentUniforms;
 
 typedef enum {
     BufferIndexVertices = 0,
-    BufferIndexUniforms = 1
+    BufferIndexUniforms = 11,
+    BufferIndexFragmentUniforms = 13,
 } BufferIndex;
 
 typedef enum {
     VertexAttributePosition = 0,
     VertexAttributeNormal = 1,
-    VertexAttributeUV = 2
+    VertexAttributeUV = 2,
+    VertexAttributeTangent = 3,
+    VertexAttributeBitangent = 4
 } VertexAttributes;
 
 typedef enum {

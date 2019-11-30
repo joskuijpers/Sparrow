@@ -10,8 +10,9 @@ import MetalKit
 
 class Model: Node {
     
-    let pipelineState: MTLRenderPipelineState
     let meshes: [Mesh]
+    
+    static var vertexDescriptor: MDLVertexDescriptor = MDLVertexDescriptor.defaultVertexDescriptor
     
     init(name: String) {
         guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
@@ -23,41 +24,21 @@ class Model: Node {
                              vertexDescriptor: MDLVertexDescriptor.defaultVertexDescriptor,
                              bufferAllocator: allocator)
         
-        let (mdlMeshes, mtkMeshes) = try! MTKMesh.newMeshes(asset: asset,
-                                                            device: Renderer.device)
+        var mtkMeshes: [MTKMesh] = []
+        let mdlMeshes = asset.childObjects(of: MDLMesh.self) as! [MDLMesh]
+        _ = mdlMeshes.map { mdlMesh in
+            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+                                    tangentAttributeNamed: MDLVertexAttributeTangent,
+                                    bitangentAttributeNamed: MDLVertexAttributeBitangent)
+            Model.vertexDescriptor = mdlMesh.vertexDescriptor
+            mtkMeshes.append(try! MTKMesh(mesh: mdlMesh, device: Renderer.device))
+        }
+
         meshes = zip(mdlMeshes, mtkMeshes).map {
             Mesh(mdlMesh: $0.0, mtkMesh: $0.1)
         }
         
-        pipelineState = Model.buildPipelineState()
-        
         super.init()
         self.name = name
-    }
-    
-    private static func buildPipelineState() -> MTLRenderPipelineState {
-        let library = Renderer.library
-        
-        let vertexFunction = library?.makeFunction(name: "vertex_main")
-        let fragmentFunction = library?.makeFunction(name: "fragment_main")
-        
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        
-        let vertexDescriptor = MDLVertexDescriptor.defaultVertexDescriptor
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(vertexDescriptor)
-        
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-        
-        var pipelineState: MTLRenderPipelineState
-        do {
-            pipelineState = try Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
-        } catch let error {
-            fatalError(error.localizedDescription)
-        }
-        
-        return pipelineState
     }
 }

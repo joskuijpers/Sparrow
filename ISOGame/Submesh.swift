@@ -10,6 +10,7 @@ import MetalKit
 
 class Submesh {
     let mtkSubmesh: MTKSubmesh
+    let pipelineState: MTLRenderPipelineState
     
     struct Textures {
         let albedo: MTLTexture?
@@ -22,6 +23,34 @@ class Submesh {
         self.mtkSubmesh = mtkSubmesh
         
         textures = Textures(material: mdlSubmesh.material)
+        pipelineState = Submesh.makePipelineState(textures: textures)
+    }
+}
+
+private extension Submesh {
+    static func makePipelineState(textures: Textures) -> MTLRenderPipelineState {
+        let library = Renderer.library
+        
+        let vertexFunction = library?.makeFunction(name: "vertex_main")
+        let fragmentFunction = library?.makeFunction(name: "fragment_main")
+        
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+        
+        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Model.vertexDescriptor)
+        
+        pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
+        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+        
+        var pipelineState: MTLRenderPipelineState
+        do {
+            pipelineState = try Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+        
+        return pipelineState
     }
 }
 

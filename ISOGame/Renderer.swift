@@ -11,13 +11,17 @@ import MetalKit
 class Renderer: NSObject {
     static var device: MTLDevice!
     static var library: MTLLibrary?
+    static var colorPixelFormat: MTLPixelFormat!
+    
     let commandQueue: MTLCommandQueue!
     
     
     var uniforms = Uniforms()
-//    var fragmentUniforms: FragmentUniforms()
+    var fragmentUniforms = FragmentUniforms()
+    
     let depthStencilState: MTLDepthStencilState
 //    let lighting = Lighting()
+    
     
     lazy var camera: Camera = {
         let camera = ArcballCamera()
@@ -43,6 +47,7 @@ class Renderer: NSObject {
         
         Renderer.device = device
         Renderer.library = device.makeDefaultLibrary()
+        Renderer.colorPixelFormat = metalView.colorPixelFormat
         metalView.device = device
         metalView.depthStencilPixelFormat = .depth32Float
         self.commandQueue = commandQueue
@@ -109,8 +114,12 @@ extension Renderer: MTKViewDelegate {
         
         uniforms.projectionMatrix = camera.projectionMatrix
         uniforms.viewMatrix = camera.viewMatrix
-//        fragmentUniforms.cameraPosition = camera.position
+        fragmentUniforms.cameraPosition = camera.position
     
+        renderEncoder.setFragmentBytes(&fragmentUniforms,
+                                       length: MemoryLayout<FragmentUniforms>.stride,
+                                       index: Int(BufferIndexFragmentUniforms.rawValue))
+        
         for model in models {
             renderEncoder.pushDebugGroup(model.name)
             
@@ -121,14 +130,17 @@ extension Renderer: MTKViewDelegate {
                                          length: MemoryLayout<Uniforms>.stride,
                                          index: Int(BufferIndexUniforms.rawValue))
             
-            renderEncoder.setRenderPipelineState(model.pipelineState)
-            
             for mesh in model.meshes {
-                let vertexBuffer = mesh.mtkMesh.vertexBuffers[0].buffer
-                renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: Int(BufferIndexVertices.rawValue))
+                for (index, vertexBuffer) in mesh.mtkMesh.vertexBuffers.enumerated() {
+                    renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
+                }
+                
                 
                 for submesh in mesh.submeshes {
+                    renderEncoder.setRenderPipelineState(submesh.pipelineState)
+                    
                     renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+                    renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
                     
                     let mtkSubmesh = submesh.mtkSubmesh
                     renderEncoder.drawIndexedPrimitives(type: .triangle,
