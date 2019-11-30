@@ -142,6 +142,11 @@ extension Renderer: MTKViewDelegate {
                     renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
                     renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
                     
+                    var material = submesh.material
+                    renderEncoder.setFragmentBytes(&material,
+                                                   length: MemoryLayout<Material>.stride,
+                                                   index: Int(BufferIndexMaterials.rawValue))
+                    
                     let mtkSubmesh = submesh.mtkSubmesh
                     renderEncoder.drawIndexedPrimitives(type: .triangle,
                                                         indexCount: mtkSubmesh.indexCount,

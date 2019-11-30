@@ -26,6 +26,7 @@ typedef enum {
     BufferIndexVertices = 0,
     BufferIndexUniforms = 11,
     BufferIndexFragmentUniforms = 13,
+    BufferIndexMaterials = 14,
 } BufferIndex;
 
 typedef enum {
@@ -42,5 +43,10 @@ typedef enum {
     TextureSpecular = 2,
 } Textures;
 
+typedef struct {
+    vector_float3 albedo;
+    vector_float3 specular;
+    float shininess;
+} Material;
 
 #endif /* ShaderCommon_h */

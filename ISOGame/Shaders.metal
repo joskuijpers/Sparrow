@@ -46,6 +46,7 @@ vertex VertexOut vertex_main(
 fragment float4 fragment_main(
                               VertexOut in [[ stage_in ]],
                               constant FragmentUniforms &fragmentUniforms [[ buffer(BufferIndexFragmentUniforms) ]],
+                              constant Material &material [[ buffer(BufferIndexMaterials) ]],
                               texture2d<float> albedoTexture [[ texture(TextureAlbedo) ]],
                               texture2d<float> normalTexture [[ texture(TextureNormal) ]]
                               ) {
@@ -54,7 +55,9 @@ fragment float4 fragment_main(
     // albedo = color
     float3 albedo = float3(0.5, 0.2, 0.5);
     
-    albedo = albedoTexture.sample(textureSampler, in.uv).rgb;
+    
+//    albedo = albedoTexture.sample(textureSampler, in.uv).rgb;
+    albedo = material.albedo;
     
     // if hasALbedoTexture
         // albedo = sample
@@ -68,8 +71,8 @@ fragment float4 fragment_main(
     
     //
     
-    float materialShininess = 64;
-    float3 materialSpecularColor = float3(0.4);
+    float materialShininess = material.shininess;
+    float3 materialSpecularColor = material.specular;
     
     float3 diffuse = 0;
     float3 ambient = 0;

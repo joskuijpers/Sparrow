@@ -11,6 +11,7 @@ import MetalKit
 class Submesh {
     let mtkSubmesh: MTKSubmesh
     let pipelineState: MTLRenderPipelineState
+    let material: Material
     
     struct Textures {
         let albedo: MTLTexture?
@@ -24,6 +25,7 @@ class Submesh {
         
         textures = Textures(material: mdlSubmesh.material)
         pipelineState = Submesh.makePipelineState(textures: textures)
+        material = Material(material: mdlSubmesh.material)
     }
 }
 
@@ -74,5 +76,26 @@ private extension Submesh.Textures {
         
         albedo = property(with: .baseColor)
         normal = property(with: .tangentSpaceNormal)
+    }
+}
+
+private extension Material {
+    init(material: MDLMaterial?) {
+        self.init()
+        
+        if let albedo = material?.property(with: .baseColor),
+            albedo.type == .float3 {
+            self.albedo = albedo.float3Value
+        }
+        
+        if let specular = material?.property(with: .specular),
+            specular.type == .float3 {
+            self.specular = specular.float3Value
+        }
+        
+        if let shininess = material?.property(with: .specularExponent),
+            shininess.type == .float {
+            self.shininess = shininess.floatValue
+        }
     }
 }
