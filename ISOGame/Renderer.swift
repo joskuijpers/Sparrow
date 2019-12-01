@@ -64,25 +64,33 @@ class Renderer: NSObject {
         
         
         
-        let house = Model(name: "lowpoly-house.obj")
-        house.position = [0, 0, 0]
-        house.rotation = [0, Float(45).degreesToRadians, 0]
-        models.append(house)
+//        let house = Model(name: "lowpoly-house.obj")
+//        house.position = [0, 0, 0]
+//        house.rotation = [0, Float(45).degreesToRadians, 0]
+//        models.append(house)
         
         let house2 = Model(name: "cottage1.obj")
         house2.position = [0, 0, 4]
         house2.rotation = [0, Float(45).degreesToRadians, 0]
         models.append(house2)
         
-        let house3 = Model(name: "cottage2.obj")
-        house3.position = [8, 0, 4]
-        house3.rotation = [0, Float(45).degreesToRadians, 0]
-        models.append(house3)
+//        let house3 = Model(name: "cottage2.obj")
+//        house3.position = [8, 0, 4]
+//        house3.rotation = [0, Float(45).degreesToRadians, 0]
+//        models.append(house3)
         
         let house4 = Model(name: "chest.obj")
         house4.position = [-4, 0, 8]
         house4.rotation = [0, Float(45).degreesToRadians, 0]
         models.append(house4)
+        
+        let truck = Model(name: "firetruck.obj")
+        truck.position = [0, 0, -4]
+//        models.append(truck)
+        
+        let cube = Model(name: "cube.obj")
+        cube.position = [0, 0, 0]
+        models.append(cube)
     }
     
     
@@ -141,6 +149,9 @@ extension Renderer: MTKViewDelegate {
                     
                     renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
                     renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+                    renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
+                    renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
+//                    renderEncoder.setFragmentTexture(submesh.textures.emission, index: Int(TextureEmission.rawValue))
                     
                     var material = submesh.material
                     renderEncoder.setFragmentBytes(&material,

@@ -41,15 +41,18 @@ typedef enum {
     TextureAlbedo = 0,
     TextureNormal = 1,
     TextureSpecular = 2,
+    TextureRoughness = 3,
+    TextureMetallic = 4,
+    TextureEmissive = 5
 } Textures;
 
 typedef struct {
     vector_float3 albedo;
     vector_float3 specularColor;
     float shininess;
-    // metallic
-    // roughness
-    // emission
+    float metallic;
+    float roughness;
+    float emission;
 } Material;
 
 #endif /* ShaderCommon_h */

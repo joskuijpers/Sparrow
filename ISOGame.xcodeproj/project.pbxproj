@@ -38,6 +38,8 @@
 		80A4631423906E1B009435EB /* chest-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630E23906DFA009435EB /* chest-roughness.png */; };
 		80A4631523906E1B009435EB /* chest.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630F23906DFA009435EB /* chest.mtl */; };
 		80A4631623906E1B009435EB /* chest.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631023906DFA009435EB /* chest.obj */; };
+		80A4631923944E85009435EB /* firetruck.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631723944E85009435EB /* firetruck.mtl */; };
+		80A4631A23944E85009435EB /* firetruck.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631823944E85009435EB /* firetruck.obj */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +78,8 @@
 		80A4630F23906DFA009435EB /* chest.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = chest.mtl; sourceTree = "<group>"; };
 		80A4631023906DFA009435EB /* chest.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = chest.obj; sourceTree = "<group>"; };
 		80A4631123906DFA009435EB /* chest-color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chest-color.png"; sourceTree = "<group>"; };
+		80A4631723944E85009435EB /* firetruck.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = firetruck.mtl; sourceTree = "<group>"; };
+		80A4631823944E85009435EB /* firetruck.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = firetruck.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +170,8 @@
 				80A4630E23906DFA009435EB /* chest-roughness.png */,
 				80A4630F23906DFA009435EB /* chest.mtl */,
 				80A4631023906DFA009435EB /* chest.obj */,
+				80A4631723944E85009435EB /* firetruck.mtl */,
+				80A4631823944E85009435EB /* firetruck.obj */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -237,6 +243,8 @@
 				80A4630A23906C71009435EB /* cottage2.obj in Resources */,
 				80A4631223906E1B009435EB /* chest-color.png in Resources */,
 				80A4630923906C71009435EB /* cottage1.mtl in Resources */,
+				80A4631A23944E85009435EB /* firetruck.obj in Resources */,
+				80A4631923944E85009435EB /* firetruck.mtl in Resources */,
 				80A4631623906E1B009435EB /* chest.obj in Resources */,
 				80A462D1238F0FB9009435EB /* Main.storyboard in Resources */,
 				80A4630823906C71009435EB /* cottage1.obj in Resources */,

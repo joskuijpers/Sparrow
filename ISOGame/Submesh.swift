@@ -16,6 +16,9 @@ class Submesh {
     struct Textures {
         let albedo: MTLTexture?
         let normal: MTLTexture?
+        let roughness: MTLTexture?
+        let metallic: MTLTexture?
+//        let emission: MTLTexture?
     }
     
     let textures: Textures
@@ -42,6 +45,7 @@ private extension Submesh {
         do {
             fragmentFunction = try library?.makeFunction(name: "fragment_main", constantValues: functionConstants)
         } catch {
+            print(functionConstants)
             fatalError("No Metal function exists")
         }
         
@@ -74,6 +78,15 @@ private extension Submesh {
         property = textures.normal != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 1)
         
+        property = textures.roughness != nil
+        functionConstants.setConstantValue(&property, type: .bool, index: 2)
+        
+        property = textures.metallic != nil
+        functionConstants.setConstantValue(&property, type: .bool, index: 3)
+        
+//        property = textures.emission != nil
+//        functionConstants.setConstantValue(&property, type: .bool, index: 4)
+        
         
         return functionConstants
     }
@@ -99,6 +112,9 @@ private extension Submesh.Textures {
         
         albedo = property(with: .baseColor)
         normal = property(with: .tangentSpaceNormal)
+        roughness = property(with: .roughness)
+        metallic = property(with: .metallic)
+//        emission = property(with: .emission)
     }
 }
 
@@ -120,5 +136,20 @@ private extension Material {
             shininess.type == .float {
             self.shininess = shininess.floatValue
         }
+        
+        if let roughness = material?.property(with: .roughness),
+            roughness.type == .float3 {
+            self.roughness = roughness.floatValue
+        }
+        
+//        if let metallic = material?.property(with: .metallic),
+//            metallic.type == .float {
+//            self.metallic = metallic.floatValue
+//        }
+        
+//        if let emission = material?.property(with: .emission),
+//            emission.type == .float {
+//            self.emission = emission.floatValue
+//        }
     }
 }

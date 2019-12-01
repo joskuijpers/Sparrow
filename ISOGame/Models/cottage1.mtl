@@ -25,6 +25,9 @@ illum 2
 map_tangentSpaceNormal cottage-normal
 map_Kd cottage-color
 
+roughness 0.50000 0.500000 0.500000
+#metallic 0.03 0.1500000 0.1500000
+
 newmtl wall
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
