@@ -12,6 +12,9 @@ using namespace metal;
 
 constant bool hasAlbedoTexture [[ function_constant(0) ]];
 constant bool hasNormalTexture [[ function_constant(1) ]];
+// metallic
+// roughness
+// emission
 
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
@@ -25,9 +28,9 @@ struct VertexOut {
     float4 position [[ position ]];
     float3 worldPosition;
     float3 worldNormal;
-    float2 uv;
     float3 worldTangent;
     float3 worldBitangent;
+    float2 uv;
 };
 
 vertex VertexOut vertex_main(
@@ -65,22 +68,20 @@ fragment float4 fragment_main(
     
     float3 normal;
     if (hasNormalTexture) {
-        normal = normalTexture.sample(textureSampler, in.uv).xyz;
-        normal = normal * 2 - 1;
+        normal = normalTexture.sample(textureSampler, in.uv).xyz * 2.0 - 1.0;
     } else {
         normal = in.worldNormal;
     }
     normal = normalize(normal);
     
     float materialShininess = material.shininess;
-    float3 materialSpecularColor = material.specular;
+    float3 materialSpecularColor = material.specularColor;
     
     float3 diffuse = 0;
     float3 ambient = 0;
     float3 specular = 0;
     
     // Sun
-//    float3 normalDirection = normalize(in.worldNormal);
     float3 normalDirection = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal) * normal;
     normalDirection = normalize(normalDirection);
     

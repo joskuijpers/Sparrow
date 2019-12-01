@@ -45,8 +45,11 @@ typedef enum {
 
 typedef struct {
     vector_float3 albedo;
-    vector_float3 specular;
+    vector_float3 specularColor;
     float shininess;
+    // metallic
+    // roughness
+    // emission
 } Material;
 
 #endif /* ShaderCommon_h */
