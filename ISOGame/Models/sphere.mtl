@@ -14,3 +14,4 @@ map_tangentSpaceNormal rusted_iron_normal.png
 map_Kd rusted_iron_albedo.png
 map_roughness rusted_iron_roughness.png
 map_metallic rusted_iron_metallic.png
+map_ao rusted_iron_ao.png
