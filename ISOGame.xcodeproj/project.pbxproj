@@ -24,22 +24,21 @@
 		80A462F2238F1E25009435EB /* MathLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F1238F1E25009435EB /* MathLibrary.swift */; };
 		80A462F4238F2025009435EB /* Texturable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F3238F2025009435EB /* Texturable.swift */; };
 		80A462F6238F22C5009435EB /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F5238F22C5009435EB /* Camera.swift */; };
-		80A462FC238F25D9009435EB /* lowpoly-house-color.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A462F9238F25D9009435EB /* lowpoly-house-color.png */; };
-		80A462FD238F25D9009435EB /* lowpoly-house.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A462FA238F25D9009435EB /* lowpoly-house.mtl */; };
-		80A462FE238F25D9009435EB /* lowpoly-house.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A462FB238F25D9009435EB /* lowpoly-house.obj */; };
 		80A4630723906C71009435EB /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630123906C71009435EB /* cube.obj */; };
-		80A4630823906C71009435EB /* cottage1.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630223906C71009435EB /* cottage1.obj */; };
-		80A4630923906C71009435EB /* cottage1.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630323906C71009435EB /* cottage1.mtl */; };
-		80A4630A23906C71009435EB /* cottage2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630423906C71009435EB /* cottage2.obj */; };
 		80A4630B23906C71009435EB /* cube.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630523906C71009435EB /* cube.mtl */; };
-		80A4630C23906C71009435EB /* cottage2.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630623906C71009435EB /* cottage2.mtl */; };
 		80A4631223906E1B009435EB /* chest-color.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631123906DFA009435EB /* chest-color.png */; };
 		80A4631323906E1B009435EB /* chest-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630D23906DFA009435EB /* chest-normal.png */; };
 		80A4631423906E1B009435EB /* chest-roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630E23906DFA009435EB /* chest-roughness.png */; };
 		80A4631523906E1B009435EB /* chest.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630F23906DFA009435EB /* chest.mtl */; };
 		80A4631623906E1B009435EB /* chest.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631023906DFA009435EB /* chest.obj */; };
-		80A4631923944E85009435EB /* firetruck.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631723944E85009435EB /* firetruck.mtl */; };
-		80A4631A23944E85009435EB /* firetruck.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631823944E85009435EB /* firetruck.obj */; };
+		80A4631C2396FE3B009435EB /* pbr in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631B2396FE3B009435EB /* pbr */; };
+		80A4631F239704C1009435EB /* sphere.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631D239704C1009435EB /* sphere.mtl */; };
+		80A46320239704C1009435EB /* sphere.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4631E239704C1009435EB /* sphere.obj */; };
+		80A463252397136F009435EB /* rusted_iron_albedo.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A463242397136D009435EB /* rusted_iron_albedo.png */; };
+		80A4632A23971380009435EB /* rusted_iron_ao.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A463282397137D009435EB /* rusted_iron_ao.png */; };
+		80A4632B23971380009435EB /* rusted_iron_metallic.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A463262397137D009435EB /* rusted_iron_metallic.png */; };
+		80A4632C23971380009435EB /* rusted_iron_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A463272397137D009435EB /* rusted_iron_normal.png */; };
+		80A4632D23971380009435EB /* rusted_iron_roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A463292397137D009435EB /* rusted_iron_roughness.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,22 +63,21 @@
 		80A462F3238F2025009435EB /* Texturable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texturable.swift; sourceTree = "<group>"; };
 		80A462F5238F22C5009435EB /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
-		80A462F9238F25D9009435EB /* lowpoly-house-color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lowpoly-house-color.png"; sourceTree = "<group>"; };
-		80A462FA238F25D9009435EB /* lowpoly-house.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "lowpoly-house.mtl"; sourceTree = "<group>"; };
-		80A462FB238F25D9009435EB /* lowpoly-house.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "lowpoly-house.obj"; sourceTree = "<group>"; };
 		80A4630123906C71009435EB /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
-		80A4630223906C71009435EB /* cottage1.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cottage1.obj; sourceTree = "<group>"; };
-		80A4630323906C71009435EB /* cottage1.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cottage1.mtl; sourceTree = "<group>"; };
-		80A4630423906C71009435EB /* cottage2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cottage2.obj; sourceTree = "<group>"; };
 		80A4630523906C71009435EB /* cube.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.mtl; sourceTree = "<group>"; };
-		80A4630623906C71009435EB /* cottage2.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cottage2.mtl; sourceTree = "<group>"; };
 		80A4630D23906DFA009435EB /* chest-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chest-normal.png"; sourceTree = "<group>"; };
 		80A4630E23906DFA009435EB /* chest-roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chest-roughness.png"; sourceTree = "<group>"; };
 		80A4630F23906DFA009435EB /* chest.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = chest.mtl; sourceTree = "<group>"; };
 		80A4631023906DFA009435EB /* chest.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = chest.obj; sourceTree = "<group>"; };
 		80A4631123906DFA009435EB /* chest-color.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chest-color.png"; sourceTree = "<group>"; };
-		80A4631723944E85009435EB /* firetruck.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = firetruck.mtl; sourceTree = "<group>"; };
-		80A4631823944E85009435EB /* firetruck.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = firetruck.obj; sourceTree = "<group>"; };
+		80A4631B2396FE3B009435EB /* pbr */ = {isa = PBXFileReference; lastKnownFileType = folder; path = pbr; sourceTree = "<group>"; };
+		80A4631D239704C1009435EB /* sphere.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sphere.mtl; sourceTree = "<group>"; };
+		80A4631E239704C1009435EB /* sphere.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sphere.obj; sourceTree = "<group>"; };
+		80A463242397136D009435EB /* rusted_iron_albedo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rusted_iron_albedo.png; sourceTree = "<group>"; };
+		80A463262397137D009435EB /* rusted_iron_metallic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rusted_iron_metallic.png; sourceTree = "<group>"; };
+		80A463272397137D009435EB /* rusted_iron_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rusted_iron_normal.png; sourceTree = "<group>"; };
+		80A463282397137D009435EB /* rusted_iron_ao.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rusted_iron_ao.png; sourceTree = "<group>"; };
+		80A463292397137D009435EB /* rusted_iron_roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rusted_iron_roughness.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,13 +154,14 @@
 		80A462F8238F25C6009435EB /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				80A462F9238F25D9009435EB /* lowpoly-house-color.png */,
-				80A462FA238F25D9009435EB /* lowpoly-house.mtl */,
-				80A462FB238F25D9009435EB /* lowpoly-house.obj */,
-				80A4630323906C71009435EB /* cottage1.mtl */,
-				80A4630223906C71009435EB /* cottage1.obj */,
-				80A4630623906C71009435EB /* cottage2.mtl */,
-				80A4630423906C71009435EB /* cottage2.obj */,
+				80A4631D239704C1009435EB /* sphere.mtl */,
+				80A4631E239704C1009435EB /* sphere.obj */,
+				80A463242397136D009435EB /* rusted_iron_albedo.png */,
+				80A463282397137D009435EB /* rusted_iron_ao.png */,
+				80A463262397137D009435EB /* rusted_iron_metallic.png */,
+				80A463272397137D009435EB /* rusted_iron_normal.png */,
+				80A463292397137D009435EB /* rusted_iron_roughness.png */,
+				80A4631B2396FE3B009435EB /* pbr */,
 				80A4630523906C71009435EB /* cube.mtl */,
 				80A4630123906C71009435EB /* cube.obj */,
 				80A4631123906DFA009435EB /* chest-color.png */,
@@ -170,8 +169,6 @@
 				80A4630E23906DFA009435EB /* chest-roughness.png */,
 				80A4630F23906DFA009435EB /* chest.mtl */,
 				80A4631023906DFA009435EB /* chest.obj */,
-				80A4631723944E85009435EB /* firetruck.mtl */,
-				80A4631823944E85009435EB /* firetruck.obj */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -234,24 +231,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80A462FC238F25D9009435EB /* lowpoly-house-color.png in Resources */,
 				80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */,
-				80A462FE238F25D9009435EB /* lowpoly-house.obj in Resources */,
 				80A4631523906E1B009435EB /* chest.mtl in Resources */,
-				80A4630C23906C71009435EB /* cottage2.mtl in Resources */,
 				80A4631323906E1B009435EB /* chest-normal.png in Resources */,
-				80A4630A23906C71009435EB /* cottage2.obj in Resources */,
+				80A4632B23971380009435EB /* rusted_iron_metallic.png in Resources */,
+				80A4631C2396FE3B009435EB /* pbr in Resources */,
+				80A4632D23971380009435EB /* rusted_iron_roughness.png in Resources */,
+				80A4631F239704C1009435EB /* sphere.mtl in Resources */,
 				80A4631223906E1B009435EB /* chest-color.png in Resources */,
-				80A4630923906C71009435EB /* cottage1.mtl in Resources */,
-				80A4631A23944E85009435EB /* firetruck.obj in Resources */,
-				80A4631923944E85009435EB /* firetruck.mtl in Resources */,
 				80A4631623906E1B009435EB /* chest.obj in Resources */,
+				80A463252397136F009435EB /* rusted_iron_albedo.png in Resources */,
 				80A462D1238F0FB9009435EB /* Main.storyboard in Resources */,
-				80A4630823906C71009435EB /* cottage1.obj in Resources */,
 				80A4630B23906C71009435EB /* cube.mtl in Resources */,
-				80A462FD238F25D9009435EB /* lowpoly-house.mtl in Resources */,
+				80A4632A23971380009435EB /* rusted_iron_ao.png in Resources */,
 				80A4631423906E1B009435EB /* chest-roughness.png in Resources */,
+				80A46320239704C1009435EB /* sphere.obj in Resources */,
 				80A4630723906C71009435EB /* cube.obj in Resources */,
+				80A4632C23971380009435EB /* rusted_iron_normal.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

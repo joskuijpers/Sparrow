@@ -18,7 +18,7 @@ class Submesh {
         let normal: MTLTexture?
         let roughness: MTLTexture?
         let metallic: MTLTexture?
-//        let emission: MTLTexture?
+//        let emissive: MTLTexture?
     }
     
     let textures: Textures
@@ -84,7 +84,7 @@ private extension Submesh {
         property = textures.metallic != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 3)
         
-//        property = textures.emission != nil
+//        property = textures.emissive != nil
 //        functionConstants.setConstantValue(&property, type: .bool, index: 4)
         
         
@@ -114,7 +114,7 @@ private extension Submesh.Textures {
         normal = property(with: .tangentSpaceNormal)
         roughness = property(with: .roughness)
         metallic = property(with: .metallic)
-//        emission = property(with: .emission)
+//        emissive = property(with: .emissive)
     }
 }
 

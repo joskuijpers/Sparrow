@@ -59,6 +59,9 @@ vertex VertexOut vertex_main(
     out.worldNormal = uniforms.normalMatrix * in.normal;
     out.uv = in.uv;
     out.worldTangent = uniforms.normalMatrix * in.tangent;
+    
+    // TEST! If works, remove bitangent from buffer
+//    out.worldBitangent = uniforms.normalMatrix * cross(in.normal, in.tangent);
     out.worldBitangent = uniforms.normalMatrix * in.bitangent;
     
     return out;
