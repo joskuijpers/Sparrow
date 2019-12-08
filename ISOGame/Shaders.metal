@@ -17,6 +17,7 @@ constant bool hasNormalTexture [[ function_constant(1) ]];
 constant bool hasRoughnessTexture [[ function_constant(2) ]];
 constant bool hasMetallicTexture [[ function_constant(3) ]];
 //constant bool hasEmissionTexture [[ function_constant(4) ]];
+constant bool hasAmbientOcclusionTexture [[ function_constant(5) ]];
 
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
@@ -76,8 +77,9 @@ fragment float4 fragment_main(
                               texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]],
                               texture2d<float> normalTexture [[ texture(TextureNormal), function_constant(hasNormalTexture) ]],
                               texture2d<float> roughnessTexture [[ texture(TextureRoughness), function_constant(hasRoughnessTexture) ]],
-                              texture2d<float> metallicTexture [[ texture(TextureMetallic), function_constant(hasMetallicTexture) ]]
+                              texture2d<float> metallicTexture [[ texture(TextureMetallic), function_constant(hasMetallicTexture) ]],
 //                              texture2d<float> emissionTexture [[ texture(TextureNormal), function_constant(hasEmissionTexture) ]]
+                              texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]]
                               ) {
     constexpr sampler textureSampler(address::repeat, filter::linear, mip_filter::linear);
     
@@ -111,6 +113,13 @@ fragment float4 fragment_main(
         roughness = material.roughness;
     }
     
+    float ambientOcclusion;
+    if (hasAmbientOcclusionTexture) {
+        ambientOcclusion = aoTexture.sample(textureSampler, in.uv).r;
+    } else {
+        ambientOcclusion = 1.0;
+    }
+    
     float3 viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
     
     // Hardcoded sun
@@ -124,22 +133,24 @@ fragment float4 fragment_main(
     lighting.normal = normal;
     lighting.metallic = metallic;
     lighting.roughness = roughness;
-    lighting.ambientOcclusion = 1.0;
+    lighting.ambientOcclusion = ambientOcclusion;
     lighting.lightColor = lightColor;
     
 
-    float3 specularOutput = render(lighting);
+//    float3 specularOutput = render(lighting);
+//
+//    // compute Lambertian diffuse
+//    float nDotl = max(0.001, saturate(dot(lighting.normal, lighting.lightDirection)));
+//
+//    // rescale from -1 : 1 to 0.4 - 1 to lighten shadows
+//    nDotl = ((nDotl + 1) / (1 + 1)) * (1 - 0.3) + 0.3;
+//
+//    float3 diffuseColor = lightColor * albedo * nDotl * lighting.ambientOcclusion;
+//    diffuseColor *= 1.0 - metallic;
+//
+//    float4 finalColor = float4(specularOutput + diffuseColor, 1.0);
     
-    // compute Lambertian diffuse
-    float nDotl = max(0.001, saturate(dot(lighting.normal, lighting.lightDirection)));
-    
-    // rescale from -1 : 1 to 0.4 - 1 to lighten shadows
-    nDotl = ((nDotl + 1) / (1 + 1)) * (1 - 0.3) + 0.3;
-
-    float3 diffuseColor = lightColor * albedo * nDotl * lighting.ambientOcclusion;
-    diffuseColor *= 1.0 - metallic;
-
-    float4 finalColor = float4(specularOutput + diffuseColor, 1.0);
+    float4 finalColor = float4(ambientOcclusion, 0, 0, 1.0);
 
     return finalColor;
 }

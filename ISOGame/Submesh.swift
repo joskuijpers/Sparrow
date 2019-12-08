@@ -19,6 +19,7 @@ class Submesh {
         let roughness: MTLTexture?
         let metallic: MTLTexture?
 //        let emissive: MTLTexture?
+        let ambientOcclusion: MTLTexture?
     }
     
     let textures: Textures
@@ -87,6 +88,8 @@ private extension Submesh {
 //        property = textures.emissive != nil
 //        functionConstants.setConstantValue(&property, type: .bool, index: 4)
         
+        property = textures.ambientOcclusion != nil
+        functionConstants.setConstantValue(&property, type: .bool, index: 5)
         
         return functionConstants
     }
@@ -115,6 +118,7 @@ private extension Submesh.Textures {
         roughness = property(with: .roughness)
         metallic = property(with: .metallic)
 //        emissive = property(with: .emissive)
+        ambientOcclusion = property(with: .ambientOcclusion)
     }
 }
 
@@ -142,10 +146,10 @@ private extension Material {
             self.roughness = roughness.floatValue
         }
         
-//        if let metallic = material?.property(with: .metallic),
-//            metallic.type == .float {
-//            self.metallic = metallic.floatValue
-//        }
+        if let metallic = material?.property(with: .metallic),
+            metallic.type == .float {
+            self.metallic = metallic.floatValue
+        }
         
 //        if let emission = material?.property(with: .emission),
 //            emission.type == .float {
