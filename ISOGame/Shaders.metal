@@ -94,6 +94,7 @@ fragment float4 fragment_main(
     float3 normal;
     if (hasNormalTexture) {
         normal = normalTexture.sample(textureSampler, in.uv).xyz * 2.0 - 1.0;
+        normal = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal) * normal;
     } else {
         normal = in.worldNormal;
     }
@@ -122,19 +123,20 @@ fragment float4 fragment_main(
     
     float3 viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
     
-    // Hardcoded sun
-    float3 lightDirection = normalize(-float3(1, 2, -2));
+    // Hardcoded sun directional light
+    float3 sunPosition = float3(1, 2, -2);
     float3 lightColor = float3(1, 1, 1);
+    float3 lightDirection = normalize(-sunPosition);
     
-    Lighting lighting;
-    lighting.lightDirection = lightDirection;
-    lighting.viewDirection = viewDirection;
-    lighting.albedo = albedo;
-    lighting.normal = normal;
-    lighting.metallic = metallic;
-    lighting.roughness = roughness;
-    lighting.ambientOcclusion = ambientOcclusion;
-    lighting.lightColor = lightColor;
+//    Lighting lighting;
+//    lighting.lightDirection = lightDirection;
+//    lighting.viewDirection = viewDirection;
+//    lighting.albedo = albedo;
+//    lighting.normal = normal;
+//    lighting.metallic = metallic;
+//    lighting.roughness = roughness;
+//    lighting.ambientOcclusion = ambientOcclusion;
+//    lighting.lightColor = lightColor;
     
 
 //    float3 specularOutput = render(lighting);
@@ -150,9 +152,14 @@ fragment float4 fragment_main(
 //
 //    float4 finalColor = float4(specularOutput + diffuseColor, 1.0);
     
-    float4 finalColor = float4(ambientOcclusion, 0, 0, 1.0);
-
-    return finalColor;
+    float3 ambient = 0.3 * float3(1, 1, 1) * albedo;
+    
+    float diffuseIntensity = saturate(-dot(lightDirection, normal));
+    float3 diffuse = diffuseIntensity * lightColor * albedo;
+    
+    float3 color = ambient + diffuse;
+    
+    return float4(color, 1.0);
 }
 
 
