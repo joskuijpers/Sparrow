@@ -61,9 +61,17 @@ class Renderer: NSObject {
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
-        let sphere = Model(name: "sphere.obj")
-        sphere.position = [3, 0, 0]
-        models.append(sphere)
+        for i in 1...10 {
+            let sphere = Model(name: "ironSphere.obj")
+            sphere.position = [Float(1 + 3 * i), 0, 0]
+            models.append(sphere)
+        }
+        
+        for i in 1...10 {
+            let sphere = Model(name: "goldSphere.obj")
+            sphere.position = [Float(1 + 3 * i), 3, 0]
+            models.append(sphere)
+        }
         
         let cube = Model(name: "cube.obj")
         cube.position = [0, 0, 0]

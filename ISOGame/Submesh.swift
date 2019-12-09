@@ -131,18 +131,18 @@ private extension Material {
             self.albedo = albedo.float3Value
         }
         
-        if let specular = material?.property(with: .specular),
-            specular.type == .float3 {
-            self.specularColor = specular.float3Value
-        }
+//        if let specular = material?.property(with: .specular),
+//            specular.type == .float3 {
+//            self.specularColor = specular.float3Value
+//        }
         
-        if let shininess = material?.property(with: .specularExponent),
-            shininess.type == .float {
-            self.shininess = shininess.floatValue
-        }
-        
+//        if let shininess = material?.property(with: .specularExponent),
+//            shininess.type == .float {
+//            self.shininess = shininess.floatValue
+//        }
+
         if let roughness = material?.property(with: .roughness),
-            roughness.type == .float3 {
+            roughness.type == .float {
             self.roughness = roughness.floatValue
         }
         

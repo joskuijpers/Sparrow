@@ -1,15 +1,17 @@
 # Blender MTL File: 'None'
 # Material Count: 1
 
-newmtl Material.001
-Ns 50
+newmtl phong2SG
+Ns 18.00
 Ka 1.000000 1.000000 1.000000
-Kd 0.000000 0.000000 0.000000
+Kd 1.000000 0.000000 0.000000
 Ks 0.500000 0.500000 0.500000
-Ke 0.0 0.0 0.0
+Ke 0.0 0.0 0.0 #emissive
 Ni 1.450000
 d 1.000000
-illum 2
+illum 4
+metallic 0.500000
+roughness 0.100000
 map_tangentSpaceNormal rusted_iron_normal.png
 map_Kd rusted_iron_albedo.png
 map_roughness rusted_iron_roughness.png
