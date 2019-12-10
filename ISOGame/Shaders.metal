@@ -203,7 +203,7 @@ fragment float4 fragment_main(
 }
 
 /// Normal distribution function (NDF) from Disney GGX/Trowbridge-Reitz
-float DistributionGGX(float3 N, float3 H, float roughness)
+inline float DistributionGGX(float3 N, float3 H, float roughness)
 {
     float a      = roughness * roughness;
     float a2     = a * a;
@@ -218,7 +218,7 @@ float DistributionGGX(float3 N, float3 H, float roughness)
 }
 
 /// Gs1 where h=roughness.
-float GeometrySchlickGGX(float NdotV, float roughness)
+inline float GeometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
     float k = (r * r) * 0.125;
@@ -234,6 +234,7 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
+    
     float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     float ggx1  = GeometrySchlickGGX(NdotL, roughness);
     
@@ -246,5 +247,6 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     // Using a replaced power for performance (Spherical Gaussian approximation)
 //    return F0 + (1.0 - F0) * pow(2.0, -5.55473 * cosTheta - 6.98316 * cosTheta);
+    //Apple seems to clamp the 1.0-cosTheta to 0-1
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
