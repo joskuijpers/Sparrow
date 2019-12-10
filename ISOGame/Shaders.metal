@@ -59,9 +59,6 @@ vertex VertexOut vertex_main(
     out.worldPosition = (uniforms.modelMatrix * in.position).xyz;
     out.worldNormal = uniforms.normalMatrix * in.normal;
     out.worldTangent = uniforms.normalMatrix * in.tangent;
-    
-    // TEST! If works, remove bitangent from buffer
-//    out.worldBitangent = uniforms.normalMatrix * cross(in.normal, in.tangent);
     out.worldBitangent = uniforms.normalMatrix * in.bitangent;
     
     out.uv = in.uv;
@@ -136,41 +133,48 @@ fragment float4 fragment_main(
     float3 F0 = float3(0.04);
     F0 = mix(F0, albedo, metallic);
     
+    // For our sun light, until we support multiple lights
     float3 lightPosition = float3(0, -1, 10);
     float3 lightColor = float3(1, 1, 1);
     
-    // https://seblagarde.wordpress.com/2012/01/08/pi-or-not-to-pi-in-game-lighting-equation/
-    // https://learnopengl.com/PBR/Lighting
-//    https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/  specular colors (F0)
-    // TODO add specular color image / property? no: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+    //https://seblagarde.wordpress.com/2012/01/08/pi-or-not-to-pi-in-game-lighting-equation/
+    //https://learnopengl.com/PBR/Lighting
+    //https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/  specular colors (F0)
+    //TODO add specular color image / property? no: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
 
     float3 lighting = float3(0.0); // outgoing radiance
     
 //    for each light
 //    {
-        float3 lightDirection = normalize(-lightPosition); // light direction, directional light
-//      float3 L = normalize(lightPosition - in.worldPosition); // light direction, point light
-        
-//        float distance = length(lightPosition - in.worldPosition); // point light
-        float attenuation = 1.0; // directional light
-//        float attenuation = 1.0 / (distance * distance); // point light
+    
+        float3 lightDirection;
+        float attenuation;
+    
+//        if directionalLight {
+            lightDirection = normalize(-lightPosition);
+            attenuation = 1.0;
+//        } else { // point light
+//            lightDirection = normalize(lightPosition - in.worldPosition);
+//            float distance = length(lightPosition - in.worldPosition); // point light
+//            attenuation = 1.0 / (distance * distance);
+//        }
         
         float3 halfwayVector = normalize(viewDirection + lightDirection);
-        float NdotL = saturate(dot(normal, lightDirection));
+        float NdotL = max(dot(normal, lightDirection), 0.0);
 
         float3 radiance = lightColor * attenuation;
     
         float NDF = DistributionGGX(normal, halfwayVector, roughness);
         float G = GeometrySmith(normal, viewDirection, lightDirection, roughness);
-        float3 F = fresnelSchlick(saturate(dot(halfwayVector, viewDirection)), F0);
+        float3 F = fresnelSchlick(max(dot(halfwayVector, viewDirection), 0.0), F0);
         
         float3 kS = F; // specular contribution
         float3 kD = 1.0 - kS; // diffuse contribution
-        kD *= 1.0 - metallic; // metallic does not have diffuse, so clear it (metallic=1 gives kD=0)
+        kD *= float(1.0 - metallic); // metallic does not have diffuse, so clear it (metallic=1 gives kD=0)
         
         // Calculate Cook-Torrance BRDF
         float3 numerator = NDF * G * F;
-        float denominator = 4.0 * saturate(dot(normal, viewDirection)) * NdotL;
+        float denominator = 4.0 * max(dot(normal, viewDirection), 0.0) * NdotL;
         float3 specular = numerator / max(denominator, 0.001);
 
         // Lambertian BRDF lighting (Cdiff / pi) where Cdiff is fraction of light reflected (diffuse) which is kD*albedo.
@@ -180,9 +184,9 @@ fragment float4 fragment_main(
         lighting += (lambert + specular) * radiance * NdotL;
     
     
-    //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
-//    float t         = fragRmt.b;
-//    lighting.rgb   -= (kD * fragAlbedo.rgb*0.31830988618) * radiance * min(dot(fragNormal.xyz, lightDirection), 0.0)*t* occlusion;
+        //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
+        //float t         = fragRmt.b;
+        //lighting.rgb   -= (kD * fragAlbedo.rgb*0.31830988618) * radiance * min(dot(fragNormal.xyz, lightDirection), 0.0)*t* occlusion;
 
 //    }
     
@@ -190,11 +194,12 @@ fragment float4 fragment_main(
     float3 ambient = float3(0.03) * albedo * ambientOcclusion;
     float3 color = ambient + lighting;
     
-    // Gamma correction and tone mapping
+    // HDR Tone mapping
     color = color / (color + float3(1.0));
+    // Gamma correction
     color = pow(color, float3(1.0 / 2.2));
     
-    return float4(saturate(color), 1.0);
+    return float4(color, 1.0);
 }
 
 /// Normal distribution function (NDF) from Disney GGX/Trowbridge-Reitz
