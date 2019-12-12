@@ -11,6 +11,7 @@ using namespace metal;
 #import "ShaderCommon.h"
 
 constant float pi = 3.1415926535897932384626433832795;
+constant float pi_inv = 0.31830988618;
 
 constant bool hasAlbedoTexture [[ function_constant(0) ]];
 constant bool hasNormalTexture [[ function_constant(1) ]];
@@ -37,16 +38,27 @@ struct VertexOut {
 };
 
 /// Lighting calculation input,
-typedef struct Lighting {
-  float3 lightDirection;
-  float3 viewDirection;
-  float3 albedo;
-  float3 normal;
-  float metallic;
-  float roughness;
-  float ambientOcclusion;
-  float3 lightColor;
-} Lighting;
+struct LightingParams {
+    float3 albedo;
+    float3 normal;
+    float ambientOcclusion;
+    float metallic;
+    float roughness;
+    
+    float3 viewDirection;
+    
+    float3 lightDirection;
+    float3 diffuseLightColor;
+    
+    float3 halfVector;
+    float3 reflectedVector;
+    float NdotL;
+    float NdotH;
+    float NdotV;
+    float HdotL;
+    
+    float3 irradiatedColor;
+};
 
 
 vertex VertexOut vertex_main(
@@ -66,9 +78,8 @@ vertex VertexOut vertex_main(
     return out;
 }
 
-float3 fresnelSchlick(float cosTheta, float3 F0);
-float DistributionGGX(float3 N, float3 H, float roughness);
-float GeometrySmith(float3 N, float3 V, float3 L, float roughness);
+float3 diffuseTerm(LightingParams params);
+float3 specularTerm(LightingParams params);
 
 fragment float4 fragment_main(
                               VertexOut in [[ stage_in ]],
@@ -79,47 +90,50 @@ fragment float4 fragment_main(
                               texture2d<float> roughnessTexture [[ texture(TextureRoughness), function_constant(hasRoughnessTexture) ]],
                               texture2d<float> metallicTexture [[ texture(TextureMetallic), function_constant(hasMetallicTexture) ]],
 //                              texture2d<float> emissionTexture [[ texture(TextureNormal), function_constant(hasEmissionTexture) ]]
-                              texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]]
+                              texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]],
+                              texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]]
                               ) {
-    constexpr sampler textureSampler(address::repeat, filter::linear, mip_filter::linear);
+    constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
+    constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
     
-    // albedo = color
     float3 albedo;
     if (hasAlbedoTexture) {
-        albedo = albedoTexture.sample(textureSampler, in.uv).rgb;
+        albedo = albedoTexture.sample(linearSampler, in.uv).rgb;
     } else {
         albedo = material.albedo;
     }
     
     float3 normalValue;
     if (hasNormalTexture) {
-        normalValue = normalTexture.sample(textureSampler, in.uv).rgb * 2.0 - 1.0;
+        normalValue = normalTexture.sample(linearSampler, in.uv).rgb * 2.0 - 1.0;
     } else {
         normalValue = in.worldNormal;
     }
-    normalValue = normalize(normalValue);
-    float3 normal = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal) * normalValue;
+    float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
+    float3 normal = normalize(TBN * normalValue);
     
     float metallic;
     if (hasMetallicTexture) {
-        metallic = metallicTexture.sample(textureSampler, in.uv).r;
+        metallic = metallicTexture.sample(linearSampler, in.uv).r;
     } else {
         metallic = material.metallic;
     }
     
     float roughness;
     if (hasRoughnessTexture) {
-        roughness = roughnessTexture.sample(textureSampler, in.uv).r;
+        roughness = roughnessTexture.sample(linearSampler, in.uv).r;
     } else {
         roughness = material.roughness;
     }
     
     float ambientOcclusion;
     if (hasAmbientOcclusionTexture) {
-        ambientOcclusion = aoTexture.sample(textureSampler, in.uv).r;
+        ambientOcclusion = aoTexture.sample(linearSampler, in.uv).r;
     } else {
         ambientOcclusion = 1.0;
     }
+    
+    float3 emissiveColor = float3(0);
     
     // DEF TODO:
     // read shading model identifier
@@ -127,25 +141,26 @@ fragment float4 fragment_main(
     // 1 = SSS
     // ...
 
-    float3 viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
-    
-    // Use a hardcoded 0.04 F0 for any nonmetals
-    float3 F0 = float3(0.04);
-    F0 = mix(F0, albedo, metallic);
-    
     // For our sun light, until we support multiple lights
     float3 lightPosition = float3(0, -1, 10);
-    float3 lightColor = float3(1, 1, 1);
+    float3 lightColor = float3(2);
     
     //https://seblagarde.wordpress.com/2012/01/08/pi-or-not-to-pi-in-game-lighting-equation/
     //https://learnopengl.com/PBR/Lighting
     //https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/  specular colors (F0)
     //TODO add specular color image / property? no: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
-
+    
     float3 lighting = float3(0.0);
     
-    float3 envColor = float3(0.5, 0.5, 0.5);
-    
+    LightingParams parameters;
+    parameters.albedo = albedo;
+    parameters.normal = normal;
+    parameters.ambientOcclusion = ambientOcclusion;
+    parameters.metallic = metallic;
+    parameters.roughness = roughness;
+    parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
+    parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
+
 //    for each light
 //    {
         float3 lightDirection;
@@ -159,42 +174,28 @@ fragment float4 fragment_main(
 //            float distance = length(lightPosition - in.worldPosition); // point light
 //            attenuation = 1.0 / (distance * distance);
 //        }
-        
-        float3 halfwayVector = normalize(viewDirection + lightDirection);
-        float NdotL = max(dot(normal, lightDirection), 0.0);
 
-        float3 radiance = lightColor * attenuation;
+        parameters.lightDirection = lightDirection;
+        parameters.diffuseLightColor = lightColor * attenuation;
+        parameters.halfVector = normalize(parameters.lightDirection + parameters.viewDirection);
+        parameters.reflectedVector = reflect(-parameters.viewDirection, parameters.normal);
+        parameters.NdotL = saturate(dot(parameters.normal, parameters.lightDirection));
+        parameters.NdotH = saturate(dot(parameters.normal, parameters.halfVector));
+        parameters.HdotL = saturate(dot(parameters.lightDirection, parameters.halfVector));
     
-        float NDF = DistributionGGX(normal, halfwayVector, roughness);
-        float G = GeometrySmith(normal, viewDirection, lightDirection, roughness);
-        float3 F = fresnelSchlick(max(dot(halfwayVector, viewDirection), 0.0), F0);
-        
-        float3 kS = F; // specular contribution
-        float3 kD = 1.0 - kS; // diffuse contribution
-        kD *= float(1.0 - metallic); // metallic does not have diffuse, so clear it (metallic=1 gives kD=0)
-        
-        // Calculate Cook-Torrance BRDF
-        float3 numerator = NDF * G * F;
-        float denominator = 4.0 * max(dot(normal, viewDirection), 0.0) * NdotL;
-        float3 specular = numerator / (denominator + 0.001);
+        float mipLevel = parameters.roughness * irradianceMap.get_num_mip_levels();
+        parameters.irradiatedColor = irradianceMap.sample(mipSampler, parameters.reflectedVector, level(mipLevel)).rgb;
 
-        // Lambertian BRDF lighting (Cdiff / pi) where Cdiff is fraction of light reflected (diffuse) which is kD*albedo.
-        float3 lambert = kD * albedo * 0.31830988618; // division by pi, approx.
-        // FinalColor = c_diff * c_light * dot(n, l)
-    
-        lighting += (lambert + specular) * radiance * NdotL;
-    
-    
-    
+        lighting += diffuseTerm(parameters) + specularTerm(parameters);
+
         //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
         //float t         = fragRmt.b;
         //lighting.rgb   -= (kD * fragAlbedo.rgb*0.31830988618) * radiance * min(dot(fragNormal.xyz, lightDirection), 0.0)*t* occlusion;
-
 //    }
     
     // Create an improvised Ambient term
     float3 ambient = float3(0.03) * albedo * ambientOcclusion;
-    float3 color = ambient + lighting;
+    float3 color = ambient + lighting + emissiveColor;
     
     // HDR Tone mapping
     color = color / (color + float3(1.0));
@@ -204,12 +205,51 @@ fragment float4 fragment_main(
     return float4(color, 1.0);
 }
 
+
+
+inline float fresnelSchlick(float dotProduct);
+static float GeometrySchlickGGX(float NdotV, float alphaG);
+static float TrowbridgeReitzNDF(float NdotH, float roughness);
+
+/// Lambertian BRDF lighting (Cdiff/pi) for non-metallic surfaces
+float3 diffuseTerm(LightingParams params) {
+    float3 diffuseColor = (params.albedo * pi_inv) * (1.0 - params.metallic);
+    return diffuseColor * params.NdotL * params.diffuseLightColor;
+}
+
+
+float3 specularTerm(LightingParams params) {
+    float specularRoughness = params.roughness * (1.0 - params.metallic) + params.metallic;
+    
+    float D = TrowbridgeReitzNDF(params.NdotH, specularRoughness);
+    
+    float F0 = 0.04;
+    float3 F = mix(F0, 1, fresnelSchlick(params.HdotL));
+    
+    float alphaG = powr(specularRoughness * 0.5 + 0.5, 2);
+    float G = GeometrySchlickGGX(params.NdotL, alphaG) * GeometrySchlickGGX(params.NdotV, alphaG);
+    
+    float3 specularOutput = (D * F * G * params.irradiatedColor)
+        * (1.0 + params.metallic * params.albedo)
+        + params.irradiatedColor * params.metallic * params.albedo;
+    
+    return specularOutput;
+}
+
 /// Normal distribution function (NDF) from Disney GGX/Trowbridge-Reitz
-inline float DistributionGGX(float3 N, float3 H, float roughness)
-{
+static float TrowbridgeReitzNDF(float NdotH, float roughness) {
+//    if (roughness >= 1.0) {
+//        return pi_inv;
+//    }
+//
+//    float roughnessSqr = roughness * roughness;
+//
+//    float d = (NdotH * roughnessSqr - NdotH) * NdotH + 1;
+//    return roughnessSqr / (pi * d * d);
+    
+    
     float a      = roughness * roughness;
     float a2     = a * a;
-    float NdotH  = max(dot(N, H), 0.0);
     float NdotH2 = NdotH * NdotH;
     
     float num   = a2;
@@ -219,36 +259,18 @@ inline float DistributionGGX(float3 N, float3 H, float roughness)
     return num / denom;
 }
 
-/// Gs1 where h=roughness.
-inline float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r * r) * 0.125;
-
-    float num   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
+static float GeometrySchlickGGX(float NdotV, float alphaG) {
+    float a = alphaG * alphaG;
+    float b = NdotV * NdotV;
     
-    return num / denom;
-}
-
-/// Gs(l, v, h): h=roughness, Disney version
-float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    
-    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
-    
-    return ggx1 * ggx2;
+    return 1.0 / (NdotV + sqrt(a + b - a * b));
 }
 
 /// Calculate ratio between specular and diffuse reflection
 /// @param F0 Specular at normal incidence
-float3 fresnelSchlick(float cosTheta, float3 F0)
-{
+inline float fresnelSchlick(float dotProduct) {
+    return pow(clamp(1.0 - dotProduct, 0.0, 1.0), 5.0);
+    
     // Using a replaced power for performance (Spherical Gaussian approximation)
-//    return F0 + (1.0 - F0) * pow(2.0, -5.55473 * cosTheta - 6.98316 * cosTheta);
-    //Apple seems to clamp the 1.0-cosTheta to 0-1
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+//    return pow(2.0, -5.55473 * dotProduct - 6.98316 * dotProduct);
 }
