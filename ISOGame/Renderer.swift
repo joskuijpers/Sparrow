@@ -36,7 +36,7 @@ class Renderer: NSObject {
     // List of models
     var models: [Model] = []
     
-    
+    let irradianceCubeMap: MTLTexture;
     
     init(metalView: MTKView) {
         guard
@@ -53,6 +53,8 @@ class Renderer: NSObject {
         self.commandQueue = commandQueue
         
         depthStencilState = Renderer.buildDepthStencilState()!
+        
+        irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
         
         super.init()
         
@@ -94,6 +96,20 @@ class Renderer: NSObject {
         
         return Renderer.device.makeDepthStencilState(descriptor: descriptor)
     }
+    
+    static func buildEnvironmentTexture(device: MTLDevice, _ name: String) -> MTLTexture {
+        let textureLoader = MTKTextureLoader(device: device)
+        let options: [MTKTextureLoader.Option : Any] = [:]
+        
+        do {
+            let textureURL = Bundle.main.url(forResource: name, withExtension: nil)!
+            let texture = try textureLoader.newTexture(URL: textureURL, options: options)
+            
+            return texture
+        } catch {
+            fatalError("Could not load irradiance map: \(error)")
+        }
+    }
 }
 
 extension Renderer: MTKViewDelegate {
@@ -118,6 +134,7 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setFragmentBytes(&fragmentUniforms,
                                        length: MemoryLayout<FragmentUniforms>.stride,
                                        index: Int(BufferIndexFragmentUniforms.rawValue))
+        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
         for model in models {
             renderEncoder.pushDebugGroup(model.name)

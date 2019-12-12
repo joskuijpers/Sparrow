@@ -14,6 +14,6 @@ metallic 0.500000
 roughness 0.100000
 map_tangentSpaceNormal gold_normal.png
 map_Kd gold_albedo.png
-map_roughness gold_roughness.png
+map_roughness rusted_iron_roughness.png
 map_metallic gold_metallic.png
 map_ao gold_ao.png

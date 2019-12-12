@@ -53,6 +53,8 @@
 		80A4634A23A02211009435EB /* plastic_roughness.png in Resources */ = {isa = PBXBuildFile; fileRef = 80A4634423A0220C009435EB /* plastic_roughness.png */; };
 		80A4634B23A02215009435EB /* plasticSphere.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4634023A02201009435EB /* plasticSphere.mtl */; };
 		80A4634D23A02220009435EB /* plasticSphere.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4634C23A02217009435EB /* plasticSphere.obj */; };
+		80A4634F23A2C367009435EB /* garage_pmrem.ktx in Resources */ = {isa = PBXBuildFile; fileRef = 80A4634E23A2C367009435EB /* garage_pmrem.ktx */; };
+		80A4635123A2C384009435EB /* loft_pmrem.ktx in Resources */ = {isa = PBXBuildFile; fileRef = 80A4635023A2C383009435EB /* loft_pmrem.ktx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,6 +108,8 @@
 		80A4634423A0220C009435EB /* plastic_roughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plastic_roughness.png; sourceTree = "<group>"; };
 		80A4634523A0220C009435EB /* plastic_ao.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plastic_ao.png; sourceTree = "<group>"; };
 		80A4634C23A02217009435EB /* plasticSphere.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = plasticSphere.obj; sourceTree = "<group>"; };
+		80A4634E23A2C367009435EB /* garage_pmrem.ktx */ = {isa = PBXFileReference; lastKnownFileType = file; path = garage_pmrem.ktx; sourceTree = "<group>"; };
+		80A4635023A2C383009435EB /* loft_pmrem.ktx */ = {isa = PBXFileReference; lastKnownFileType = file; path = loft_pmrem.ktx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +186,8 @@
 		80A462F8238F25C6009435EB /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				80A4635023A2C383009435EB /* loft_pmrem.ktx */,
+				80A4634E23A2C367009435EB /* garage_pmrem.ktx */,
 				80A4631D239704C1009435EB /* ironSphere.mtl */,
 				80A4634023A02201009435EB /* plasticSphere.mtl */,
 				80A46337239EE636009435EB /* goldSphere.mtl */,
@@ -281,6 +287,7 @@
 				80A4634D23A02220009435EB /* plasticSphere.obj in Resources */,
 				80A4633B239EE6B9009435EB /* gold_albedo.png in Resources */,
 				80A4631523906E1B009435EB /* chest.mtl in Resources */,
+				80A4635123A2C384009435EB /* loft_pmrem.ktx in Resources */,
 				80A4631323906E1B009435EB /* chest-normal.png in Resources */,
 				80A4632B23971380009435EB /* rusted_iron_metallic.png in Resources */,
 				80A4631C2396FE3B009435EB /* pbr in Resources */,
@@ -301,6 +308,7 @@
 				80A4633E239EE6B9009435EB /* gold_normal.png in Resources */,
 				80A4631423906E1B009435EB /* chest-roughness.png in Resources */,
 				80A4630723906C71009435EB /* cube.obj in Resources */,
+				80A4634F23A2C367009435EB /* garage_pmrem.ktx in Resources */,
 				80A4634823A02211009435EB /* plastic_metallic.png in Resources */,
 				80A4632C23971380009435EB /* rusted_iron_normal.png in Resources */,
 				80A4634B23A02215009435EB /* plasticSphere.mtl in Resources */,

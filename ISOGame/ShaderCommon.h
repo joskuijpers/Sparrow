@@ -50,7 +50,9 @@ typedef enum {
     TextureRoughness = 3,
     TextureMetallic = 4,
     TextureEmissive = 5,
-    TextureAmbientOcclusion = 6
+    TextureAmbientOcclusion = 6,
+    
+    TextureIrradiance = 10
 } Textures;
 
 typedef struct {
