@@ -142,11 +142,12 @@ fragment float4 fragment_main(
     //https://seblagarde.wordpress.com/2011/08/17/feeding-a-physical-based-lighting-mode/  specular colors (F0)
     //TODO add specular color image / property? no: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
 
-    float3 lighting = float3(0.0); // outgoing radiance
+    float3 lighting = float3(0.0);
+    
+    float3 envColor = float3(0.5, 0.5, 0.5);
     
 //    for each light
 //    {
-    
         float3 lightDirection;
         float attenuation;
     
@@ -175,13 +176,14 @@ fragment float4 fragment_main(
         // Calculate Cook-Torrance BRDF
         float3 numerator = NDF * G * F;
         float denominator = 4.0 * max(dot(normal, viewDirection), 0.0) * NdotL;
-        float3 specular = numerator / max(denominator, 0.001);
+        float3 specular = numerator / (denominator + 0.001);
 
         // Lambertian BRDF lighting (Cdiff / pi) where Cdiff is fraction of light reflected (diffuse) which is kD*albedo.
         float3 lambert = kD * albedo * 0.31830988618; // division by pi, approx.
         // FinalColor = c_diff * c_light * dot(n, l)
     
         lighting += (lambert + specular) * radiance * NdotL;
+    
     
     
         //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
