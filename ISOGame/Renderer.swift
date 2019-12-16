@@ -81,9 +81,22 @@ class Renderer: NSObject {
             models.append(sphere)
         }
         
+        for i in 1...2 {
+            let sphere = Model(name: "grassSphere.obj")
+            sphere.position = [Float(1 + 3 * i), 6, 0]
+            models.append(sphere)
+        }
+        
         let cube = Model(name: "cube.obj")
         cube.position = [0, 0, 0]
         models.append(cube)
+        
+        
+        
+        let helmet = Model(name: "helmet.obj")
+        helmet.position = [-3, 0, 0]
+        helmet.rotation = [0, Float(180).degreesToRadians, 0]
+        models.append(helmet)
     }
     
     
