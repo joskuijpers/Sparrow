@@ -64,9 +64,6 @@
 		80A4635F23A2CC95009435EB /* grassSphere.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4635C23A2CC2A009435EB /* grassSphere.obj */; };
 		80A4636623A80DC0009435EB /* helmet.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4636023A80DBC009435EB /* helmet.mtl */; };
 		80A4636723A80DC0009435EB /* helmet.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4636123A80DBD009435EB /* helmet.obj */; };
-		80A4636823A80DC0009435EB /* helmet_roughness.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 80A4636223A80DBD009435EB /* helmet_roughness.jpg */; };
-		80A4636923A80DC0009435EB /* helmet_normal.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 80A4636323A80DBE009435EB /* helmet_normal.jpg */; };
-		80A4636D23A80E72009435EB /* helmet_metallic.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 80A4636C23A80E71009435EB /* helmet_metallic.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,10 +128,6 @@
 		80A4635D23A2CC2B009435EB /* grassSphere.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = grassSphere.mtl; sourceTree = "<group>"; };
 		80A4636023A80DBC009435EB /* helmet.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = helmet.mtl; sourceTree = "<group>"; };
 		80A4636123A80DBD009435EB /* helmet.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = helmet.obj; sourceTree = "<group>"; };
-		80A4636223A80DBD009435EB /* helmet_roughness.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = helmet_roughness.jpg; sourceTree = "<group>"; };
-		80A4636323A80DBE009435EB /* helmet_normal.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = helmet_normal.jpg; sourceTree = "<group>"; };
-		80A4636423A80DBF009435EB /* helmet_baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = helmet_baseColor.png; sourceTree = "<group>"; };
-		80A4636C23A80E71009435EB /* helmet_metallic.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = helmet_metallic.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,10 +204,6 @@
 		80A462F8238F25C6009435EB /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				80A4636423A80DBF009435EB /* helmet_baseColor.png */,
-				80A4636323A80DBE009435EB /* helmet_normal.jpg */,
-				80A4636223A80DBD009435EB /* helmet_roughness.jpg */,
-				80A4636C23A80E71009435EB /* helmet_metallic.jpg */,
 				80A4636023A80DBC009435EB /* helmet.mtl */,
 				80A4636123A80DBD009435EB /* helmet.obj */,
 				80A4635023A2C383009435EB /* loft_pmrem.ktx */,
@@ -328,7 +317,6 @@
 				80A4634D23A02220009435EB /* plasticSphere.obj in Resources */,
 				80A4633B239EE6B9009435EB /* gold_albedo.png in Resources */,
 				80A4631523906E1B009435EB /* chest.mtl in Resources */,
-				80A4636923A80DC0009435EB /* helmet_normal.jpg in Resources */,
 				80A4635123A2C384009435EB /* loft_pmrem.ktx in Resources */,
 				80A4631323906E1B009435EB /* chest-normal.png in Resources */,
 				80A4636623A80DC0009435EB /* helmet.mtl in Resources */,
@@ -347,7 +335,6 @@
 				80A4633F239EE6B9009435EB /* gold_roughness.png in Resources */,
 				80A462D1238F0FB9009435EB /* Main.storyboard in Resources */,
 				80A4630B23906C71009435EB /* cube.mtl in Resources */,
-				80A4636D23A80E72009435EB /* helmet_metallic.jpg in Resources */,
 				80A4634923A02211009435EB /* plastic_normal.png in Resources */,
 				80A4635923A2CC25009435EB /* grass_metallic.png in Resources */,
 				80A4635E23A2CC95009435EB /* grassSphere.mtl in Resources */,
@@ -361,7 +348,6 @@
 				80A4632C23971380009435EB /* rusted_iron_normal.png in Resources */,
 				80A4634B23A02215009435EB /* plasticSphere.mtl in Resources */,
 				80A4635F23A2CC95009435EB /* grassSphere.obj in Resources */,
-				80A4636823A80DC0009435EB /* helmet_roughness.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
