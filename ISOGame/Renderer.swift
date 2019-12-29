@@ -7,6 +7,7 @@
 //
 
 import MetalKit
+import STF
 
 class Renderer: NSObject {
     static var device: MTLDevice!
@@ -67,40 +68,45 @@ class Renderer: NSObject {
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
-        for i in 1...5 {
-            let sphere = Model(name: "ironSphere.obj")
-            sphere.position = [Float(1 + 3 * i), 0, 0]
-            models.append(sphere)
-        }
+
+        let box = Model2(name: "box.gltf")
+//        models.append(box)
         
-        for i in 1...5 {
-            let sphere = Model(name: "goldSphere.obj")
-            sphere.position = [Float(1 + 3 * i), 3, 0]
-            models.append(sphere)
-        }
-        
-        for i in 1...5 {
-            let sphere = Model(name: "plasticSphere.obj")
-            sphere.position = [Float(1 + 3 * i), -3, 0]
-            models.append(sphere)
-        }
-        
-        for i in 1...5 {
-            let sphere = Model(name: "grassSphere.obj")
-            sphere.position = [Float(1 + 3 * i), 6, 0]
-            models.append(sphere)
-        }
-        
-        let cube = Model(name: "cube.obj")
-        cube.position = [0, 0, 0]
-        models.append(cube)
-        
-        
-        
-        let helmet = Model(name: "helmet.obj")
-        helmet.position = [-3, 0, 0]
-        helmet.rotation = [0, Float(180).degreesToRadians, 0]
-        models.append(helmet)
+//        
+//        for i in 1...5 {
+//            let sphere = Model(name: "ironSphere.obj")
+//            sphere.position = [Float(1 + 3 * i), 0, 0]
+//            models.append(sphere)
+//        }
+//        
+//        for i in 1...5 {
+//            let sphere = Model(name: "goldSphere.obj")
+//            sphere.position = [Float(1 + 3 * i), 3, 0]
+//            models.append(sphere)
+//        }
+//        
+//        for i in 1...5 {
+//            let sphere = Model(name: "plasticSphere.obj")
+//            sphere.position = [Float(1 + 3 * i), -3, 0]
+//            models.append(sphere)
+//        }
+//        
+//        for i in 1...5 {
+//            let sphere = Model(name: "grassSphere.obj")
+//            sphere.position = [Float(1 + 3 * i), 6, 0]
+//            models.append(sphere)
+//        }
+//        
+//        let cube = Model(name: "cube.obj")
+//        cube.position = [0, 0, 0]
+//        models.append(cube)
+//        
+//        
+//        
+//        let helmet = Model(name: "helmet.obj")
+//        helmet.position = [-3, 0, 0]
+//        helmet.rotation = [0, Float(180).degreesToRadians, 0]
+//        models.append(helmet)
     }
     
     

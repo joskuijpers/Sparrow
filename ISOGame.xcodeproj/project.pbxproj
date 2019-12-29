@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
+		8086965C23B8DD150007E75D /* STF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8086965B23B8DD150007E75D /* STF.framework */; };
+		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
 		80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462C9238F0FB6009435EB /* AppDelegate.swift */; };
 		80A462CC238F0FB6009435EB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462CB238F0FB6009435EB /* ViewController.swift */; };
 		80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CD238F0FB9009435EB /* Assets.xcassets */; };
@@ -23,7 +25,6 @@
 		80A462ED238F14AC009435EB /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EC238F14AC009435EB /* Shaders.metal */; };
 		80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EE238F1D58009435EB /* VertexDescriptor.swift */; };
 		80A462F2238F1E25009435EB /* MathLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F1238F1E25009435EB /* MathLibrary.swift */; };
-		80A462F4238F2025009435EB /* Texturable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F3238F2025009435EB /* Texturable.swift */; };
 		80A462F6238F22C5009435EB /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F5238F22C5009435EB /* Camera.swift */; };
 		80A4630723906C71009435EB /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630123906C71009435EB /* cube.obj */; };
 		80A4630B23906C71009435EB /* cube.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 80A4630523906C71009435EB /* cube.mtl */; };
@@ -69,6 +70,9 @@
 
 /* Begin PBXFileReference section */
 		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
+		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8086965B23B8DD150007E75D /* STF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = STF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8086965D23B8DDA00007E75D /* box.gltf */ = {isa = PBXFileReference; lastKnownFileType = file; path = box.gltf; sourceTree = SOURCE_ROOT; };
 		80A462C6238F0FB6009435EB /* ISOGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISOGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A462C9238F0FB6009435EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80A462CB238F0FB6009435EB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -87,7 +91,6 @@
 		80A462EC238F14AC009435EB /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		80A462EE238F1D58009435EB /* VertexDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
 		80A462F1238F1E25009435EB /* MathLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathLibrary.swift; sourceTree = "<group>"; };
-		80A462F3238F2025009435EB /* Texturable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texturable.swift; sourceTree = "<group>"; };
 		80A462F5238F22C5009435EB /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
 		80A4630123906C71009435EB /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
@@ -137,17 +140,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8086965C23B8DD150007E75D /* STF.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8086963423B8D8BC0007E75D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8086965B23B8DD150007E75D /* STF.framework */,
+				8086963523B8D8BC0007E75D /* GLTF.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		80A462BD238F0FB6009435EB = {
 			isa = PBXGroup;
 			children = (
 				80A462C8238F0FB6009435EB /* ISOGame */,
 				80A462C7238F0FB6009435EB /* Products */,
+				8086963423B8D8BC0007E75D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -170,12 +184,11 @@
 				80A462E4238F1266009435EB /* Model.swift */,
 				80A462E6238F126A009435EB /* Mesh.swift */,
 				80A462E8238F126F009435EB /* Submesh.swift */,
-				80A462F3238F2025009435EB /* Texturable.swift */,
+				80A462F5238F22C5009435EB /* Camera.swift */,
 				80A462DD238F10D7009435EB /* App */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80A462EC238F14AC009435EB /* Shaders.metal */,
 				80A462F7238F23AC009435EB /* ShaderCommon.h */,
-				80A462F5238F22C5009435EB /* Camera.swift */,
 				80A462EE238F1D58009435EB /* VertexDescriptor.swift */,
 				80A462CD238F0FB9009435EB /* Assets.xcassets */,
 				80A462D3238F0FB9009435EB /* ISOGame.entitlements */,
@@ -207,6 +220,7 @@
 		80A462F8238F25C6009435EB /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				8086965D23B8DDA00007E75D /* box.gltf */,
 				80A4636023A80DBC009435EB /* helmet.mtl */,
 				80A4636123A80DBD009435EB /* helmet.obj */,
 				80A4635023A2C383009435EB /* loft_pmrem.ktx */,
@@ -316,6 +330,7 @@
 				80A4634723A02211009435EB /* plastic_ao.png in Resources */,
 				80A4635723A2CC25009435EB /* grass_albedo.png in Resources */,
 				80A4634623A02211009435EB /* plastic_albedo.png in Resources */,
+				8086965E23B8DDA10007E75D /* box.gltf in Resources */,
 				80A4634A23A02211009435EB /* plastic_roughness.png in Resources */,
 				80A4634D23A02220009435EB /* plasticSphere.obj in Resources */,
 				80A4633B239EE6B9009435EB /* gold_albedo.png in Resources */,
@@ -362,7 +377,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
-				80A462F4238F2025009435EB /* Texturable.swift in Sources */,
 				80A462DF238F124D009435EB /* Node.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,

@@ -20,3 +20,15 @@ class Mesh {
     }
     
 }
+
+//class Mesh2 {
+//    let mtkMesh: MTKMesh
+//    let submeshes: [Submesh]
+//    
+//    init(stfMesh: STFMesh, mtkMesh: MTKMesh) {
+//        self.mtkMesh: mtkMesh
+//        submeshes = zip(stfMesh.primitives!, mtkMesh.submeshes).map { mesh in
+//            Submesh(mdlSubmesh: mesh.0 as! MDLSubmesh, mtkSubmesh: mesh.1)
+//        }
+//    }
+//}

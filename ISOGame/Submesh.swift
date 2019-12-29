@@ -95,10 +95,6 @@ private extension Submesh {
     }
 }
 
-extension Submesh: Texturable {
-
-}
-
 private extension Submesh.Textures {
     init(material: MDLMaterial?) {
         func property(with semantic: MDLMaterialSemantic) -> MTLTexture? {
