@@ -12,6 +12,7 @@ class Renderer: NSObject {
     static var device: MTLDevice!
     static var library: MTLLibrary?
     static var colorPixelFormat: MTLPixelFormat!
+    static var textureLoader: TextureLoader!
     
     let commandQueue: MTLCommandQueue!
     
@@ -48,8 +49,11 @@ class Renderer: NSObject {
         Renderer.device = device
         Renderer.library = device.makeDefaultLibrary()
         Renderer.colorPixelFormat = metalView.colorPixelFormat
+        Renderer.textureLoader = TextureLoader()
+        
         metalView.device = device
         metalView.depthStencilPixelFormat = .depth32Float
+        
         self.commandQueue = commandQueue
         
         depthStencilState = Renderer.buildDepthStencilState()!
@@ -63,25 +67,25 @@ class Renderer: NSObject {
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
-        for i in 1...2 {
+        for i in 1...5 {
             let sphere = Model(name: "ironSphere.obj")
             sphere.position = [Float(1 + 3 * i), 0, 0]
             models.append(sphere)
         }
         
-        for i in 1...2 {
+        for i in 1...5 {
             let sphere = Model(name: "goldSphere.obj")
             sphere.position = [Float(1 + 3 * i), 3, 0]
             models.append(sphere)
         }
         
-        for i in 1...2 {
+        for i in 1...5 {
             let sphere = Model(name: "plasticSphere.obj")
             sphere.position = [Float(1 + 3 * i), -3, 0]
             models.append(sphere)
         }
         
-        for i in 1...2 {
+        for i in 1...5 {
             let sphere = Model(name: "grassSphere.obj")
             sphere.position = [Float(1 + 3 * i), 6, 0]
             models.append(sphere)

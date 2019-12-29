@@ -105,12 +105,12 @@ private extension Submesh.Textures {
             guard let property = material?.property(with: semantic),
                 property.type == .string,
                 let filename = property.stringValue,
-                let texture = try? Submesh.loadTexture(imageName: filename)
+                let texture = Renderer.textureLoader.load(imageName: filename)
             else {
                 return nil
             }
             
-            return texture
+            return texture.mtlTexture
         }
         
         albedo = property(with: .baseColor)

@@ -238,25 +238,14 @@ float3 specularTerm(LightingParams params) {
 
 /// Normal distribution function (NDF) from Disney GGX/Trowbridge-Reitz
 static float TrowbridgeReitzNDF(float NdotH, float roughness) {
-//    if (roughness >= 1.0) {
-//        return pi_inv;
-//    }
-//
-//    float roughnessSqr = roughness * roughness;
-//
-//    float d = (NdotH * roughnessSqr - NdotH) * NdotH + 1;
-//    return roughnessSqr / (pi * d * d);
-    
-    
-    float a      = roughness * roughness;
-    float a2     = a * a;
-    float NdotH2 = NdotH * NdotH;
-    
-    float num   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = pi * denom * denom;
-    
-    return num / denom;
+    if (roughness >= 1.0) {
+        return pi_inv;
+    }
+
+    float roughnessSqr = roughness * roughness;
+
+    float d = (NdotH * roughnessSqr - NdotH) * NdotH + 1;
+    return roughnessSqr / (pi * d * d);
 }
 
 static float GeometrySchlickGGX(float NdotV, float alphaG) {

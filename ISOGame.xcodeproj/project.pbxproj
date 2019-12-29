@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
 		80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462C9238F0FB6009435EB /* AppDelegate.swift */; };
 		80A462CC238F0FB6009435EB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462CB238F0FB6009435EB /* ViewController.swift */; };
 		80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CD238F0FB9009435EB /* Assets.xcassets */; };
@@ -67,6 +68,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		80A462C6238F0FB6009435EB /* ISOGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISOGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A462C9238F0FB6009435EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80A462CB238F0FB6009435EB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				80A462CD238F0FB9009435EB /* Assets.xcassets */,
 				80A462D3238F0FB9009435EB /* ISOGame.entitlements */,
 				80A462D2238F0FB9009435EB /* Info.plist */,
+				808695F623B8CA1E0007E75D /* TextureLoader.swift */,
 			);
 			path = ISOGame;
 			sourceTree = "<group>";
@@ -364,6 +367,7 @@
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				80A462DA238F100B009435EB /* GameView.swift in Sources */,
+				808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */,
 				80A462E7238F126A009435EB /* Mesh.swift in Sources */,
 				80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */,
 				80A462E9238F126F009435EB /* Submesh.swift in Sources */,
