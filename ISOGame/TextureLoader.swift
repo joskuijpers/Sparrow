@@ -11,11 +11,26 @@ import MetalKit
 
 /**
  Texture loader that ensures any texture is only loaded once
+ 
+ Note that this uses MTKTextureLoader internally, which also caches but seems to be much slower as
+ it does not assume the same options for all.
  */
 class TextureLoader {
     private var cache: [String : Texture] = [:]
+    private let mtkTextureLoader: MTKTextureLoader
+    
+    var allocatedSize: Int {
+        var total = 0
+        
+        for (_, texture) in cache {
+            total += texture.mtlTexture.allocatedSize
+        }
+        
+        return total
+    }
     
     init() {
+        mtkTextureLoader = MTKTextureLoader(device: Renderer.device)
     }
     
     /**
@@ -35,19 +50,19 @@ class TextureLoader {
         }
         
         // Get new
-        let mtkTextureLoader = MTKTextureLoader(device: Renderer.device)
         let options: [MTKTextureLoader.Option: Any] = [
             .origin: MTKTextureLoader.Origin.bottomLeft,
             .SRGB: false,
             .generateMipmaps: true,
         ]
         
-        if let mtlTexture = try? loadMtlTexture(mtkTextureLoader: mtkTextureLoader, imageName: imageName, textureLoaderOptions: options) {
+        if let mtlTexture = try? loadMtlTexture(imageName: imageName, textureLoaderOptions: options) {
             let texture = Texture(imageName: imageName, mtlTexture: mtlTexture)
             cache[imageName] = texture
             
-            print("[texture] Loaded \(texture.imageName)")
-            
+            print("[texture] Loaded \(texture.imageName) (\(Float(texture.mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
+//            print("[texture] size \(Float(allocatedSize) / 1024 / 1024) MiB")
+
             return texture
         }
         
@@ -57,7 +72,7 @@ class TextureLoader {
     /**
      Load the MTL internal texture
      */
-    private func loadMtlTexture(mtkTextureLoader: MTKTextureLoader, imageName: String, textureLoaderOptions: [MTKTextureLoader.Option: Any]) throws -> MTLTexture? {
+    private func loadMtlTexture(imageName: String, textureLoaderOptions: [MTKTextureLoader.Option: Any]) throws -> MTLTexture? {
         let fileExtension = URL(fileURLWithPath: imageName).pathExtension.isEmpty ? "png" : nil
         guard let url = Bundle.main.url(forResource: imageName, withExtension: fileExtension) else {
 //            print("Loading \(imageName) from bundle")
