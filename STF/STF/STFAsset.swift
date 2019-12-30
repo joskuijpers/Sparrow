@@ -329,7 +329,6 @@ public class STFAsset {
                 let indexAccessor = submesh.indexAccessor!
                 let bufferView = indexAccessor.bufferView
                 let indexCount = indexAccessor.count
-                print("buffer id \(bufferView.bufferIndex) \(buffers.count)")
                 let indexBuffer = buffers[bufferView.bufferIndex]
                 let indexBufferOffset = bufferView.byteOffset + indexAccessor.offset
                 
@@ -422,95 +421,61 @@ public class STFAsset {
     }
     
     private func createVertexDescriptor(submesh: STFSubmesh) -> MDLVertexDescriptor {
-//        let vertexDescriptor = STFMakeVertexDescriptor()
-//
-//        let layouts = NSMutableArray(capacity: 8)
-//        for _ in 0..<8 {
-//          layouts.add(MDLVertexBufferLayout(stride: 0))
-//        }
-//
-//        for accessorAttribute in submesh.accessorsForAttribute {
-//            let accessor = accessorAttribute.value
-//            var attributeName = "Untitled"
-//
-//            var layoutIndex = 0
-//            guard let key = STFAttribute(rawValue: accessorAttribute.key) else {
-//                print("WARNING! = Attribute \(accessorAttribute.key) not supported")
-//                continue
-//            }
-//
-//            switch key {
-//            case .position:
-//                attributeName = MDLVertexAttributePosition
-////                vertexCount = accessor.count
-//            case .normal:
-//                attributeName = MDLVertexAttributeNormal
-//            case .texCoord:
-//                attributeName = MDLVertexAttributeTextureCoordinate
-//            case .tangent:
-//                attributeName = MDLVertexAttributeTangent
-//            case .bitangent:
-//                attributeName = MDLVertexAttributeBitangent
-////            case .color:
-////                attributeName = MDLVertexAttributeColor
-//            }
-//            layoutIndex = key.bufferIndex()
-//
-//            let bufferView = accessor.bufferView
-//            let format: MDLVertexFormat = STFGetVertexFormat(componentType: accessor.componentType, type: accessor.type)
-//
-//            let offset = 0
-//            let attribute = MDLVertexAttribute(name: attributeName,
-//                                               format: format,
-//                                               offset: offset,
-//                                               bufferIndex: layoutIndex)
-//            vertexDescriptor.addOrReplaceAttribute(attribute)
-//
-//            // Update the layout
-//            var stride = bufferView.byteStride
-//            if stride <= 0 {
-//                stride = STFStrideOf(vertexFormat: format)
-//            }
-//            layouts[layoutIndex] = MDLVertexBufferLayout(stride: stride)
-//        }
-//
-//        vertexDescriptor.layouts = layouts
-//
-//        return vertexDescriptor
-//
-//
-        
-        
-        let vertexDescriptor = MDLVertexDescriptor()
-        var offset = 0
-        
-        // Position
-        let positionAttribute = MDLVertexAttribute(name: MDLVertexAttributePosition,
-                                                   format: .float3,
-                                                   offset: offset,
-                                                   bufferIndex: 0)
-        vertexDescriptor.attributes[0] = positionAttribute
-        offset += MemoryLayout<float3>.stride
-        
-        // Normal
-        let normalAttribute = MDLVertexAttribute(name: MDLVertexAttributeNormal,
-                                                 format: .float3,
-                                                 offset: offset,
-                                                 bufferIndex: 0)
-        vertexDescriptor.attributes[1] = normalAttribute
-        offset += MemoryLayout<float3>.stride
-        
-        // UV
-//        let uvAttribute = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
-//                                             format: .float2,
-//                                             offset: offset,
-//                                             bufferIndex: 0)
-//        vertexDescriptor.attributes[2] = uvAttribute
-//        offset += MemoryLayout<float2>.stride
-//        
-        
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: offset)
-        
+        let vertexDescriptor = STFMakeVertexDescriptor()
+
+        let layouts = NSMutableArray(capacity: 8)
+        for _ in 0..<8 {
+          layouts.add(MDLVertexBufferLayout(stride: 0))
+        }
+
+        for accessorAttribute in submesh.accessorsForAttribute {
+            let accessor = accessorAttribute.value
+            var attributeName = "Untitled"
+
+            var layoutIndex = 0
+            guard let key = STFAttribute(rawValue: accessorAttribute.key) else {
+                print("WARNING! = Attribute \(accessorAttribute.key) not supported")
+                continue
+            }
+            
+            switch key {
+            case .position:
+                attributeName = MDLVertexAttributePosition
+//                vertexCount = accessor.count
+            case .normal:
+                attributeName = MDLVertexAttributeNormal
+            case .texCoord:
+                attributeName = MDLVertexAttributeTextureCoordinate
+            case .tangent:
+                attributeName = MDLVertexAttributeTangent
+            case .bitangent:
+                attributeName = MDLVertexAttributeBitangent
+//            case .color:
+//                attributeName = MDLVertexAttributeColor
+            }
+            layoutIndex = key.bufferIndex()
+            
+
+            let bufferView = accessor.bufferView
+            let format: MDLVertexFormat = STFGetVertexFormat(componentType: accessor.componentType, type: accessor.type)
+
+            let offset = 0
+            let attribute = MDLVertexAttribute(name: attributeName,
+                                               format: format,
+                                               offset: offset,
+                                               bufferIndex: layoutIndex)
+            vertexDescriptor.addOrReplaceAttribute(attribute)
+
+            // Update the layout
+            var stride = bufferView.byteStride
+            if stride <= 0 {
+                stride = STFStrideOf(vertexFormat: format)
+            }
+            layouts[layoutIndex] = MDLVertexBufferLayout(stride: stride)
+        }
+
+        vertexDescriptor.layouts = layouts
+
         return vertexDescriptor
     }
     

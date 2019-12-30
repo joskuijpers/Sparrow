@@ -206,16 +206,22 @@ extension Renderer: MTKViewDelegate {
         }
         
         
-        uniforms.modelMatrix = float4x4()
+        var position: float3 = [0, 0, 0]
+        var rotation: float3 = [0, 0, 0]
+        var scale: float3 = [1, 1, 1]
+
+        let translateMatrix = float4x4(translation: position)
+        let rotateMatrix = float4x4(rotation: rotation)
+        let scaleMatrix = float4x4(scaling: scale)
+
+        let modelMatrix = translateMatrix * rotateMatrix * scaleMatrix
+        uniforms.modelMatrix = modelMatrix
         uniforms.normalMatrix = uniforms.modelMatrix.upperLeft
         renderEncoder.setVertexBytes(&uniforms,
                                      length: MemoryLayout<Uniforms>.stride,
                                      index: Int(BufferIndexUniforms.rawValue))
         
-        var material = Material(albedo: float3(1,1,1), specularColor: float3(1,1,1), shininess: 0, metallic: 1, roughness: 0, emission: 0)
-        renderEncoder.setFragmentBytes(&material,
-                                       length: MemoryLayout<Material>.stride,
-                                       index: Int(BufferIndexMaterials.rawValue))
+
         
         box.render(renderEncoder: renderEncoder)
         

@@ -96,8 +96,6 @@ fragment float4 fragment_main(
                               texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]],
                               texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]]
                               ) {
-    return float4(1,1,1,1);
-    
     constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
     constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
     
@@ -114,8 +112,9 @@ fragment float4 fragment_main(
     } else {
         normalValue = in.worldNormal;
     }
-    float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
-    float3 normal = normalize(TBN * normalValue);
+//    float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
+//    float3 normal = normalize(TBN * normalValue);
+    float3 normal = normalValue;
     
     float metallic;
     if (hasMetallicTexture) {
