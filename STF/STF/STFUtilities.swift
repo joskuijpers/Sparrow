@@ -88,8 +88,8 @@ enum STFAttribute: String {
     //    joints = "JOINTS_0",
     //    weights = "WEIGHTS_0",
     tangent = "TANGENT",
-    bitangent = "BITANGENT",
-    color = "COLOR_0"
+    bitangent = "BITANGENT"
+//    color = "COLOR_0"
     
     func bufferIndex() -> Int {
         switch self {
@@ -104,11 +104,11 @@ enum STFAttribute: String {
             //        case .weights:
         //            return 4
         case .tangent:
-            return 5
+            return 3
         case .bitangent:
-            return 6
-        case .color:
-            return 7
+            return 4
+//        case .color:
+//            return 5
         }
     }
 }
@@ -120,7 +120,7 @@ func STFMakeVertexDescriptor() -> MDLVertexDescriptor {
     (descriptor.attributes[2] as! MDLVertexAttribute).name = MDLVertexAttributeTextureCoordinate
     (descriptor.attributes[3] as! MDLVertexAttribute).name = MDLVertexAttributeTangent
     (descriptor.attributes[4] as! MDLVertexAttribute).name = MDLVertexAttributeBitangent
-    (descriptor.attributes[5] as! MDLVertexAttribute).name = MDLVertexAttributeColor
+//    (descriptor.attributes[5] as! MDLVertexAttribute).name = MDLVertexAttributeColor
 //    (descriptor.attributes[6] as! MDLVertexAttribute).name = MDLVertexAttributeJointIndices
 //    (descriptor.attributes[7] as! MDLVertexAttribute).name = MDLVertexAttributeJointWeights
     return descriptor

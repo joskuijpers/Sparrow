@@ -9,8 +9,8 @@
 import Foundation
 import Metal
 
-class STFBuffer {
-    let mtlBuffer: MTLBuffer
+public class STFBuffer {
+    public let mtlBuffer: MTLBuffer
     
     init(mtlBuffer: MTLBuffer) {
         self.mtlBuffer = mtlBuffer

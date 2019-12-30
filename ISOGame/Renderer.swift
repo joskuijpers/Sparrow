@@ -25,6 +25,8 @@ class Renderer: NSObject {
 //    let lighting = Lighting()
     
     
+    let box: Model2
+    
     lazy var camera: Camera = {
         let camera = ArcballCamera()
         
@@ -61,6 +63,8 @@ class Renderer: NSObject {
         
         irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
         
+        box = Model2(name: "box.gltf")
+        
         super.init()
         
         metalView.clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
@@ -69,34 +73,33 @@ class Renderer: NSObject {
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
 
-        let box = Model2(name: "box.gltf")
-//        models.append(box)
         
-//        
+        
+        
 //        for i in 1...5 {
 //            let sphere = Model(name: "ironSphere.obj")
 //            sphere.position = [Float(1 + 3 * i), 0, 0]
 //            models.append(sphere)
 //        }
-//        
+//
 //        for i in 1...5 {
 //            let sphere = Model(name: "goldSphere.obj")
 //            sphere.position = [Float(1 + 3 * i), 3, 0]
 //            models.append(sphere)
 //        }
-//        
+//
 //        for i in 1...5 {
 //            let sphere = Model(name: "plasticSphere.obj")
 //            sphere.position = [Float(1 + 3 * i), -3, 0]
 //            models.append(sphere)
 //        }
-//        
+//
 //        for i in 1...5 {
 //            let sphere = Model(name: "grassSphere.obj")
 //            sphere.position = [Float(1 + 3 * i), 6, 0]
 //            models.append(sphere)
 //        }
-//        
+        
 //        let cube = Model(name: "cube.obj")
 //        cube.position = [0, 0, 0]
 //        models.append(cube)
@@ -203,7 +206,18 @@ extension Renderer: MTKViewDelegate {
         }
         
         
+        uniforms.modelMatrix = float4x4()
+        uniforms.normalMatrix = uniforms.modelMatrix.upperLeft
+        renderEncoder.setVertexBytes(&uniforms,
+                                     length: MemoryLayout<Uniforms>.stride,
+                                     index: Int(BufferIndexUniforms.rawValue))
         
+        var material = Material(albedo: float3(1,1,1), specularColor: float3(1,1,1), shininess: 0, metallic: 1, roughness: 0, emission: 0)
+        renderEncoder.setFragmentBytes(&material,
+                                       length: MemoryLayout<Material>.stride,
+                                       index: Int(BufferIndexMaterials.rawValue))
+        
+        box.render(renderEncoder: renderEncoder)
         
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {

@@ -10,8 +10,9 @@ import Foundation
 
 public class STFScene {
 //    private weak var asset: STFAsset?
-    var nodes = [STFNode]()
+    public var nodes = [STFNode]()
     public let name: String
+    public var meshNodes = [STFNode]()
     
     init(json: JSONScene) {
         self.name = json.name ?? "untitled"

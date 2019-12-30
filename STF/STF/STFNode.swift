@@ -20,7 +20,7 @@ public class STFNode {
     public var children = [STFNode]()
     public weak var parent: STFNode?
     
-    var mesh: STFMesh?
+    public var mesh: STFMesh?
     
     var rotationQuaternion = simd_quatf()
     var scale = float3(repeating: 1)

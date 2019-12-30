@@ -23,9 +23,9 @@ constant bool hasAmbientOcclusionTexture [[ function_constant(5) ]];
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
     float3 normal       [[ attribute(VertexAttributeNormal) ]];
-    float2 uv           [[ attribute(VertexAttributeUV) ]];
-    float3 tangent      [[ attribute(VertexAttributeTangent) ]];
-    float3 bitangent    [[ attribute(VertexAttributeBitangent) ]];
+//    float2 uv           [[ attribute(VertexAttributeUV) ]];
+//    float3 tangent      [[ attribute(VertexAttributeTangent) ]];
+//    float3 bitangent    [[ attribute(VertexAttributeBitangent) ]];
 };
 
 struct VertexOut {
@@ -70,10 +70,13 @@ vertex VertexOut vertex_main(
     out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * in.position;
     out.worldPosition = (uniforms.modelMatrix * in.position).xyz;
     out.worldNormal = uniforms.normalMatrix * in.normal;
-    out.worldTangent = uniforms.normalMatrix * in.tangent;
-    out.worldBitangent = uniforms.normalMatrix * in.bitangent;
-    
-    out.uv = in.uv;
+    out.worldTangent = float3(0);
+    out.worldBitangent = float3(0);
+    out.uv = float2(0);
+//    out.worldTangent = uniforms.normalMatrix * in.tangent;
+//    out.worldBitangent = uniforms.normalMatrix * in.bitangent;
+//
+//    out.uv = in.uv;
     
     return out;
 }
@@ -93,6 +96,8 @@ fragment float4 fragment_main(
                               texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]],
                               texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]]
                               ) {
+    return float4(1,1,1,1);
+    
     constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
     constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
     

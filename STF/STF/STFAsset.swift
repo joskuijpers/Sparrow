@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Metal
+import MetalKit
 import ModelIO.MDLMaterial
 
 public class STFAsset {
@@ -17,10 +17,10 @@ public class STFAsset {
     var scenes = [STFScene]()
     public private(set) var defaultScene: STFScene?
     
-    var nodes = [STFNode]()
+    public var nodes = [STFNode]()
 ////    var cameras: [STFCamera]
     var meshes = [STFMesh]()
-    var buffers = [STFBuffer]()
+    public var buffers = [STFBuffer]()
     var bufferViews = [STFBufferView]()
     var accessors = [STFAccessor]()
     
@@ -71,7 +71,7 @@ public class STFAsset {
         }
         
         generateNodes()
-        generateMesh()
+        generateMesh(device: device)
         
         finalizeAsset()
     }
@@ -113,6 +113,7 @@ public class STFAsset {
     }
     
     private func loadBuffers(json: [JSONBuffer], url: URL, device: MTLDevice) {
+        print("LOAD BUFFERS \(json.count)")
         buffers.reserveCapacity(json.count)
         
         for bufferInfo in json {
@@ -121,29 +122,31 @@ public class STFAsset {
                 continue
             }
             
-            // TODO: proper
+            var data: Data?
             if uri.hasPrefix("data:application/octet-stream;base64,") {
+                let firstComma = (uri.range(of: ",")?.lowerBound)!
+                let encodedData = uri.suffix(from: uri.index(after: firstComma))
                 
+                data = Data(base64Encoded: String(encodedData), options: .ignoreUnknownCharacters)
             } else if uri.count > 0 {
                 let fileURL = url.deletingLastPathComponent().appendingPathComponent(uri)
                 print("Loading buffer from \(fileURL)")
                 
-                let data: Data
                 do {
                     data = try Data(contentsOf: fileURL)
                 } catch let error {
                     fatalError(error.localizedDescription)
                 }
-                
-                let buffer = device.makeBuffer(length: bufferInfo.byteLength, options: [])!
-                data.withUnsafeBytes { (uint8Ptr: UnsafePointer<UInt8>) in
-                    let pointer = UnsafeRawPointer(uint8Ptr)
-                    memcpy(buffer.contents(), pointer, bufferInfo.byteLength)
-                }
-                
-                buffers.append(STFBuffer(mtlBuffer: buffer))
-                // buffersData.append(data)
             }
+                
+            let buffer = device.makeBuffer(length: bufferInfo.byteLength, options: [])!
+            data!.withUnsafeBytes { (uint8Ptr: UnsafePointer<UInt8>) in
+                let pointer = UnsafeRawPointer(uint8Ptr)
+                memcpy(buffer.contents(), pointer, bufferInfo.byteLength)
+            }
+                
+            buffers.append(STFBuffer(mtlBuffer: buffer))
+            // buffersData.append(data)
         }
         
     }
@@ -310,15 +313,49 @@ public class STFAsset {
         }
     }
     
-    private func generateMesh() {
+    private func generateMesh(device: MTLDevice) {
         for mesh in meshes {
             for submesh in mesh.submeshes {
                 let vertexDescriptor = createVertexDescriptor(submesh: submesh)
                 
+//                hasJoints = false
+//                hasNormal = false
+//                hasTangent = false
+//                hasWeights = false
                 
+                let mtkVertexDescriptor = MTKMetalVertexDescriptorFromModelIO(vertexDescriptor)!
+                submesh.pipelineState = createPipelineState(vertexDescriptor: mtkVertexDescriptor, device: device)
                 
+                let indexAccessor = submesh.indexAccessor!
+                let bufferView = indexAccessor.bufferView
+                let indexCount = indexAccessor.count
+                print("buffer id \(bufferView.bufferIndex) \(buffers.count)")
+                let indexBuffer = buffers[bufferView.bufferIndex]
+                let indexBufferOffset = bufferView.byteOffset + indexAccessor.offset
                 
-//                mesh.submeshes.append(submesh)
+                submesh.indexCount = indexCount
+                submesh.indexBuffer = indexBuffer.mtlBuffer
+                submesh.indexBufferOffset = indexBufferOffset
+                
+                for attribute in submesh.accessorsForAttribute {
+                    guard let key = STFAttribute(rawValue: attribute.key) else {
+                        continue
+                    }
+                    let index = key.bufferIndex()
+                    let accessor = attribute.value
+                    let bufferView = accessor.bufferView
+                    let bufferIndex = bufferView.bufferIndex
+                    let offset = accessor.offset + bufferView.byteOffset
+                    
+                    var attrib = Attributes()
+                    attrib.name = attribute.key
+                    attrib.index = index
+                    attrib.bufferIndex = bufferIndex
+                    attrib.offset = offset
+                    submesh.attributes.append(attrib)
+                }
+
+                mesh.submeshes.append(submesh)
             }
         }
     }
@@ -385,75 +422,154 @@ public class STFAsset {
     }
     
     private func createVertexDescriptor(submesh: STFSubmesh) -> MDLVertexDescriptor {
-        let vertexDescriptor = STFMakeVertexDescriptor()
+//        let vertexDescriptor = STFMakeVertexDescriptor()
+//
+//        let layouts = NSMutableArray(capacity: 8)
+//        for _ in 0..<8 {
+//          layouts.add(MDLVertexBufferLayout(stride: 0))
+//        }
+//
+//        for accessorAttribute in submesh.accessorsForAttribute {
+//            let accessor = accessorAttribute.value
+//            var attributeName = "Untitled"
+//
+//            var layoutIndex = 0
+//            guard let key = STFAttribute(rawValue: accessorAttribute.key) else {
+//                print("WARNING! = Attribute \(accessorAttribute.key) not supported")
+//                continue
+//            }
+//
+//            switch key {
+//            case .position:
+//                attributeName = MDLVertexAttributePosition
+////                vertexCount = accessor.count
+//            case .normal:
+//                attributeName = MDLVertexAttributeNormal
+//            case .texCoord:
+//                attributeName = MDLVertexAttributeTextureCoordinate
+//            case .tangent:
+//                attributeName = MDLVertexAttributeTangent
+//            case .bitangent:
+//                attributeName = MDLVertexAttributeBitangent
+////            case .color:
+////                attributeName = MDLVertexAttributeColor
+//            }
+//            layoutIndex = key.bufferIndex()
+//
+//            let bufferView = accessor.bufferView
+//            let format: MDLVertexFormat = STFGetVertexFormat(componentType: accessor.componentType, type: accessor.type)
+//
+//            let offset = 0
+//            let attribute = MDLVertexAttribute(name: attributeName,
+//                                               format: format,
+//                                               offset: offset,
+//                                               bufferIndex: layoutIndex)
+//            vertexDescriptor.addOrReplaceAttribute(attribute)
+//
+//            // Update the layout
+//            var stride = bufferView.byteStride
+//            if stride <= 0 {
+//                stride = STFStrideOf(vertexFormat: format)
+//            }
+//            layouts[layoutIndex] = MDLVertexBufferLayout(stride: stride)
+//        }
+//
+//        vertexDescriptor.layouts = layouts
+//
+//        return vertexDescriptor
+//
+//
         
-        let layouts = NSMutableArray(capacity: 8)
-        for _ in 0..<8 {
-          layouts.add(MDLVertexBufferLayout(stride: 0))
-        }
         
-        for accessorAttribute in submesh.accessorsForAttribute {
-            let accessor = accessorAttribute.value
-            var attributeName = "Untitled"
-            
-            var layoutIndex = 0
-            guard let key = STFAttribute(rawValue: accessorAttribute.key) else {
-                print("WARNING! = Attribute \(accessorAttribute.key) not supported")
-                continue
-            }
-                        
-            switch key {
-            case .position:
-                attributeName = MDLVertexAttributePosition
-//                vertexCount = accessor.count
-            case .normal:
-                attributeName = MDLVertexAttributeNormal
-            case .texCoord:
-                attributeName = MDLVertexAttributeTextureCoordinate
-            case .tangent:
-                attributeName = MDLVertexAttributeTangent
-            case .bitangent:
-                attributeName = MDLVertexAttributeBitangent
-            case .color:
-                attributeName = MDLVertexAttributeColor
-            }
-            layoutIndex = key.bufferIndex()
-            
-            let bufferView = accessor.bufferView
-            let format: MDLVertexFormat = STFGetVertexFormat(componentType: accessor.componentType, type: accessor.type)
-            
-            let offset = 0
-            let attribute = MDLVertexAttribute(name: attributeName,
-                                               format: format,
-                                               offset: offset,
-                                               bufferIndex: layoutIndex)
-            vertexDescriptor.addOrReplaceAttribute(attribute)
-            
-            // Update the layout
-            var stride = bufferView.byteStride
-            if stride <= 0 {
-                stride = STFStrideOf(vertexFormat: format)
-            }
-            layouts[layoutIndex] = MDLVertexBufferLayout(stride: stride)
-        }
+        let vertexDescriptor = MDLVertexDescriptor()
+        var offset = 0
         
-        vertexDescriptor.layouts = layouts
+        // Position
+        let positionAttribute = MDLVertexAttribute(name: MDLVertexAttributePosition,
+                                                   format: .float3,
+                                                   offset: offset,
+                                                   bufferIndex: 0)
+        vertexDescriptor.attributes[0] = positionAttribute
+        offset += MemoryLayout<float3>.stride
+        
+        // Normal
+        let normalAttribute = MDLVertexAttribute(name: MDLVertexAttributeNormal,
+                                                 format: .float3,
+                                                 offset: offset,
+                                                 bufferIndex: 0)
+        vertexDescriptor.attributes[1] = normalAttribute
+        offset += MemoryLayout<float3>.stride
+        
+        // UV
+//        let uvAttribute = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+//                                             format: .float2,
+//                                             offset: offset,
+//                                             bufferIndex: 0)
+//        vertexDescriptor.attributes[2] = uvAttribute
+//        offset += MemoryLayout<float2>.stride
+//        
+        
+        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: offset)
         
         return vertexDescriptor
     }
     
     /// Collect mesh nodes for each scene
     private func finalizeAsset() {
-//        for scene in scenes {
-//            for node in scene.nodes {
-//                scene.meshNodes = flatten(root: node, children: { $0.children }).filter( { $0.mesh != nil })
-//            }
-//        }
+        for scene in scenes {
+            for node in scene.nodes {
+                scene.meshNodes = flatten(root: node, children: { $0.children }).filter( { $0.mesh != nil })
+            }
+        }
     }
     
     private func flatten<STFNode>(root: STFNode, children: (STFNode) -> [STFNode]) -> [STFNode] {
         return [root] + children(root).flatMap({
             flatten(root: $0, children: children)
         })
+    }
+    
+    func createPipelineState(vertexDescriptor: MTLVertexDescriptor, device: MTLDevice) -> MTLRenderPipelineState{
+        let functionConstants = buildFunctionConstants()
+        let pipelineState: MTLRenderPipelineState
+        do {
+            let library = device.makeDefaultLibrary()
+            let vertexFunction = try library?.makeFunction(name: "vertex_main", constantValues: functionConstants)
+            let fragmentFunction =  try library?.makeFunction(name: "fragment_main", constantValues: functionConstants)
+            let descriptor = MTLRenderPipelineDescriptor()
+            descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+            descriptor.vertexFunction = vertexFunction
+            descriptor.fragmentFunction = fragmentFunction
+            descriptor.vertexDescriptor = vertexDescriptor
+            descriptor.depthAttachmentPixelFormat = .depth32Float
+            try pipelineState = device.makeRenderPipelineState(descriptor: descriptor)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+        return pipelineState
+    }
+    
+    func buildFunctionConstants() -> MTLFunctionConstantValues {
+        let functionConstants = MTLFunctionConstantValues()
+        
+        var property = false
+        functionConstants.setConstantValue(&property, type: .bool, index: 0)
+        
+        property = false
+        functionConstants.setConstantValue(&property, type: .bool, index: 1)
+        
+        property = false
+        functionConstants.setConstantValue(&property, type: .bool, index: 2)
+        
+        property = false
+        functionConstants.setConstantValue(&property, type: .bool, index: 3)
+        
+        //        property = textures.emissive != nil
+        //        functionConstants.setConstantValue(&property, type: .bool, index: 4)
+        
+        property = false
+        functionConstants.setConstantValue(&property, type: .bool, index: 5)
+        
+        return functionConstants
     }
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class STFAccessor {
+public class STFAccessor {
     let accessorIndex: Int
     let componentType: Int
     let type: String

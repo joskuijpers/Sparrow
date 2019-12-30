@@ -9,7 +9,7 @@
 import Foundation
 
 public class STFMesh {
-    var submeshes = [STFSubmesh]()
+    public var submeshes = [STFSubmesh]()
     public let name: String
     
     init(json: JSONMesh) {
