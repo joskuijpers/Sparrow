@@ -7,7 +7,6 @@
 //
 
 import MetalKit
-import STF
 
 class Renderer: NSObject {
     static var device: MTLDevice!
@@ -23,9 +22,6 @@ class Renderer: NSObject {
     
     let depthStencilState: MTLDepthStencilState
 //    let lighting = Lighting()
-    
-    
-    let box: Model2
     
     lazy var camera: Camera = {
         let camera = ArcballCamera()
@@ -63,8 +59,6 @@ class Renderer: NSObject {
         
         irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
         
-        box = Model2(name: "box.gltf")
-        
         super.init()
         
         metalView.clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
@@ -73,43 +67,40 @@ class Renderer: NSObject {
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
 
+        for i in 1...5 {
+            let sphere = Model(name: "ironSphere.obj")
+            sphere.position = [Float(1 + 3 * i), 0, 0]
+            models.append(sphere)
+        }
+
+        for i in 1...5 {
+            let sphere = Model(name: "goldSphere.obj")
+            sphere.position = [Float(1 + 3 * i), 3, 0]
+            models.append(sphere)
+        }
+
+        for i in 1...5 {
+            let sphere = Model(name: "plasticSphere.obj")
+            sphere.position = [Float(1 + 3 * i), -3, 0]
+            models.append(sphere)
+        }
+
+        for i in 1...5 {
+            let sphere = Model(name: "grassSphere.obj")
+            sphere.position = [Float(1 + 3 * i), 6, 0]
+            models.append(sphere)
+        }
+        
+        let cube = Model(name: "cube.obj")
+        cube.position = [0, 0, 0]
+        models.append(cube)
         
         
         
-//        for i in 1...5 {
-//            let sphere = Model(name: "ironSphere.obj")
-//            sphere.position = [Float(1 + 3 * i), 0, 0]
-//            models.append(sphere)
-//        }
-//
-//        for i in 1...5 {
-//            let sphere = Model(name: "goldSphere.obj")
-//            sphere.position = [Float(1 + 3 * i), 3, 0]
-//            models.append(sphere)
-//        }
-//
-//        for i in 1...5 {
-//            let sphere = Model(name: "plasticSphere.obj")
-//            sphere.position = [Float(1 + 3 * i), -3, 0]
-//            models.append(sphere)
-//        }
-//
-//        for i in 1...5 {
-//            let sphere = Model(name: "grassSphere.obj")
-//            sphere.position = [Float(1 + 3 * i), 6, 0]
-//            models.append(sphere)
-//        }
-        
-//        let cube = Model(name: "cube.obj")
-//        cube.position = [0, 0, 0]
-//        models.append(cube)
-//        
-//        
-//        
-//        let helmet = Model(name: "helmet.obj")
-//        helmet.position = [-3, 0, 0]
-//        helmet.rotation = [0, Float(180).degreesToRadians, 0]
-//        models.append(helmet)
+        let helmet = Model(name: "helmet.obj")
+        helmet.position = [-3, 0, 0]
+        helmet.rotation = [0, Float(180).degreesToRadians, 0]
+        models.append(helmet)
     }
     
     
@@ -204,26 +195,6 @@ extension Renderer: MTKViewDelegate {
             
             renderEncoder.popDebugGroup()
         }
-        
-        
-        var position: float3 = [0, 0, 0]
-        var rotation: float3 = [0, 0, 0]
-        var scale: float3 = [1, 1, 1]
-
-        let translateMatrix = float4x4(translation: position)
-        let rotateMatrix = float4x4(rotation: rotation)
-        let scaleMatrix = float4x4(scaling: scale)
-
-        let modelMatrix = translateMatrix * rotateMatrix * scaleMatrix
-        uniforms.modelMatrix = modelMatrix
-        uniforms.normalMatrix = uniforms.modelMatrix.upperLeft
-        renderEncoder.setVertexBytes(&uniforms,
-                                     length: MemoryLayout<Uniforms>.stride,
-                                     index: Int(BufferIndexUniforms.rawValue))
-        
-
-        
-        box.render(renderEncoder: renderEncoder)
         
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {

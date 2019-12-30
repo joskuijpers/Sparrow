@@ -23,9 +23,9 @@ constant bool hasAmbientOcclusionTexture [[ function_constant(5) ]];
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
     float3 normal       [[ attribute(VertexAttributeNormal) ]];
-//    float2 uv           [[ attribute(VertexAttributeUV) ]];
-//    float3 tangent      [[ attribute(VertexAttributeTangent) ]];
-//    float3 bitangent    [[ attribute(VertexAttributeBitangent) ]];
+    float2 uv           [[ attribute(VertexAttributeUV) ]];
+    float3 tangent      [[ attribute(VertexAttributeTangent) ]];
+    float3 bitangent    [[ attribute(VertexAttributeBitangent) ]];
 };
 
 struct VertexOut {
@@ -70,13 +70,10 @@ vertex VertexOut vertex_main(
     out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * in.position;
     out.worldPosition = (uniforms.modelMatrix * in.position).xyz;
     out.worldNormal = uniforms.normalMatrix * in.normal;
-    out.worldTangent = float3(0);
-    out.worldBitangent = float3(0);
-    out.uv = float2(0);
-//    out.worldTangent = uniforms.normalMatrix * in.tangent;
-//    out.worldBitangent = uniforms.normalMatrix * in.bitangent;
-//
-//    out.uv = in.uv;
+    out.worldTangent = uniforms.normalMatrix * in.tangent;
+    out.worldBitangent = uniforms.normalMatrix * in.bitangent;
+    
+    out.uv = in.uv;
     
     return out;
 }
@@ -112,9 +109,8 @@ fragment float4 fragment_main(
     } else {
         normalValue = in.worldNormal;
     }
-//    float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
-//    float3 normal = normalize(TBN * normalValue);
-    float3 normal = normalValue;
+    float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
+    float3 normal = normalize(TBN * normalValue);
     
     float metallic;
     if (hasMetallicTexture) {
