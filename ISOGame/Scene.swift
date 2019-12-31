@@ -9,7 +9,9 @@
 import MetalKit
 
 protocol Renderable {
-    func render(renderEncoder: MTLRenderCommandEncoder)
+    var name: String { get }
+    
+    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms)
 }
 
 class Scene {
@@ -25,6 +27,9 @@ class Scene {
         cameras[currentCameraIndex]
     }
     
+    var uniforms = Uniforms()
+    var fragmentUniforms = FragmentUniforms()
+    
     init(screenSize: CGSize) {
         self.screenSize = screenSize
         // setup scene
@@ -33,6 +38,12 @@ class Scene {
     
     func update(deltaTime: Float) {
         
+    }
+    
+    func updateUniforms() {
+        uniforms.projectionMatrix = camera.projectionMatrix
+        uniforms.viewMatrix = camera.viewMatrix
+        fragmentUniforms.cameraPosition = camera.position
     }
     
     /**

@@ -15,18 +15,11 @@ class Renderer: NSObject {
     static var textureLoader: TextureLoader!
     
     let commandQueue: MTLCommandQueue!
-    
-    
-    var uniforms = Uniforms()
-    var fragmentUniforms = FragmentUniforms()
-    
+
     let depthStencilState: MTLDepthStencilState
 //    let lighting = Lighting()
     
     var scene: Scene
-    
-    // List of models
-    var models: [Model] = []
     
     let irradianceCubeMap: MTLTexture;
     
@@ -71,37 +64,37 @@ class Renderer: NSObject {
         for i in 1...5 {
             let sphere = Model(name: "ironSphere.obj")
             sphere.position = [Float(1 + 3 * i), 0, 0]
-            models.append(sphere)
+            scene.add(node: sphere)
         }
 
         for i in 1...5 {
             let sphere = Model(name: "goldSphere.obj")
             sphere.position = [Float(1 + 3 * i), 3, 0]
-            models.append(sphere)
+            scene.add(node: sphere)
         }
 
         for i in 1...5 {
             let sphere = Model(name: "plasticSphere.obj")
             sphere.position = [Float(1 + 3 * i), -3, 0]
-            models.append(sphere)
+            scene.add(node: sphere)
         }
 
         for i in 1...5 {
             let sphere = Model(name: "grassSphere.obj")
             sphere.position = [Float(1 + 3 * i), 6, 0]
-            models.append(sphere)
+            scene.add(node: sphere)
         }
         
         let cube = Model(name: "cube.obj")
         cube.position = [0, 0, 0]
-        models.append(cube)
+        scene.add(node: cube)
         
         
         
         let helmet = Model(name: "helmet.obj")
         helmet.position = [-3, 0, 0]
         helmet.rotation = [0, Float(180).degreesToRadians, 0]
-        models.append(helmet)
+        scene.add(node: helmet)
     }
     
     
@@ -145,54 +138,17 @@ extension Renderer: MTKViewDelegate {
         
         renderEncoder.setDepthStencilState(depthStencilState)
         
-        uniforms.projectionMatrix = scene.camera.projectionMatrix
-        uniforms.viewMatrix = scene.camera.viewMatrix
-        fragmentUniforms.cameraPosition = scene.camera.position
+        scene.updateUniforms()
     
-        renderEncoder.setFragmentBytes(&fragmentUniforms,
+        renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
                                        length: MemoryLayout<FragmentUniforms>.stride,
                                        index: Int(BufferIndexFragmentUniforms.rawValue))
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
-        for model in models {
-            renderEncoder.pushDebugGroup(model.name)
+        for renderable in scene.renderables {
+            renderEncoder.pushDebugGroup(renderable.name)
             
-            uniforms.modelMatrix = model.modelMatrix
-            uniforms.normalMatrix = uniforms.modelMatrix.upperLeft
-            
-            renderEncoder.setVertexBytes(&uniforms,
-                                         length: MemoryLayout<Uniforms>.stride,
-                                         index: Int(BufferIndexUniforms.rawValue))
-            
-            for mesh in model.meshes {
-                for (index, vertexBuffer) in mesh.mtkMesh.vertexBuffers.enumerated() {
-                    renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
-                }
-                
-                
-                for submesh in mesh.submeshes {
-                    renderEncoder.setRenderPipelineState(submesh.pipelineState)
-                    
-                    renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
-                    renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
-                    renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
-                    renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
-                    renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
-//                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
-                    
-                    var material = submesh.material
-                    renderEncoder.setFragmentBytes(&material,
-                                                   length: MemoryLayout<Material>.stride,
-                                                   index: Int(BufferIndexMaterials.rawValue))
-                    
-                    let mtkSubmesh = submesh.mtkSubmesh
-                    renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                        indexCount: mtkSubmesh.indexCount,
-                                                        indexType: mtkSubmesh.indexType,
-                                                        indexBuffer: mtkSubmesh.indexBuffer.buffer,
-                                                        indexBufferOffset: mtkSubmesh.indexBuffer.offset)
-                }
-            }
+            renderable.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
             
             renderEncoder.popDebugGroup()
         }

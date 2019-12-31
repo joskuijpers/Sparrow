@@ -10,7 +10,6 @@ import MetalKit
 import STF
 
 class Model: Node {
-    
     let meshes: [Mesh]
     
     static var vertexDescriptor: MDLVertexDescriptor = MDLVertexDescriptor.defaultVertexDescriptor
@@ -41,6 +40,53 @@ class Model: Node {
         
         super.init()
         self.name = name
+    }
+}
+
+extension Model: Renderable {
+    
+    func render(renderEncoder: MTLRenderCommandEncoder, submesh: Submesh) {
+        renderEncoder.setRenderPipelineState(submesh.pipelineState)
+        
+        renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
+        //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
+        
+        var material = submesh.material
+        renderEncoder.setFragmentBytes(&material,
+                                       length: MemoryLayout<Material>.stride,
+                                       index: Int(BufferIndexMaterials.rawValue))
+        
+        let mtkSubmesh = submesh.mtkSubmesh
+        renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                            indexCount: mtkSubmesh.indexCount,
+                                            indexType: mtkSubmesh.indexType,
+                                            indexBuffer: mtkSubmesh.indexBuffer.buffer,
+                                            indexBufferOffset: mtkSubmesh.indexBuffer.offset)
+    }
+    
+    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
+        var vUniforms = vertexUniforms
+        
+        vUniforms.modelMatrix = modelMatrix
+        vUniforms.normalMatrix = modelMatrix.upperLeft
+        
+        renderEncoder.setVertexBytes(&vUniforms,
+                                     length: MemoryLayout<Uniforms>.stride,
+                                     index: Int(BufferIndexUniforms.rawValue))
+        
+        for mesh in self.meshes {
+            for (index, vertexBuffer) in mesh.mtkMesh.vertexBuffers.enumerated() {
+                renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
+            }
+            
+            for submesh in mesh.submeshes {
+                render(renderEncoder: renderEncoder, submesh: submesh)
+            }
+        }
     }
 }
 
