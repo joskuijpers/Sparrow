@@ -32,13 +32,23 @@ class Camera: Node {
         return (translateMatrix * scaleMatrix * rotateMatrix).inverse
     }
     
+    func screenSizeWillChange(to size: CGSize) {
+        aspect = Float(size.width / size.height)
+    }
+    
     func zoom(delta: Float) {}
     func rotate(delta: float2) {}
 }
 
+class PerspectiveCamera: Camera {
+    // TODO move from parent
+}
 
+class OrthographicCamera: Camera {
+    // TODO
+}
 
-class ArcballCamera: Camera {
+class ArcballCamera: PerspectiveCamera {
   
   var minDistance: Float = 0.5
   var maxDistance: Float = 10

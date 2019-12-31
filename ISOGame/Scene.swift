@@ -8,6 +8,97 @@
 
 import MetalKit
 
+protocol Renderable {
+    func render(renderEncoder: MTLRenderCommandEncoder)
+}
+
 class Scene {
+//    var inputController = InputController()
     
+    var rootNode = Node()
+    var renderables = [Renderable]()
+    
+    var screenSize: CGSize
+    var cameras = [Camera()]
+    var currentCameraIndex = 0
+    var camera: Camera {
+        cameras[currentCameraIndex]
+    }
+    
+    init(screenSize: CGSize) {
+        self.screenSize = screenSize
+        // setup scene
+//        screenSizeWillChange(to: screenSize)
+    }
+    
+    func update(deltaTime: Float) {
+        
+    }
+    
+    /**
+     Add a note to the scene hierarchy. Will be added below given parent if any,
+     - Renderables will be added to the renderables list
+     - Cameras will be added to the camera list
+     //- Lights will be added to the lights list
+     */
+    func add(node: Node, parent: Node? = nil) {
+        if let parent = parent {
+            parent.add(childNode: node)
+        } else {
+            rootNode.add(childNode: node)
+        }
+        
+        if let renderable = node as? Renderable {
+            renderables.append(renderable)
+        }
+        
+        if let camera = node as? Camera {
+            cameras.append(camera)
+            
+            print("ADD CAMERA \(self.camera)")
+        }
+    }
+    
+    /**
+     Remove a node from the scene hierarchy
+     */
+    func remove(node: Node) {
+        if let parent = node.parent {
+            parent.remove(childNode: node)
+        } else {
+            for child in node.children {
+                child.parent = nil
+            }
+            node.children = []
+        }
+        
+        if node is Renderable,
+            let index = (renderables.firstIndex {
+                $0 as? Node === node
+            }) {
+            renderables.remove(at: index)
+        }
+        
+        if node is Camera,
+            let index = (cameras.firstIndex {
+                $0 === node
+            }) {
+            if index == currentCameraIndex {
+                currentCameraIndex = 0
+            } else if index > currentCameraIndex {
+                currentCameraIndex -= 1
+            }
+            cameras.remove(at: index)
+        }
+    }
+    
+    /**
+     Scene projection size changed. Update all dependent objects (mostly cameras)
+     */
+    func screenSizeWillChange(to size: CGSize) {
+        for camera in cameras {
+            camera.screenSizeWillChange(to: size)
+        }
+        screenSize = size
+    }
 }

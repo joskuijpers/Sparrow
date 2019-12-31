@@ -23,15 +23,7 @@ class Renderer: NSObject {
     let depthStencilState: MTLDepthStencilState
 //    let lighting = Lighting()
     
-    lazy var camera: Camera = {
-        let camera = ArcballCamera()
-        
-        camera.distance = 4.3
-        camera.target = [0, 1.2, 0]
-        camera.rotation.x = Float(-10).degreesToRadians
-        
-        return camera
-    }()
+    var scene: Scene
     
     // List of models
     var models: [Model] = []
@@ -58,6 +50,15 @@ class Renderer: NSObject {
         depthStencilState = Renderer.buildDepthStencilState()!
         
         irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
+        
+        scene = Scene(screenSize: metalView.bounds.size)
+        
+        let camera = ArcballCamera()
+        camera.distance = 4.3
+        camera.target = [0, 1.2, 0]
+        camera.rotation.x = Float(-10).degreesToRadians
+        scene.add(node: camera)
+        scene.currentCameraIndex = 1
         
         super.init()
         
@@ -132,7 +133,7 @@ class Renderer: NSObject {
 extension Renderer: MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        camera.aspect = Float(view.bounds.width) / Float(view.bounds.height)
+        scene.screenSizeWillChange(to: size)
     }
     
     func draw(in view: MTKView) {
@@ -144,9 +145,9 @@ extension Renderer: MTKViewDelegate {
         
         renderEncoder.setDepthStencilState(depthStencilState)
         
-        uniforms.projectionMatrix = camera.projectionMatrix
-        uniforms.viewMatrix = camera.viewMatrix
-        fragmentUniforms.cameraPosition = camera.position
+        uniforms.projectionMatrix = scene.camera.projectionMatrix
+        uniforms.viewMatrix = scene.camera.viewMatrix
+        fragmentUniforms.cameraPosition = scene.camera.position
     
         renderEncoder.setFragmentBytes(&fragmentUniforms,
                                        length: MemoryLayout<FragmentUniforms>.stride,
