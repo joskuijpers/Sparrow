@@ -43,6 +43,8 @@ class Model: Node {
     }
 }
 
+// MARK: - Rendering
+
 extension Model: Renderable {
     
     func render(renderEncoder: MTLRenderCommandEncoder, submesh: Submesh) {
@@ -71,8 +73,8 @@ extension Model: Renderable {
     func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
         var vUniforms = vertexUniforms
         
-        vUniforms.modelMatrix = modelMatrix
-        vUniforms.normalMatrix = modelMatrix.upperLeft
+        vUniforms.modelMatrix = worldTransform
+        vUniforms.normalMatrix = worldTransform.upperLeft
         
         renderEncoder.setVertexBytes(&vUniforms,
                                      length: MemoryLayout<Uniforms>.stride,

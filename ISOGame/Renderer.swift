@@ -20,6 +20,7 @@ class Renderer: NSObject {
 //    let lighting = Lighting()
     
     var scene: Scene
+    var rotNode: Node!
     
     let irradianceCubeMap: MTLTexture;
     
@@ -60,28 +61,31 @@ class Renderer: NSObject {
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
-
-        for i in 1...5 {
+        rotNode = Node()
+        rotNode.position = [5, 0, 0]
+        scene.add(node: rotNode)
+        
+        for i in 0...4 {
             let sphere = Model(name: "ironSphere.obj")
-            sphere.position = [Float(1 + 3 * i), 0, 0]
-            scene.add(node: sphere)
+            sphere.position = [Float(3 * i), 0, 0]
+            scene.add(node: sphere, parent: rotNode)
         }
 
-        for i in 1...5 {
+        for i in 0...4 {
             let sphere = Model(name: "goldSphere.obj")
-            sphere.position = [Float(1 + 3 * i), 3, 0]
-            scene.add(node: sphere)
+            sphere.position = [Float(3 * i), 3, 0]
+            scene.add(node: sphere, parent: rotNode)
         }
 
-        for i in 1...5 {
+        for i in 0...4 {
             let sphere = Model(name: "plasticSphere.obj")
-            sphere.position = [Float(1 + 3 * i), -3, 0]
-            scene.add(node: sphere)
+            sphere.position = [Float(3 * i), -3, 0]
+            scene.add(node: sphere, parent: rotNode)
         }
 
-        for i in 1...5 {
+        for i in 0...4 {
             let sphere = Model(name: "grassSphere.obj")
-            sphere.position = [Float(1 + 3 * i), 6, 0]
+            sphere.position = [Float(3 * i), 6, 0]
             scene.add(node: sphere)
         }
         
@@ -136,6 +140,8 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
+        let deltaTime = 1.0 / Float(view.preferredFramesPerSecond)
+        
         renderEncoder.setDepthStencilState(depthStencilState)
         
         scene.updateUniforms()
@@ -144,6 +150,9 @@ extension Renderer: MTKViewDelegate {
                                        length: MemoryLayout<FragmentUniforms>.stride,
                                        index: Int(BufferIndexFragmentUniforms.rawValue))
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
+        
+        
+        rotNode.rotation = rotNode.rotation + float3(0, Float(10).degreesToRadians * deltaTime, 0)
         
         for renderable in scene.renderables {
             renderEncoder.pushDebugGroup(renderable.name)
