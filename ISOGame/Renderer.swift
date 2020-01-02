@@ -152,7 +152,7 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
         
-        rotNode.rotation = rotNode.rotation + float3(0, Float(10).degreesToRadians * deltaTime, 0)
+        rotNode.rotation += float3(0, Float(10).degreesToRadians * deltaTime, 0)
         
         for renderable in scene.renderables {
             renderEncoder.pushDebugGroup(renderable.name)
