@@ -23,7 +23,7 @@ vertex float4 vertex_debug_aabb(
     // bound. Use max bound for vertices at 1
     float3 position = mix(minBounds, maxBounds, in);
     
-    return uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(in, 1);
+    return uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(position, 1);
 }
 
 fragment float4 fragment_debug_aabb(
