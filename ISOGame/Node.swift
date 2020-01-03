@@ -12,6 +12,9 @@ import MetalKit
   Scene graph node
  */
 class Node {
+    static var aabbPipelineState: MTLRenderPipelineState?
+    static var aabbBuffer: MTLBuffer?
+    
     var name: String = "untitled";
     
     /// Child nodes in the hierarchy
@@ -50,12 +53,12 @@ class Node {
         return modelMatrix
     }
     
-    // TODO: change to own type?
-    // Axis aligned bounding box of the node with its children (???)
-//    var boundingBox = MDLAxisAlignedBoundingBox()
-//    var size: float3 {
-//        return boundingBox.maxBounds - boundingBox.minBounds
-//    }
+    /// Axis aligned bounding box of the node with its children, local (??? local ???)
+    // TODO something about calculating it using min/max of submeshes
+    var boundingBox = AxisAlignedBoundingBox()
+    var size: float3 {
+        return boundingBox.maxBounds - boundingBox.minBounds
+    }
     
     /**
      Add a node below this node
@@ -92,5 +95,95 @@ class Node {
             }
             self.parent = nil
         }
+    }
+    
+    /**
+     Build the state for the AABB drawing, with a special vertex shader that adjusts a normalize cube vertices to min and max bounds.
+     */
+    // TODO: move to AABB struct or DebugDrawing util?
+    static func buildAABBState() {
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        let library = Renderer.library!
+        
+        pipelineDescriptor.vertexFunction = library.makeFunction(name: "vertex_debug_aabb")
+        pipelineDescriptor.fragmentFunction = library.makeFunction(name: "fragment_debug_aabb")
+        
+        pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
+        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+        
+        Node.aabbPipelineState = try! Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        
+        // Cube, normalized. Will be matching the aabb bounds in the vertex shader
+        var verts = [float3]()
+        
+        verts.append(float3(0, 0, 0))
+        verts.append(float3(1, 0, 0))
+        
+        verts.append(float3(0, 1, 0))
+        verts.append(float3(1, 1, 0))
+        
+        verts.append(float3(0, 0, 1))
+        verts.append(float3(1, 0, 1))
+        
+        verts.append(float3(0, 1, 1))
+        verts.append(float3(1, 1, 1))
+        
+        
+        verts.append(float3(0, 0, 0))
+        verts.append(float3(0, 1, 0))
+        
+        verts.append(float3(1, 0, 0))
+        verts.append(float3(1, 1, 0))
+        
+        verts.append(float3(0, 0, 1))
+        verts.append(float3(0, 1, 1))
+        
+        verts.append(float3(1, 0, 1))
+        verts.append(float3(1, 1, 1))
+        
+        
+        verts.append(float3(0, 0, 0))
+        verts.append(float3(0, 0, 1))
+        
+        verts.append(float3(1, 0, 0))
+        verts.append(float3(1, 0, 1))
+        
+        verts.append(float3(0, 1, 0))
+        verts.append(float3(0, 1, 1))
+        
+        verts.append(float3(1, 1, 0))
+        verts.append(float3(1, 1, 1))
+        
+        Node.aabbBuffer = Renderer.device.makeBuffer(bytes: &verts, length: verts.count * MemoryLayout<float3>.stride, options: [])!
+    }
+    
+    // TODO: move to AABB struct or DebugDrawing util?
+    func drawBoundingBox(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms) {
+        if Node.aabbBuffer == nil || Node.aabbPipelineState == nil {
+            Node.buildAABBState()
+        }
+        
+        let aabb = boundingBox
+        
+        // Set special state with custom vertex shader
+        renderEncoder.setRenderPipelineState(Node.aabbPipelineState!)
+
+        var vUniforms = vertexUniforms
+        vUniforms.modelMatrix = worldTransform
+        renderEncoder.setVertexBytes(&vUniforms,
+                                     length: MemoryLayout<Uniforms>.stride,
+                                     index: Int(BufferIndexUniforms.rawValue))
+        
+        // Set special vertex options: it will move the vertices accoridng to the min and max bounds
+        var minBounds = aabb.minBounds
+        renderEncoder.setVertexBytes(&minBounds, length: MemoryLayout<float3>.stride, index: 1)
+        var maxBounds = aabb.maxBounds
+        renderEncoder.setVertexBytes(&maxBounds, length: MemoryLayout<float3>.stride, index: 2)
+        
+        var color = float3(1, 0, 0)
+        renderEncoder.setFragmentBytes(&color, length: MemoryLayout<float3>.stride, index: 0)
+
+        renderEncoder.setVertexBuffer(Node.aabbBuffer, offset: 0, index: 0)
+        renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 24)
     }
 }

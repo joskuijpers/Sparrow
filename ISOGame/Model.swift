@@ -40,6 +40,9 @@ class Model: Node {
         
         super.init()
         self.name = name
+        
+        let bb = mdlMeshes[0].boundingBox
+        boundingBox = AxisAlignedBoundingBox(minBounds: bb.minBounds, maxBounds: bb.maxBounds)
     }
 }
 
