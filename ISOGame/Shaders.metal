@@ -169,12 +169,16 @@ fragment float4 fragment_main(
         float3 lightColor = light.color;
     
         if (light.type == LightTypeDirectional) {
-            lightDirection = normalize(-light.position);
+            lightDirection = normalize(-light.position.xyz);
             attenuation = 1.0;
         } else if (light.type == LightTypePoint) {
-            lightDirection = normalize(light.position - in.worldPosition);
-            float distance = length(light.position - in.worldPosition);
-            attenuation = 1.0 / (distance * distance);
+            lightDirection = normalize(light.position.xyz - in.worldPosition);
+            float dist = length(light.position.xyz - in.worldPosition);
+            
+            float range = 0; // TODO!
+            half attenNum = (range > 0) ? saturate(1.0 - powr(dist / range, 4)) : 1;
+            
+            attenuation = attenNum / (dist * dist);
         }
 
         parameters.lightDirection = lightDirection;
@@ -188,7 +192,7 @@ fragment float4 fragment_main(
         float mipLevel = parameters.roughness * irradianceMap.get_num_mip_levels();
         parameters.irradiatedColor = irradianceMap.sample(mipSampler, parameters.reflectedVector, level(mipLevel)).rgb;
 
-        lighting += diffuseTerm(parameters) + specularTerm(parameters);
+        lighting += diffuseTerm(parameters);// + specularTerm(parameters);
 
         //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
         //float t         = fragRmt.b;

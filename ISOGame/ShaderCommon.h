@@ -70,7 +70,7 @@ typedef enum {
 } LightType;
 
 typedef struct {
-    vector_float3 position;
+    vector_float4 position;
     vector_float3 color;
 //    float intensity;
 //    vector_float3 attenuation;

@@ -147,9 +147,9 @@ private extension Material {
             self.metallic = metallic.floatValue
         }
         
-        if let emission = material?.property(with: .emission),
-            emission.type == .float3 {
-            self.emission = emission.float3Value
-        }
+//        if let emission = material?.property(with: .emission),
+//            emission.type == .float3 {
+//            self.emission = emission.float3Value
+//        }
     }
 }

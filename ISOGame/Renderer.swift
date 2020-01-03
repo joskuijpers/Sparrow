@@ -99,6 +99,12 @@ class Renderer: NSObject {
         helmet.position = [-3, 0, 0]
         helmet.rotation = [0, Float(180).degreesToRadians, 0]
         scene.add(node: helmet)
+        
+        scene.add(node: DirectionalLight(color: float3(2, 2, 2), direction: float3(0, -5, 10)))
+        
+        let pl = PointLight(color: float3(0, 0, 1), intensity: 10)
+        pl.position = [4, 0, 0]
+        scene.add(node: pl, parent: rotNode)
     }
     
     
@@ -145,14 +151,12 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setDepthStencilState(depthStencilState)
         
         scene.updateUniforms()
-    
+
         
         var lights = [LightData]()
-        var sun = LightData()
-        sun.color = float3(2, 0, 0)
-        sun.type = LightTypeDirectional
-        sun.position = float3(0, -1, 10)
-        lights.append(sun)
+        for light in scene.lights {
+            lights.append(light.build())
+        }
         var lightCount = lights.count
         
         renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
@@ -165,7 +169,7 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
         // Testing
-        rotNode.rotation += float3(0, Float(10).degreesToRadians * deltaTime, 0)
+        rotNode.rotation += float3(0, Float(30).degreesToRadians * deltaTime, 0)
         
         for renderable in scene.renderables {
             renderEncoder.pushDebugGroup(renderable.name)
