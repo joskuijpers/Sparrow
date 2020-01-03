@@ -160,10 +160,10 @@ extension Renderer: MTKViewDelegate {
             renderable.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
             
             renderEncoder.popDebugGroup()
-            
-            if let r = renderable as? Node {
-                r.drawBoundingBox(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
-            }
+        }
+        
+        for node in scene.nodes {
+            node.drawBoundingBox(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
         }
         
         renderEncoder.endEncoding()

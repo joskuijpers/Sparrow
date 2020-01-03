@@ -19,6 +19,7 @@ class Scene {
     
     var rootNode = Node()
     var renderables = [Renderable]()
+    var nodes = [Node]()
     
     var screenSize: CGSize
     var cameras = [Camera()]
@@ -53,6 +54,8 @@ class Scene {
      //- Lights will be added to the lights list
      */
     func add(node: Node, parent: Node? = nil) {
+        nodes.append(node)
+        
         if let parent = parent {
             parent.add(childNode: node)
         } else {
@@ -74,6 +77,10 @@ class Scene {
      Remove a node from the scene hierarchy
      */
     func remove(node: Node) {
+        if let index = (nodes.firstIndex { $0 === node}) {
+            nodes.remove(at: index)
+        }
+
         if let parent = node.parent {
             parent.remove(childNode: node)
         } else {

@@ -50,11 +50,34 @@ class Node {
         return modelMatrix
     }
     
-    /// Axis aligned bounding box of the node with its children, local (??? local ???)
-    // TODO something about calculating it using min/max of submeshes
+    /// Axis aligned bounding box of just this node, in model space. Does not contain children
     var boundingBox = AxisAlignedBoundingBox()
     var size: float3 {
         return boundingBox.maxBounds - boundingBox.minBounds
+    }
+    
+    /// Approximate bounds of this node including meshes and children
+    var approximateBounds: AxisAlignedBoundingBox {
+        return computeApproximateBounds(transform: parent?.worldTransform ?? matrix_identity_float4x4)
+    }
+    
+    /// Approximate the bounds of this node by creating AABBs around the AABBs of the children
+    private func computeApproximateBounds(transform: float4x4) -> AxisAlignedBoundingBox {
+        var aabb = AxisAlignedBoundingBox()
+
+        if !self.boundingBox.isEmpty {
+            aabb = self.boundingBox
+        }
+        
+        let worldTransform = transform * modelMatrix
+        aabb = aabb * worldTransform // slow!
+        
+        for child in children {
+            let box = child.computeApproximateBounds(transform: worldTransform)
+            aabb = aabb.union(box)
+        }
+        
+        return aabb
     }
     
     /**
@@ -95,6 +118,14 @@ class Node {
     }
     
     func drawBoundingBox(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms) {
-        boundingBox.render(renderEncoder: renderEncoder, vertexUniforms: vertexUniforms, worldTransform: worldTransform)
+        var vertexUniforms = vertexUniforms
+        
+        let color = children.count > 0 ? float3(0, 1, 0) : float3(1, 0, 0)
+        vertexUniforms.modelMatrix = matrix_identity_float4x4
+        approximateBounds.render(renderEncoder: renderEncoder, vertexUniforms: vertexUniforms, color: color)
+        
+        // Draw local bounding box
+//        vertexUniforms.modelMatrix = worldTransform
+//        boundingBox.render(renderEncoder: renderEncoder, vertexUniforms: vertexUniforms, color: float3(0, 0, 1))
     }
 }
