@@ -17,7 +17,6 @@ class Renderer: NSObject {
     let commandQueue: MTLCommandQueue!
 
     let depthStencilState: MTLDepthStencilState
-//    let lighting = Lighting()
     
     var scene: Scene
     var rotNode: Node!
@@ -139,6 +138,24 @@ extension Renderer: MTKViewDelegate {
         scene.screenSizeWillChange(to: size)
     }
     
+    func fillRenderQueues() {
+//        renderQueue.clear()
+        
+        // RenderQueue<Renderable>
+        // RenderQueue<LightData>
+            // .count
+        
+        // Walk through whole scene graph
+            // if node is visible in frustrum
+                // if is renderable
+                    // if has alpha blending
+                        // Fill transparency queue
+                    // else
+                        // Fill opaque queue
+                // if node is a light
+                    // add to lights list
+    }
+    
     func draw(in view: MTKView) {
         guard let descriptor = view.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
@@ -151,13 +168,16 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setDepthStencilState(depthStencilState)
         
         scene.updateUniforms()
-
         
+        fillRenderQueues()
+
+        // Replace with render queue
         var lights = [LightData]()
         for light in scene.lights {
             lights.append(light.build())
         }
         var lightCount = lights.count
+        
         
         renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
         renderEncoder.setFragmentBytes(&lights, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
@@ -179,9 +199,9 @@ extension Renderer: MTKViewDelegate {
             renderEncoder.popDebugGroup()
         }
         
-        for node in scene.nodes {
-            node.drawBoundingBox(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
-        }
+//        for node in scene.nodes {
+//            node.drawBoundingBox(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
+//        }
         
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {

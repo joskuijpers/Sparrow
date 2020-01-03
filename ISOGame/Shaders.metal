@@ -192,7 +192,7 @@ fragment float4 fragment_main(
         float mipLevel = parameters.roughness * irradianceMap.get_num_mip_levels();
         parameters.irradiatedColor = irradianceMap.sample(mipSampler, parameters.reflectedVector, level(mipLevel)).rgb;
 
-        lighting += diffuseTerm(parameters);// + specularTerm(parameters);
+        lighting += diffuseTerm(parameters) + specularTerm(parameters);
 
         //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
         //float t         = fragRmt.b;

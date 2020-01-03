@@ -23,6 +23,10 @@ class DirectionalLight: Light {
         data.type = LightTypeDirectional
         data.color = color
         data.position = float4(direction, 0)
+        
+        super.init()
+        
+        self.boundingBox = AxisAlignedBoundingBox(minBounds: float3(repeating: -Float.infinity), maxBounds: float3(repeating: Float.infinity))
     }
     
     override func build() -> LightData {
@@ -36,10 +40,11 @@ class PointLight: Light {
     init(color: float3, intensity: Float) {
         data.type = LightTypePoint
         data.color = color
-        // TODO: do something with intensity
+        // TODO: do something with intensity and range
         
         super.init()
         
+        // TODO: use Range! to cull the spotlight
         self.boundingBox = AxisAlignedBoundingBox(minBounds: float3(-0.1, -0.1, -0.1), maxBounds: float3(0.1, 0.1, 0.1))
     }
     
