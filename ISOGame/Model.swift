@@ -154,7 +154,7 @@ class Model2: Node {
                                                   offset: attribute.offset,
                                                   index: attribute.index)
                 }
-                var material2 = Material(albedo: float3(1,0,0), specularColor: float3(1,1,1), shininess: 0, metallic: 0, roughness: 0, emission: 0)
+                var material2 = Material(albedo: float3(1,0,0), shininess: 0, metallic: 0, roughness: 0, emission: float3.zero)
                 renderEncoder.setFragmentBytes(&material2,
                                                length: MemoryLayout<Material>.stride,
                                                index: Int(BufferIndexMaterials.rawValue))

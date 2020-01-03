@@ -146,12 +146,25 @@ extension Renderer: MTKViewDelegate {
         
         scene.updateUniforms()
     
+        
+        var lights = [LightData]()
+        var sun = LightData()
+        sun.color = float3(2, 0, 0)
+        sun.type = LightTypeDirectional
+        sun.position = float3(0, -1, 10)
+        lights.append(sun)
+        var lightCount = lights.count
+        
+        renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
+        renderEncoder.setFragmentBytes(&lights, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
+        
+        
         renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
                                        length: MemoryLayout<FragmentUniforms>.stride,
                                        index: Int(BufferIndexFragmentUniforms.rawValue))
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
-        
+        // Testing
         rotNode.rotation += float3(0, Float(10).degreesToRadians * deltaTime, 0)
         
         for renderable in scene.renderables {

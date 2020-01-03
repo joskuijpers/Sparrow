@@ -20,6 +20,7 @@ class Scene {
     var rootNode = Node()
     var renderables = [Renderable]()
     var nodes = [Node]()
+    var lights = [Light]()
     
     var screenSize: CGSize
     var cameras = [Camera()]
@@ -66,10 +67,10 @@ class Scene {
             renderables.append(renderable)
         }
         
-        if let camera = node as? Camera {
+        if let light = node as? Light {
+            lights.append(light)
+        } else if let camera = node as? Camera {
             cameras.append(camera)
-            
-            print("ADD CAMERA \(self.camera)")
         }
     }
     
@@ -98,15 +99,16 @@ class Scene {
         }
         
         if node is Camera,
-            let index = (cameras.firstIndex {
-                $0 === node
-            }) {
+            let index = (cameras.firstIndex { $0 === node }) {
             if index == currentCameraIndex {
                 currentCameraIndex = 0
             } else if index > currentCameraIndex {
                 currentCameraIndex -= 1
             }
             cameras.remove(at: index)
+        } else if node is Light,
+            let index = (cameras.firstIndex { $0 === node }) {
+            lights.remove(at: index)
         }
     }
     

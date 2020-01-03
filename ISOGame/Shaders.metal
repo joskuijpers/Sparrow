@@ -91,7 +91,10 @@ fragment float4 fragment_main(
                               texture2d<float> metallicTexture [[ texture(TextureMetallic), function_constant(hasMetallicTexture) ]],
 //                              texture2d<float> emissionTexture [[ texture(TextureNormal), function_constant(hasEmissionTexture) ]]
                               texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]],
-                              texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]]
+                              texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]],
+                              
+                              constant LightData *lights [[ buffer(16) ]],
+                              constant int &lightsCount [[ buffer(15) ]]
                               ) {
     constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
     constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
@@ -133,17 +136,13 @@ fragment float4 fragment_main(
         ambientOcclusion = 1.0;
     }
     
-    float3 emissiveColor = float3(0);
+    float3 emissiveColor = material.emission;
     
     // DEF TODO:
     // read shading model identifier
     // 0 = default
     // 1 = SSS
     // ...
-
-    // For our sun light, until we support multiple lights
-    float3 lightPosition = float3(0, -1, 10);
-    float3 lightColor = float3(2);
     
     //https://seblagarde.wordpress.com/2012/01/08/pi-or-not-to-pi-in-game-lighting-equation/
     //https://learnopengl.com/PBR/Lighting
@@ -161,19 +160,22 @@ fragment float4 fragment_main(
     parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
     parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
 
-//    for each light
-//    {
-        float3 lightDirection;
-        float attenuation;
+    for (int i = 0; i < lightsCount; ++i) {
+        LightData light = lights[i];
+        
+        float3 lightDirection = float3(1, 0, 0);
+        float attenuation = 1.0;
+        
+        float3 lightColor = light.color;
     
-//        if directionalLight {
-            lightDirection = normalize(-lightPosition);
+        if (light.type == LightTypeDirectional) {
+            lightDirection = normalize(-light.position);
             attenuation = 1.0;
-//        } else { // point light
-//            lightDirection = normalize(lightPosition - in.worldPosition);
-//            float distance = length(lightPosition - in.worldPosition); // point light
-//            attenuation = 1.0 / (distance * distance);
-//        }
+        } else if (light.type == LightTypePoint) {
+            lightDirection = normalize(light.position - in.worldPosition);
+            float distance = length(light.position - in.worldPosition);
+            attenuation = 1.0 / (distance * distance);
+        }
 
         parameters.lightDirection = lightDirection;
         parameters.diffuseLightColor = lightColor * attenuation;
@@ -191,7 +193,7 @@ fragment float4 fragment_main(
         //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
         //float t         = fragRmt.b;
         //lighting.rgb   -= (kD * fragAlbedo.rgb*0.31830988618) * radiance * min(dot(fragNormal.xyz, lightDirection), 0.0)*t* occlusion;
-//    }
+    }
     
     // Create an improvised Ambient term
     float3 ambient = float3(0.03) * albedo * ambientOcclusion;
@@ -229,6 +231,7 @@ float3 specularTerm(LightingParams params) {
     float alphaG = powr(specularRoughness * 0.5 + 0.5, 2);
     float G = GeometrySchlickGGX(params.NdotL, alphaG) * GeometrySchlickGGX(params.NdotV, alphaG);
     
+    // https://github.com/warrenm/GLTFKit/blob/ec24ca8d822dfb29fc8f413d54b6276581b47374/GLTFViewer/Resources/Shaders/pbr.metal#L396
     float3 specularOutput = (D * F * G * params.irradiatedColor)
         * (1.0 + params.metallic * params.albedo)
         + params.irradiatedColor * params.metallic * params.albedo;
