@@ -19,23 +19,9 @@ vertex float4 vertex_debug_aabb(
                                 ) {
     float3 in = vertexArray[vid];
     
-    if (in.x == 0) {
-        in.x = minBounds.x;
-    } else if (in.x == 1) {
-        in.x = maxBounds.x;
-    }
-    
-    if (in.y == 0) {
-        in.y = minBounds.y;
-    } else if (in.y == 1) {
-        in.y = maxBounds.y;
-    }
-    
-    if (in.z == 0) {
-        in.z = minBounds.z;
-    } else if (in.z == 1) {
-        in.z = maxBounds.z;
-    }
+    // Adjust position based on lower/upper bounds. For every vertex at 0, use min
+    // bound. Use max bound for vertices at 1
+    float3 position = mix(minBounds, maxBounds, in);
     
     return uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(in, 1);
 }
