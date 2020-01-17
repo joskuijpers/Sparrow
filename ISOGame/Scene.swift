@@ -8,10 +8,15 @@
 
 import MetalKit
 
+enum RenderPass {
+    case gbuffer
+    case shadow
+}
+
 protocol Renderable {
     var name: String { get }
     
-    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms)
+    func render(renderEncoder: MTLRenderCommandEncoder, pass: RenderPass, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms)
 }
 
 class Scene {

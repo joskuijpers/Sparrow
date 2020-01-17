@@ -12,6 +12,20 @@ import STF
 class Model: Node {
     let meshes: [Mesh]
     
+    
+    // material parameters
+//    renderingMode: opaque, transparent/transluecent (alpha blending), cutout (- alpha cutoff), using functionConstants
+    // albedo color OR albedo map
+    // normal map optiona;
+    // occlusion optional (default: 1)
+    // metallic optional (default: slider input)
+    // roughness optional (default: slider input)
+    // availability of the texture does not mean availability of value: might have metallic texture but constant roughness
+    // so we need to keep track of that in the function constants, even thouygh we pack them:
+    // R = metallic, G = roughness, B = ? heightmap ?, A = occlusion
+    
+    
+    
     static var vertexDescriptor: MDLVertexDescriptor = MDLVertexDescriptor.defaultVertexDescriptor
     
     init(name: String) {
@@ -93,79 +107,4 @@ extension Model: Renderable {
             }
         }
     }
-}
-
-
-
-class Model2: Node {
-//    let meshes: [Mesh2]
-    
-    let buffers: [STFBuffer]
-    let meshNodes: [STFNode]
-    let nodes: [STFNode]
-    
-    init(name: String) {
-        guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
-            fatalError("Model: \(name) not found")
-        }
-        
-        let asset = try? STFAsset(url: assetUrl, device: Renderer.device)
-        
-        buffers = (asset?.buffers)!
-        meshNodes = (asset?.scene(at: 0).meshNodes)!
-        nodes = (asset?.scene(at: 0).nodes)!
-        
-//        buffers = asset.buffers
-//        meshNodes = asset?.scene(at: 0).meshNodes
-//        nodes = asset.scenes[0].nodes
-        
-//        let scene = asset?.defaultScene
-//        guard let node = scene?.node(at: 0) else { fatalError() }
-//
-//        let stfMesh = node.mesh
-//
-////            mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
-////                                    tangentAttributeNamed: MDLVertexAttributeTangent,
-////                                    bitangentAttributeNamed: MDLVertexAttributeBitangent)
-////            Model.vertexDescriptor = mdlMesh.vertexDescriptor
-//
-//        let mtkMEsh = try! MTKMesh(mesh: mdlMesh, device: Renderer.device)
-//
-//        meshes = zip(mdlMeshes, mtkMeshes).map {
-//            Mesh(mdlMesh: $0.0, mtkMesh: $0.1)
-//        }
-        
-        super.init()
-        self.name = name
-    }
-    
-    func render(renderEncoder: MTLRenderCommandEncoder) {
-        for node in meshNodes {
-            guard let mesh = node.mesh else { continue }
-            
-            for submesh in mesh.submeshes {
-                renderEncoder.setRenderPipelineState(submesh.pipelineState!)
-                var material = submesh.material
-                renderEncoder.setFragmentBytes(&material,
-                                               length: MemoryLayout<Material>.stride,
-                                               index: Int(BufferIndexMaterials.rawValue))
-                for attribute in submesh.attributes {
-                    renderEncoder.setVertexBuffer(buffers[attribute.bufferIndex].mtlBuffer,
-                                                  offset: attribute.offset,
-                                                  index: attribute.index)
-                }
-                var material2 = Material(albedo: float3(1,0,0), shininess: 0, metallic: 0, roughness: 0, emission: float3.zero)
-                renderEncoder.setFragmentBytes(&material2,
-                                               length: MemoryLayout<Material>.stride,
-                                               index: Int(BufferIndexMaterials.rawValue))
-                
-                renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                    indexCount: submesh.indexCount,
-                                                    indexType: submesh.indexType,
-                                                    indexBuffer: submesh.indexBuffer!,
-                                                    indexBufferOffset: submesh.indexBufferOffset)
-            }
-        }
-    }
-    
 }
