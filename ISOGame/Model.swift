@@ -63,7 +63,6 @@ class Model: Node {
 // MARK: - Rendering
 
 extension Model: Renderable {
-    
     func render(renderEncoder: MTLRenderCommandEncoder, submesh: Submesh) {
         renderEncoder.setRenderPipelineState(submesh.pipelineState)
         
@@ -87,7 +86,7 @@ extension Model: Renderable {
                                             indexBufferOffset: mtkSubmesh.indexBuffer.offset)
     }
     
-    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
+    func render(renderEncoder: MTLRenderCommandEncoder, pass: RenderPass, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
         var vUniforms = vertexUniforms
         
         vUniforms.modelMatrix = worldTransform

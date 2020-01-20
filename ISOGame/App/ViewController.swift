@@ -24,10 +24,6 @@ class ViewController: NSViewController {
         addGestureRecognizers(to: metalView)
     }
     
-    
-    
-    static var previousScale: CGFloat = 1
-    
     func addGestureRecognizers(to view: NSView) {
         let pan = NSPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
         view.addGestureRecognizer(pan)

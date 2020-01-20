@@ -104,7 +104,23 @@ class Renderer: NSObject {
         let pl = PointLight(color: float3(0, 0, 1), intensity: 10)
         pl.position = [4, 0, 0]
         scene.add(node: pl, parent: rotNode)
+        
+        
+//        let helmetE = scene.createGameObject()
+//        let mesh = MeshComp(name: "helmet.obj")
+//        // mesh options
+//        helmetE.addComponent(mesh)
+//
+//        let transform = Transform()
+//        transform.position = [10, 0, 0]
+//        helmetE.addComponent(transform)
+        
+        
+        
+        
+        
     }
+    
     
     
     /// Create a simple depth stencil state that writes to the depth buffer
@@ -194,10 +210,21 @@ extension Renderer: MTKViewDelegate {
         for renderable in scene.renderables {
             renderEncoder.pushDebugGroup(renderable.name)
             
-            renderable.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
+            renderable.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
             
             renderEncoder.popDebugGroup()
         }
+        
+        
+//        for object in scene.objects {
+//            if let mesh = object.component(ofType: MeshComp.self) {
+//                renderEncoder.pushDebugGroup(object.name)
+//
+//                mesh.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
+//                
+//                renderEncoder.popDebugGroup()
+//            }
+//        }
         
 //        for node in scene.nodes {
 //            node.drawBoundingBox(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
