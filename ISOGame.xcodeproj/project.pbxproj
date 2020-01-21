@@ -7,6 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8015C6B823D647B100DFF109 /* FamilyRequirementsManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C69D23D647AF00DFF109 /* FamilyRequirementsManaging.swift */; };
+		8015C6BB23D647B100DFF109 /* ManagedContiguousArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */; };
+		8015C6BC23D647B100DFF109 /* UnorderedSparseSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */; };
+		8015C6BD23D647B100DFF109 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A223D647AF00DFF109 /* Entity.swift */; };
+		8015C6BE23D647B100DFF109 /* Family1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A323D647AF00DFF109 /* Family1.swift */; };
+		8015C6BF23D647B100DFF109 /* Family2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A423D647B000DFF109 /* Family2.swift */; };
+		8015C6C023D647B100DFF109 /* FamilyTraitSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A523D647B000DFF109 /* FamilyTraitSet.swift */; };
+		8015C6C123D647B100DFF109 /* Nexus+Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A623D647B000DFF109 /* Nexus+Family.swift */; };
+		8015C6C223D647B100DFF109 /* Nexus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A723D647B000DFF109 /* Nexus.swift */; };
+		8015C6C323D647B100DFF109 /* Nexus+Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A823D647B000DFF109 /* Nexus+Component.swift */; };
+		8015C6C423D647B100DFF109 /* ComponentIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */; };
+		8015C6C523D647B100DFF109 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AA23D647B000DFF109 /* Component.swift */; };
+		8015C6C623D647B100DFF109 /* Family4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AB23D647B000DFF109 /* Family4.swift */; };
+		8015C6C723D647B100DFF109 /* ComponentAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AC23D647B000DFF109 /* ComponentAccess.swift */; };
+		8015C6C823D647B100DFF109 /* NexusEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */; };
+		8015C6CA23D647B100DFF109 /* Nexus+SceneGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */; };
+		8015C6CB23D647B100DFF109 /* EntityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B023D647B000DFF109 /* EntityIdentifier.swift */; };
+		8015C6CC23D647B100DFF109 /* Nexus+FamilyUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B123D647B000DFF109 /* Nexus+FamilyUpdate.swift */; };
+		8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B223D647B000DFF109 /* Hashing.swift */; };
+		8015C6CE23D647B100DFF109 /* Family3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B323D647B100DFF109 /* Family3.swift */; };
+		8015C6CF23D647B100DFF109 /* Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B423D647B100DFF109 /* Family.swift */; };
+		8015C6D023D647B100DFF109 /* NexusEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B523D647B100DFF109 /* NexusEvents.swift */; };
+		8015C6D123D647B100DFF109 /* Family5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B623D647B100DFF109 /* Family5.swift */; };
+		8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B723D647B100DFF109 /* Nexus+Entity.swift */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
 		8086965C23B8DD150007E75D /* STF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8086965B23B8DD150007E75D /* STF.framework */; };
 		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
@@ -74,6 +98,30 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8015C69D23D647AF00DFF109 /* FamilyRequirementsManaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyRequirementsManaging.swift; sourceTree = "<group>"; };
+		8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedContiguousArray.swift; sourceTree = "<group>"; };
+		8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnorderedSparseSet.swift; sourceTree = "<group>"; };
+		8015C6A223D647AF00DFF109 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
+		8015C6A323D647AF00DFF109 /* Family1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Family1.swift; sourceTree = "<group>"; };
+		8015C6A423D647B000DFF109 /* Family2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Family2.swift; sourceTree = "<group>"; };
+		8015C6A523D647B000DFF109 /* FamilyTraitSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyTraitSet.swift; sourceTree = "<group>"; };
+		8015C6A623D647B000DFF109 /* Nexus+Family.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Family.swift"; sourceTree = "<group>"; };
+		8015C6A723D647B000DFF109 /* Nexus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Nexus.swift; sourceTree = "<group>"; };
+		8015C6A823D647B000DFF109 /* Nexus+Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Component.swift"; sourceTree = "<group>"; };
+		8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentIdentifier.swift; sourceTree = "<group>"; };
+		8015C6AA23D647B000DFF109 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
+		8015C6AB23D647B000DFF109 /* Family4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Family4.swift; sourceTree = "<group>"; };
+		8015C6AC23D647B000DFF109 /* ComponentAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentAccess.swift; sourceTree = "<group>"; };
+		8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NexusEventDelegate.swift; sourceTree = "<group>"; };
+		8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+SceneGraph.swift"; sourceTree = "<group>"; };
+		8015C6B023D647B000DFF109 /* EntityIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityIdentifier.swift; sourceTree = "<group>"; };
+		8015C6B123D647B000DFF109 /* Nexus+FamilyUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+FamilyUpdate.swift"; sourceTree = "<group>"; };
+		8015C6B223D647B000DFF109 /* Hashing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashing.swift; sourceTree = "<group>"; };
+		8015C6B323D647B100DFF109 /* Family3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Family3.swift; sourceTree = "<group>"; };
+		8015C6B423D647B100DFF109 /* Family.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Family.swift; sourceTree = "<group>"; };
+		8015C6B523D647B100DFF109 /* NexusEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NexusEvents.swift; sourceTree = "<group>"; };
+		8015C6B623D647B100DFF109 /* Family5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Family5.swift; sourceTree = "<group>"; };
+		8015C6B723D647B100DFF109 /* Nexus+Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Entity.swift"; sourceTree = "<group>"; };
 		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086965B23B8DD150007E75D /* STF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = STF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +205,53 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8015C69C23D6479F00DFF109 /* ECS */ = {
+			isa = PBXGroup;
+			children = (
+				8015C6AA23D647B000DFF109 /* Component.swift */,
+				8015C6AC23D647B000DFF109 /* ComponentAccess.swift */,
+				8015C6A223D647AF00DFF109 /* Entity.swift */,
+				8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */,
+				8015C6B023D647B000DFF109 /* EntityIdentifier.swift */,
+				8015C6D323D64CDE00DFF109 /* Families */,
+				8015C6B223D647B000DFF109 /* Hashing.swift */,
+				8015C6D423D64D1200DFF109 /* Nexus */,
+				8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */,
+				8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */,
+			);
+			path = ECS;
+			sourceTree = "<group>";
+		};
+		8015C6D323D64CDE00DFF109 /* Families */ = {
+			isa = PBXGroup;
+			children = (
+				8015C6B423D647B100DFF109 /* Family.swift */,
+				8015C6A323D647AF00DFF109 /* Family1.swift */,
+				8015C6A423D647B000DFF109 /* Family2.swift */,
+				8015C6B323D647B100DFF109 /* Family3.swift */,
+				8015C6AB23D647B000DFF109 /* Family4.swift */,
+				8015C6B623D647B100DFF109 /* Family5.swift */,
+				8015C69D23D647AF00DFF109 /* FamilyRequirementsManaging.swift */,
+				8015C6A523D647B000DFF109 /* FamilyTraitSet.swift */,
+			);
+			name = Families;
+			sourceTree = "<group>";
+		};
+		8015C6D423D64D1200DFF109 /* Nexus */ = {
+			isa = PBXGroup;
+			children = (
+				8015C6A723D647B000DFF109 /* Nexus.swift */,
+				8015C6A823D647B000DFF109 /* Nexus+Component.swift */,
+				8015C6B723D647B100DFF109 /* Nexus+Entity.swift */,
+				8015C6A623D647B000DFF109 /* Nexus+Family.swift */,
+				8015C6B123D647B000DFF109 /* Nexus+FamilyUpdate.swift */,
+				8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */,
+				8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */,
+				8015C6B523D647B100DFF109 /* NexusEvents.swift */,
+			);
+			name = Nexus;
+			sourceTree = "<group>";
+		};
 		8086963423B8D8BC0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -186,6 +281,7 @@
 		80A462C8238F0FB6009435EB /* ISOGame */ = {
 			isa = PBXGroup;
 			children = (
+				8015C69C23D6479F00DFF109 /* ECS */,
 				80A462EA238F1287009435EB /* Primitive.swift */,
 				80A462F8238F25C6009435EB /* Models */,
 				80A462F0238F1E14009435EB /* Utility */,
@@ -392,21 +488,45 @@
 			buildActionMask = 2147483647;
 			files = (
 				8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */,
+				8015C6CC23D647B100DFF109 /* Nexus+FamilyUpdate.swift in Sources */,
+				8015C6C723D647B100DFF109 /* ComponentAccess.swift in Sources */,
+				8015C6C323D647B100DFF109 /* Nexus+Component.swift in Sources */,
 				8099AAF923CE747300E03CE0 /* SceneObject.swift in Sources */,
+				8015C6C523D647B100DFF109 /* Component.swift in Sources */,
+				8015C6BE23D647B100DFF109 /* Family1.swift in Sources */,
+				8015C6C623D647B100DFF109 /* Family4.swift in Sources */,
+				8015C6BF23D647B100DFF109 /* Family2.swift in Sources */,
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				80A462DF238F124D009435EB /* Node.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
+				8015C6C223D647B100DFF109 /* Nexus.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
+				8015C6CE23D647B100DFF109 /* Family3.swift in Sources */,
+				8015C6D023D647B100DFF109 /* NexusEvents.swift in Sources */,
 				80A462DA238F100B009435EB /* GameView.swift in Sources */,
 				808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */,
+				8015C6CA23D647B100DFF109 /* Nexus+SceneGraph.swift in Sources */,
+				8015C6B823D647B100DFF109 /* FamilyRequirementsManaging.swift in Sources */,
+				8015C6BD23D647B100DFF109 /* Entity.swift in Sources */,
+				8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */,
 				80A462E7238F126A009435EB /* Mesh.swift in Sources */,
+				8015C6C023D647B100DFF109 /* FamilyTraitSet.swift in Sources */,
+				8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */,
+				8015C6BB23D647B100DFF109 /* ManagedContiguousArray.swift in Sources */,
 				80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */,
 				80A462E9238F126F009435EB /* Submesh.swift in Sources */,
+				8015C6D123D647B100DFF109 /* Family5.swift in Sources */,
+				8015C6CB23D647B100DFF109 /* EntityIdentifier.swift in Sources */,
+				8015C6C423D647B100DFF109 /* ComponentIdentifier.swift in Sources */,
 				80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */,
 				80A462ED238F14AC009435EB /* Shaders.metal in Sources */,
+				8015C6C823D647B100DFF109 /* NexusEventDelegate.swift in Sources */,
 				8099AAEF23BE127E00E03CE0 /* BoundingBox.swift in Sources */,
 				8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */,
+				8015C6BC23D647B100DFF109 /* UnorderedSparseSet.swift in Sources */,
 				80A462F6238F22C5009435EB /* Camera.swift in Sources */,
+				8015C6CF23D647B100DFF109 /* Family.swift in Sources */,
+				8015C6C123D647B100DFF109 /* Nexus+Family.swift in Sources */,
 				80A462F2238F1E25009435EB /* MathLibrary.swift in Sources */,
 				8099AAF323BE17AB00E03CE0 /* DebugShaders.metal in Sources */,
 				80A462E5238F1266009435EB /* Model.swift in Sources */,

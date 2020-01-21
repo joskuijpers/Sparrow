@@ -23,6 +23,11 @@ class Renderer: NSObject {
     
     let irradianceCubeMap: MTLTexture;
     
+    static var nexus: Nexus!
+    let renderSystem: RenderSystem
+    let behaviorSystem: BehaviorSystem
+    var rootEntity: Entity!
+    
     init(metalView: MTKView) {
         guard
             let device = MTLCreateSystemDefaultDevice(),
@@ -52,6 +57,10 @@ class Renderer: NSObject {
         camera.rotation.x = Float(-10).degreesToRadians
         scene.add(node: camera)
         scene.currentCameraIndex = 1
+        
+        Renderer.nexus = Nexus()
+        renderSystem = RenderSystem(nexus: Renderer.nexus)
+        behaviorSystem = BehaviorSystem(nexus: Renderer.nexus)
         
         super.init()
         
@@ -115,10 +124,25 @@ class Renderer: NSObject {
 //        transform.position = [10, 0, 0]
 //        helmetE.addComponent(transform)
         
+        let entity = Renderer.nexus.createEntity()
+        let meshComp = MeshComponent()
+        entity.addComponent(meshComp)
+        meshComp.meshName = "hello world"
+        
+        entity.add(behavior: HelloWorldComponent())
+        entity.addComponent(TransformComponent())
+        
+//        entity.addComponent(BehaviorComponent())
+        
+        rootEntity = entity
         
         
+        let child = Renderer.nexus.createEntity()
+        let meshComp2 = MeshComponent()
+        child.addComponent(meshComp2)
+        meshComp2.meshName = "foobar"
         
-        
+        Renderer.nexus.addChild(child, to: entity)
     }
     
     
@@ -179,7 +203,27 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
-        let deltaTime = 1.0 / Float(view.preferredFramesPerSecond)
+        /*
+         
+         behaviorSystem.update(dt)
+         
+         renderSystem.render()
+            split into the passes as needed, e.g. filling queue first
+         */
+        
+//        Renderer.nexus.walkSceneGraph(root: self.rootEntity) { (entity, parent) -> Nexus.SceneGraphWalkAction in
+//            print("ENTITY", entity, "PARENT", parent ?? "none")
+//              this could update all transforms (if dirty), and active-ness. all entities need to have an up-to-date state of active/visible/worldTRANSFORM before rendering
+//            return .walkChildren
+        
+//        }
+        /*
+        renderSystem.render()
+           split into the passes as needed, e.g. filling queue first, with frustrum culling
+            then do the passes from these queues
+        */
+        
+        let deltaTime = TimeInterval(1.0 / Double(view.preferredFramesPerSecond))
         
         renderEncoder.setDepthStencilState(depthStencilState)
         
@@ -205,7 +249,7 @@ extension Renderer: MTKViewDelegate {
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
         // Testing
-        rotNode.rotation += float3(0, Float(30).degreesToRadians * deltaTime, 0)
+        rotNode.rotation += float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
         
         for renderable in scene.renderables {
             renderEncoder.pushDebugGroup(renderable.name)
@@ -214,6 +258,9 @@ extension Renderer: MTKViewDelegate {
             
             renderEncoder.popDebugGroup()
         }
+        
+        behaviorSystem.update(deltaTime: deltaTime)
+        renderSystem.render()
         
         
 //        for object in scene.objects {
@@ -238,4 +285,138 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.commit()
     }
     
+}
+
+
+class MeshComponent: Component {
+    var meshName: String = ""
+    
+    
+}
+
+class BehaviorComponent: Component {
+    var behaviors = [Behavior]()
+    
+    func update(deltaTime: TimeInterval) {
+        for behavior in behaviors {
+            behavior.onUpdate(deltaTime: deltaTime)
+        }
+    }
+    
+    func add(behavior: Behavior) {
+        behavior.entityId = entityId
+        behavior.nexus = nexus
+        behaviors.append(behavior)
+    }
+}
+
+class Behavior {
+    internal var entityId: EntityIdentifier!
+    internal var nexus: Nexus!
+    
+    func onStart() {}
+    func onUpdate(deltaTime: TimeInterval) {}
+    
+    var transform: TransformComponent {
+        nexus.get(component: TransformComponent.identifier, for: entityId) as! TransformComponent
+    }
+    
+    /// The entity of this component.
+    var entity: Entity {
+        return nexus.get(entity: entityId)!
+    }
+    
+    /// Get a sibling component.
+    public func get<C>() -> C? where C: Component {
+        return nexus.get(for: entityId)
+    }
+
+    /// Get a sibling component.
+    public func get<A>(component compType: A.Type = A.self) -> A? where A: Component {
+        return nexus.get(for: entityId)
+    }
+}
+
+class HelloWorldComponent: Behavior {
+    override func onStart() {
+        print("START HELLO WORLD")
+    }
+    
+    override func onUpdate(deltaTime: TimeInterval) {
+        print("UPDATE \(deltaTime)")
+        
+        if let transform = get(component: TransformComponent.self) {
+            print("SET ROT \(entity)")
+            transform.rotation += float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
+        }
+        
+        print(transform.rotation)
+    }
+}
+
+class TransformComponent: Component {
+    var rotation: float3 = .zero
+}
+
+extension Component {
+    /// Utility for getting the object transform, if available
+    var transform: TransformComponent? {
+        guard let id = entityId else { return nil }
+        return nexus?.get(component: TransformComponent.identifier, for: id) as? TransformComponent
+    }
+}
+
+extension Entity {
+    /// Utility for getting the object transform, if available
+    var transform: TransformComponent? {
+        return nexus.get(component: TransformComponent.identifier, for: identifier) as? TransformComponent
+    }
+    
+    func add(behavior: Behavior) {
+        var comp: BehaviorComponent? = getComponent()
+        if comp == nil {
+            comp = BehaviorComponent()
+            addComponent(comp!)
+        }
+        
+        comp?.add(behavior: behavior)
+    }
+}
+
+
+
+
+class RenderSystem {
+    let nexus: Nexus
+    let family: Family<Requires1<MeshComponent>>
+    
+    init(nexus: Nexus) {
+        self.nexus = nexus
+        
+        family = nexus.family(requires: MeshComponent.self)
+    }
+    
+    func render() {
+        family.forEach { (mesh: MeshComponent) in
+//            print("RENDER MESH", mesh, mesh.meshName)
+        }
+    }
+    
+}
+
+class BehaviorSystem {
+    let nexus: Nexus
+    let family: Family<Requires1<BehaviorComponent>>
+    
+    init(nexus: Nexus) {
+        self.nexus = nexus
+
+        family = nexus.family(requires: BehaviorComponent.self)
+    }
+    
+    func update(deltaTime: TimeInterval) {
+        family.forEach { (behavior: BehaviorComponent) in
+            behavior.update(deltaTime: deltaTime)
+        }
+    }
 }
