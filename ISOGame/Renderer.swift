@@ -112,27 +112,9 @@ class Renderer: NSObject {
         skyLight.color = float3(2, 2, 2)
         skyLight.direction = float3(0, -5, 10)
         scene.add(node: skyLight)
-        
-//        let lightObject = Renderer.nexus.createEntity()
-//        lightObject.add(TransformComponent())
-//        let lightComponent = Light(type: .directional)
-//        lightObject.add(lightComponent)
+
         
         
-        
-//        let pl = PointLight(color: float3(0, 0, 1), intensity: 10)
-//        pl.position = [4, 0, 0]
-//        scene.add(node: pl, parent: rotNode)
-        
-        
-//        let helmetE = scene.createGameObject()
-//        let mesh = MeshComp(name: "helmet.obj")
-//        // mesh options
-//        helmetE.addComponent(mesh)
-//
-//        let transform = Transform()
-//        transform.position = [10, 0, 0]
-//        helmetE.addComponent(transform)
         
         let lightObject = Renderer.nexus.createEntity()
         lightObject.addComponent(TransformComponent())
@@ -141,7 +123,8 @@ class Renderer: NSObject {
         lightObject.getComponent(component: LightComponent.self)?.color = float3(2, 2, 2)
         
         // maybe better api, but needs required init() or something.
-//        let light: LightComponent = lightObject.addComponent()
+//        skyLight.add(component: TransformComponent.self)
+//        let light = skyLight.add(component: Light.self)
 //        light.color = float3(1, 1, 0)
         
         let entity = Renderer.nexus.createEntity()
@@ -284,21 +267,6 @@ extension Renderer: MTKViewDelegate {
         behaviorSystem.update(deltaTime: deltaTime)
         renderSystem.render()
         
-        
-//        for object in scene.objects {
-//            if let mesh = object.component(ofType: MeshComp.self) {
-//                renderEncoder.pushDebugGroup(object.name)
-//
-//                mesh.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
-//                
-//                renderEncoder.popDebugGroup()
-//            }
-//        }
-        
-//        for node in scene.nodes {
-//            node.drawBoundingBox(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
-//        }
-        
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {
             return
@@ -335,9 +303,10 @@ class RenderSystem {
     }
     
     func render() {
-        for light in lights {
-            print("LIGHT", light)
-        }
+        // START BUILD LIGHTS
+        let lightsData: [LightData] = lights.map { $0.build() }
+        let lightCount = lightsData.count
+        // END BUILD LIGHTS
         
         for (meshSelector, meshRenderer) in meshes {
             print("MESH", meshSelector, meshSelector.mesh?.name ?? "none")
