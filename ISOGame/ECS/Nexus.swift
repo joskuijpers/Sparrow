@@ -32,6 +32,10 @@ public final class Nexus {
     /// - Key: A parent entity id.
     /// - Value: Adjacency Set of all associated children.
     @usableFromInline final var parentChildrenMap: [EntityIdentifier: Set<EntityIdentifier>]
+    
+    /// - Key: A child entity id.
+    /// - Value: The parent entity id.
+    @usableFromInline final var childParentMap: [EntityIdentifier: EntityIdentifier]
 
     public init() {
         entityStorage = UnorderedSparseSet<Entity>()
@@ -40,6 +44,7 @@ public final class Nexus {
         freeEntities = ContiguousArray<EntityIdentifier>()
         familyMembersByTraits = [:]
         parentChildrenMap = [:]
+        childParentMap = [:]
     }
 
     public final func clear() {
@@ -61,6 +66,7 @@ public final class Nexus {
         componentIdsByEntity.removeAll()
         familyMembersByTraits.removeAll()
         parentChildrenMap.removeAll()
+        childParentMap.removeAll()
     }
 
     deinit {
@@ -77,7 +83,8 @@ extension Nexus: Equatable {
             lhs.freeEntities == rhs.freeEntities &&
             lhs.familyMembersByTraits == rhs.familyMembersByTraits &&
             lhs.componentsByType.keys == rhs.componentsByType.keys &&
-            lhs.parentChildrenMap == rhs.parentChildrenMap
+            lhs.parentChildrenMap == rhs.parentChildrenMap &&
+            lhs.childParentMap == rhs.childParentMap
         // NOTE: components are not equatable (yet)
     }
 }

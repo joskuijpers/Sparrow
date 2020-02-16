@@ -108,11 +108,21 @@ class Renderer: NSObject {
         helmet.rotation = [0, Float(180).degreesToRadians, 0]
         scene.add(node: helmet)
         
-        scene.add(node: DirectionalLight(color: float3(2, 2, 2), direction: float3(0, -5, 10)))
+        let skyLight = Light(type: .directional)
+        skyLight.color = float3(2, 2, 2)
+        skyLight.direction = float3(0, -5, 10)
+        scene.add(node: skyLight)
         
-        let pl = PointLight(color: float3(0, 0, 1), intensity: 10)
-        pl.position = [4, 0, 0]
-        scene.add(node: pl, parent: rotNode)
+//        let lightObject = Renderer.nexus.createEntity()
+//        lightObject.add(TransformComponent())
+//        let lightComponent = Light(type: .directional)
+//        lightObject.add(lightComponent)
+        
+        
+        
+//        let pl = PointLight(color: float3(0, 0, 1), intensity: 10)
+//        pl.position = [4, 0, 0]
+//        scene.add(node: pl, parent: rotNode)
         
         
 //        let helmetE = scene.createGameObject()
@@ -288,103 +298,27 @@ extension Renderer: MTKViewDelegate {
 }
 
 
+/**
+ Component holding a mesh and mesh rendering properties.
+ */
 class MeshComponent: Component {
     var meshName: String = ""
     
     
 }
 
-class BehaviorComponent: Component {
-    var behaviors = [Behavior]()
-    
-    func update(deltaTime: TimeInterval) {
-        for behavior in behaviors {
-            behavior.onUpdate(deltaTime: deltaTime)
-        }
-    }
-    
-    func add(behavior: Behavior) {
-        behavior.entityId = entityId
-        behavior.nexus = nexus
-        behaviors.append(behavior)
-    }
-}
-
-class Behavior {
-    internal var entityId: EntityIdentifier!
-    internal var nexus: Nexus!
-    
-    func onStart() {}
-    func onUpdate(deltaTime: TimeInterval) {}
-    
-    var transform: TransformComponent {
-        nexus.get(component: TransformComponent.identifier, for: entityId) as! TransformComponent
-    }
-    
-    /// The entity of this component.
-    var entity: Entity {
-        return nexus.get(entity: entityId)!
-    }
-    
-    /// Get a sibling component.
-    public func get<C>() -> C? where C: Component {
-        return nexus.get(for: entityId)
-    }
-
-    /// Get a sibling component.
-    public func get<A>(component compType: A.Type = A.self) -> A? where A: Component {
-        return nexus.get(for: entityId)
-    }
-}
-
+/// Behavior test
 class HelloWorldComponent: Behavior {
     override func onStart() {
         print("START HELLO WORLD")
     }
     
     override func onUpdate(deltaTime: TimeInterval) {
-        print("UPDATE \(deltaTime)")
+//        print("UPDATE \(deltaTime)")
         
-        if let transform = get(component: TransformComponent.self) {
-            print("SET ROT \(entity)")
-            transform.rotation += float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
-        }
-        
-        print(transform.rotation)
+        transform.rotation = transform.rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
     }
 }
-
-class TransformComponent: Component {
-    var rotation: float3 = .zero
-}
-
-extension Component {
-    /// Utility for getting the object transform, if available
-    var transform: TransformComponent? {
-        guard let id = entityId else { return nil }
-        return nexus?.get(component: TransformComponent.identifier, for: id) as? TransformComponent
-    }
-}
-
-extension Entity {
-    /// Utility for getting the object transform, if available
-    var transform: TransformComponent? {
-        return nexus.get(component: TransformComponent.identifier, for: identifier) as? TransformComponent
-    }
-    
-    func add(behavior: Behavior) {
-        var comp: BehaviorComponent? = getComponent()
-        if comp == nil {
-            comp = BehaviorComponent()
-            addComponent(comp!)
-        }
-        
-        comp?.add(behavior: behavior)
-    }
-}
-
-
-
 
 class RenderSystem {
     let nexus: Nexus
@@ -397,26 +331,9 @@ class RenderSystem {
     }
     
     func render() {
-        family.forEach { (mesh: MeshComponent) in
-//            print("RENDER MESH", mesh, mesh.meshName)
+        for mesh in family {
+            print("RENDER MESH", mesh, mesh.meshName)
         }
     }
     
-}
-
-class BehaviorSystem {
-    let nexus: Nexus
-    let family: Family<Requires1<BehaviorComponent>>
-    
-    init(nexus: Nexus) {
-        self.nexus = nexus
-
-        family = nexus.family(requires: BehaviorComponent.self)
-    }
-    
-    func update(deltaTime: TimeInterval) {
-        family.forEach { (behavior: BehaviorComponent) in
-            behavior.update(deltaTime: deltaTime)
-        }
-    }
 }

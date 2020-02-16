@@ -56,7 +56,7 @@ class Model: Node {
         self.name = name
         
         let bb = mdlMeshes[0].boundingBox
-        boundingBox = AxisAlignedBoundingBox(minBounds: bb.minBounds, maxBounds: bb.maxBounds)
+        boundingBox = Bounds(minBounds: bb.minBounds, maxBounds: bb.maxBounds)
     }
 }
 

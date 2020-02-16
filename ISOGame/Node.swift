@@ -51,19 +51,19 @@ class Node {
     }
     
     /// Axis aligned bounding box of just this node, in model space. Does not contain children
-    var boundingBox = AxisAlignedBoundingBox()
+    var boundingBox = Bounds()
     var size: float3 {
         return boundingBox.maxBounds - boundingBox.minBounds
     }
     
     /// Approximate bounds of this node including meshes and children
-    var approximateBounds: AxisAlignedBoundingBox {
+    var approximateBounds: Bounds {
         return computeApproximateBounds(transform: parent?.worldTransform ?? matrix_identity_float4x4)
     }
     
     /// Approximate the bounds of this node by creating AABBs around the AABBs of the children
-    private func computeApproximateBounds(transform: float4x4) -> AxisAlignedBoundingBox {
-        var aabb = AxisAlignedBoundingBox()
+    private func computeApproximateBounds(transform: float4x4) -> Bounds {
+        var aabb = Bounds()
 
         if !self.boundingBox.isEmpty {
             aabb = self.boundingBox

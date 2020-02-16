@@ -15,6 +15,7 @@ public class Component {
     internal unowned var nexus: Nexus? = nil
     internal var entityId: EntityIdentifier? = nil
     
+    /// Component was added to an entity. Set the nexus and entity ID so we can find the entity from the component.
     func addedToEntity(_ entity: Entity) {
         nexus = entity.nexus
         entityId = entity.identifier
@@ -32,7 +33,7 @@ extension Component {
     }
     
     /// Get a sibling component.
-    public func getComponent<C>() -> C? where C: Component {
+    public func get<C>() -> C? where C: Component {
         if let id = entityId {
             return nexus?.get(for: id)
         }
@@ -40,12 +41,14 @@ extension Component {
     }
 
     /// Get a sibling component.
-    public func getComponent<A>(component compType: A.Type = A.self) -> A? where A: Component {
+    public func get<A>(component compType: A.Type = A.self) -> A? where A: Component {
         if let id = entityId {
             return nexus?.get(for: id)
         }
         return nil
     }
+    
+    // todo: add, remove
 }
 
 // MARK: - Instantiation and destruction

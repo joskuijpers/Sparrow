@@ -49,6 +49,14 @@ extension Nexus {
         return parentChildrenMap[entity.identifier]?.count ?? 0
     }
     
+    /// Get the parent of an entity, if any.
+    public final func getParent(for entity: Entity) -> Entity? {
+        if let id = childParentMap[entity.identifier] {
+            return get(entity: id)
+        }
+        return nil
+    }
+    
     public enum SceneGraphWalkAction {
         case skipChildren, walkChildren
     }

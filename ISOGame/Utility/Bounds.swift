@@ -9,39 +9,100 @@
 import Foundation
 import Metal
 
-struct AxisAlignedBoundingBox {
+/**
+Axis aligned bounding box for wrapping bounds of objects, in worldspace.
+ */
+struct Bounds {
+    // The minimal point of the bounding box.
     let minBounds: float3
+    
+    // The maximal point of the bounding box.
     let maxBounds: float3
+    
+    /// The extents of the bounding box. This is half the size.
+    let extents: float3
+    
+    /// The center of the bounding box.
+    let center: float3
+    
     
     public init() {
         minBounds = float3.zero
         maxBounds = float3.zero
+        
+        extents = ((maxBounds - minBounds) * 0.5) + minBounds
+        center = float3.zero
     }
     
+    /// A new bounding box with given extends in world space.
     public init(minBounds: float3, maxBounds: float3) {
         self.minBounds = minBounds
         self.maxBounds = maxBounds
+        
+        extents = ((maxBounds - minBounds) * 0.5) + minBounds
+        center = minBounds + extents
     }
     
+    /// A new bounding box with given center in world space and extents.
+    public init(center: float3, extents: float3) {
+        self.minBounds = center - extents
+        self.maxBounds = center + extents
+        
+        self.extents = extents
+        self.center = center
+    }
+    
+    /// Get whether the bounding box has a size of zero
     var isEmpty: Bool {
         return minBounds == float3.zero && maxBounds == float3.zero
     }
+    
+    /// The size of the bounding box.
+    var size: float3 {
+        return extents * 2.0
+    }
+    
+    /// Get whether given world space point is contained within these bounds.
+    func contains(point: float3) -> Bool {
+        // todo
+        return false
+    }
+    
+    /// Get the closest point to given point, that lies on the bounding box.
+    func closest(point: float3) -> float3 {
+        return minBounds
+    }
+    
+//    func intersects(ray: Ray) -> Bool {
+//        return false // TODO
+//    }
+    
+    /// Get whether this bounding box intersects another bounding box.
+    func intersects(bounds: Bounds) -> Bool {
+        return false // TODO
+    }
+
+    //    sqrDistance(point) -> float // smallest sqr distance between point and bounds
+
+//    // float radius = rend.bounds.extents.length;
+//    // extension float3 { var length: float = sqrt(x*x, y*y, z*z) if not exists
 }
 
 // MARK: - Math
 
-extension AxisAlignedBoundingBox {
-    func union(_ other: AxisAlignedBoundingBox) -> AxisAlignedBoundingBox {
+extension Bounds {
+    /// Get the union of this bounds with other bounds.
+    func union(_ other: Bounds) -> Bounds {
         let minimum = min(self.minBounds, other.minBounds)
         let maximum = max(self.maxBounds, other.maxBounds)
         
-        return AxisAlignedBoundingBox(minBounds: minimum, maxBounds: maximum)
+        return Bounds(minBounds: minimum, maxBounds: maximum)
     }
     
     /**
      Multiply given AABB with a matrix, staying axis aligned. This is done by transforming every corner of the AABB and then creating a new AABB.
      */
-    static func * (left: AxisAlignedBoundingBox, right: float4x4) -> AxisAlignedBoundingBox {
+    static func * (left: Bounds, right: float4x4) -> Bounds {
         let ltf = (right * float4(left.minBounds.x, left.maxBounds.y, left.maxBounds.z, 1)).xyz
         let rtf = (right * float4(left.maxBounds.x, left.maxBounds.y, left.maxBounds.z, 1)).xyz
         let lbf = (right * float4(left.minBounds.x, left.minBounds.y, left.maxBounds.z, 1)).xyz
@@ -54,13 +115,18 @@ extension AxisAlignedBoundingBox {
         let minBounds = min(min(min(min(min(min(min(ltf, rtf), lbf), rbf), ltb), rtb), lbb), rbb)
         let maxBounds = max(max(max(max(max(max(max(ltf, rtf), lbf), rbf), ltb), rtb), lbb), rbb)
 
-        return AxisAlignedBoundingBox(minBounds: minBounds, maxBounds: maxBounds)
+        return Bounds(minBounds: minBounds, maxBounds: maxBounds)
+    }
+    
+    /// Get the union of two bounds.
+    static func + (left: Bounds, right: Bounds) -> Bounds {
+        return left.union(right)
     }
 }
 
 // MARK: - Rendering
 
-extension AxisAlignedBoundingBox {
+extension Bounds {
     static private var renderPipelineState: MTLRenderPipelineState?
     static private var renderBuffer: MTLBuffer?
     
@@ -77,7 +143,7 @@ extension AxisAlignedBoundingBox {
         pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         
-        AxisAlignedBoundingBox.renderPipelineState = try! Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        Bounds.renderPipelineState = try! Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
         
         // Cube, normalized. Will be matching the aabb bounds in the vertex shader
         var verts = [float3]()
@@ -120,26 +186,26 @@ extension AxisAlignedBoundingBox {
         verts.append(float3(1, 1, 0))
         verts.append(float3(1, 1, 1))
         
-        AxisAlignedBoundingBox.renderBuffer = Renderer.device.makeBuffer(bytes: &verts, length: verts.count * MemoryLayout<float3>.stride, options: [])!
+        Bounds.renderBuffer = Renderer.device.makeBuffer(bytes: &verts, length: verts.count * MemoryLayout<float3>.stride, options: [])!
     }
     
     /**
      Render the bounding box using a special bounding box shader. For debug use only.
      */
     func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, color: float3) {
-        if AxisAlignedBoundingBox.renderBuffer == nil || AxisAlignedBoundingBox.renderPipelineState == nil {
-            AxisAlignedBoundingBox.buildRenderingState()
+        if Bounds.renderBuffer == nil || Bounds.renderPipelineState == nil {
+            Bounds.buildRenderingState()
         }
         
         // Set special state with custom vertex shader
-        renderEncoder.setRenderPipelineState(AxisAlignedBoundingBox.renderPipelineState!)
+        renderEncoder.setRenderPipelineState(Bounds.renderPipelineState!)
 
         var vUniforms = vertexUniforms
         renderEncoder.setVertexBytes(&vUniforms,
                                      length: MemoryLayout<Uniforms>.stride,
                                      index: Int(BufferIndexUniforms.rawValue))
 
-        renderEncoder.setVertexBuffer(AxisAlignedBoundingBox.renderBuffer, offset: 0, index: 0)
+        renderEncoder.setVertexBuffer(Bounds.renderBuffer, offset: 0, index: 0)
         
         // Set special vertex options: it will move the vertices accoridng to the min and max bounds
         var minBounds = self.minBounds

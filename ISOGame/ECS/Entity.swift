@@ -168,6 +168,11 @@ extension Entity {
 //    public var numChildren: Int {
 //        return nexus.numChildren(for: self)
 //    }
+    
+    /// The parent of this entity, if any.
+    public var parent: Entity? {
+        return nexus.getParent(for: self)
+    }
 }
 
 // MARK: - Equatable

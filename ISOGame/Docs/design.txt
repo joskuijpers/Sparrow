@@ -1,0 +1,159 @@
+class Light: Component {}
+class Camera: Component {}
+
+class Collider: Component {}
+class SphereCollider: Collider {}
+class BoxCollider: Collider {}
+
+    optional: class MeshSelector {
+       var mesh: Mesh, var sharedMesh: Mesh
+     }
+class Renderer: Component {
+    bounds
+ }
+class MeshRenderer: Renderer {
+    var mesh: Mesh
+}
+class AudioSource: Component {}
+class AudioListener: Component {
+    update {
+        AVListener position = transform.worldPosition
+    }
+}
+ 
+Renderer.bounds
+Collider.bounds
+ Mesh.bounds -> using min/max from GLTF
+
+
+ // Actual mesh stuff (Model)
+ class Mesh: Resource {
+   bounds
+ }
+ 
+ 
+ // Debug drawing, useful for showing bounds and colliders
+ class Gizmos {
+    static func drawWireSphere(worldPos, size) {}
+    static func drawBox(min, max) {}
+ }
+ 
+ 
+ class Resources {
+   static load<T: Resource>(name: String)
+ }
+ 
+ 
+
+ GameObject.swift // extensions
+    .createPrimitive(type)
+        entity, transform, mesh, collider
+    
+ Scene/
+    Scene.swift
+    SceneManager.swift
+        static load(name) (async?, later)
+    Transform.swift
+ Graphics/
+    Mesh: Object -> Was Model
+        Mesh.Submesh ?
+    Camera      https://github.com/Unity-Technologies/UnityCsReference/blob/5bc2902a12bd9f919e03a60f1f1ffffe5c31204c/Runtime/Export/Camera/Camera.bindings.cs
+        type orthographics/perspective
+    Light: Component
+        type
+        buildLightData -> LightData for C++
+    RendererComponent
+        func render()
+    MeshRenderer: RendererComponent
+        func render()
+    MeshSelector
+        var mesh
+ Rendering/ ??
+    MetalRenderer.swift
+ Physics/
+    PhysicsWorld.swift
+    Collider.swift
+    RigidBody.swift
+    Joint.swift
+ Audio/
+    AudioSource
+    AudioClip/Sample
+    AudioListener
+ Utils/
+    Bounds.swift
+ Input/
+    Input.getAxis/getButton/getKey??
+    InputBinding system
+Resources/
+     Resources.swift
+    ResourceLoadable interface with static fromResource(Data) throws? -> T?
+    TextureLoader.swift
+
+Mesh.bounds
+Renderer.bounds (???))
+
+Issues:
+- for shadow drawing we need an othographic camera that does culling that way. So camera does not necessarily mean a component.....??? but then it is not really a camera is it... so we can calculate some fast matrices for the light pov, and re-use a culling algorithm with input = matrix, output = bool. Culling.swift -> static func isCulled(matrix, bounds)
+
+
+
+
+update loop
+    behaviorSystem.update(dt)
+
+    physicsSystem.step(dt)
+
+    renderSystem.updateRendersets()
+        go through tree once with stack per render set, use culling, add to sets
+        - set: camera
+        - set: (VISIBLE) lights with shadows
+
+    renderSystem.render(commandQueue)
+
+    commandQueue.end()
+
+
+
+RenderSystem
+    let lights = Family<Transform, Light>
+    let meshes = Family<Transform, MeshSelector, MeshRenderer>
+    
+    let camera = scene.camera
+
+    let cameraRenderSet: RenderSet
+    let lightRenderSets: [RenderSet](4) -- preallocated
+
+
+    func updateRendersets()
+        for each set
+            fillRenderSet(set, camera, root)
+
+    func fillRenderSet(set, camera, root)
+        queue is [root]
+
+        while queue is not empty
+            element = queue.pop()
+
+            if element is not culled using camera
+                set.add(element)
+                queue.addAll(element.children
+            end
+        end
+
+
+    func render(commandQueue)
+        camera transforms
+
+        Shadow pass:
+            go over each shadow to render, get render set, do rendering with that pass
+
+        Geometry pass:
+            go over each queue, do rendering
+
+        Lighting pass:
+            shaders
+
+        etc
+        etc
+
+
