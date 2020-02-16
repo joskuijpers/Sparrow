@@ -134,6 +134,16 @@ class Renderer: NSObject {
 //        transform.position = [10, 0, 0]
 //        helmetE.addComponent(transform)
         
+        let lightObject = Renderer.nexus.createEntity()
+        lightObject.addComponent(TransformComponent())
+        lightObject.addComponent(LightComponent(type: .directional))
+        lightObject.getComponent(component: LightComponent.self)?.direction = float3(0, -5, 10)
+        lightObject.getComponent(component: LightComponent.self)?.color = float3(2, 2, 2)
+        
+        // maybe better api, but needs required init() or something.
+//        let light: LightComponent = lightObject.addComponent()
+//        light.color = float3(1, 1, 0)
+        
         let entity = Renderer.nexus.createEntity()
         entity.addComponent(TransformComponent())
         entity.transform?.position = float3(-10, 0, 0)
@@ -314,17 +324,23 @@ class HelloWorldComponent: Behavior {
 
 class RenderSystem {
     let nexus: Nexus
-    let family: Family<Requires2<MeshSelector, MeshRenderer>>
+    let lights: Family<Requires1<LightComponent>>
+    let meshes: Family<Requires2<MeshSelector, MeshRenderer>>
     
     init(nexus: Nexus) {
         self.nexus = nexus
         
-        family = nexus.family(requiresAll: MeshSelector.self, MeshRenderer.self)
+        lights = nexus.family(requires: LightComponent.self)
+        meshes = nexus.family(requiresAll: MeshSelector.self, MeshRenderer.self)
     }
     
     func render() {
-        for (meshSelector, meshRenderer) in family {
-            print("RENDER MESH", meshSelector, meshSelector.mesh?.name ?? "none")
+        for light in lights {
+            print("LIGHT", light)
+        }
+        
+        for (meshSelector, meshRenderer) in meshes {
+            print("MESH", meshSelector, meshSelector.mesh?.name ?? "none")
         }
     }
     
