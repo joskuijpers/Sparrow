@@ -95,7 +95,10 @@ Renderer.bounds (???))
 Issues:
 - for shadow drawing we need an othographic camera that does culling that way. So camera does not necessarily mean a component.....??? but then it is not really a camera is it... so we can calculate some fast matrices for the light pov, and re-use a culling algorithm with input = matrix, output = bool. Culling.swift -> static func isCulled(matrix, bounds)
 
-
+CULLING:
+- mesh.bounds
+then [EntityID:Bounds], built by walking graph (with dirty flags). Then at the end when not-dirty, we have a list of cullboxes for every game object. (this requires tree-walk)
+After that we can use it for efficiently walking _again_ with culling. Not sure walking twice is a good idea at all... maybe just cache it? But how to do dirtying without storing it in the nodes?
 
 
 update loop

@@ -135,22 +135,24 @@ class Renderer: NSObject {
 //        helmetE.addComponent(transform)
         
         let entity = Renderer.nexus.createEntity()
-        let meshComp = MeshComponent()
-        entity.addComponent(meshComp)
-        meshComp.meshName = "hello world"
+        entity.addComponent(TransformComponent())
+        entity.transform?.position = float3(-10, 0, 0)
+        entity.addComponent(MeshSelector())
+        entity.getComponent(component: MeshSelector.self)?.mesh = helmet
+        entity.addComponent(MeshRenderer())
         
         entity.add(behavior: HelloWorldComponent())
-        entity.addComponent(TransformComponent())
-        
-//        entity.addComponent(BehaviorComponent())
         
         rootEntity = entity
         
         
+        
         let child = Renderer.nexus.createEntity()
-        let meshComp2 = MeshComponent()
-        child.addComponent(meshComp2)
-        meshComp2.meshName = "foobar"
+        child.addComponent(TransformComponent())
+        child.transform?.position = float3(0, 0, 2)
+        child.addComponent(MeshSelector())
+        child.getComponent(component: MeshSelector.self)?.mesh = cube
+        child.addComponent(MeshRenderer())
         
         Renderer.nexus.addChild(child, to: entity)
     }
@@ -297,16 +299,6 @@ extension Renderer: MTKViewDelegate {
     
 }
 
-
-/**
- Component holding a mesh and mesh rendering properties.
- */
-class MeshComponent: Component {
-    var meshName: String = ""
-    
-    
-}
-
 /// Behavior test
 class HelloWorldComponent: Behavior {
     override func onStart() {
@@ -322,17 +314,17 @@ class HelloWorldComponent: Behavior {
 
 class RenderSystem {
     let nexus: Nexus
-    let family: Family<Requires1<MeshComponent>>
+    let family: Family<Requires2<MeshSelector, MeshRenderer>>
     
     init(nexus: Nexus) {
         self.nexus = nexus
         
-        family = nexus.family(requires: MeshComponent.self)
+        family = nexus.family(requiresAll: MeshSelector.self, MeshRenderer.self)
     }
     
     func render() {
-        for mesh in family {
-            print("RENDER MESH", mesh, mesh.meshName)
+        for (meshSelector, meshRenderer) in family {
+            print("RENDER MESH", meshSelector, meshSelector.mesh?.name ?? "none")
         }
     }
     

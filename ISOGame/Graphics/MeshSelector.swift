@@ -9,6 +9,6 @@
 import Foundation
 
 class MeshSelector: Component {
-    public var mesh: Mesh?
+    public var mesh: Model?
     
 }
