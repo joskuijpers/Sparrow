@@ -74,7 +74,7 @@ class Node {
         
         for child in children {
             let box = child.computeApproximateBounds(transform: worldTransform)
-            aabb = aabb.union(box)
+            aabb = aabb + box
         }
         
         return aabb
