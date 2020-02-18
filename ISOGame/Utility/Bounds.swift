@@ -79,6 +79,7 @@ struct Bounds {
     }
     
 //    func intersects(ray: Ray) -> Bool {
+//    func intersects(ray: Ray, distance: out Float) -> Bool {
     // https://gdbooks.gitbooks.io/3dcollisions/content/Chapter3/raycast_aabb.html
 //        return false // TODO
 //    }
@@ -97,9 +98,6 @@ struct Bounds {
     func squareDistance(point: float3) -> Float {
         return length_squared(max(max(minBounds - point, 0), point - maxBounds))
     }
-
-//    // float radius = rend.bounds.extents.length;
-//    // extension float3 { var length: float = sqrt(x*x, y*y, z*z) if not exists
 }
 
 // MARK: - Math
