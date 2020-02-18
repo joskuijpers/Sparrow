@@ -7,14 +7,17 @@
 //
 
 import Foundation
+import Metal
 
 class MeshRenderer: Component {
     
     
     
     
-    func render() {
+    func render(renderEncoder: MTLRenderCommandEncoder, pass: RenderPass, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
         let mesh = get(component: MeshSelector.self)?.mesh
-        print("[MeshRenderer] Render mesh \(mesh.debugDescription)")
+//        print("[MeshRenderer] Render mesh \(mesh!.name)")
+        
+        mesh!.render(renderEncoder: renderEncoder, pass: pass, vertexUniforms: vertexUniforms, fragmentUniforms: fragmentUniforms)
     }
 }

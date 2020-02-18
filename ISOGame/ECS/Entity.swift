@@ -50,9 +50,9 @@ extension Entity {
     /// Add one or more components to this entity.
     /// - Parameter components: one or more components.
     @discardableResult
-    public func addComponent(_ components: Component...) -> Entity {
+    public func add(_ components: Component...) -> Entity {
         for component: Component in components {
-            addComponent(component)
+            add(component)
         }
         return self
     }
@@ -60,7 +60,7 @@ extension Entity {
     /// Add a component to this entity.
     /// - Parameter component: a component.
     @discardableResult
-    public func addComponent(_ component: Component) -> Entity {
+    public func add(component: Component) -> Entity {
         nexus.assign(component: component, to: self)
         return self
     }
@@ -68,7 +68,7 @@ extension Entity {
     /// Add a typed component to this entity.
     /// - Parameter component: the typed component.
     @discardableResult
-    public func addComponent<C>(_ component: C) -> Entity where C: Component {
+    public func add<C>(component: C) -> Entity where C: Component {
         nexus.assign(component: component, to: self)
         return self
     }
@@ -101,28 +101,28 @@ extension Entity {
     }
     
     @inlinable
-    public func getComponent<C>() -> C? where C: Component {
+    public func get<C>() -> C? where C: Component {
         return nexus.get(for: identifier)
     }
 
     @inlinable
-    public func getComponent<A>(component compType: A.Type = A.self) -> A? where A: Component {
+    public func get<A>(component compType: A.Type = A.self) -> A? where A: Component {
         return nexus.get(for: identifier)
     }
 
     @inlinable
     public func get<A, B>(components _: A.Type, _: B.Type) -> (A?, B?) where A: Component, B: Component {
-        let compA: A? = getComponent(component: A.self)
-        let compB: B? = getComponent(component: B.self)
+        let compA: A? = get(component: A.self)
+        let compB: B? = get(component: B.self)
         return (compA, compB)
     }
 
     // swiftlint:disable large_tuple
     @inlinable
     public func get<A, B, C>(components _: A.Type, _: B.Type, _: C.Type) -> (A?, B?, C?) where A: Component, B: Component, C: Component {
-        let compA: A? = getComponent(component: A.self)
-        let compB: B? = getComponent(component: B.self)
-        let compC: C? = getComponent(component: C.self)
+        let compA: A? = get(component: A.self)
+        let compB: B? = get(component: B.self)
+        let compC: C? = get(component: C.self)
         return (compA, compB, compC)
     }
 }

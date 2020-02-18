@@ -95,10 +95,10 @@ extension Entity {
     ///
     /// Creates a behavior component if it did not exist, and adds the behavior to it.
     func add(behavior: Behavior) {
-        var comp: BehaviorComponent? = getComponent()
+        var comp: BehaviorComponent? = get()
         if comp == nil {
             comp = BehaviorComponent()
-            addComponent(comp!)
+            add(component: comp!)
         }
         
         comp?.add(behavior: behavior)

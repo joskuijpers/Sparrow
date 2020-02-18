@@ -69,44 +69,42 @@ class Renderer: NSObject {
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
         
-        rotNode = Node()
-        rotNode.position = [5, 0, 0]
-        scene.add(node: rotNode)
-        
-        for i in 0...4 {
-            let sphere = Model(name: "ironSphere.obj")
-            sphere.position = [Float(3 * i), 0, 0]
-            scene.add(node: sphere, parent: rotNode)
-        }
-
-        for i in 0...4 {
-            let sphere = Model(name: "goldSphere.obj")
-            sphere.position = [Float(3 * i), 3, 0]
-            scene.add(node: sphere, parent: rotNode)
-        }
-
-        for i in 0...4 {
-            let sphere = Model(name: "plasticSphere.obj")
-            sphere.position = [Float(3 * i), -3, 0]
-            scene.add(node: sphere, parent: rotNode)
-        }
-
-        for i in 0...4 {
-            let sphere = Model(name: "grassSphere.obj")
-            sphere.position = [Float(3 * i), 6, 0]
-            scene.add(node: sphere)
-        }
+//        rotNode = Node()
+//        rotNode.position = [5, 0, 0]
+//        scene.add(node: rotNode)
+//
+//        for i in 0...4 {
+//            let sphere = Model(name: "ironSphere.obj")
+//            sphere.position = [Float(3 * i), 0, 0]
+//            scene.add(node: sphere, parent: rotNode)
+//        }
+//
+//        for i in 0...4 {
+//            let sphere = Model(name: "goldSphere.obj")
+//            sphere.position = [Float(3 * i), 3, 0]
+//            scene.add(node: sphere, parent: rotNode)
+//        }
+//
+//        for i in 0...4 {
+//            let sphere = Model(name: "plasticSphere.obj")
+//            sphere.position = [Float(3 * i), -3, 0]
+//            scene.add(node: sphere, parent: rotNode)
+//        }
+//
+//        for i in 0...4 {
+//            let sphere = Model(name: "grassSphere.obj")
+//            sphere.position = [Float(3 * i), 6, 0]
+//            scene.add(node: sphere)
+//        }
         
         let cube = Model(name: "cube.obj")
-        cube.position = [0, 0, 0]
-        scene.add(node: cube)
-        
-        
+//        cube.position = [0, 0, 0]
+//        scene.add(node: cube)
         
         let helmet = Model(name: "helmet.obj")
-        helmet.position = [-3, 0, 0]
-        helmet.rotation = [0, Float(180).degreesToRadians, 0]
-        scene.add(node: helmet)
+//        helmet.position = [-3, 0, 0]
+//        helmet.rotation = [0, Float(180).degreesToRadians, 0]
+//        scene.add(node: helmet)
         
         let skyLight = Light(type: .directional)
         skyLight.color = float3(2, 2, 2)
@@ -117,10 +115,10 @@ class Renderer: NSObject {
         
         
         let lightObject = Renderer.nexus.createEntity()
-        lightObject.addComponent(TransformComponent())
-        lightObject.addComponent(LightComponent(type: .directional))
-        lightObject.getComponent(component: LightComponent.self)?.direction = float3(0, -5, 10)
-        lightObject.getComponent(component: LightComponent.self)?.color = float3(2, 2, 2)
+        lightObject.add(component: TransformComponent())
+        lightObject.add(component: LightComponent(type: .directional))
+        lightObject.get(component: LightComponent.self)?.direction = float3(0, -5, 10)
+        lightObject.get(component: LightComponent.self)?.color = float3(2, 2, 2)
         
         // maybe better api, but needs required init() or something.
 //        skyLight.add(component: TransformComponent.self)
@@ -128,11 +126,11 @@ class Renderer: NSObject {
 //        light.color = float3(1, 1, 0)
         
         let entity = Renderer.nexus.createEntity()
-        entity.addComponent(TransformComponent())
+        entity.add(component: TransformComponent())
         entity.transform?.position = float3(-10, 0, 0)
-        entity.addComponent(MeshSelector())
-        entity.getComponent(component: MeshSelector.self)?.mesh = helmet
-        entity.addComponent(MeshRenderer())
+        entity.add(component: MeshSelector())
+        entity.get(component: MeshSelector.self)?.mesh = helmet
+        entity.add(component: MeshRenderer())
         
         entity.add(behavior: HelloWorldComponent())
         
@@ -141,11 +139,12 @@ class Renderer: NSObject {
         
         
         let child = Renderer.nexus.createEntity()
-        child.addComponent(TransformComponent())
+        child.add(component: TransformComponent())
         child.transform?.position = float3(0, 0, 2)
-        child.addComponent(MeshSelector())
-        child.getComponent(component: MeshSelector.self)?.mesh = cube
-        child.addComponent(MeshRenderer())
+        child.add(component: MeshSelector())
+        child.get(component: MeshSelector.self)?.mesh = cube
+        child.add(component: MeshRenderer())
+        child.add(behavior: HelloWorldComponent())
         
         Renderer.nexus.addChild(child, to: entity)
     }
@@ -229,43 +228,46 @@ extension Renderer: MTKViewDelegate {
         */
         
         let deltaTime = TimeInterval(1.0 / Double(view.preferredFramesPerSecond))
+        behaviorSystem.update(deltaTime: deltaTime)
+        
         
         renderEncoder.setDepthStencilState(depthStencilState)
         
         scene.updateUniforms()
         
         fillRenderQueues()
-
-        // Replace with render queue
-        var lights = [LightData]()
-        for light in scene.lights {
-            lights.append(light.build())
-        }
-        var lightCount = lights.count
         
+//
+//        // Replace with render queue
+//        var lights = [LightData]()
+//        for light in scene.lights {
+//            lights.append(light.build())
+//        }
+//        var lightCount = lights.count
+//
+//
+//        renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
+//        renderEncoder.setFragmentBytes(&lights, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
+//
+//
         
-        renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
-        renderEncoder.setFragmentBytes(&lights, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
-        
-        
-        renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
-                                       length: MemoryLayout<FragmentUniforms>.stride,
-                                       index: Int(BufferIndexFragmentUniforms.rawValue))
-        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
+//        renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
+//                                       length: MemoryLayout<FragmentUniforms>.stride,
+//                                       index: Int(BufferIndexFragmentUniforms.rawValue))
+//        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
         
         // Testing
-        rotNode.rotation += float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
-        
-        for renderable in scene.renderables {
-            renderEncoder.pushDebugGroup(renderable.name)
-            
-            renderable.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
-            
-            renderEncoder.popDebugGroup()
-        }
-        
-        behaviorSystem.update(deltaTime: deltaTime)
-        renderSystem.render()
+//        rotNode.rotation += float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
+//
+//        for renderable in scene.renderables {
+//            renderEncoder.pushDebugGroup(renderable.name)
+//
+//            renderable.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
+//
+//            renderEncoder.popDebugGroup()
+//        }
+    
+        renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene)
         
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {
@@ -302,14 +304,35 @@ class RenderSystem {
         meshes = nexus.family(requiresAll: MeshSelector.self, MeshRenderer.self)
     }
     
-    func render() {
+    func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene) {
+//        let scene = SceneManager.activeScene
+        
         // START BUILD LIGHTS
-        let lightsData: [LightData] = lights.map { $0.build() }
-        let lightCount = lightsData.count
+        // todo: limit with Bounds... culling...
+        var lightsData: [LightData] = lights.map { $0.build() }
+        var lightCount = lightsData.count
+        
+        renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
+        renderEncoder.setFragmentBytes(&lightsData, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
         // END BUILD LIGHTS
         
+        
+        renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
+                                       length: MemoryLayout<FragmentUniforms>.stride,
+                                       index: Int(BufferIndexFragmentUniforms.rawValue))
+        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
+        
+        
+        // Update fragment uniforms if possible here
+        
+        // Set irradiance texture
+        
         for (meshSelector, meshRenderer) in meshes {
-            print("MESH", meshSelector, meshSelector.mesh?.name ?? "none")
+            renderEncoder.pushDebugGroup(meshSelector.mesh!.name)
+
+            meshRenderer.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
+            
+            renderEncoder.popDebugGroup()
         }
     }
     

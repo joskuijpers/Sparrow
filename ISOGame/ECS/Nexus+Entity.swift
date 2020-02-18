@@ -26,7 +26,7 @@ extension Nexus {
     @discardableResult
     public func createEntity(with components: Component...) -> Entity {
         let newEntity = createEntity()
-        components.forEach { newEntity.addComponent($0) }
+        components.forEach { newEntity.add(component: $0) }
         return newEntity
     }
 
