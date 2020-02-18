@@ -106,13 +106,6 @@ class Renderer: NSObject {
 //        helmet.rotation = [0, Float(180).degreesToRadians, 0]
 //        scene.add(node: helmet)
         
-        let skyLight = Light(type: .directional)
-        skyLight.color = float3(2, 2, 2)
-        skyLight.direction = float3(0, -5, 10)
-        scene.add(node: skyLight)
-
-        
-        
         
         let lightObject = Renderer.nexus.createEntity()
         lightObject.add(component: TransformComponent())
