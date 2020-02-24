@@ -120,7 +120,7 @@ class Renderer: NSObject {
         
         let entity = Renderer.nexus.createEntity()
         entity.add(component: TransformComponent())
-        entity.transform?.position = float3(-10, 0, 0)
+        entity.transform?.position = float3(0, 0, 0)
         entity.add(component: MeshSelector(mesh: helmet))
         entity.add(component: MeshRenderer())
         
@@ -132,7 +132,7 @@ class Renderer: NSObject {
         
         let child = Renderer.nexus.createEntity()
         child.add(component: TransformComponent())
-        child.transform?.position = float3(0, 0, 2)
+        child.transform?.position = float3(0, 0, 3)
         child.add(component: MeshSelector(mesh: cube))
         child.add(component: MeshRenderer())
 //        child.add(behavior: HelloWorldComponent())
@@ -226,37 +226,7 @@ extension Renderer: MTKViewDelegate {
         
         scene.updateUniforms()
         
-        fillRenderQueues()
-        
-//
-//        // Replace with render queue
-//        var lights = [LightData]()
-//        for light in scene.lights {
-//            lights.append(light.build())
-//        }
-//        var lightCount = lights.count
-//
-//
-//        renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
-//        renderEncoder.setFragmentBytes(&lights, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
-//
-//
-        
-//        renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
-//                                       length: MemoryLayout<FragmentUniforms>.stride,
-//                                       index: Int(BufferIndexFragmentUniforms.rawValue))
-//        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
-        
-        // Testing
-//        rotNode.rotation += float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
-//
-//        for renderable in scene.renderables {
-//            renderEncoder.pushDebugGroup(renderable.name)
-//
-//            renderable.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
-//
-//            renderEncoder.popDebugGroup()
-//        }
+//        fillRenderQueues()
     
         renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene)
         
@@ -307,16 +277,15 @@ class RenderSystem {
         renderEncoder.setFragmentBytes(&lightsData, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
         // END BUILD LIGHTS
         
+        // Update fragment uniforms if possible here
         
         renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
                                        length: MemoryLayout<FragmentUniforms>.stride,
                                        index: Int(BufferIndexFragmentUniforms.rawValue))
-        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
-        
-        
-        // Update fragment uniforms if possible here
         
         // Set irradiance texture
+        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
+
         
         for (meshSelector, meshRenderer) in meshes {
             renderEncoder.pushDebugGroup(meshSelector.mesh!.name)

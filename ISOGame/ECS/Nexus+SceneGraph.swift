@@ -17,9 +17,13 @@ extension Nexus {
             let (isNewMember, _) = parentChildrenMap[parent.identifier]!.insert(child.identifier)
             inserted = isNewMember
         }
+        
+        childParentMap[child.identifier] = parent.identifier
+        
         if inserted {
             delegate?.nexusEvent(ChildAdded(parent: parent.identifier, child: child.identifier))
         }
+        
         return inserted
     }
 
@@ -33,6 +37,7 @@ extension Nexus {
     public final func removeChild(_ child: EntityIdentifier, from parent: EntityIdentifier) -> Bool {
         let removed: Bool = parentChildrenMap[parent]?.remove(child) != nil
         if removed {
+            childParentMap.removeValue(forKey: child)
             delegate?.nexusEvent(ChildRemoved(parent: parent, child: child))
         }
         return removed

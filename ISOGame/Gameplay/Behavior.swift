@@ -15,9 +15,12 @@ class Behavior {
     internal var entityId: EntityIdentifier!
     internal unowned var nexus: Nexus!
     
-    func onStart() {}
-    func onUpdate(deltaTime: TimeInterval) {}
+    /// Called when the behavior starts
+    open func onStart() {}
+    /// Called on every frame update
+    open func onUpdate(deltaTime: TimeInterval) {}
     
+    /// The transform component.
     var transform: TransformComponent {
         nexus.get(component: TransformComponent.identifier, for: entityId) as! TransformComponent
     }
