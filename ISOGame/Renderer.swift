@@ -97,11 +97,11 @@ class Renderer: NSObject {
 //            scene.add(node: sphere)
 //        }
         
-        let cube = Model(name: "cube.obj")
+        let cube = Mesh(name: "cube.obj")
 //        cube.position = [0, 0, 0]
 //        scene.add(node: cube)
         
-        let helmet = Model(name: "helmet.obj")
+        let helmet = Mesh(name: "helmet.obj")
 //        helmet.position = [-3, 0, 0]
 //        helmet.rotation = [0, Float(180).degreesToRadians, 0]
 //        scene.add(node: helmet)
@@ -137,7 +137,7 @@ class Renderer: NSObject {
         child.add(component: MeshSelector())
         child.get(component: MeshSelector.self)?.mesh = cube
         child.add(component: MeshRenderer())
-        child.add(behavior: HelloWorldComponent())
+//        child.add(behavior: HelloWorldComponent())
         
         Renderer.nexus.addChild(child, to: entity)
     }

@@ -608,3 +608,20 @@ import Metal
 //
 //        print(inst)
 //        let x = unsafeDowncast(inst, to: Test2.Type)
+
+
+
+
+/*
+ 
+ 
+ Scene has Octree
+ No union AABBs. AABBs rotate (?)
+ 
+ frustrum culling
+ 
+ https://gdbooks.gitbooks.io/legacyopengl/content/Chapter8/halfspace.html
+ https://gdbooks.gitbooks.io/3dcollisions/content/Chapter6/frustum.html
+ 
+ 
+ */

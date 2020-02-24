@@ -15,9 +15,13 @@ class MeshRenderer: Component {
     
     
     func render(renderEncoder: MTLRenderCommandEncoder, pass: RenderPass, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
-        let mesh = get(component: MeshSelector.self)?.mesh
-//        print("[MeshRenderer] Render mesh \(mesh!.name)")
+        guard let mesh = get(component: MeshSelector.self)?.mesh,
+            let transform = self.transform else {
+            return
+        }
+
+//        print("[MeshRenderer] Render mesh \(mesh.name)")
         
-        mesh!.render(renderEncoder: renderEncoder, pass: pass, vertexUniforms: vertexUniforms, fragmentUniforms: fragmentUniforms)
+        mesh.render(renderEncoder: renderEncoder, pass: pass, vertexUniforms: vertexUniforms, fragmentUniforms: fragmentUniforms, worldTransform: transform.worldTransform)
     }
 }

@@ -53,7 +53,6 @@
 		80A462DC238F106B009435EB /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462DB238F106B009435EB /* Renderer.swift */; };
 		80A462DF238F124D009435EB /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462DE238F124D009435EB /* Node.swift */; };
 		80A462E1238F1254009435EB /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E0238F1254009435EB /* Scene.swift */; };
-		80A462E5238F1266009435EB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E4238F1266009435EB /* Model.swift */; };
 		80A462E7238F126A009435EB /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E6238F126A009435EB /* Mesh.swift */; };
 		80A462E9238F126F009435EB /* Submesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E8238F126F009435EB /* Submesh.swift */; };
 		80A462EB238F1287009435EB /* Primitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EA238F1287009435EB /* Primitive.swift */; };
@@ -154,7 +153,6 @@
 		80A462DB238F106B009435EB /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		80A462DE238F124D009435EB /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		80A462E0238F1254009435EB /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
-		80A462E4238F1266009435EB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		80A462E6238F126A009435EB /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		80A462E8238F126F009435EB /* Submesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Submesh.swift; sourceTree = "<group>"; };
 		80A462EA238F1287009435EB /* Primitive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Primitive.swift; sourceTree = "<group>"; };
@@ -348,7 +346,6 @@
 				80A462F8238F25C6009435EB /* Models */,
 				80A462F0238F1E14009435EB /* Utility */,
 				80A462DE238F124D009435EB /* Node.swift */,
-				80A462E4238F1266009435EB /* Model.swift */,
 				80A462E6238F126A009435EB /* Mesh.swift */,
 				80A462E8238F126F009435EB /* Submesh.swift */,
 				80A462DD238F10D7009435EB /* App */,
@@ -593,7 +590,6 @@
 				8015C6C123D647B100DFF109 /* Nexus+Family.swift in Sources */,
 				80A462F2238F1E25009435EB /* MathLibrary.swift in Sources */,
 				8099AAF323BE17AB00E03CE0 /* DebugShaders.metal in Sources */,
-				80A462E5238F1266009435EB /* Model.swift in Sources */,
 				80A462EB238F1287009435EB /* Primitive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -54,7 +54,7 @@ private extension Submesh {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Model.vertexDescriptor)
+        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Mesh.vertexDescriptor)
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
