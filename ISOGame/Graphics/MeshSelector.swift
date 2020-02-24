@@ -8,7 +8,18 @@
 
 import Foundation
 
+/**
+ Selects a mesh
+ */
 class MeshSelector: Component {
     public var mesh: Mesh?
     
+    /// Init without a mesh set
+    init() {
+    }
+    
+    /// Init with a mesh
+    init(mesh: Mesh) {
+        self.mesh = mesh
+    }
 }

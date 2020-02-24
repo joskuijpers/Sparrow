@@ -121,8 +121,7 @@ class Renderer: NSObject {
         let entity = Renderer.nexus.createEntity()
         entity.add(component: TransformComponent())
         entity.transform?.position = float3(-10, 0, 0)
-        entity.add(component: MeshSelector())
-        entity.get(component: MeshSelector.self)?.mesh = helmet
+        entity.add(component: MeshSelector(mesh: helmet))
         entity.add(component: MeshRenderer())
         
         entity.add(behavior: HelloWorldComponent())
@@ -134,8 +133,7 @@ class Renderer: NSObject {
         let child = Renderer.nexus.createEntity()
         child.add(component: TransformComponent())
         child.transform?.position = float3(0, 0, 2)
-        child.add(component: MeshSelector())
-        child.get(component: MeshSelector.self)?.mesh = cube
+        child.add(component: MeshSelector(mesh: cube))
         child.add(component: MeshRenderer())
 //        child.add(behavior: HelloWorldComponent())
         
