@@ -320,6 +320,16 @@
 			name = Component;
 			sourceTree = "<group>";
 		};
+		80438C1E2405DEB800099034 /* AppInfo */ = {
+			isa = PBXGroup;
+			children = (
+				80A462CD238F0FB9009435EB /* Assets.xcassets */,
+				80A462D2238F0FB9009435EB /* Info.plist */,
+				80A462D3238F0FB9009435EB /* ISOGame.entitlements */,
+			);
+			name = AppInfo;
+			sourceTree = "<group>";
+		};
 		8086963423B8D8BC0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -349,26 +359,24 @@
 		80A462C8238F0FB6009435EB /* ISOGame */ = {
 			isa = PBXGroup;
 			children = (
+				80A462DD238F10D7009435EB /* App */,
 				800604B123F9F54A00B3FB7F /* Gameplay */,
 				800604AF23F9EF2C00B3FB7F /* Rendering */,
 				800604AE23F9EF2400B3FB7F /* Graphics */,
 				800604AD23F9EF1E00B3FB7F /* Scene */,
 				8015C69C23D6479F00DFF109 /* ECS */,
-				80A462EA238F1287009435EB /* Primitive.swift */,
 				80A462F8238F25C6009435EB /* Models */,
 				80A462F0238F1E14009435EB /* Utility */,
 				80A462E6238F126A009435EB /* Mesh.swift */,
 				80A462E8238F126F009435EB /* Submesh.swift */,
-				80A462DD238F10D7009435EB /* App */,
+				80A462EA238F1287009435EB /* Primitive.swift */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80A462EC238F14AC009435EB /* Shaders.metal */,
 				8099AAF223BE17AB00E03CE0 /* DebugShaders.metal */,
 				80A462F7238F23AC009435EB /* ShaderCommon.h */,
 				80A462EE238F1D58009435EB /* VertexDescriptor.swift */,
-				80A462CD238F0FB9009435EB /* Assets.xcassets */,
-				80A462D3238F0FB9009435EB /* ISOGame.entitlements */,
-				80A462D2238F0FB9009435EB /* Info.plist */,
 				808695F623B8CA1E0007E75D /* TextureLoader.swift */,
+				80438C1E2405DEB800099034 /* AppInfo */,
 				800E6DD323F2096E00412CCE /* Docs */,
 			);
 			path = ISOGame;
