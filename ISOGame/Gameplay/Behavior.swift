@@ -67,7 +67,7 @@ class BehaviorComponent: Component {
  */
 class BehaviorSystem {
     let nexus: Nexus
-    let family: Family<Requires1<BehaviorComponent>>
+    let group: Group<Requires1<BehaviorComponent>>
     
     init(nexus: Nexus) {
         self.nexus = nexus
@@ -82,11 +82,11 @@ class BehaviorSystem {
          
          
          */
-        family = nexus.family(requires: BehaviorComponent.self)
+        group = nexus.group(requires: BehaviorComponent.self)
     }
     
     func update(deltaTime: TimeInterval) {
-        for behavior in family {
+        for behavior in group {
             behavior.update(deltaTime: deltaTime)
         }
     }

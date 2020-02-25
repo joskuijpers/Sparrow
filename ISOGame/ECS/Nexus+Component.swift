@@ -21,7 +21,8 @@ extension Nexus {
         return componentIdsByEntity[entityId]?.count ?? 0
     }
 
-    public final func assign(component: Component, to entity: Entity) {
+    /// Assign a component to an entity
+    internal final func assign(component: Component, to entity: Entity) {
         let componentId: ComponentIdentifier = component.identifier
         let entityId: EntityIdentifier = entity.identifier
 
@@ -36,22 +37,23 @@ extension Nexus {
         if componentsByType[componentId] == nil {
             componentsByType[componentId] = ManagedContiguousArray<Component>()
         }
-        componentsByType[componentId]?.insert(component, at: entityId.id)
+        componentsByType[componentId]!.insert(component, at: entityId.id)
 
         // assigns the component id to the entity id
         if componentIdsByEntity[entityId] == nil {
             componentIdsByEntity[entityId] = Set<ComponentIdentifier>()
         }
-        componentIdsByEntity[entityId]?.insert(componentId) //, at: componentId.hashValue)
+        componentIdsByEntity[entityId]!.insert(componentId) //, at: componentId.hashValue)
 
         component.onAddedToEntity(entity)
         
-        update(familyMembership: entityId)
+        update(groupMembership: entityId)
 
         delegate?.nexusEvent(ComponentAdded(component: componentId, toEntity: entity.identifier))
     }
 
-    public final func assign<C>(component: C, to entity: Entity) where C: Component {
+    /// Assign a component to an entity.
+    internal final func assign<C>(component: C, to entity: Entity) where C: Component {
         assign(component: component, to: entity)
     }
 
@@ -94,7 +96,7 @@ extension Nexus {
         // unasign component from entity
         componentIdsByEntity[entityId]?.remove(componentId)
 
-        update(familyMembership: entityId)
+        update(groupMembership: entityId)
 
         delegate?.nexusEvent(ComponentRemoved(component: componentId, from: entityId))
         return true

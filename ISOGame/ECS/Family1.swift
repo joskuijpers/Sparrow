@@ -1,13 +1,13 @@
 //
-//  Family1.swift
+//  Group1.swift
 //
 //
 //  Created by Christian Treffs on 21.08.19.
 //
 
-public typealias Family1<A: Component> = Family<Requires1<A>>
+public typealias Group1<A: Component> = Group<Requires1<A>>
 
-public struct Requires1<A>: FamilyRequirementsManaging where A: Component {
+public struct Requires1<A>: GroupRequirementsManaging where A: Component {
     public let componentTypes: [Component.Type]
 
     public init(_ components: (A.Type)) {
@@ -33,11 +33,11 @@ public struct Requires1<A>: FamilyRequirementsManaging where A: Component {
 }
 
 extension Nexus {
-    public func family<A>(
+    public func group<A>(
         requires componentA: A.Type,
         excludesAll excludedComponents: Component.Type...
-    ) -> Family1<A> where A: Component {
-        return Family1<A>(nexus: self,
+    ) -> Group1<A> where A: Component {
+        return Group1<A>(nexus: self,
                           requiresAll: componentA,
                           excludesAll: excludedComponents)
     }

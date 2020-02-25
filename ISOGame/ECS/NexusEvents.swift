@@ -29,22 +29,22 @@ public struct ComponentRemoved: NexusEvent {
     public let from: EntityIdentifier
 }
 
-public struct FamilyMemberAdded: NexusEvent {
+public struct GroupMemberAdded: NexusEvent {
     public let member: EntityIdentifier
-    public let toFamily: FamilyTraitSet
+    public let toGroup: GroupTraitSet
 }
 
-public struct FamilyMemberRemoved: NexusEvent {
+public struct GroupMemberRemoved: NexusEvent {
     public let member: EntityIdentifier
-    public let from: FamilyTraitSet
+    public let from: GroupTraitSet
 }
 
-public struct FamilyCreated: NexusEvent {
-    public let family: FamilyTraitSet
+public struct GroupCreated: NexusEvent {
+    public let group: GroupTraitSet
 }
 
-public struct FamilyDestroyed: NexusEvent {
-    public let family: FamilyTraitSet
+public struct GroupDestroyed: NexusEvent {
+    public let group: GroupTraitSet
 }
 
 public struct ChildAdded: NexusEvent {

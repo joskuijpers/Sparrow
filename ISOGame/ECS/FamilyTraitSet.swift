@@ -1,11 +1,11 @@
 //
-//  FamilyTraitSet.swift
+//  GroupTraitSet.swift
 //  FirebladeECS
 //
 //  Created by Christian Treffs on 09.10.17.
 //
 
-public struct FamilyTraitSet {
+public struct GroupTraitSet {
     public let requiresAll: Set<ComponentIdentifier>
     public let excludesAll: Set<ComponentIdentifier>
 
@@ -15,8 +15,8 @@ public struct FamilyTraitSet {
         let requiresAll = Set<ComponentIdentifier>(requiresAll.map { $0.identifier })
         let excludesAll = Set<ComponentIdentifier>(excludesAll.map { $0.identifier })
 
-        precondition(FamilyTraitSet.isValid(requiresAll: requiresAll, excludesAll: excludesAll),
-                     "invalid family trait created - requiresAll: \(requiresAll), excludesAll: \(excludesAll)")
+        precondition(GroupTraitSet.isValid(requiresAll: requiresAll, excludesAll: excludesAll),
+                     "invalid Group trait created - requiresAll: \(requiresAll), excludesAll: \(excludesAll)")
 
         self.requiresAll = requiresAll
         self.excludesAll = excludesAll
@@ -48,25 +48,25 @@ public struct FamilyTraitSet {
 }
 
 // MARK: - Equatable
-extension FamilyTraitSet: Equatable {
-    public static func == (lhs: FamilyTraitSet, rhs: FamilyTraitSet) -> Bool {
+extension GroupTraitSet: Equatable {
+    public static func == (lhs: GroupTraitSet, rhs: GroupTraitSet) -> Bool {
         return lhs.setHash == rhs.setHash
     }
 }
 
 // MARK: - Hashable
-extension FamilyTraitSet: Hashable {
+extension GroupTraitSet: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(setHash)
     }
 }
 
-extension FamilyTraitSet: CustomStringConvertible, CustomDebugStringConvertible {
+extension GroupTraitSet: CustomStringConvertible, CustomDebugStringConvertible {
     @inlinable public var description: String {
-        return "<FamilyTraitSet [requiresAll:\(requiresAll.description) excludesAll:\(excludesAll.description)]>"
+        return "<GroupTraitSet [requiresAll:\(requiresAll.description) excludesAll:\(excludesAll.description)]>"
     }
 
     @inlinable public var debugDescription: String {
-        return "<FamilyTraitSet [requiresAll:\(requiresAll.debugDescription) excludesAll: \(excludesAll.debugDescription)]>"
+        return "<GroupTraitSet [requiresAll:\(requiresAll.debugDescription) excludesAll: \(excludesAll.debugDescription)]>"
     }
 }

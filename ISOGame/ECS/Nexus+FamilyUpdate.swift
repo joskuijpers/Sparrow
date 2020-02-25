@@ -1,22 +1,22 @@
 //
-//  Nexus+FamilyUpdate.swift
+//  Nexus+GroupUpdate.swift
 //  FirebladeECS
 //
 //  Created by Christian Treffs on 14.02.19.
 //
 
 extension Nexus {
-    /// will be called on family init
-    final func onFamilyInit(traits: FamilyTraitSet) {
-        guard familyMembersByTraits[traits] == nil else {
+    /// will be called on group init
+    final func onGroupInit(traits: GroupTraitSet) {
+        guard groupMembersByTraits[traits] == nil else {
             return
         }
 
-        familyMembersByTraits[traits] = UnorderedSparseSet<EntityIdentifier>()
-        update(familyMembership: traits)
+        groupMembersByTraits[traits] = UnorderedSparseSet<EntityIdentifier>()
+        update(groupMembership: traits)
     }
 
-    final func update(familyMembership traits: FamilyTraitSet) {
+    final func update(groupMembership traits: GroupTraitSet) {
         // FIXME: iterating all entities is costly for many entities
         var iter = entityStorage.makeIterator()
         while let entity = iter.next() {
@@ -24,23 +24,23 @@ extension Nexus {
         }
     }
 
-    final func update(familyMembership entityId: EntityIdentifier) {
+    final func update(groupMembership entityId: EntityIdentifier) {
         // FIXME: iterating all families is costly for many families
-        var iter = familyMembersByTraits.keys.makeIterator()
+        var iter = groupMembersByTraits.keys.makeIterator()
         while let traits = iter.next() {
             update(membership: traits, for: entityId)
         }
     }
 
-    final func update(membership traits: FamilyTraitSet, for entityId: EntityIdentifier) {
+    final func update(membership traits: GroupTraitSet, for entityId: EntityIdentifier) {
         guard let componentIds = componentIdsByEntity[entityId] else {
             // no components - so skip
             return
         }
 
-        let isMember: Bool = self.isMember(entity: entityId, inFamilyWithTraits: traits)
+        let isMember: Bool = self.isMember(entity: entityId, inGroupWithTraits: traits)
         if !exists(entity: entityId) && isMember {
-            remove(entityWithId: entityId, fromFamilyWithTraits: traits)
+            remove(entityWithId: entityId, fromGroupWithTraits: traits)
             return
         }
 
@@ -48,13 +48,13 @@ extension Nexus {
 
         switch (isMatch, isMember) {
         case (true, false):
-            add(entityWithId: entityId, toFamilyWithTraits: traits)
-            delegate?.nexusEvent(FamilyMemberAdded(member: entityId, toFamily: traits))
+            add(entityWithId: entityId, toGroupWithTraits: traits)
+            delegate?.nexusEvent(GroupMemberAdded(member: entityId, toGroup: traits))
             return
 
         case (false, true):
-            remove(entityWithId: entityId, fromFamilyWithTraits: traits)
-            delegate?.nexusEvent(FamilyMemberRemoved(member: entityId, from: traits))
+            remove(entityWithId: entityId, fromGroupWithTraits: traits)
+            delegate?.nexusEvent(GroupMemberRemoved(member: entityId, from: traits))
             return
 
         default:
@@ -62,13 +62,13 @@ extension Nexus {
         }
     }
 
-    final func add(entityWithId entityId: EntityIdentifier, toFamilyWithTraits traits: FamilyTraitSet) {
-        precondition(familyMembersByTraits[traits] != nil)
-        familyMembersByTraits[traits].unsafelyUnwrapped.insert(entityId, at: entityId.id)
+    final func add(entityWithId entityId: EntityIdentifier, toGroupWithTraits traits: GroupTraitSet) {
+        precondition(groupMembersByTraits[traits] != nil)
+        groupMembersByTraits[traits].unsafelyUnwrapped.insert(entityId, at: entityId.id)
     }
 
-    final func remove(entityWithId entityId: EntityIdentifier, fromFamilyWithTraits traits: FamilyTraitSet) {
-        precondition(familyMembersByTraits[traits] != nil)
-        familyMembersByTraits[traits].unsafelyUnwrapped.remove(at: entityId.id)
+    final func remove(entityWithId entityId: EntityIdentifier, fromGroupWithTraits traits: GroupTraitSet) {
+        precondition(groupMembersByTraits[traits] != nil)
+        groupMembersByTraits[traits].unsafelyUnwrapped.remove(at: entityId.id)
     }
 }

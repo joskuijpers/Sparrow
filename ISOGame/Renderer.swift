@@ -241,14 +241,14 @@ class HelloWorldComponent: Behavior {
 
 class RenderSystem {
     let nexus: Nexus
-    let lights: Family<Requires1<LightComponent>>
-    let meshes: Family<Requires2<MeshSelector, MeshRenderer>>
+    let lights: Group<Requires1<LightComponent>>
+    let meshes: Group<Requires2<MeshSelector, MeshRenderer>>
     
     init(nexus: Nexus) {
         self.nexus = nexus
         
-        lights = nexus.family(requires: LightComponent.self)
-        meshes = nexus.family(requiresAll: MeshSelector.self, MeshRenderer.self)
+        lights = nexus.group(requires: LightComponent.self)
+        meshes = nexus.group(requiresAll: MeshSelector.self, MeshRenderer.self)
     }
     
     func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene) {

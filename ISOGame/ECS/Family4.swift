@@ -1,5 +1,5 @@
 //
-//  Family4.swift
+//  Group4.swift
 //
 //
 //  Created by Christian Treffs on 21.08.19.
@@ -7,9 +7,9 @@
 
 // swiftlint:disable large_tuple
 
-public typealias Family4<A: Component, B: Component, C: Component, D: Component> = Family<Requires4<A, B, C, D>>
+public typealias Group4<A: Component, B: Component, C: Component, D: Component> = Group<Requires4<A, B, C, D>>
 
-public struct Requires4<A, B, C, D>: FamilyRequirementsManaging where A: Component, B: Component, C: Component, D: Component {
+public struct Requires4<A, B, C, D>: GroupRequirementsManaging where A: Component, B: Component, C: Component, D: Component {
     public let componentTypes: [Component.Type]
 
     public init(_ types: (A.Type, B.Type, C.Type, D.Type)) {
@@ -48,14 +48,14 @@ public struct Requires4<A, B, C, D>: FamilyRequirementsManaging where A: Compone
 }
 
 extension Nexus {
-    public func family<A, B, C, D>(
+    public func group<A, B, C, D>(
         requiresAll componentA: A.Type,
         _ componentB: B.Type,
         _ componentC: C.Type,
         _ componentD: D.Type,
         excludesAll excludedComponents: Component.Type...
-    ) -> Family4<A, B, C, D> where A: Component, B: Component, C: Component, D: Component {
-        return Family4(
+    ) -> Group4<A, B, C, D> where A: Component, B: Component, C: Component, D: Component {
+        return Group4(
             nexus: self,
             requiresAll: (componentA, componentB, componentC, componentD),
             excludesAll: excludedComponents

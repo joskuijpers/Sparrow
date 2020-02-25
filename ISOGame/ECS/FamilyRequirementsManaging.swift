@@ -1,11 +1,11 @@
 //
-//  FamilyRequirementsManaging.swift
+//  GroupRequirementsManaging.swift
 //
 //
 //  Created by Christian Treffs on 21.08.19.
 //
 
-public protocol FamilyRequirementsManaging {
+public protocol GroupRequirementsManaging {
     associatedtype Components
     associatedtype ComponentTypes
     associatedtype EntityAndComponents

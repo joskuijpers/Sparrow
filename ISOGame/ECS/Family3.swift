@@ -1,5 +1,5 @@
 //
-//  Family3.swift
+//  Group3.swift
 //
 //
 //  Created by Christian Treffs on 21.08.19.
@@ -7,9 +7,9 @@
 
 // swiftlint:disable large_tuple
 
-public typealias Family3<A: Component, B: Component, C: Component> = Family<Requires3<A, B, C>>
+public typealias Group3<A: Component, B: Component, C: Component> = Group<Requires3<A, B, C>>
 
-public struct Requires3<A, B, C>: FamilyRequirementsManaging where A: Component, B: Component, C: Component {
+public struct Requires3<A, B, C>: GroupRequirementsManaging where A: Component, B: Component, C: Component {
     public let componentTypes: [Component.Type]
 
     public init(_ types: (A.Type, B.Type, C.Type)) {
@@ -43,13 +43,13 @@ public struct Requires3<A, B, C>: FamilyRequirementsManaging where A: Component,
 }
 
 extension Nexus {
-    public func family<A, B, C>(
+    public func group<A, B, C>(
         requiresAll componentA: A.Type,
         _ componentB: B.Type,
         _ componentC: C.Type,
         excludesAll excludedComponents: Component.Type...
-    ) -> Family3<A, B, C> where A: Component, B: Component, C: Component {
-        return Family3(
+    ) -> Group3<A, B, C> where A: Component, B: Component, C: Component {
+        return Group3(
             nexus: self,
             requiresAll: (componentA, componentB, componentC),
             excludesAll: excludedComponents

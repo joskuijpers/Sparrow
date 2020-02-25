@@ -1,5 +1,5 @@
 //
-//  Family5.swift
+//  Group5.swift
 //
 //
 //  Created by Christian Treffs on 21.08.19.
@@ -7,9 +7,9 @@
 
 // swiftlint:disable large_tuple
 
-public typealias Family5<A: Component, B: Component, C: Component, D: Component, E: Component> = Family<Requires5<A, B, C, D, E>>
+public typealias Group5<A: Component, B: Component, C: Component, D: Component, E: Component> = Group<Requires5<A, B, C, D, E>>
 
-public struct Requires5<A, B, C, D, E>: FamilyRequirementsManaging where A: Component, B: Component, C: Component, D: Component, E: Component {
+public struct Requires5<A, B, C, D, E>: GroupRequirementsManaging where A: Component, B: Component, C: Component, D: Component, E: Component {
     public let componentTypes: [Component.Type]
 
     public init(_ types: (A.Type, B.Type, C.Type, D.Type, E.Type)) {
@@ -54,15 +54,15 @@ public struct Requires5<A, B, C, D, E>: FamilyRequirementsManaging where A: Comp
 
 extension Nexus {
     // swiftlint:disable function_parameter_count
-    public func family<A, B, C, D, E>(
+    public func group<A, B, C, D, E>(
         requiresAll componentA: A.Type,
         _ componentB: B.Type,
         _ componentC: C.Type,
         _ componentD: D.Type,
         _ componentE: E.Type,
         excludesAll excludedComponents: Component.Type...
-    ) -> Family5<A, B, C, D, E> where A: Component, B: Component, C: Component, D: Component, E: Component {
-        return Family5(
+    ) -> Group5<A, B, C, D, E> where A: Component, B: Component, C: Component, D: Component, E: Component {
+        return Group5(
             nexus: self,
             requiresAll: (componentA, componentB, componentC, componentD, componentE),
             excludesAll: excludedComponents

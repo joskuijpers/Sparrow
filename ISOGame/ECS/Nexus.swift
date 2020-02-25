@@ -25,9 +25,9 @@ public final class Nexus {
     /// Entity ids that are currently not used.
     @usableFromInline final var freeEntities: ContiguousArray<EntityIdentifier>
 
-    /// - Key: FamilyTraitSet aka component types that make up one distinct family.
-    /// - Value: Tightly packed EntityIdentifiers that represent the association of an entity to the family.
-    @usableFromInline final var familyMembersByTraits: [FamilyTraitSet: UnorderedSparseSet<EntityIdentifier>]
+    /// - Key: GroupTraitSet aka component types that make up one distinct Group.
+    /// - Value: Tightly packed EntityIdentifiers that represent the association of an entity to the Group.
+    @usableFromInline final var groupMembersByTraits: [GroupTraitSet: UnorderedSparseSet<EntityIdentifier>]
 
     /// - Key: A parent entity id.
     /// - Value: Adjacency Set of all associated children.
@@ -42,7 +42,7 @@ public final class Nexus {
         componentsByType = [:]
         componentIdsByEntity = [:]
         freeEntities = ContiguousArray<EntityIdentifier>()
-        familyMembersByTraits = [:]
+        groupMembersByTraits = [:]
         parentChildrenMap = [:]
         childParentMap = [:]
     }
@@ -60,11 +60,11 @@ public final class Nexus {
         assert(componentsByType.values.reduce(0) { $0 + $1.count } == 0)
         assert(componentIdsByEntity.values.reduce(0) { $0 + $1.count } == 0)
         assert(freeEntities.isEmpty)
-        assert(familyMembersByTraits.values.reduce(0) { $0 + $1.count } == 0)
+        assert(groupMembersByTraits.values.reduce(0) { $0 + $1.count } == 0)
 
         componentsByType.removeAll()
         componentIdsByEntity.removeAll()
-        familyMembersByTraits.removeAll()
+        groupMembersByTraits.removeAll()
         parentChildrenMap.removeAll()
         childParentMap.removeAll()
     }
@@ -81,7 +81,7 @@ extension Nexus: Equatable {
         return lhs.entityStorage == rhs.entityStorage &&
             lhs.componentIdsByEntity == rhs.componentIdsByEntity &&
             lhs.freeEntities == rhs.freeEntities &&
-            lhs.familyMembersByTraits == rhs.familyMembersByTraits &&
+            lhs.groupMembersByTraits == rhs.groupMembersByTraits &&
             lhs.componentsByType.keys == rhs.componentsByType.keys &&
             lhs.parentChildrenMap == rhs.parentChildrenMap &&
             lhs.childParentMap == rhs.childParentMap
@@ -92,6 +92,6 @@ extension Nexus: Equatable {
 // MARK: - CustomDebugStringConvertible
 extension Nexus: CustomDebugStringConvertible {
     public var debugDescription: String {
-        return "<Nexus entities:\(numEntities) components:\(numComponents) families:\(numFamilies)>"
+        return "<Nexus entities:\(numEntities) components:\(numComponents) groups:\(numGroups)>"
     }
 }

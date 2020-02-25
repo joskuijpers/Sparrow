@@ -1,24 +1,24 @@
 //
-//  Family.swift
+//  Group.swift
 //
 //
 //  Created by Christian Treffs on 21.08.19.
 //
 
-public struct Family<R> where R: FamilyRequirementsManaging {
+public struct Group<R> where R: GroupRequirementsManaging {
     @usableFromInline unowned let nexus: Nexus
-    public let traits: FamilyTraitSet
+    public let traits: GroupTraitSet
 
     public init(nexus: Nexus, requiresAll: @autoclosure () -> (R.ComponentTypes), excludesAll: [Component.Type]) {
         let required = R(requiresAll())
         self.nexus = nexus
-        let traits = FamilyTraitSet(requiresAll: required.componentTypes, excludesAll: excludesAll)
+        let traits = GroupTraitSet(requiresAll: required.componentTypes, excludesAll: excludesAll)
         self.traits = traits
-        nexus.onFamilyInit(traits: traits)
+        nexus.onGroupInit(traits: traits)
     }
 
     @inlinable public var memberIds: UnorderedSparseSet<EntityIdentifier> {
-        return nexus.members(withFamilyTraits: traits)
+        return nexus.members(withGroupTraits: traits)
     }
 
     @inlinable public var count: Int {
@@ -41,30 +41,30 @@ public struct Family<R> where R: FamilyRequirementsManaging {
 }
 
 // MARK: - Equatable
-extension Family: Equatable {
-    public static func == (lhs: Family<R>, rhs: Family<R>) -> Bool {
+extension Group: Equatable {
+    public static func == (lhs: Group<R>, rhs: Group<R>) -> Bool {
         return lhs.nexus == rhs.nexus &&
             lhs.traits == rhs.traits
     }
 }
 
-extension Family: Sequence {
+extension Group: Sequence {
     __consuming public func makeIterator() -> ComponentsIterator {
-        return ComponentsIterator(family: self)
+        return ComponentsIterator(group: self)
     }
 }
 
-extension Family: LazySequenceProtocol { }
+extension Group: LazySequenceProtocol { }
 
 // MARK: - components iterator
-extension Family {
+extension Group {
     public struct ComponentsIterator: IteratorProtocol {
         @usableFromInline var memberIdsIterator: UnorderedSparseSetIterator<EntityIdentifier>
         @usableFromInline unowned let nexus: Nexus
 
-        public init(family: Family<R>) {
-            self.nexus = family.nexus
-            memberIdsIterator = family.memberIds.makeIterator()
+        public init(group: Group<R>) {
+            self.nexus = group.nexus
+            memberIdsIterator = group.memberIds.makeIterator()
         }
 
         public mutating func next() -> R.Components? {
@@ -77,21 +77,21 @@ extension Family {
     }
 }
 
-extension Family.ComponentsIterator: LazySequenceProtocol { }
+extension Group.ComponentsIterator: LazySequenceProtocol { }
 
 // MARK: - entity iterator
-extension Family {
+extension Group {
     @inlinable public var entities: EntityIterator {
-        return EntityIterator(family: self)
+        return EntityIterator(group: self)
     }
 
     public struct EntityIterator: IteratorProtocol {
         @usableFromInline var memberIdsIterator: UnorderedSparseSetIterator<EntityIdentifier>
         @usableFromInline unowned let nexus: Nexus
 
-        public init(family: Family<R>) {
-            self.nexus = family.nexus
-            memberIdsIterator = family.memberIds.makeIterator()
+        public init(group: Group<R>) {
+            self.nexus = group.nexus
+            memberIdsIterator = group.memberIds.makeIterator()
         }
 
         public mutating func next() -> Entity? {
@@ -103,21 +103,21 @@ extension Family {
     }
 }
 
-extension Family.EntityIterator: LazySequenceProtocol { }
+extension Group.EntityIterator: LazySequenceProtocol { }
 
 // MARK: - entity component iterator
-extension Family {
+extension Group {
     @inlinable public var entityAndComponents: EntityComponentIterator {
-        return EntityComponentIterator(family: self)
+        return EntityComponentIterator(group: self)
     }
 
     public struct EntityComponentIterator: IteratorProtocol {
         @usableFromInline var memberIdsIterator: UnorderedSparseSetIterator<EntityIdentifier>
         @usableFromInline unowned let nexus: Nexus
 
-        public init(family: Family<R>) {
-            self.nexus = family.nexus
-            memberIdsIterator = family.memberIds.makeIterator()
+        public init(group: Group<R>) {
+            self.nexus = group.nexus
+            memberIdsIterator = group.memberIds.makeIterator()
         }
 
         public mutating func next() -> R.EntityAndComponents? {
@@ -129,25 +129,25 @@ extension Family {
     }
 }
 
-extension Family.EntityComponentIterator: LazySequenceProtocol { }
+extension Group.EntityComponentIterator: LazySequenceProtocol { }
 
 // MARK: - relatives iterator
 
-extension Family {
+extension Group {
     @inlinable
     public func descendRelatives(from root: Entity) -> RelativesIterator {
-        return RelativesIterator(family: self, root: root)
+        return RelativesIterator(group: self, root: root)
     }
 
     public struct RelativesIterator: IteratorProtocol {
         @usableFromInline unowned let nexus: Nexus
-        @usableFromInline let familyTraits: FamilyTraitSet
+        @usableFromInline let groupTraits: GroupTraitSet
 
         @usableFromInline var relatives: ContiguousArray<(EntityIdentifier, EntityIdentifier)>
 
-        public init(family: Family<R>, root: Entity) {
-            self.nexus = family.nexus
-            self.familyTraits = family.traits
+        public init(group: Group<R>, root: Entity) {
+            self.nexus = group.nexus
+            self.groupTraits = group.traits
 
             // FIXME: this is not the most efficient way to aggregate all parent child tuples
             // Problems:
@@ -155,7 +155,7 @@ extension Family {
             // - needs to be build on every iteration
             // - relies on isMember check
             self.relatives = []
-            self.relatives.reserveCapacity(family.memberIds.count)
+            self.relatives.reserveCapacity(group.memberIds.count)
             aggregateRelativesBreathFirst(root.identifier)
             relatives.reverse()
         }
@@ -166,7 +166,7 @@ extension Family {
             }
             children
                 .compactMap { child in
-                    guard nexus.isMember(child, in: familyTraits) else {
+                    guard nexus.isMember(child, in: groupTraits) else {
                         return nil
                     }
                     relatives.append((parent, child))
@@ -184,4 +184,4 @@ extension Family {
     }
 }
 
-extension Family.RelativesIterator: LazySequenceProtocol { }
+extension Group.RelativesIterator: LazySequenceProtocol { }

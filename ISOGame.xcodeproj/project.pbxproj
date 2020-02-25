@@ -289,6 +289,8 @@
 				8015C6B623D647B100DFF109 /* Family5.swift */,
 				8015C69D23D647AF00DFF109 /* FamilyRequirementsManaging.swift */,
 				8015C6A523D647B000DFF109 /* FamilyTraitSet.swift */,
+				8015C6A623D647B000DFF109 /* Nexus+Family.swift */,
+				8015C6B123D647B000DFF109 /* Nexus+FamilyUpdate.swift */,
 			);
 			name = Families;
 			sourceTree = "<group>";
@@ -299,8 +301,6 @@
 				8015C6A723D647B000DFF109 /* Nexus.swift */,
 				8015C6A823D647B000DFF109 /* Nexus+Component.swift */,
 				8015C6B723D647B100DFF109 /* Nexus+Entity.swift */,
-				8015C6A623D647B000DFF109 /* Nexus+Family.swift */,
-				8015C6B123D647B000DFF109 /* Nexus+FamilyUpdate.swift */,
 				8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */,
 				8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */,
 				8015C6B523D647B100DFF109 /* NexusEvents.swift */,
