@@ -47,6 +47,13 @@ extension Entity {
         return nexus.count(components: identifier) > 0
     }
 
+    @discardableResult
+    public func add<C>() -> C where C: Component {
+        let component = C.init()
+        nexus.assign(component: component, to: self)
+        return component
+    }
+    
     /// Add one or more components to this entity.
     /// - Parameter components: one or more components.
     @discardableResult
@@ -60,17 +67,17 @@ extension Entity {
     /// Add a component to this entity.
     /// - Parameter component: a component.
     @discardableResult
-    public func add(component: Component) -> Entity {
+    public func add(component: Component) -> Component {
         nexus.assign(component: component, to: self)
-        return self
+        return component
     }
 
     /// Add a typed component to this entity.
     /// - Parameter component: the typed component.
     @discardableResult
-    public func add<C>(component: C) -> Entity where C: Component {
+    public func add<C>(component: C) -> C where C: Component {
         nexus.assign(component: component, to: self)
-        return self
+        return component
     }
 
     /// Remove a component from this entity.

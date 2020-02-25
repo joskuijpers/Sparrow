@@ -15,7 +15,7 @@ class MeshSelector: Component {
     public var mesh: Mesh?
     
     /// Init without a mesh set
-    override init() {
+    required init() {
     }
     
     /// Init with a mesh

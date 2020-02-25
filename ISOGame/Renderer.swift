@@ -119,8 +119,8 @@ class Renderer: NSObject {
 //        light.color = float3(1, 1, 0)
         
         let entity = Renderer.nexus.createEntity()
-        entity.add(component: TransformComponent())
-        entity.transform?.position = float3(0, 0, 0)
+        let transform: TransformComponent = entity.add() // TODO: decide whether this is a good idea at all
+        transform.position = float3(0, 0, 0)
         entity.add(component: MeshSelector(mesh: helmet))
         entity.add(component: MeshRenderer())
         
