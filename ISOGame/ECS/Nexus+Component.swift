@@ -44,7 +44,7 @@ extension Nexus {
         }
         componentIdsByEntity[entityId]?.insert(componentId) //, at: componentId.hashValue)
 
-        component.addedToEntity(entity)
+        component.onAddedToEntity(entity)
         
         update(familyMembership: entityId)
 

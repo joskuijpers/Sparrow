@@ -18,7 +18,7 @@ public class Component {
     required init() {}
     
     /// Component was added to an entity. Set the nexus and entity ID so we can find the entity from the component.
-    func addedToEntity(_ entity: Entity) {
+    func onAddedToEntity(_ entity: Entity) {
         nexus = entity.nexus
         entityId = entity.identifier
     }
