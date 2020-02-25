@@ -70,6 +70,41 @@ class Renderer: NSObject {
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
 
         
+//
+//        let skyLight = Renderer.nexus.createEntity()
+//        skyLight.add(component: TransformComponent())
+//
+//        let light = skyLight.add(component: LightComponent(type: .directional))
+//        light.direction = float3(0, -5, 10)
+//        light.color = float3(2, 2, 2)
+//
+//
+//
+//        let helmet = Renderer.nexus.createEntity()
+//        let transform: TransformComponent = helmet.add() // TODO: decide whether this is a good idea at all
+//        transform.position = float3(0, 0, 0)
+//
+//        helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
+//        helmet.add(component: MeshRenderer())
+//        helmet.add(behavior: HelloWorldComponent())
+//
+//        // TODO Move to Scene
+//        rootEntity = helmet
+//
+//
+//
+//        let cube = Renderer.nexus.createEntity()
+//
+//        cube.add(component: TransformComponent())
+//        cube.transform?.position = float3(0, 0, 3)
+//        cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
+//        cube.add(component: MeshRenderer())
+////        cube.add(behavior: HelloWorldComponent())
+//
+//        // TODO Move NExus to Scene. Add tools for setting parent setParent(keepWorldPosition:Bool=false)
+//        Renderer.nexus.addChild(cube, to: helmet)
+        
+        
         
         let skyLight = Renderer.nexus.createEntity()
         skyLight.add(component: TransformComponent())
@@ -79,29 +114,21 @@ class Renderer: NSObject {
         light.color = float3(2, 2, 2)
         
         
-        
         let helmet = Renderer.nexus.createEntity()
-        let transform: TransformComponent = helmet.add() // TODO: decide whether this is a good idea at all
+        let transform = helmet.add(component: TransformComponent())
         transform.position = float3(0, 0, 0)
         
         helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
         helmet.add(component: MeshRenderer())
         helmet.add(behavior: HelloWorldComponent())
         
-        // TODO Move to Scene
-        rootEntity = helmet
-        
-        
         
         let cube = Renderer.nexus.createEntity()
-        
         cube.add(component: TransformComponent())
         cube.transform?.position = float3(0, 0, 3)
         cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
         cube.add(component: MeshRenderer())
-//        cube.add(behavior: HelloWorldComponent())
-        
-        // TODO Move NExus to Scene. Add tools for setting parent setParent(keepWorldPosition:Bool=false)
+        // cube.add(behavior: HelloWorldComponent())
         Renderer.nexus.addChild(cube, to: helmet)
     }
     
@@ -207,13 +234,7 @@ extension Renderer: MTKViewDelegate {
 
 /// Behavior test
 class HelloWorldComponent: Behavior {
-    override func onStart() {
-        print("START HELLO WORLD")
-    }
-    
     override func onUpdate(deltaTime: TimeInterval) {
-//        print("UPDATE \(deltaTime)")
-        
         transform.rotation = transform.rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
     }
 }

@@ -46,13 +46,6 @@ extension Entity {
     public var hasComponents: Bool {
         return nexus.count(components: identifier) > 0
     }
-
-    @discardableResult
-    public func add<C>() -> C where C: Component {
-        let component = C.init()
-        nexus.assign(component: component, to: self)
-        return component
-    }
     
     /// Add one or more components to this entity.
     /// - Parameter components: one or more components.
@@ -63,14 +56,6 @@ extension Entity {
         }
         return self
     }
-
-    /// Add a component to this entity.
-    /// - Parameter component: a component.
-//    @discardableResult
-//    public func add(component: Component) -> Component {
-//        nexus.assign(component: component, to: self)
-//        return component
-//    }
 
     /// Add a typed component to this entity.
     /// - Parameter component: the typed component.
