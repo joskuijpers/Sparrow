@@ -34,12 +34,12 @@ class ViewController: NSViewController {
         let delta = float2(Float(translation.x),
                            Float(translation.y))
         
-        renderer?.scene.camera.rotate(delta: delta)
+        renderer?.scene.camera?.rotate(delta: delta)
         gesture.setTranslation(.zero, in: gesture.view)
     }
     
     override func scrollWheel(with event: NSEvent) {
-        renderer?.scene.camera.zoom(delta: Float(event.deltaY))
+        renderer?.scene.camera?.zoom(delta: Float(event.deltaY))
     }
 }
 

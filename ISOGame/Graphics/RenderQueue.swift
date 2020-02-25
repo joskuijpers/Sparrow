@@ -12,7 +12,7 @@ import Foundation
  A queue of renderables
  */
 class RenderQueue {
-    private var list = [Renderable]()
+    private var list = [Bool]()
     
     init() {
     }
@@ -22,7 +22,7 @@ class RenderQueue {
     }
     
     /// Add a new renderable to the queue
-    func add(_ renderable: Renderable) {
+    func add(_ renderable: Bool) {
         list.append(renderable)
     }
     
@@ -52,7 +52,7 @@ class RenderSet {
     var translucent = RenderQueue()
     
     /// Add a new renderable to the set. Will be put in the appropriate queue.
-    func add(_ renderable: Renderable) {
+    func add(_ renderable: Bool) {
         // TODO: depends on the material. Every submesh can have material... ?????
 //        switch (renderable.renderMode) {
 //        case .opaque, .cutout:

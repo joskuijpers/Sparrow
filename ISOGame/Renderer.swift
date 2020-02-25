@@ -19,7 +19,6 @@ class Renderer: NSObject {
     let depthStencilState: MTLDepthStencilState
     
     var scene: Scene
-    var rotNode: Node!
     
     let irradianceCubeMap: MTLTexture;
     
@@ -50,13 +49,8 @@ class Renderer: NSObject {
         irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
         
         scene = Scene(screenSize: metalView.bounds.size)
+
         
-        let camera = ArcballCamera()
-        camera.distance = 4.3
-        camera.target = [0, 1.2, 0]
-        camera.rotation.x = Float(-10).degreesToRadians
-        scene.add(node: camera)
-        scene.currentCameraIndex = 1
         
         Renderer.nexus = Nexus()
         renderSystem = RenderSystem(nexus: Renderer.nexus)
@@ -104,6 +98,17 @@ class Renderer: NSObject {
 //        // TODO Move NExus to Scene. Add tools for setting parent setParent(keepWorldPosition:Bool=false)
 //        Renderer.nexus.addChild(cube, to: helmet)
         
+        
+        let camera = Renderer.nexus.createEntity()
+        camera.add(component: TransformComponent())
+        let cameraComp = camera.add(component: ArcballCamera())
+        cameraComp.distance = 4.3
+        cameraComp.target = [0, 1.2, 0]
+        if var r = cameraComp.transform?.rotation {
+            r.x = Float(-10).degreesToRadians
+            cameraComp.transform?.rotation = r
+        }
+        scene.camera = cameraComp
         
         
         let skyLight = Renderer.nexus.createEntity()
