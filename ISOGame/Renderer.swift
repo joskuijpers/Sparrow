@@ -246,7 +246,9 @@ extension Renderer: MTKViewDelegate {
 /// Behavior test
 class HelloWorldComponent: Behavior {
     override func onUpdate(deltaTime: TimeInterval) {
-        transform.rotation = transform.rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
+        if let rotation = transform?.rotation {
+            transform?.rotation = rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
+        }
     }
 }
 
@@ -283,6 +285,9 @@ class RenderSystem {
             
             renderEncoder.popDebugGroup()
         }
+
+        // Easy testing
+        NSApplication.shared.mainWindow!.title = "Drawn meshes: \(meshes.count)"
     }
     
 }

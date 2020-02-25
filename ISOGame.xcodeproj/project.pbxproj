@@ -38,7 +38,6 @@
 		8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B723D647B100DFF109 /* Nexus+Entity.swift */; };
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
-		8086965C23B8DD150007E75D /* STF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8086965B23B8DD150007E75D /* STF.framework */; };
 		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
 		8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAEE23BE127E00E03CE0 /* Bounds.swift */; };
 		8099AAF323BE17AB00E03CE0 /* DebugShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF223BE17AB00E03CE0 /* DebugShaders.metal */; };
@@ -206,7 +205,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8086965C23B8DD150007E75D /* STF.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

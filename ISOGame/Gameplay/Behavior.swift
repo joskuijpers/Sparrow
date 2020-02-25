@@ -12,8 +12,8 @@ import Foundation
  A game object behavior. More than one can be assigned to a game object.
  */
 class Behavior {
-    internal var entityId: EntityIdentifier!
-    internal unowned var nexus: Nexus!
+    fileprivate var entityId: EntityIdentifier!
+    private unowned var nexus = Nexus.shared()
     
     /// Called when the behavior starts
     open func onStart() {}
@@ -21,8 +21,8 @@ class Behavior {
     open func onUpdate(deltaTime: TimeInterval) {}
     
     /// The transform component.
-    var transform: Transform {
-        nexus.get(component: Transform.identifier, for: entityId) as! Transform
+    var transform: Transform? {
+        nexus.get(component: Transform.identifier, for: entityId) as? Transform
     }
     
     /// The entity of this component.
@@ -50,8 +50,8 @@ class Behavior {
 /**
 Component that holds any behavior on the game object.
  */
-class BehaviorComponent: Component {
-    var behaviors = [Behavior]()
+fileprivate class BehaviorComponent: Component {
+    private var behaviors = [Behavior]()
     
     func update(deltaTime: TimeInterval) {
         for behavior in behaviors {
@@ -61,8 +61,14 @@ class BehaviorComponent: Component {
     
     func add(behavior: Behavior) {
         behavior.entityId = entityId
-        behavior.nexus = nexus
         behaviors.append(behavior)
+    }
+    
+    func remove(behavior: Behavior) {
+        behavior.entityId = nil
+//        behaviors.removeAll { (search) -> Bool in
+//            return search == behavior
+//        }
     }
 }
 
@@ -70,7 +76,7 @@ class BehaviorComponent: Component {
  System running behavior code.
  */
 class BehaviorSystem {
-    let behaviors = Nexus.shared().group(requires: BehaviorComponent.self)
+    private let behaviors = Nexus.shared().group(requires: BehaviorComponent.self)
     
     func update(deltaTime: TimeInterval) {
         for behavior in behaviors {
