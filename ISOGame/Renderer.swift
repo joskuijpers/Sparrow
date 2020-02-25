@@ -8,6 +8,12 @@
 
 import MetalKit
 
+extension Nexus {
+    static func shared() -> Nexus {
+        return Renderer.nexus
+    }
+}
+
 class Renderer: NSObject {
     static var device: MTLDevice!
     static var library: MTLLibrary?
@@ -22,7 +28,7 @@ class Renderer: NSObject {
     
     let irradianceCubeMap: MTLTexture;
     
-    static var nexus: Nexus!
+    fileprivate static var nexus: Nexus!
     let renderSystem: RenderSystem
     let behaviorSystem: BehaviorSystem
     var rootEntity: Entity!
@@ -53,8 +59,8 @@ class Renderer: NSObject {
         
         
         Renderer.nexus = Nexus()
-        renderSystem = RenderSystem(nexus: Renderer.nexus)
-        behaviorSystem = BehaviorSystem(nexus: Renderer.nexus)
+        renderSystem = RenderSystem()
+        behaviorSystem = BehaviorSystem()
         
         super.init()
         
@@ -99,7 +105,7 @@ class Renderer: NSObject {
 //        Renderer.nexus.addChild(cube, to: helmet)
         
         
-        let camera = Renderer.nexus.createEntity()
+        let camera = Nexus.shared().createEntity()
         camera.add(component: Transform())
         let cameraComp = camera.add(component: ArcballCamera())
         cameraComp.distance = 4.3
@@ -111,7 +117,7 @@ class Renderer: NSObject {
         scene.camera = cameraComp
         
         
-        let skyLight = Renderer.nexus.createEntity()
+        let skyLight = Nexus.shared().createEntity()
         skyLight.add(component: Transform())
         
         let light = skyLight.add(component: Light(type: .directional))
@@ -119,7 +125,7 @@ class Renderer: NSObject {
         light.color = float3(2, 2, 2)
         
         
-        let helmet = Renderer.nexus.createEntity()
+        let helmet = Nexus.shared().createEntity()
         let transform = helmet.add(component: Transform())
         transform.position = float3(0, 0, 0)
         
@@ -128,13 +134,13 @@ class Renderer: NSObject {
         helmet.add(behavior: HelloWorldComponent())
         
         
-        let cube = Renderer.nexus.createEntity()
+        let cube = Nexus.shared().createEntity()
         cube.add(component: Transform())
         cube.transform?.position = float3(0, 0, 3)
         cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
         cube.add(component: MeshRenderer())
         // cube.add(behavior: HelloWorldComponent())
-        Renderer.nexus.addChild(cube, to: helmet)
+        Nexus.shared().addChild(cube, to: helmet)
     }
     
     
@@ -245,16 +251,8 @@ class HelloWorldComponent: Behavior {
 }
 
 class RenderSystem {
-    let nexus: Nexus
-    let lights: Group<Requires1<Light>>
-    let meshes: Group<Requires2<MeshSelector, MeshRenderer>>
-    
-    init(nexus: Nexus) {
-        self.nexus = nexus
-        
-        lights = nexus.group(requires: Light.self)
-        meshes = nexus.group(requiresAll: MeshSelector.self, MeshRenderer.self)
-    }
+    let lights = Nexus.shared().group(requires: Light.self)
+    let meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
     
     func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene) {
 //        let scene = SceneManager.activeScene

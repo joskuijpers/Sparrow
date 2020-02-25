@@ -70,27 +70,10 @@ class BehaviorComponent: Component {
  System running behavior code.
  */
 class BehaviorSystem {
-    let nexus: Nexus
-    let group: Group<Requires1<BehaviorComponent>>
-    
-    init(nexus: Nexus) {
-        self.nexus = nexus
-
-        /*
-         NEXT: see if we can serialize/deserialize this
-         
-         We will want to serialize the whole Nexus and classes, so we can save Scenes and GameObjects
-         To serialize GameObjects (prefabs) we need to be able to save the nexus partially
-         
-         See if we rename Entity to GameObject
-         
-         
-         */
-        group = nexus.group(requires: BehaviorComponent.self)
-    }
+    let behaviors = Nexus.shared().group(requires: BehaviorComponent.self)
     
     func update(deltaTime: TimeInterval) {
-        for behavior in group {
+        for behavior in behaviors {
             behavior.update(deltaTime: deltaTime)
         }
     }
