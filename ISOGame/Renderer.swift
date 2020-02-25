@@ -114,7 +114,7 @@ class Renderer: NSObject {
         let skyLight = Renderer.nexus.createEntity()
         skyLight.add(component: TransformComponent())
         
-        let light = skyLight.add(component: LightComponent(type: .directional))
+        let light = skyLight.add(component: Light(type: .directional))
         light.direction = float3(0, -5, 10)
         light.color = float3(2, 2, 2)
         
@@ -246,13 +246,13 @@ class HelloWorldComponent: Behavior {
 
 class RenderSystem {
     let nexus: Nexus
-    let lights: Group<Requires1<LightComponent>>
+    let lights: Group<Requires1<Light>>
     let meshes: Group<Requires2<MeshSelector, MeshRenderer>>
     
     init(nexus: Nexus) {
         self.nexus = nexus
         
-        lights = nexus.group(requires: LightComponent.self)
+        lights = nexus.group(requires: Light.self)
         meshes = nexus.group(requiresAll: MeshSelector.self, MeshRenderer.self)
     }
     

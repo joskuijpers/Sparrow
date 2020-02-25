@@ -13,7 +13,7 @@ enum LightType {
     case point
 }
 
-class LightComponent: Component {
+class Light: Component {
     private var data = LightData()
     
     /// Type of the light
