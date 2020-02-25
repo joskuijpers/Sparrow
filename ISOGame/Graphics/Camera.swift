@@ -42,7 +42,7 @@ class Camera: Component {
     }
 }
 
-
+// TODO: This whole camera should be a Behavior bound to Input system
 class ArcballCamera: Component {
     
     var fovDegrees: Float = 70

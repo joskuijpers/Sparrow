@@ -25,10 +25,12 @@ class ViewController: NSViewController {
     }
     
     func addGestureRecognizers(to view: NSView) {
+        // This should be forwarded to an Input system
         let pan = NSPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
         view.addGestureRecognizer(pan)
     }
     
+    // This should be in the Behavior of the camera
     @objc func handlePan(gesture: NSPanGestureRecognizer) {
         let translation = gesture.translation(in: gesture.view)
         let delta = float2(Float(translation.x),
