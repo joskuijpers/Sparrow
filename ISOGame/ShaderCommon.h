@@ -69,6 +69,7 @@ typedef enum {
     LightTypePoint = 2
 } LightType;
 
+/// Data pertaining lights that is transferred from CPU to GPU
 typedef struct {
     vector_float4 position;
     vector_float3 color;
