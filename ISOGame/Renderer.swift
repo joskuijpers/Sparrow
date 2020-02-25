@@ -287,7 +287,7 @@ class RenderSystem {
         }
 
         // Easy testing
-        NSApplication.shared.mainWindow!.title = "Drawn meshes: \(meshes.count)"
+        NSApplication.shared.mainWindow?.title = "Drawn meshes: \(meshes.count)"
     }
     
 }
