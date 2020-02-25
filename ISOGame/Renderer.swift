@@ -70,41 +70,11 @@ class Renderer: NSObject {
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
 
         
-//
-//        let skyLight = Renderer.nexus.createEntity()
-//        skyLight.add(component: TransformComponent())
-//
-//        let light = skyLight.add(component: LightComponent(type: .directional))
-//        light.direction = float3(0, -5, 10)
-//        light.color = float3(2, 2, 2)
-//
-//
-//
-//        let helmet = Renderer.nexus.createEntity()
-//        let transform: TransformComponent = helmet.add() // TODO: decide whether this is a good idea at all
-//        transform.position = float3(0, 0, 0)
-//
-//        helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
-//        helmet.add(component: MeshRenderer())
-//        helmet.add(behavior: HelloWorldComponent())
-//
-//        // TODO Move to Scene
-//        rootEntity = helmet
-//
-//
-//
-//        let cube = Renderer.nexus.createEntity()
-//
-//        cube.add(component: TransformComponent())
-//        cube.transform?.position = float3(0, 0, 3)
-//        cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
-//        cube.add(component: MeshRenderer())
-////        cube.add(behavior: HelloWorldComponent())
-//
-//        // TODO Move NExus to Scene. Add tools for setting parent setParent(keepWorldPosition:Bool=false)
-//        Renderer.nexus.addChild(cube, to: helmet)
-        
-        
+        buildScene()
+    }
+    
+    // For testing
+    func buildScene() {
         let camera = Nexus.shared().createEntity()
         camera.add(component: Transform())
         let cameraComp = camera.add(component: ArcballCamera())
@@ -114,6 +84,10 @@ class Renderer: NSObject {
             r.x = Float(-10).degreesToRadians
             cameraComp.transform?.rotation = r
         }
+//        camera.add(component: Camera())
+//        camera.add(behavior: ArcBallCamera(distance: 4.3, target: [0, 1.2, 0]))
+        
+        
         scene.camera = cameraComp
         
         
