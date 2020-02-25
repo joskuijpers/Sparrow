@@ -264,21 +264,18 @@
 		8015C69C23D6479F00DFF109 /* ECS */ = {
 			isa = PBXGroup;
 			children = (
-				8015C6AA23D647B000DFF109 /* Component.swift */,
-				8015C6AC23D647B000DFF109 /* ComponentAccess.swift */,
-				8015C6A223D647AF00DFF109 /* Entity.swift */,
-				8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */,
-				8015C6B023D647B000DFF109 /* EntityIdentifier.swift */,
-				8015C6D323D64CDE00DFF109 /* Groups */,
-				8015C6B223D647B000DFF109 /* Hashing.swift */,
+				80438C1B2405C3C100099034 /* Entity */,
+				80438C1C2405C3C800099034 /* Component */,
+				8015C6D323D64CDE00DFF109 /* Group */,
 				8015C6D423D64D1200DFF109 /* Nexus */,
 				8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */,
 				8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */,
+				8015C6B223D647B000DFF109 /* Hashing.swift */,
 			);
 			path = ECS;
 			sourceTree = "<group>";
 		};
-		8015C6D323D64CDE00DFF109 /* Groups */ = {
+		8015C6D323D64CDE00DFF109 /* Group */ = {
 			isa = PBXGroup;
 			children = (
 				8015C6B423D647B100DFF109 /* Group.swift */,
@@ -292,20 +289,39 @@
 				8015C6A623D647B000DFF109 /* Nexus+Group.swift */,
 				8015C6B123D647B000DFF109 /* Nexus+GroupUpdate.swift */,
 			);
-			name = Groups;
+			name = Group;
 			sourceTree = "<group>";
 		};
 		8015C6D423D64D1200DFF109 /* Nexus */ = {
 			isa = PBXGroup;
 			children = (
 				8015C6A723D647B000DFF109 /* Nexus.swift */,
-				8015C6A823D647B000DFF109 /* Nexus+Component.swift */,
-				8015C6B723D647B100DFF109 /* Nexus+Entity.swift */,
 				8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */,
 				8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */,
 				8015C6B523D647B100DFF109 /* NexusEvents.swift */,
 			);
 			name = Nexus;
+			sourceTree = "<group>";
+		};
+		80438C1B2405C3C100099034 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				8015C6A223D647AF00DFF109 /* Entity.swift */,
+				8015C6B023D647B000DFF109 /* EntityIdentifier.swift */,
+				8015C6B723D647B100DFF109 /* Nexus+Entity.swift */,
+			);
+			name = Entity;
+			sourceTree = "<group>";
+		};
+		80438C1C2405C3C800099034 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				8015C6AA23D647B000DFF109 /* Component.swift */,
+				8015C6AC23D647B000DFF109 /* ComponentAccess.swift */,
+				8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */,
+				8015C6A823D647B000DFF109 /* Nexus+Component.swift */,
+			);
+			name = Component;
 			sourceTree = "<group>";
 		};
 		8086963423B8D8BC0007E75D /* Frameworks */ = {
