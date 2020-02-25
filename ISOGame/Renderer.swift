@@ -68,76 +68,41 @@ class Renderer: NSObject {
         metalView.delegate = self
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
-        
-//        rotNode = Node()
-//        rotNode.position = [5, 0, 0]
-//        scene.add(node: rotNode)
-//
-//        for i in 0...4 {
-//            let sphere = Model(name: "ironSphere.obj")
-//            sphere.position = [Float(3 * i), 0, 0]
-//            scene.add(node: sphere, parent: rotNode)
-//        }
-//
-//        for i in 0...4 {
-//            let sphere = Model(name: "goldSphere.obj")
-//            sphere.position = [Float(3 * i), 3, 0]
-//            scene.add(node: sphere, parent: rotNode)
-//        }
-//
-//        for i in 0...4 {
-//            let sphere = Model(name: "plasticSphere.obj")
-//            sphere.position = [Float(3 * i), -3, 0]
-//            scene.add(node: sphere, parent: rotNode)
-//        }
-//
-//        for i in 0...4 {
-//            let sphere = Model(name: "grassSphere.obj")
-//            sphere.position = [Float(3 * i), 6, 0]
-//            scene.add(node: sphere)
-//        }
-        
-        let cube = Mesh(name: "cube.obj")
-//        cube.position = [0, 0, 0]
-//        scene.add(node: cube)
-        
-        let helmet = Mesh(name: "helmet.obj")
-//        helmet.position = [-3, 0, 0]
-//        helmet.rotation = [0, Float(180).degreesToRadians, 0]
-//        scene.add(node: helmet)
+
         
         
-        let lightObject = Renderer.nexus.createEntity()
-        lightObject.add(component: TransformComponent())
-        lightObject.add(component: LightComponent(type: .directional))
-        lightObject.get(component: LightComponent.self)?.direction = float3(0, -5, 10)
-        lightObject.get(component: LightComponent.self)?.color = float3(2, 2, 2)
+        let skyLight = Renderer.nexus.createEntity()
+        skyLight.add(component: TransformComponent())
         
-        // maybe better api, but needs required init() or something.
-//        skyLight.add(component: TransformComponent.self)
-//        let light = skyLight.add(component: Light.self)
-//        light.color = float3(1, 1, 0)
+        let light = skyLight.add(component: LightComponent(type: .directional))
+        light.direction = float3(0, -5, 10)
+        light.color = float3(2, 2, 2)
         
-        let entity = Renderer.nexus.createEntity()
-        let transform: TransformComponent = entity.add() // TODO: decide whether this is a good idea at all
+        
+        
+        let helmet = Renderer.nexus.createEntity()
+        let transform: TransformComponent = helmet.add() // TODO: decide whether this is a good idea at all
         transform.position = float3(0, 0, 0)
-        entity.add(component: MeshSelector(mesh: helmet))
-        entity.add(component: MeshRenderer())
         
-        entity.add(behavior: HelloWorldComponent())
+        helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
+        helmet.add(component: MeshRenderer())
+        helmet.add(behavior: HelloWorldComponent())
         
-        rootEntity = entity
+        // TODO Move to Scene
+        rootEntity = helmet
         
         
         
-        let child = Renderer.nexus.createEntity()
-        child.add(component: TransformComponent())
-        child.transform?.position = float3(0, 0, 3)
-        child.add(component: MeshSelector(mesh: cube))
-        child.add(component: MeshRenderer())
-//        child.add(behavior: HelloWorldComponent())
+        let cube = Renderer.nexus.createEntity()
         
-        Renderer.nexus.addChild(child, to: entity)
+        cube.add(component: TransformComponent())
+        cube.transform?.position = float3(0, 0, 3)
+        cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
+        cube.add(component: MeshRenderer())
+//        cube.add(behavior: HelloWorldComponent())
+        
+        // TODO Move NExus to Scene. Add tools for setting parent setParent(keepWorldPosition:Bool=false)
+        Renderer.nexus.addChild(cube, to: helmet)
     }
     
     

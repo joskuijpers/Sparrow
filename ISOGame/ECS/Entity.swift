@@ -66,11 +66,11 @@ extension Entity {
 
     /// Add a component to this entity.
     /// - Parameter component: a component.
-    @discardableResult
-    public func add(component: Component) -> Component {
-        nexus.assign(component: component, to: self)
-        return component
-    }
+//    @discardableResult
+//    public func add(component: Component) -> Component {
+//        nexus.assign(component: component, to: self)
+//        return component
+//    }
 
     /// Add a typed component to this entity.
     /// - Parameter component: the typed component.
