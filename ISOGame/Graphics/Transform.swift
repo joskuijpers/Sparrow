@@ -14,7 +14,7 @@ import Foundation
  Holds position, rotation and scale. Has access to forward and right vectors, and transformation matrices
  generated from the properties.
  */
-class TransformComponent: Component {
+class Transform: Component {
     /// Local node position
     var position: float3 = .zero
     
@@ -62,15 +62,15 @@ class TransformComponent: Component {
 
 extension Component {
     /// Utility for getting the object transform, if available
-    var transform: TransformComponent? {
+    var transform: Transform? {
         guard let id = entityId else { return nil }
-        return nexus?.get(component: TransformComponent.identifier, for: id) as? TransformComponent
+        return nexus?.get(component: Transform.identifier, for: id) as? Transform
     }
 }
 
 extension Entity {
     /// Utility for getting the object transform, if available
-    var transform: TransformComponent? {
-        return nexus.get(component: TransformComponent.identifier, for: identifier) as? TransformComponent
+    var transform: Transform? {
+        return nexus.get(component: Transform.identifier, for: identifier) as? Transform
     }
 }

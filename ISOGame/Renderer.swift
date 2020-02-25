@@ -100,7 +100,7 @@ class Renderer: NSObject {
         
         
         let camera = Renderer.nexus.createEntity()
-        camera.add(component: TransformComponent())
+        camera.add(component: Transform())
         let cameraComp = camera.add(component: ArcballCamera())
         cameraComp.distance = 4.3
         cameraComp.target = [0, 1.2, 0]
@@ -112,7 +112,7 @@ class Renderer: NSObject {
         
         
         let skyLight = Renderer.nexus.createEntity()
-        skyLight.add(component: TransformComponent())
+        skyLight.add(component: Transform())
         
         let light = skyLight.add(component: Light(type: .directional))
         light.direction = float3(0, -5, 10)
@@ -120,7 +120,7 @@ class Renderer: NSObject {
         
         
         let helmet = Renderer.nexus.createEntity()
-        let transform = helmet.add(component: TransformComponent())
+        let transform = helmet.add(component: Transform())
         transform.position = float3(0, 0, 0)
         
         helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
@@ -129,7 +129,7 @@ class Renderer: NSObject {
         
         
         let cube = Renderer.nexus.createEntity()
-        cube.add(component: TransformComponent())
+        cube.add(component: Transform())
         cube.transform?.position = float3(0, 0, 3)
         cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
         cube.add(component: MeshRenderer())

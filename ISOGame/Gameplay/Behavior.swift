@@ -21,8 +21,8 @@ class Behavior {
     open func onUpdate(deltaTime: TimeInterval) {}
     
     /// The transform component.
-    var transform: TransformComponent {
-        nexus.get(component: TransformComponent.identifier, for: entityId) as! TransformComponent
+    var transform: Transform {
+        nexus.get(component: Transform.identifier, for: entityId) as! Transform
     }
     
     /// The entity of this component.
@@ -41,6 +41,10 @@ class Behavior {
     }
     
     // todo: instantiate, destroy, add(component:), remove(component:), add(behavior:), remove(behavior:)
+    
+    // instantiate
+    //   create new entity
+    //      instantiate every component -> is an init + copy values!
 }
 
 /**
