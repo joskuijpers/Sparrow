@@ -157,13 +157,6 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
-//        Renderer.nexus.walkSceneGraph(root: self.rootEntity) { (entity, parent) -> Nexus.SceneGraphWalkAction in
-//            print("ENTITY", entity, "PARENT", parent ?? "none")
-//              this could update all transforms (if dirty), and active-ness. all entities need to have an up-to-date state of active/visible/worldTRANSFORM before rendering
-//            return .walkChildren
-//        }
-
-        
         let deltaTime = TimeInterval(1.0 / Double(view.preferredFramesPerSecond))
         behaviorSystem.update(deltaTime: deltaTime)
         
@@ -180,7 +173,6 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }
-    
 }
 
 /**
