@@ -150,24 +150,6 @@ extension Renderer: MTKViewDelegate {
         scene.screenSizeWillChange(to: size)
     }
     
-    func fillRenderQueues() {
-//        renderQueue.clear()
-        
-        // RenderQueue<Renderable>
-        // RenderQueue<LightData>
-            // .count
-        
-        // Walk through whole scene graph
-            // if node is visible in frustrum
-                // if is renderable
-                    // if has alpha blending
-                        // Fill transparency queue
-                    // else
-                        // Fill opaque queue
-                // if node is a light
-                    // add to lights list
-    }
-    
     func draw(in view: MTKView) {
         guard let descriptor = view.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
@@ -175,36 +157,20 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
-        /*
-         
-         behaviorSystem.update(dt)
-         
-         renderSystem.render()
-            split into the passes as needed, e.g. filling queue first
-         */
-        
 //        Renderer.nexus.walkSceneGraph(root: self.rootEntity) { (entity, parent) -> Nexus.SceneGraphWalkAction in
 //            print("ENTITY", entity, "PARENT", parent ?? "none")
 //              this could update all transforms (if dirty), and active-ness. all entities need to have an up-to-date state of active/visible/worldTRANSFORM before rendering
 //            return .walkChildren
-        
 //        }
-        /*
-        renderSystem.render()
-           split into the passes as needed, e.g. filling queue first, with frustrum culling
-            then do the passes from these queues
-        */
+
         
         let deltaTime = TimeInterval(1.0 / Double(view.preferredFramesPerSecond))
         behaviorSystem.update(deltaTime: deltaTime)
-        
         
         renderEncoder.setDepthStencilState(depthStencilState)
         
         scene.updateUniforms()
         
-//        fillRenderQueues()
-    
         renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene)
         
         renderEncoder.endEncoding()
@@ -217,15 +183,9 @@ extension Renderer: MTKViewDelegate {
     
 }
 
-/// Behavior test
-class HelloWorldComponent: Behavior {
-    override func onUpdate(deltaTime: TimeInterval) {
-        if let rotation = transform?.rotation {
-            transform?.rotation = rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
-        }
-    }
-}
-
+/**
+ Render system. Renders lights and meshes.
+ */
 class RenderSystem {
     let lights = Nexus.shared().group(requires: Light.self)
     let meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
@@ -264,4 +224,17 @@ class RenderSystem {
         NSApplication.shared.mainWindow?.title = "Drawn meshes: \(meshes.count)"
     }
     
+}
+
+
+
+
+
+/// Behavior test
+class HelloWorldComponent: Behavior {
+    override func onUpdate(deltaTime: TimeInterval) {
+        if let rotation = transform?.rotation {
+            transform?.rotation = rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
+        }
+    }
 }
