@@ -19,6 +19,10 @@ class Mesh {
     // TODO get rid of this
     static var vertexDescriptor: MDLVertexDescriptor = MDLVertexDescriptor.defaultVertexDescriptor
     
+    var vertexBuffers: [MTKMeshBuffer] {
+        self.mtkMesh.vertexBuffers
+    }
+    
     init(name: String) {
         guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
             fatalError("Model: \(name) not found")
@@ -51,26 +55,6 @@ class Mesh {
         bounds = Bounds(minBounds: mdlMesh.boundingBox.minBounds, maxBounds: mdlMesh.boundingBox.maxBounds)
     }
     
-    /// Render this mesh
-    func render(renderEncoder: MTLRenderCommandEncoder, pass: RenderPass, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms, worldTransform: float4x4) {
-        var vUniforms = vertexUniforms
-        
-        vUniforms.modelMatrix = worldTransform
-        vUniforms.normalMatrix = worldTransform.upperLeft
-        
-        renderEncoder.setVertexBytes(&vUniforms,
-                                     length: MemoryLayout<Uniforms>.stride,
-                                     index: Int(BufferIndexUniforms.rawValue))
-        
-        for (index, vertexBuffer) in mtkMesh.vertexBuffers.enumerated() {
-            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
-        }
-        
-        for submesh in submeshes {
-            submesh.render(renderEncoder: renderEncoder)
-        }
-    }
-    
     /**
      Add this mesh to the given render set for rendering from given viewPosition.
      
@@ -86,9 +70,59 @@ class Mesh {
         let (_, _, _, translation) = worldTransform.columns
         let depth: Float = distance(viewPosition, translation.xyz)
         
-        for submesh in submeshes {
-            let renderItem = RenderItem(transform: worldTransform, depth: depth, vertexBuffers: mtkMesh.vertexBuffers, submesh: submesh)
-            set.add(renderItem)
+        for (index, _) in submeshes.enumerated() {
+            // TODO: depending on submesh render mode, put in opaque or translucent
+            
+//            set.opaque.add(depth: depth, mesh: self, submeshIndex: uint8(index), worldTransform: worldTransform)
+            var item = set.acquire()
+            item.set(depth: depth, mesh: self, submeshIndex: uint8(index), worldTransform: worldTransform)
+            set.add(item)
         }
+    }
+}
+
+// MARK: - Rendering
+
+extension Mesh {
+    /**
+     Render the submesh at given index.
+     */
+    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms, submeshIndex: uint8, worldTransform: float4x4) {
+        let submesh = submeshes[Int(submeshIndex)]
+
+        renderEncoder.setRenderPipelineState(submesh.pipelineState)
+        
+        // Set vertex uniforms
+        var vertexUniforms = vertexUniforms
+        vertexUniforms.modelMatrix = worldTransform
+        vertexUniforms.normalMatrix = worldTransform.upperLeft
+        
+        renderEncoder.setVertexBytes(&vertexUniforms,
+                                     length: MemoryLayout<Uniforms>.stride,
+                                     index: Int(BufferIndexUniforms.rawValue))
+        
+        // Set vertex buffers
+        for (index, vertexBuffer) in mtkMesh.vertexBuffers.enumerated() {
+            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
+        }
+        
+        // Set textures
+        renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
+        renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
+        //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
+        
+        var materialPtr = submesh.material
+        renderEncoder.setFragmentBytes(&materialPtr,
+                                       length: MemoryLayout<Material>.stride,
+                                       index: Int(BufferIndexMaterials.rawValue))
+        
+        renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                            indexCount: submesh.mtkSubmesh.indexCount,
+                                            indexType: submesh.mtkSubmesh.indexType,
+                                            indexBuffer: submesh.mtkSubmesh.indexBuffer.buffer,
+                                            indexBufferOffset: submesh.mtkSubmesh.indexBuffer.offset)
     }
 }

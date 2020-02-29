@@ -11,112 +11,128 @@ import MetalKit
 /**
  A queue of renderables
  */
-struct RenderQueue: Sequence {
-    typealias Element = RenderItem
-    
-    fileprivate var list = [RenderItem]()
-    
-    var count: Int {
-        list.count
-    }
-    
-    init() {
-    }
-    
-    @inlinable public var isEmpty: Bool {
-        list.isEmpty
-    }
-    
-    /// Add a new renderable to the queue
-    mutating func add(_ item: RenderItem) {
-        list.append(item)
-    }
-    
-    /// Clear the queue
-    mutating func clear() {
-        list.removeAll(keepingCapacity: true)
-    }
-    
-    /// Sort the queue
-    func sort() {
-        
-//        list.sort { (a, b) -> Bool in
-//            return a.id < b.id
+//struct RenderQueue: Sequence {
+//    typealias Element = RenderQueueItem
+//    fileprivate var store = ContiguousArray<RenderQueueItem?>()
+//
+//    /// Total number of active items
+//    private(set) var size = 0
+//
+//    init(minCount: Int = 256) {
+//        store = ContiguousArray<RenderQueueItem?>(repeating: nil, count: minCount)
+//    }
+//
+//    @inlinable public var isEmpty: Bool {
+//        size == 0
+//    }
+//
+//    /// Add a new renderable to the queue
+//    mutating func add(_ item: RenderQueueItem) {
+//        store.add(item)
+//    }
+//
+//    /// Clear the queue
+//    mutating func clear() {
+//        store.removeAll(keepingCapacity: true)
+//        size = 0
+//    }
+//
+//    /// Sort the queue
+//    func sort() {
+////        list.sort { (a, b) -> Bool in
+////            return a.id < b.id
+////        }
+//    }
+//
+//    func makeIterator() -> RenderQueueIterator {
+//        return RenderQueueIterator(queue: self)
+//    }
+//}
+
+//struct RenderQueueIterator: IteratorProtocol {
+//    let queue: RenderQueue
+//    var current = 0
+//
+//    mutating func next() -> RenderQueueItem? {
+//        if current > queue.size - 1 {
+//            return nil
 //        }
-    }
-    
-    func makeIterator() -> RenderQueueIterator {
-        return RenderQueueIterator(queue: self)
-    }
-}
-
-struct RenderQueueIterator: IteratorProtocol {
-    let queue: RenderQueue
-    var current = 0
-    
-    mutating func next() -> RenderItem? {
-        if current > queue.list.count - 1 {
-            return nil
-        }
-
-        let item = queue.list[current]
-        current += 1
-        return item
-    }
-}
+//
+//        let item = queue.store[current]
+//        current += 1
+//        return item
+//    }
+//}
 
 /**
  A set of render queues for a specific projection.
  For example, the player camera, or a light (for shadow mapping)
  */
 class RenderSet {
+    private var pool = [RenderQueueItem]()
+    
     /// Render queue of renderabels that have no translucency, but can have cutouts
-    var opaque = RenderQueue()
+    var opaque = ContiguousArray<RenderQueueItem>()//RenderQueue()
     
-    /// Render queue of translucent renderables
-    var translucent = RenderQueue()
-    
-    /// Add a new renderable to the set. Will be put in the appropriate queue.
-    func add(_ item: RenderItem) {
-//        switch (item.submesh.material.renderMode) {
-//        case .opaque, .cutout:
-//            opaque.add(renderable)
-//        case .translucent:
-//            translucent.add(renderable)
-//        }
-        
-        opaque.add(item)
-    }
+    /// Render queue of translucent meshes (alpha blending)
+//    var translucent = RenderQueue()
     
     /// Clear the set
     func clear() {
-        opaque.clear()
-        translucent.clear()
+        for item in opaque {
+            pool.append(item)
+        }
+        
+        opaque.removeAll(keepingCapacity: true)
+    }
+    
+    /// Acquire a render queue item to fill
+    func acquire() -> RenderQueueItem {
+        if pool.count > 0 {
+            return pool.remove(at: 0)
+        }
+
+        return RenderQueueItem()
+    }
+    
+    /// Add an item to the queue
+    func add(_ item: RenderQueueItem) {
+        opaque.append(item)
     }
 }
 
-struct RenderItem {
-    let transform: float4x4
-    let depth: Float
-    let vertexBuffers: [MTKMeshBuffer]
-    let submesh: Submesh
-    
-    // let renderMode: RenderMode // .opaque, .alphaTest/cutout, .alphaBlend/translucent
-    
-    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
-        var vUniforms = vertexUniforms
-        
-        vUniforms.modelMatrix = transform
-        vUniforms.normalMatrix = transform.upperLeft
-        
-        renderEncoder.setVertexBytes(&vUniforms,
-                                     length: MemoryLayout<Uniforms>.stride,
-                                     index: Int(BufferIndexUniforms.rawValue))
-        
-        for (index, vertexBuffer) in vertexBuffers.enumerated() {
-            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
-        }
-        
-        submesh.render(renderEncoder: renderEncoder)
+enum RenderMode {
+    case opaque
+    case cutOut // alphaTest
+    case translucent // alphaBlend
+}
+
+/**
+ An item to render
+ */
+struct RenderQueueItem {
+    var depth: Float
+    unowned var mesh: Mesh!
+    var submeshIndex: uint8
+    var worldTransform: float4x4
+
+    init() {
+        depth = 0
+        mesh = nil
+        submeshIndex = 0
+        worldTransform = float4x4.identity()
     }
+    
+    mutating func set(depth: Float, mesh: Mesh, submeshIndex: uint8, worldTransform: float4x4) {
+//        print("SETTING ITEM", depth, mesh, submeshIndex, worldTransform)
+        
+        self.depth = depth
+        self.mesh = mesh
+        self.submeshIndex = submeshIndex
+        self.worldTransform = worldTransform
+    }
+    // numTextures
+    // textures: [TextureIdentifier] = [MAX TEXTURES]
+    
+    // shaderIdentifier
 }

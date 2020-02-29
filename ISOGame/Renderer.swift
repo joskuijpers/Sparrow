@@ -182,6 +182,8 @@ class RenderSystem {
     let lights = Nexus.shared().group(requires: Light.self)
     let meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
     
+    let renderSet = RenderSet()
+    
     func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene) {
 //        let scene = SceneManager.activeScene
         
@@ -196,14 +198,14 @@ class RenderSystem {
         
         
         // BUILD QUEUE
-        let set = RenderSet()
+        renderSet.clear()
         let (_, _, _, cameraWorldPosition) = scene.camera!.transform!.worldTransform.columns
         
         // Build a small render queue by adding all items to it
         // TODO: culling
         // TODO: sorting
         for (_, meshRenderer) in meshes {
-            meshRenderer.renderQueue(set: set, frustrum: false, viewPosition: cameraWorldPosition.xyz)
+            meshRenderer.renderQueue(set: renderSet, frustrum: false, viewPosition: cameraWorldPosition.xyz)
         }
         
         // Update fragment uniforms if possible here
@@ -215,14 +217,15 @@ class RenderSystem {
         // Set irradiance texture
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
 
-        for item in set.opaque {
+        for item in renderSet.opaque {
+//            print("GET", index, "DO", item.depth, item.mesh, item.submeshIndex, item.worldTransform)
 //            renderEncoder.pushDebugGroup(meshSelector.mesh!.name)
-            item.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
+            item.mesh.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
 //            renderEncoder.popDebugGroup()
         }
 
         // Easy testing
-        NSApplication.shared.mainWindow?.title = "Drawn meshes: \(set.opaque.count)"
+        NSApplication.shared.mainWindow?.title = "Drawn meshes: \(renderSet.opaque.count)"
     }
     
 }

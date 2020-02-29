@@ -9,8 +9,11 @@
 import MetalKit
 
 enum RenderPass {
-    case gbuffer
+    case depthPrePass
+    case ssao
     case shadow
+    case geometry
+    case postfx
 }
 
 class Scene {
