@@ -11,10 +11,11 @@ import Metal
 
 class MeshRenderer: Component {
     
+    // castShadows: Bool
+    // receiveShadows: Bool
     
     
-    
-    func render(renderEncoder: MTLRenderCommandEncoder, pass: RenderPass, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
+    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms) {
         guard let mesh = get(component: MeshSelector.self)?.mesh,
             let transform = self.transform else {
             return
@@ -22,6 +23,18 @@ class MeshRenderer: Component {
 
 //        print("[MeshRenderer] Render mesh \(mesh.name)")
         
-        mesh.render(renderEncoder: renderEncoder, pass: pass, vertexUniforms: vertexUniforms, fragmentUniforms: fragmentUniforms, worldTransform: transform.worldTransform)
+        mesh.render(renderEncoder: renderEncoder, pass: .gbuffer, vertexUniforms: vertexUniforms, fragmentUniforms: fragmentUniforms, worldTransform: transform.worldTransform)
+    }
+    
+    // Render into the queue
+    // TODO: create Frustrum type
+    func renderQueue(set: RenderSet, frustrum: Bool, viewPosition: float3) {
+        guard let mesh = get(component: MeshSelector.self)?.mesh,
+            let transform = self.transform else {
+            return
+        }
+        
+        // if mesh.bounds inside frustrum
+        mesh.addToRenderSet(set: set, pass: .gbuffer, viewPosition: viewPosition, worldTransform: transform.worldTransform)
     }
 }

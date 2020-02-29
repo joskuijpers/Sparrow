@@ -194,6 +194,18 @@ class RenderSystem {
         renderEncoder.setFragmentBytes(&lightsData, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
         // END BUILD LIGHTS
         
+        
+        // BUILD QUEUE
+        let set = RenderSet()
+        let (_, _, _, cameraWorldPosition) = scene.camera!.transform!.worldTransform.columns
+        
+        // Build a small render queue by adding all items to it
+        // TODO: culling
+        // TODO: sorting
+        for (_, meshRenderer) in meshes {
+            meshRenderer.renderQueue(set: set, frustrum: false, viewPosition: cameraWorldPosition.xyz)
+        }
+        
         // Update fragment uniforms if possible here
         
         renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
@@ -203,17 +215,14 @@ class RenderSystem {
         // Set irradiance texture
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
 
-        
-        for (meshSelector, meshRenderer) in meshes {
-            renderEncoder.pushDebugGroup(meshSelector.mesh!.name)
-
-            meshRenderer.render(renderEncoder: renderEncoder, pass: RenderPass.gbuffer, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
-            
-            renderEncoder.popDebugGroup()
+        for item in set.opaque {
+//            renderEncoder.pushDebugGroup(meshSelector.mesh!.name)
+            item.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms)
+//            renderEncoder.popDebugGroup()
         }
 
         // Easy testing
-        NSApplication.shared.mainWindow?.title = "Drawn meshes: \(meshes.count)"
+        NSApplication.shared.mainWindow?.title = "Drawn meshes: \(set.opaque.count)"
     }
     
 }

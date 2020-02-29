@@ -13,6 +13,11 @@ class Submesh {
     let pipelineState: MTLRenderPipelineState
     let material: Material
     
+    
+    // opaque, alphaTest, alphaBlend
+    
+    
+    
     struct Textures {
         let albedo: MTLTexture?
         let normal: MTLTexture?
@@ -92,6 +97,33 @@ private extension Submesh {
         functionConstants.setConstantValue(&property, type: .bool, index: 5)
         
         return functionConstants
+    }
+}
+
+extension Submesh {
+    /**
+     Render this submesh
+     */
+    func render(renderEncoder: MTLRenderCommandEncoder) {
+        renderEncoder.setRenderPipelineState(pipelineState)
+        
+        renderEncoder.setFragmentTexture(textures.albedo, index: Int(TextureAlbedo.rawValue))
+        renderEncoder.setFragmentTexture(textures.normal, index: Int(TextureNormal.rawValue))
+        renderEncoder.setFragmentTexture(textures.roughness, index: Int(TextureRoughness.rawValue))
+        renderEncoder.setFragmentTexture(textures.metallic, index: Int(TextureMetallic.rawValue))
+        renderEncoder.setFragmentTexture(textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
+        //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
+        
+        var materialPtr = material
+        renderEncoder.setFragmentBytes(&materialPtr,
+                                       length: MemoryLayout<Material>.stride,
+                                       index: Int(BufferIndexMaterials.rawValue))
+        
+        renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                            indexCount: mtkSubmesh.indexCount,
+                                            indexType: mtkSubmesh.indexType,
+                                            indexBuffer: mtkSubmesh.indexBuffer.buffer,
+                                            indexBufferOffset: mtkSubmesh.indexBuffer.offset)
     }
 }
 
