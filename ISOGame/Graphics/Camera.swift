@@ -16,7 +16,7 @@ class Camera: Component {
     }
     var aspect: Float = 1
     var near: Float = 0.001
-    var far: Float = 100
+    var far: Float = 1000
     
     var projectionMatrix: float4x4 {
         return float4x4(projectionFov: fovRadians,
@@ -51,7 +51,7 @@ class ArcballCamera: Component {
     }
     var aspect: Float = 1
     var near: Float = 0.001
-    var far: Float = 100
+    var far: Float = 1000
     
     var target: float3 = [0, 0, 0] {
         didSet {

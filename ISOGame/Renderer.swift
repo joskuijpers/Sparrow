@@ -115,6 +115,20 @@ class Renderer: NSObject {
         cube.add(component: MeshRenderer())
         // cube.add(behavior: HelloWorldComponent())
         Nexus.shared().addChild(cube, to: helmet)
+        
+        
+        
+        let sphereMesh = Mesh(name: "ironSphere.obj")
+        let c = 1000
+        let q = Int(sqrtf(Float(c)))
+        for i in 0...c {
+            let sphere = Nexus.shared().createEntity()
+            let transform = sphere.add(component: Transform())
+            transform.position = [Float(i / q - q/2) * 3, 0, Float(i % q - q/2) * 3]
+            sphere.add(component: MeshSelector(mesh: sphereMesh))
+            sphere.add(component: MeshRenderer())
+            sphere.add(behavior: HelloWorldComponent(seed: i))
+        }
     }
     
     
@@ -236,9 +250,14 @@ class RenderSystem {
 
 /// Behavior test
 class HelloWorldComponent: Behavior {
+    let rotationSpeed: Float
+    
+    init(seed: Int = 0) {
+        rotationSpeed = (Float(seed) * 35972.326365396643).truncatingRemainder(dividingBy: 180)
+    }
     override func onUpdate(deltaTime: TimeInterval) {
         if let rotation = transform?.rotation {
-            transform?.rotation = rotation + float3(0, Float(30).degreesToRadians * Float(deltaTime), 0)
+            transform?.rotation = rotation + float3(0, rotationSpeed.degreesToRadians * Float(deltaTime), 0)
         }
     }
 }
