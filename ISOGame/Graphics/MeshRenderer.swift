@@ -21,11 +21,12 @@ class MeshRenderer: Component {
             return
         }
         
-        let bounds = mesh.bounds * transform.worldTransform
+        let wt = transform.worldTransform
+        let bounds = mesh.bounds * wt
         DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
         
-        let wt = transform.worldTransform
-        if frustrum.intersects(bounds: mesh.bounds * wt) == .outside {
+
+        if frustrum.intersects(bounds: bounds) == .outside {
             return
         }
         

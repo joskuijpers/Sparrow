@@ -88,22 +88,21 @@ struct Frustrum {
     /// Get whether the bounds are (partially) within the frustrum.
     /// Returns outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
     func intersects(bounds: Bounds) -> FrustrumCullResult {
-        return .inside
-//        let center = bounds.center
-//        let extents = bounds.extents
-//        var result: FrustrumCullResult = .inside
-//
-//        for plane in planes {
-//            let m = dot(center, plane.normal)
-//            let n = dot(extents, abs(plane.normal))
-//
-//            if m + n < -plane.distance {
-//                return .outside
-//            }
-//            if m - n < -plane.distance {
-//                result = .intersect
-//            }
-//
+        let center = bounds.center
+        let extents = bounds.extents
+        var result: FrustrumCullResult = .inside
+
+        for plane in planes {
+            let m = dot(center, plane.normal)
+            let n = dot(extents, abs(plane.normal))
+
+            if m + n < -plane.distance {
+                return .outside
+            }
+            if m - n < -plane.distance {
+                result = .intersect
+            }
+
 ////            let nx = plane.normal.x > 0
 ////            let ny = plane.normal.y > 0
 ////            let nz = plane.normal.z > 0
@@ -118,9 +117,9 @@ struct Frustrum {
 ////            if d2 <= -plane.distance {
 ////                return true
 ////            }
-//        }
-//
-//        return result
+        }
+
+        return result
     }
     
     /// Get whether the sphere is (partially) within the frustrum.

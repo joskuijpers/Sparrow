@@ -99,33 +99,39 @@ class Renderer: NSObject {
         light.color = float3(2, 2, 2)
         
         
-        let helmet = Nexus.shared().createEntity()
-        let transform = helmet.add(component: Transform())
-        transform.position = float3(0, 0, 0)
-        
-        helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
-        helmet.add(component: MeshRenderer())
-        helmet.add(behavior: HelloWorldComponent())
-        
-        
-        let cube = Nexus.shared().createEntity()
-        cube.add(component: Transform())
-        cube.transform?.position = float3(0, 0, 3)
-        cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
-        cube.add(component: MeshRenderer())
-        // cube.add(behavior: HelloWorldComponent())
-        Nexus.shared().addChild(cube, to: helmet)
+//        let helmet = Nexus.shared().createEntity()
+//        let transform = helmet.add(component: Transform())
+//        transform.position = float3(0, 0, 0)
+//
+//        helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
+//        helmet.add(component: MeshRenderer())
+//        helmet.add(behavior: HelloWorldComponent())
+//
+//
+//        let cube = Nexus.shared().createEntity()
+//        cube.add(component: Transform())
+//        cube.transform?.position = float3(0, 0, 3)
+//        cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
+//        cube.add(component: MeshRenderer())
+//        // cube.add(behavior: HelloWorldComponent())
+//        Nexus.shared().addChild(cube, to: helmet)
         
         
         
         let sphereMesh = Mesh(name: "ironSphere.obj")
+        let sphereMesh2 = Mesh(name: "grassSphere.obj")
         let c = 1000
         let q = Int(sqrtf(Float(c)))
         for i in 0...c {
             let sphere = Nexus.shared().createEntity()
             let transform = sphere.add(component: Transform())
             transform.position = [Float(i / q - q/2) * 3, 0, Float(i % q - q/2) * 3]
-            sphere.add(component: MeshSelector(mesh: sphereMesh))
+            
+            if i % 2 == 0 {
+                sphere.add(component: MeshSelector(mesh: sphereMesh))
+            } else {
+                sphere.add(component: MeshSelector(mesh: sphereMesh2))
+            }
             sphere.add(component: MeshRenderer())
             sphere.add(behavior: HelloWorldComponent(seed: i))
         }
