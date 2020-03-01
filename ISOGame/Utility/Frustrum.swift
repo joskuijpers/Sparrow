@@ -8,14 +8,22 @@
 
 import Foundation
 
+/// Frustrum culling result
 enum FrustrumCullResult {
-    case outside, inside, intersect
+    /// Object is outside the frustrum.
+    case outside
+    /// Object is fully inside the frustrum.
+    case inside
+    /// Object is at least partially inside the frustrum.
+    case intersect
 }
 
 /**
  Frustrum box, defined by 6 planes. Values in worldspace.
  
  Can be used to test Bounds intersection.
+ 
+ - Note: The test is approximate, for culling only. Objects that are fully outside might be seen as inside or intersecting.
  
  - Note:
     ~~~
