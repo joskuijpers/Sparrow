@@ -64,7 +64,8 @@ struct Frustrum {
     
     /// Get whether the sphere is (partially) within the frustrum.
     func intersects(sphereAt position: float3, radius: Float) -> Bool {
-        for plane in planes {
+        for i in 0..<6 {
+            let plane = planes[i]
             if dot(position, plane.xyz) + plane.w <= -radius {
                 return false
             }
