@@ -18,8 +18,11 @@ public class DebugRendering {
     
     private var pipelineState: MTLRenderPipelineState?
     private var vertices = [DebugRenderVertex]()
+    private var buffer: MTLBuffer!
     
     private init() {
+        let count = max(vertices.count, 64)
+        buffer = Renderer.device.makeBuffer(bytes: &vertices, length: count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
     }
 
     /// Draw a box
@@ -100,7 +103,7 @@ public class DebugRendering {
                                      length: MemoryLayout<Uniforms>.stride,
                                      index: Int(BufferIndexUniforms.rawValue))
         
-        let buffer = makeBuffer()
+        updateBuffer()
         renderEncoder.setVertexBuffer(buffer, offset: 0, index: 0)
         renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: vertices.count)
         
@@ -108,8 +111,13 @@ public class DebugRendering {
         vertices.removeAll(keepingCapacity: true)
     }
     
-    private func makeBuffer() -> MTLBuffer {
-        return Renderer.device.makeBuffer(bytes: &vertices, length: vertices.count * MemoryLayout<DebugRenderVertex>.stride, options: [])!
+    private func updateBuffer() {
+        let size = vertices.count * MemoryLayout<DebugRenderVertex>.stride
+        if buffer.allocatedSize < size {
+            buffer = Renderer.device.makeBuffer(bytes: &vertices, length: (vertices.count + 64) * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
+        } else {
+            buffer.contents().copyMemory(from: &vertices, byteCount: size)
+        }
     }
 
     private func makePipelineState() {
