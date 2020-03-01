@@ -618,7 +618,7 @@ import Metal
  Scene has Octree
  No union AABBs. AABBs rotate (?)
  
- frustrum culling
+ frustum culling
  
  https://gdbooks.gitbooks.io/legacyopengl/content/Chapter8/halfspace.html
  https://gdbooks.gitbooks.io/3dcollisions/content/Chapter6/frustum.html

@@ -10,11 +10,11 @@ import Foundation
 
 /// Frustum culling result
 enum FrustumCullResult {
-    /// Object is outside the frustrum.
+    /// Object is outside the frustum.
     case outside
-    /// Object is fully inside the frustrum.
+    /// Object is fully inside the frustum.
     case inside
-    /// Object is at least partially inside the frustrum.
+    /// Object is at least partially inside the frustum.
     case intersect
 }
 
@@ -52,7 +52,7 @@ struct Frustum {
         self.planes = planes
     }
     
-    /// Get whether the bounds are (partially) within the frustrum.
+    /// Get whether the bounds are (partially) within the frustum.
     ///
     /// - Parameter bounds: The bounds of the AABB to intersect with.
     /// - Returns: outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
@@ -78,7 +78,7 @@ struct Frustum {
         return result
     }
     
-    /// Get whether the sphere is (partially) within the frustrum.
+    /// Get whether the sphere is (partially) within the frustum.
     ///
     /// - Parameter position: Sphere center position.
     /// - Parameter radius: Sphere radius.

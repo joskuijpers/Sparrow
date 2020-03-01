@@ -219,14 +219,14 @@ class RenderSystem {
         
         // BUILD QUEUE
         renderSet.clear()
-        let frustrum = Frustum(viewProjectionMatrix: scene.uniforms.projectionMatrix * scene.uniforms.viewMatrix)
+        let frustum = Frustum(viewProjectionMatrix: scene.uniforms.projectionMatrix * scene.uniforms.viewMatrix)
         let (_, _, _, cameraWorldPosition) = scene.camera!.transform!.worldTransform.columns
         
         // Build a small render queue by adding all items to it
         // TODO: culling
         // TODO: sorting
         for (_, meshRenderer) in meshes {
-            meshRenderer.renderQueue(set: renderSet, frustrum: frustrum, viewPosition: cameraWorldPosition.xyz)
+            meshRenderer.renderQueue(set: renderSet, frustum: frustum, viewPosition: cameraWorldPosition.xyz)
         }
         
         // Update fragment uniforms if possible here
