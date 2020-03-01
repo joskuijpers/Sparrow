@@ -111,15 +111,22 @@ public class DebugRendering {
         vertices.removeAll(keepingCapacity: true)
     }
     
+    /// Update the vertex buffer with new contents. Make it larger if the vertices don't fit int he current size.
+    ///
+    /// - Note: Currently, the buffer never shrinks
     private func updateBuffer() {
         let size = vertices.count * MemoryLayout<DebugRenderVertex>.stride
         if buffer.allocatedSize < size {
             buffer = Renderer.device.makeBuffer(bytes: &vertices, length: (vertices.count + 64) * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
+        } else if size < buffer.allocatedSize / 2 {
+            print("TODO: SHRINK DEBUG VERTEX BUFFER")
+            buffer.contents().copyMemory(from: &vertices, byteCount: size)
         } else {
             buffer.contents().copyMemory(from: &vertices, byteCount: size)
         }
     }
 
+    /// Create a pipeline state with the debug shaders that simply draw colored vertices.
     private func makePipelineState() {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         let library = Renderer.library!
