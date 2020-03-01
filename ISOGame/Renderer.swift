@@ -268,7 +268,7 @@ class HelloWorldComponent: Behavior {
     }
     override func onUpdate(deltaTime: TimeInterval) {
         if let rotation = transform?.rotation {
-            transform?.rotation = rotation + float3(0, rotationSpeed.degreesToRadians * Float(deltaTime), 0)
+            transform!.rotation = rotation + float3(0, rotationSpeed.degreesToRadians * Float(deltaTime), 0)
         }
     }
 }

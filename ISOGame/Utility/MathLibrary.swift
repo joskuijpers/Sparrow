@@ -8,11 +8,11 @@
 
 import simd
 
-typealias float2 = SIMD2<Float>
-typealias float3 = SIMD3<Float>
-typealias float4 = SIMD4<Float>
+public typealias float2 = SIMD2<Float>
+public typealias float3 = SIMD3<Float>
+public typealias float4 = SIMD4<Float>
 
-let π = Float.pi
+public let π = Float.pi
 
 extension Float {
     var radiansToDegrees: Float {
@@ -27,63 +27,65 @@ extension Float {
 // MARK:- float4
 extension float4x4 {
     // MARK:- Translate
+    @inlinable
     init(translation: float3) {
-        let matrix = float4x4(
+        self = float4x4(
             [            1,             0,             0, 0],
             [            0,             1,             0, 0],
             [            0,             0,             1, 0],
             [translation.x, translation.y, translation.z, 1]
         )
-        self = matrix
     }
     
     // MARK:- Scale
+    @inlinable
     init(scaling: float3) {
-        let matrix = float4x4(
+        self = float4x4(
             [scaling.x,         0,         0, 0],
             [        0, scaling.y,         0, 0],
             [        0,         0, scaling.z, 0],
             [        0,         0,         0, 1]
         )
-        self = matrix
     }
     
+    @inlinable
     init(scaling: Float) {
         self = matrix_identity_float4x4
         columns.3.w = 1 / scaling
     }
     
     // MARK:- Rotate
+    @inlinable
     init(rotationX angle: Float) {
-        let matrix = float4x4(
+        self = float4x4(
             [1,           0,          0, 0],
             [0,  cos(angle), sin(angle), 0],
             [0, -sin(angle), cos(angle), 0],
             [0,           0,          0, 1]
         )
-        self = matrix
     }
     
+    @inlinable
     init(rotationY angle: Float) {
-        let matrix = float4x4(
+        self = float4x4(
             [cos(angle), 0, -sin(angle), 0],
             [         0, 1,           0, 0],
             [sin(angle), 0,  cos(angle), 0],
             [         0, 0,           0, 1]
         )
-        self = matrix
     }
     
+    @inlinable
     init(rotationZ angle: Float) {
-        let matrix = float4x4(
+        self = float4x4(
             [ cos(angle), sin(angle), 0, 0],
             [-sin(angle), cos(angle), 0, 0],
             [          0,          0, 1, 0],
             [          0,          0, 0, 1]
         )
-        self = matrix
     }
     
+    @inlinable
     init(rotation angle: float3) {
         let rotationX = float4x4(rotationX: angle.x)
         let rotationY = float4x4(rotationY: angle.y)
@@ -91,6 +93,7 @@ extension float4x4 {
         self = rotationX * rotationY * rotationZ
     }
     
+    @inlinable
     init(rotationYXZ angle: float3) {
         let rotationX = float4x4(rotationX: angle.x)
         let rotationY = float4x4(rotationY: angle.y)
@@ -99,11 +102,13 @@ extension float4x4 {
     }
     
     // MARK:- Identity
+    @inlinable
     static func identity() -> float4x4 {
         matrix_identity_float4x4
     }
     
     // MARK:- Upper left 3x3
+    @inlinable
     var upperLeft: float3x3 {
         let x = columns.0.xyz
         let y = columns.1.xyz
@@ -173,6 +178,7 @@ extension float3x3 {
 
 // MARK:- float4
 extension float4 {
+    @inlinable
     var xyz: float3 {
         get {
             float3(x, y, z)
