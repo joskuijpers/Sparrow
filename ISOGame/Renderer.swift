@@ -213,13 +213,14 @@ class RenderSystem {
         
         // BUILD QUEUE
         renderSet.clear()
+        let frustrum = Frustrum(viewProjectionMatrix: scene.uniforms.viewMatrix * scene.uniforms.projectionMatrix)
         let (_, _, _, cameraWorldPosition) = scene.camera!.transform!.worldTransform.columns
         
         // Build a small render queue by adding all items to it
         // TODO: culling
         // TODO: sorting
         for (_, meshRenderer) in meshes {
-            meshRenderer.renderQueue(set: renderSet, frustrum: false, viewPosition: cameraWorldPosition.xyz)
+            meshRenderer.renderQueue(set: renderSet, frustrum: frustrum, viewPosition: cameraWorldPosition.xyz)
         }
         
         // Update fragment uniforms if possible here
@@ -237,6 +238,10 @@ class RenderSystem {
             item.mesh.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
 //            renderEncoder.popDebugGroup()
         }
+        
+        DebugRendering.shared.gizmo(position: float3(0, 5, 0))
+        
+        DebugRendering.shared.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
 
         // Easy testing
         NSApplication.shared.mainWindow?.title = "Drawn meshes: \(renderSet.opaque.count)"

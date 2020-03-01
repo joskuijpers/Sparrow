@@ -10,25 +10,32 @@
 using namespace metal;
 #import "ShaderCommon.h"
 
-vertex float4 vertex_debug_aabb(
-                                const constant float3 *vertexArray [[ buffer(0) ]],
-                                unsigned int vid [[ vertex_id ]],
-                                constant float3 &minBounds [[ buffer(1) ]],
-                                constant float3 &maxBounds [[ buffer(2) ]],
-                                constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]]
-                                ) {
-    float3 in = vertexArray[vid];
+struct VertexIn {
+    float3 position     [[ attribute(0) ]];
+    float3 color        [[ attribute(1) ]];
+};
+
+struct VertexOut {
+    float4 position [[ position ]];
+    float3 color;
+};
+
+vertex VertexOut vertex_debug(
+                              const constant VertexIn *vertexArray [[ buffer(0) ]],
+                              unsigned int vid [[ vertex_id ]],
+                              constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]]
+                              ) {
+    VertexIn in = vertexArray[vid];
+    VertexOut out;
     
-    // Adjust position based on lower/upper bounds. For every vertex at 0, use min
-    // bound. Use max bound for vertices at 1
-    float3 position = mix(minBounds, maxBounds, in);
+    out.position = uniforms.projectionMatrix * uniforms.viewMatrix * float4(in.position, 1);
+    out.color = in.color;
     
-    return uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(position, 1);
+    return out;
 }
 
-fragment float4 fragment_debug_aabb(
-                                    float4 in [[ stage_in ]],
-                                    constant float3 &color [[ buffer(0) ]]
-                                    ) {
-    return float4(color, 1);
+fragment float4 fragment_debug(
+                               VertexIn in [[ stage_in ]]
+                               ) {
+    return float4(in.color, 1);
 }

@@ -116,38 +116,38 @@ public class STFAsset {
         print("LOAD BUFFERS \(json.count)")
         buffers.reserveCapacity(json.count)
         
-        for bufferInfo in json {
-            guard let uri = bufferInfo.uri else {
-                fatalError("Buffer is missing a URI")
-                continue
-            }
+//        for bufferInfo in json {
+//            guard let uri = bufferInfo.uri else {
+//                fatalError("Buffer is missing a URI")
+//                continue
+//            }
             
-            var data: Data?
-            if uri.hasPrefix("data:application/octet-stream;base64,") {
-                let firstComma = (uri.range(of: ",")?.lowerBound)!
-                let encodedData = uri.suffix(from: uri.index(after: firstComma))
+//            var data: Data?
+//            if uri.hasPrefix("data:application/octet-stream;base64,") {
+//                let firstComma = (uri.range(of: ",")?.lowerBound)!
+//                let encodedData = uri.suffix(from: uri.index(after: firstComma))
+//
+//                data = Data(base64Encoded: String(encodedData), options: .ignoreUnknownCharacters)
+//            } else if uri.count > 0 {
+//                let fileURL = url.deletingLastPathComponent().appendingPathComponent(uri)
+//                print("Loading buffer from \(fileURL)")
+//
+//                do {
+//                    data = try Data(contentsOf: fileURL)
+//                } catch let error {
+//                    fatalError(error.localizedDescription)
+//                }
+//            }
                 
-                data = Data(base64Encoded: String(encodedData), options: .ignoreUnknownCharacters)
-            } else if uri.count > 0 {
-                let fileURL = url.deletingLastPathComponent().appendingPathComponent(uri)
-                print("Loading buffer from \(fileURL)")
+//            let buffer = device.makeBuffer(length: bufferInfo.byteLength, options: [])!
+//            data!wifffffthUnsafeBytes { (uint8Ptr: UnsafePointer<UInt8>) in
+//                let pointer = UnsafeRawPointer(uint8Ptr)
+//                memcpy(buffer.contents(), pointer, bufferInfo.byteLength)
+//            }
                 
-                do {
-                    data = try Data(contentsOf: fileURL)
-                } catch let error {
-                    fatalError(error.localizedDescription)
-                }
-            }
-                
-            let buffer = device.makeBuffer(length: bufferInfo.byteLength, options: [])!
-            data!.withUnsafeBytes { (uint8Ptr: UnsafePointer<UInt8>) in
-                let pointer = UnsafeRawPointer(uint8Ptr)
-                memcpy(buffer.contents(), pointer, bufferInfo.byteLength)
-            }
-                
-            buffers.append(STFBuffer(mtlBuffer: buffer))
+//            buffers.append(STFBuffer(mtlBuffer: buffer))
             // buffersData.append(data)
-        }
+//        }
         
     }
     
@@ -183,19 +183,20 @@ public class STFAsset {
     }
     
     private func getImage(index: Int) -> String? {
-        let textureInfo = textures[index]
+//        let textureInfo = textures[index]
         
-        if let imageIndex = textureInfo.source {
-            let imageInfo = images[imageIndex]
+//        if let imageIndex = textureInfo.source {
+//            let imageInfo = images[imageIndex]
             
-            if let imageName = imageInfo.uri {
-                print("IMAGE NAME \(imageName)")
-                return imageName
-            } else if let mimeType = imageInfo.mimeType, let viewIndex = imageInfo.bufferView {
-                let view = bufferViews[viewIndex]
-                fatalError("TO IMPLEMENT")
-            }
-        }
+//            if let imageName = imageInfo.uri {
+//                print("IMAGE NAME \(imageName)")
+//                return imageName
+//            } else if let mimeType = imageInfo.mimeType, let viewIndex = imageInfo.bufferView {
+//                let view = bufferViews[viewIndex]
+//                fatalError("TO IMPLEMENT")
+//            }
+//            return nil
+//        }
         
         return nil
     }
