@@ -42,12 +42,12 @@ struct Frustum {
         var planes = [float4](repeating: .zero, count: 6)
 
         let (x, y, z, w) = viewProjectionMatrix.transpose.columns
-        planes.append(normalize(w + x)) // left
-        planes.append(normalize(w - x)) // right
-        planes.append(normalize(w + y)) // bottom
-        planes.append(normalize(w - y)) // top
-        planes.append(normalize(w + z)) // near
-        planes.append(normalize(w - x)) // far
+        planes[0] = normalize(w + x) // left
+        planes[1] = normalize(w - x) // right
+        planes[2] = normalize(w + y) // bottom
+        planes[3] = normalize(w - y) // top
+        planes[4] = normalize(w + z) // near
+        planes[5] = normalize(w - x) // far
 
         self.planes = planes
     }
