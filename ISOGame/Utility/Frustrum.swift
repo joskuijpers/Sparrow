@@ -17,13 +17,19 @@ enum FrustrumCullResult {
  
  Can be used to test Bounds intersection.
  
- https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/scenemanagement/Tutorial%207%20-%20Scene%20Management.pdf
- http://old.cescg.org/CESCG-2002/DSykoraJJelinek/
- https://www.gamedev.net/forums/topic/657702-creating-camera-bounding-frustum-from-view-and-projection-matrix/
+ - Note:
+    ~~~
+    https://research.ncl.ac.uk/game/mastersdegree/graphicsforgames/scenemanagement/Tutorial%207%20-%20Scene%20Management.pdf
+    http://old.cescg.org/CESCG-2002/DSykoraJJelinek/
+    https://www.gamedev.net/forums/topic/657702-creating-camera-bounding-frustum-from-view-and-projection-matrix/
+    ~~~
  */
 struct Frustrum {
     let planes: [float4] // xyz=normal, w=distance
     
+    /// Create a new Frustrum using the camera view projection matrix
+    ///
+    /// - Parameter viewProjectionMatrix: The matrix from the camera.
     init(viewProjectionMatrix: float4x4) {
         var planes = [float4](repeating: .zero, count: 6)
 
@@ -39,7 +45,9 @@ struct Frustrum {
     }
     
     /// Get whether the bounds are (partially) within the frustrum.
-    /// Returns outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
+    ///
+    /// - Parameter bounds: The bounds of the AABB to intersect with.
+    /// - Returns: outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
     func intersects(bounds: Bounds) -> FrustrumCullResult {
         let center = bounds.center
         let extents = bounds.extents
@@ -63,13 +71,17 @@ struct Frustrum {
     }
     
     /// Get whether the sphere is (partially) within the frustrum.
-    func intersects(sphereAt position: float3, radius: Float) -> Bool {
+    ///
+    /// - Parameter position: Sphere center position.
+    /// - Parameter radius: Sphere radius.
+    /// - Returns: Whether the sphere is outside or inside
+    func intersects(sphereAt position: float3, radius: Float) -> FrustrumCullResult {
         for i in 0..<6 {
             let plane = planes[i]
             if dot(position, plane.xyz) + plane.w <= -radius {
-                return false
+                return .outside
             }
         }
-        return true
+        return .inside
     }
 }
