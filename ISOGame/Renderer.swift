@@ -219,7 +219,7 @@ class RenderSystem {
         
         // BUILD QUEUE
         renderSet.clear()
-        let frustrum = Frustrum(viewProjectionMatrix: scene.uniforms.viewMatrix * scene.uniforms.projectionMatrix)
+        let frustrum = Frustum(viewProjectionMatrix: scene.uniforms.projectionMatrix * scene.uniforms.viewMatrix)
         let (_, _, _, cameraWorldPosition) = scene.camera!.transform!.worldTransform.columns
         
         // Build a small render queue by adding all items to it

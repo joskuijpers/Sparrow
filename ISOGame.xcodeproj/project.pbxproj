@@ -37,7 +37,7 @@
 		8015C6D123D647B100DFF109 /* Group5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B623D647B100DFF109 /* Group5.swift */; };
 		8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B723D647B100DFF109 /* Nexus+Entity.swift */; };
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
-		80438C20240B0A2700099034 /* Frustrum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1F240B0A2700099034 /* Frustrum.swift */; };
+		80438C20240B0A2700099034 /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1F240B0A2700099034 /* Frustum.swift */; };
 		80438C22240B2A6300099034 /* DebugRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C21240B2A6300099034 /* DebugRendering.swift */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
 		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
@@ -133,7 +133,7 @@
 		8015C6B623D647B100DFF109 /* Group5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group5.swift; sourceTree = "<group>"; };
 		8015C6B723D647B100DFF109 /* Nexus+Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Entity.swift"; sourceTree = "<group>"; };
 		80438C1623FA0CF600099034 /* SceneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManager.swift; sourceTree = "<group>"; };
-		80438C1F240B0A2700099034 /* Frustrum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustrum.swift; sourceTree = "<group>"; };
+		80438C1F240B0A2700099034 /* Frustum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		80438C21240B2A6300099034 /* DebugRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRendering.swift; sourceTree = "<group>"; };
 		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -403,7 +403,7 @@
 			children = (
 				80A462F1238F1E25009435EB /* MathLibrary.swift */,
 				8099AAEE23BE127E00E03CE0 /* Bounds.swift */,
-				80438C1F240B0A2700099034 /* Frustrum.swift */,
+				80438C1F240B0A2700099034 /* Frustum.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -585,7 +585,7 @@
 				8015C6C223D647B100DFF109 /* Nexus.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				8015C6CE23D647B100DFF109 /* Group3.swift in Sources */,
-				80438C20240B0A2700099034 /* Frustrum.swift in Sources */,
+				80438C20240B0A2700099034 /* Frustum.swift in Sources */,
 				8015C6D023D647B100DFF109 /* NexusEvents.swift in Sources */,
 				80A462DA238F100B009435EB /* GameView.swift in Sources */,
 				808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */,

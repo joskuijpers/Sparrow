@@ -1,5 +1,5 @@
 //
-//  Frustrum.swift
+//  Frustum.swift
 //  ISOGame
 //
 //  Created by Jos Kuijpers on 29/02/2020.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-/// Frustrum culling result
-enum FrustrumCullResult {
+/// Frustum culling result
+enum FrustumCullResult {
     /// Object is outside the frustrum.
     case outside
     /// Object is fully inside the frustrum.
@@ -19,7 +19,7 @@ enum FrustrumCullResult {
 }
 
 /**
- Frustrum box, defined by 6 planes. Values in worldspace.
+ Frustum box, defined by 6 planes. Values in worldspace.
  
  Can be used to test Bounds intersection.
  
@@ -32,10 +32,10 @@ enum FrustrumCullResult {
     https://www.gamedev.net/forums/topic/657702-creating-camera-bounding-frustum-from-view-and-projection-matrix/
     ~~~
  */
-struct Frustrum {
+struct Frustum {
     let planes: [float4] // xyz=normal, w=distance
     
-    /// Create a new Frustrum using the camera view projection matrix
+    /// Create a new Frustum using the camera view projection matrix
     ///
     /// - Parameter viewProjectionMatrix: The matrix from the camera.
     init(viewProjectionMatrix: float4x4) {
@@ -56,10 +56,10 @@ struct Frustrum {
     ///
     /// - Parameter bounds: The bounds of the AABB to intersect with.
     /// - Returns: outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
-    func intersects(bounds: Bounds) -> FrustrumCullResult {
+    func intersects(bounds: Bounds) -> FrustumCullResult {
         let center = bounds.center
         let extents = bounds.extents
-        var result: FrustrumCullResult = .inside
+        var result: FrustumCullResult = .inside
 
         for i in 0..<6 {
             let plane = planes[i]
@@ -83,7 +83,7 @@ struct Frustrum {
     /// - Parameter position: Sphere center position.
     /// - Parameter radius: Sphere radius.
     /// - Returns: Whether the sphere is outside or inside
-    func intersects(sphereAt position: float3, radius: Float) -> FrustrumCullResult {
+    func intersects(sphereAt position: float3, radius: Float) -> FrustumCullResult {
         for i in 0..<6 {
             let plane = planes[i]
             if dot(position, plane.xyz) + plane.w <= -radius {

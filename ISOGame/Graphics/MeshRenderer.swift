@@ -15,7 +15,7 @@ class MeshRenderer: Component {
     // receiveShadows: Bool
     
     /// Add renderables to render set
-    func renderQueue(set: RenderSet, frustrum: Frustrum, viewPosition: float3) {
+    func renderQueue(set: RenderSet, frustrum: Frustum, viewPosition: float3) {
         guard let mesh = get(component: MeshSelector.self)?.mesh,
             let transform = self.transform else {
             return
