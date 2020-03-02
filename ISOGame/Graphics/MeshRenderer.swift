@@ -23,7 +23,7 @@ class MeshRenderer: Component {
         
         let wt = transform.worldTransform
         let bounds = mesh.bounds * wt
-        DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
+//        DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
         
 
         if frustum.intersects(bounds: bounds) == .outside {

@@ -28,6 +28,8 @@ class Light: Component {
     /// Light direction (for spot and directional lights). // TODO; replace with rotation of transform?
     var direction = float3(0, -1, 0)
     
+    private var buildDateDirty = true
+    
     // TODO: add set/get Kelvin (color), Candela (intensity)
         // colorTemperature
     // range
@@ -36,16 +38,12 @@ class Light: Component {
         self.type = type
         
         super.init()
-        
-        rebuildData()
     }
     
     required init() {
         self.type = .point
         
         super.init()
-
-        rebuildData()
     }
     
     private func rebuildData() {
@@ -71,6 +69,9 @@ class Light: Component {
     
     /// Acquire the render system light data
     func build() -> LightData {
+        if buildDateDirty {
+            rebuildData()
+        }
         return data
     }
 }

@@ -118,8 +118,8 @@ public class DebugRendering {
         let size = vertices.count * MemoryLayout<DebugRenderVertex>.stride
         if buffer.allocatedSize < size {
             buffer = Renderer.device.makeBuffer(bytes: &vertices, length: (vertices.count + 64) * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
-        } else if size < buffer.allocatedSize / 2 {
-            print("TODO: SHRINK DEBUG VERTEX BUFFER")
+        } else if max(size, 64) < buffer.allocatedSize / 2 {
+//            print("TODO: SHRINK DEBUG VERTEX BUFFER")
             buffer.contents().copyMemory(from: &vertices, byteCount: size)
         } else {
             buffer.contents().copyMemory(from: &vertices, byteCount: size)

@@ -84,7 +84,6 @@ class Renderer: NSObject {
         
         let skyLight = Nexus.shared().createEntity()
         skyLight.add(component: Transform())
-        
         let light = skyLight.add(component: Light(type: .directional))
         light.direction = float3(0, -5, 10)
         light.color = float3(2, 2, 2)
@@ -125,6 +124,17 @@ class Renderer: NSObject {
             }
             sphere.add(component: MeshRenderer())
             sphere.add(behavior: HelloWorldComponent(seed: i))
+        }
+        
+        let l = 80
+        for i in 0...l {
+            let light = Nexus.shared().createEntity()
+            let transform = light.add(component: Transform())
+            transform.position = [Float(i / 5) * 3, 2, Float(i % 5) * 3]
+            
+            let lightInfo = light.add(component: Light(type: .point))
+            lightInfo.color = float3(1,1,0)
+            lightInfo.intensity = 1
         }
     }
     
@@ -200,7 +210,11 @@ class RenderSystem {
         
         // START BUILD LIGHTS
         // todo: limit with Bounds... culling...
-        var lightsData: [LightData] = lights.map { $0.build() }
+        var lightsData = [LightData]()
+        for light in lights {
+            lightsData.append(light.build())
+            DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
+        }
         var lightCount = lightsData.count
         
         renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)

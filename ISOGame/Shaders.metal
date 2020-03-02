@@ -160,7 +160,7 @@ fragment float4 fragment_main(
     parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
     parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
 
-    for (int i = 0; i < lightsCount; ++i) {
+    for (int i = 0; i < 1; ++i) {
         LightData light = lights[i];
         
         float3 lightDirection = float3(1, 0, 0);
