@@ -70,6 +70,6 @@ class DebugCameraBehavior: Behavior {
             diff = diff - float3(0, 1, 0) * Float(deltaTime) * speed
         }
         
-        transform.position = transform.position + diff
+        transform.translate(diff)
     }
 }

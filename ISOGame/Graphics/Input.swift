@@ -34,6 +34,16 @@ class Input {
     func getKey(_ keyCode: Keycode) -> Bool {
         return keyState[keyCode.rawValue] ?? false
     }
+    
+    /// Return key state for input binding name
+    func getKey(name: String) -> Bool {
+        return false;
+    }
+    
+    /// Return axis value for binding name
+    func getAxis(name: String) -> Float {
+        return 0.0
+    }
 }
 
 enum Keycode: UInt16 {

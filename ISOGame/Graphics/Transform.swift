@@ -106,6 +106,17 @@ class Transform: Component {
     var forward: float3 {
         return (float4(1, 0, 0, 1) * worldTransform).xyz
     }
+    
+    
+    
+    
+    func translate(_ d: float3) {
+        position = position + d
+    }
+    
+    func rotate(_ d: float3) {
+        rotation = rotation + d
+    }
 }
 
 extension Component {
