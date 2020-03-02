@@ -39,6 +39,7 @@
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
 		80438C20240B0A2700099034 /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1F240B0A2700099034 /* Frustum.swift */; };
 		80438C22240B2A6300099034 /* DebugRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C21240B2A6300099034 /* DebugRendering.swift */; };
+		80438C24240DC31B00099034 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C23240DC31B00099034 /* Input.swift */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
 		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
 		8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAEE23BE127E00E03CE0 /* Bounds.swift */; };
@@ -135,6 +136,7 @@
 		80438C1623FA0CF600099034 /* SceneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManager.swift; sourceTree = "<group>"; };
 		80438C1F240B0A2700099034 /* Frustum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		80438C21240B2A6300099034 /* DebugRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRendering.swift; sourceTree = "<group>"; };
+		80438C23240DC31B00099034 /* Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Input.swift; path = Graphics/Input.swift; sourceTree = "<group>"; };
 		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086965B23B8DD150007E75D /* STF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = STF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -371,6 +373,7 @@
 				8015C69C23D6479F00DFF109 /* ECS */,
 				80A462F8238F25C6009435EB /* Models */,
 				80A462F0238F1E14009435EB /* Utility */,
+				80438C23240DC31B00099034 /* Input.swift */,
 				80A462E6238F126A009435EB /* Mesh.swift */,
 				80A462E8238F126F009435EB /* Submesh.swift */,
 				80A462EA238F1287009435EB /* Primitive.swift */,
@@ -578,6 +581,7 @@
 				800604B323F9F55C00B3FB7F /* Behavior.swift in Sources */,
 				8015C6BE23D647B100DFF109 /* Group1.swift in Sources */,
 				8015C6C623D647B100DFF109 /* Group4.swift in Sources */,
+				80438C24240DC31B00099034 /* Input.swift in Sources */,
 				800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */,
 				8015C6BF23D647B100DFF109 /* Group2.swift in Sources */,
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,

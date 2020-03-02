@@ -20,7 +20,7 @@ class Scene {
 //    var inputController = InputController()
 
     var screenSize: CGSize
-    var camera: ArcballCamera?
+    var camera: Camera?
     
     var uniforms = Uniforms()
     var fragmentUniforms = FragmentUniforms()

@@ -77,17 +77,8 @@ class Renderer: NSObject {
     func buildScene() {
         let camera = Nexus.shared().createEntity()
         camera.add(component: Transform())
-        let cameraComp = camera.add(component: ArcballCamera())
-        cameraComp.distance = 4.3
-        cameraComp.target = [0, 1.2, 0]
-        if var r = cameraComp.transform?.rotation {
-            r.x = Float(-10).degreesToRadians
-            cameraComp.transform?.rotation = r
-        }
-//        camera.add(component: Camera())
-//        camera.add(behavior: ArcBallCamera(distance: 4.3, target: [0, 1.2, 0]))
-        
-        
+        let cameraComp = camera.add(component: Camera())
+        camera.add(behavior: DebugCameraBehavior())
         scene.camera = cameraComp
         
         

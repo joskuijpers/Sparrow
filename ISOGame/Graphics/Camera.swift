@@ -40,85 +40,36 @@ class Camera: Component {
     func screenSizeWillChange(to size: CGSize) {
         aspect = Float(size.width / size.height)
     }
+    
+    // TODO, maybe: static Camera.main -> Camera { SceneManager.current.camera }
 }
 
-// TODO: This whole camera should be a Behavior bound to Input system
-class ArcballCamera: Component {
-    
-    var fovDegrees: Float = 70
-    var fovRadians: Float {
-        return fovDegrees.degreesToRadians
-    }
-    var aspect: Float = 1
-    var near: Float = 0.001
-    var far: Float = 1000
-    
-    var target: float3 = [0, 0, 0] {
-        didSet {
-            viewMatrixDirty = true
-        }
-    }
-    
-    var distance: Float = 0 {
-        didSet {
-            viewMatrixDirty = true
-        }
-    }
-    
-    /// Get the projection matrix
-    var projectionMatrix: float4x4 {
-        return float4x4(projectionFov: fovRadians,
-                        near: near,
-                        far: far,
-                        aspect: aspect)
-    }
-    
-    /// Get an up to date view matrix
-    var viewMatrix: float4x4 {
-        if viewMatrixDirty {
-            guard let transform = self.transform else {
-                fatalError("Camera needs a transform")
-            }
-            
-            let translateMatrix = float4x4(translation: [target.x, target.y, target.z - distance])
-            let rotateMatrix = float4x4(rotationYXZ: [-transform.rotation.x, transform.rotation.y, 0])
-            _viewMatrix = (rotateMatrix * translateMatrix).inverse
-            transform.position = rotateMatrix.upperLeft * -_viewMatrix.columns.3.xyz
-            
-            viewMatrixDirty = false
+/// Simple debug camera with keyboard movement
+class DebugCameraBehavior: Behavior {
+    override func onUpdate(deltaTime: TimeInterval) {
+        guard let transform = self.transform else { return }
+        
+        var diff = float3.zero
+        let speed: Float = 5.0
+        
+        if Input.shared.getKey(.w) {
+            diff = diff + float3(0, 0, 1) * Float(deltaTime) * speed
+        } else if Input.shared.getKey(.s) {
+            diff = diff - float3(0, 0, 1) * Float(deltaTime) * speed
         }
         
-        return _viewMatrix
-    }
-    private var _viewMatrix = float4x4.identity()
-    private var viewMatrixDirty = true
-    
-    func screenSizeWillChange(to size: CGSize) {
-        aspect = Float(size.width / size.height)
-    }
-    
-    /// Zoom towards the lookat point
-    func zoom(delta: Float) {
-        let sensitivity: Float = 0.05
-        distance -= delta * sensitivity
-        viewMatrixDirty = true
-    }
-    
-    /// Rotate around the lookat point.
-    func rotate(delta: float2) {
-        guard let transform = self.transform else {
-            fatalError("Camera needs a transform")
+        if Input.shared.getKey(.a) {
+            diff = diff - float3(1, 0, 0) * Float(deltaTime) * speed
+        } else if Input.shared.getKey(.d) {
+            diff = diff + float3(1, 0, 0) * Float(deltaTime) * speed
         }
         
-        let sensitivity: Float = 0.005
-        var rotation = transform.rotation
+        if Input.shared.getKey(.q) {
+            diff = diff + float3(0, 1, 0) * Float(deltaTime) * speed
+        } else if Input.shared.getKey(.e) {
+            diff = diff - float3(0, 1, 0) * Float(deltaTime) * speed
+        }
         
-        rotation.y += delta.x * sensitivity
-        rotation.x += delta.y * sensitivity
-        rotation.x = max(-Float.pi/2, min(rotation.x, Float.pi/2))
-        
-        transform.rotation = rotation
-        
-        viewMatrixDirty = true
+        transform.position = transform.position + diff
     }
 }

@@ -21,27 +21,6 @@ class ViewController: NSViewController {
         }
         
         renderer = Renderer(metalView: metalView)
-        addGestureRecognizers(to: metalView)
-    }
-    
-    func addGestureRecognizers(to view: NSView) {
-        // This should be forwarded to an Input system
-        let pan = NSPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
-        view.addGestureRecognizer(pan)
-    }
-    
-    // This should be in the Behavior of the camera
-    @objc func handlePan(gesture: NSPanGestureRecognizer) {
-        let translation = gesture.translation(in: gesture.view)
-        let delta = float2(Float(translation.x),
-                           Float(translation.y))
-        
-        renderer?.scene.camera?.rotate(delta: delta)
-        gesture.setTranslation(.zero, in: gesture.view)
-    }
-    
-    override func scrollWheel(with event: NSEvent) {
-        renderer?.scene.camera?.zoom(delta: Float(event.deltaY))
     }
 }
 

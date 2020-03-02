@@ -10,5 +10,15 @@ import AppKit
 import MetalKit
 
 class GameView: MTKView {
+    override func keyDown(with event: NSEvent) {
+        Input.shared.handle(event: event)
+    }
     
+    override func keyUp(with event: NSEvent) {
+        Input.shared.handle(event: event)
+    }
+    
+    override var acceptsFirstResponder: Bool {
+        return true
+    }
 }
