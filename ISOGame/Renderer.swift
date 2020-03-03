@@ -85,7 +85,7 @@ class Renderer: NSObject {
         skyLight.add(component: Transform())
         let light = skyLight.add(component: Light(type: .directional))
         light.direction = float3(0, -5, 10)
-        light.color = float3(2, 2, 2)
+        light.color = float3(0, 0, 0)
         
         
 //        let helmet = Nexus.shared().createEntity()
@@ -132,7 +132,7 @@ class Renderer: NSObject {
             transform.position = [Float(i / 5) * 3, 2, Float(i % 5) * 3]
             
             let lightInfo = light.add(component: Light(type: .point))
-            lightInfo.color = float3(1,1,0)
+            lightInfo.color = float3(min(0.01 * Float(l), 1), Float(0.1), 1 - min(0.01 * Float(l), 1))
             lightInfo.intensity = 1
         }
     }

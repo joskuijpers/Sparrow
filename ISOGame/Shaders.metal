@@ -150,57 +150,67 @@ fragment float4 fragment_main(
     //TODO add specular color image / property? no: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
     
     float3 lighting = float3(0.0);
-    
-    LightingParams parameters;
-    parameters.albedo = albedo;
-    parameters.normal = normal;
-    parameters.ambientOcclusion = ambientOcclusion;
-    parameters.metallic = metallic;
-    parameters.roughness = roughness;
-    parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
-    parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
-
-    for (int i = 0; i < 1; ++i) {
+//
+//    LightingParams parameters;
+//    parameters.albedo = albedo;
+//    parameters.normal = normal;
+//    parameters.ambientOcclusion = ambientOcclusion;
+//    parameters.metallic = metallic;
+//    parameters.roughness = roughness;
+//    parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
+//    parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
+//
+    for (int i = 0; i < lightsCount; ++i) {
         LightData light = lights[i];
-        
+
         float3 lightDirection = float3(1, 0, 0);
         float attenuation = 1.0;
-        
+
         float3 lightColor = light.color;
-    
+
         if (light.type == LightTypeDirectional) {
             lightDirection = normalize(-light.position.xyz);
             attenuation = 1.0;
         } else if (light.type == LightTypePoint) {
             lightDirection = normalize(light.position.xyz - in.worldPosition);
             float dist = length(light.position.xyz - in.worldPosition);
-            
-            float range = 0; // TODO!
+
+            float range = 10; // TODO!
             half attenNum = (range > 0) ? saturate(1.0 - powr(dist / range, 4)) : 1;
-            
+
             attenuation = attenNum / (dist * dist);
         }
-
-        parameters.lightDirection = lightDirection;
-        parameters.diffuseLightColor = lightColor * attenuation;
-        parameters.halfVector = normalize(parameters.lightDirection + parameters.viewDirection);
-        parameters.reflectedVector = reflect(-parameters.viewDirection, parameters.normal);
-        parameters.NdotL = saturate(dot(parameters.normal, parameters.lightDirection));
-        parameters.NdotH = saturate(dot(parameters.normal, parameters.halfVector));
-        parameters.HdotL = saturate(dot(parameters.lightDirection, parameters.halfVector));
-    
-        float mipLevel = parameters.roughness * irradianceMap.get_num_mip_levels();
-        parameters.irradiatedColor = irradianceMap.sample(mipSampler, parameters.reflectedVector, level(mipLevel)).rgb;
-
-        lighting += diffuseTerm(parameters) + specularTerm(parameters);
-
-        //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
-        //float t         = fragRmt.b;
-        //lighting.rgb   -= (kD * fragAlbedo.rgb*0.31830988618) * radiance * min(dot(fragNormal.xyz, lightDirection), 0.0)*t* occlusion;
+        
+        float diff = max(dot(normal, lightDirection), 0.0);
+        float3 diffuse = diff * lightColor * albedo;
+        
+        float3 viewDir = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
+        float3 reflectDir = reflect(-lightDirection, normal);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        float3 specular = 0.5 * spec * lightColor;
+        
+        lighting += (diffuse + specular) * attenuation;
+//
+//        parameters.lightDirection = lightDirection;
+//        parameters.diffuseLightColor = lightColor * attenuation;
+//        parameters.halfVector = normalize(parameters.lightDirection + parameters.viewDirection);
+//        parameters.reflectedVector = reflect(-parameters.viewDirection, parameters.normal);
+//        parameters.NdotL = saturate(dot(parameters.normal, parameters.lightDirection));
+//        parameters.NdotH = saturate(dot(parameters.normal, parameters.halfVector));
+//        parameters.HdotL = saturate(dot(parameters.lightDirection, parameters.halfVector));
+//
+//        float mipLevel = parameters.roughness * irradianceMap.get_num_mip_levels();
+//        parameters.irradiatedColor = irradianceMap.sample(mipSampler, parameters.reflectedVector, level(mipLevel)).rgb;
+//
+//        lighting += diffuseTerm(parameters) + specularTerm(parameters);
+//
+//        //Translucency https://github.com/gregouar/VALAG/blob/master/Valag/shaders/lighting/lighting.frag
+//        //float t         = fragRmt.b;
+//        //lighting.rgb   -= (kD * fragAlbedo.rgb*0.31830988618) * radiance * min(dot(fragNormal.xyz, lightDirection), 0.0)*t* occlusion;
     }
-    
+
     // Create an improvised Ambient term
-    float3 ambient = float3(0.03) * albedo * ambientOcclusion;
+    float3 ambient = float3(0.01) * albedo * ambientOcclusion;
     float3 color = ambient + lighting + emissiveColor;
     
     // HDR Tone mapping
