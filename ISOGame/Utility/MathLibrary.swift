@@ -87,10 +87,16 @@ extension float4x4 {
     
     @inlinable
     init(rotation angle: float3) {
-        let rotationX = float4x4(rotationX: angle.x)
-        let rotationY = float4x4(rotationY: angle.y)
-        let rotationZ = float4x4(rotationZ: angle.z)
-        self = rotationX * rotationY * rotationZ
+        let x = angle.x
+        let y = angle.y
+        let z = angle.z
+        
+        self = float4x4(
+            [cos(z) * cos(y), sin(z) * cos(y), -sin(y), 0],
+            [cos(z) * sin(y) * sin(x) - sin(z) * cos(x), sin(z) * sin(y) * sin(x) + cos(z) * cos(x), cos(y) * sin(x), 0],
+            [cos(z) * sin(y) * cos(x) + sin(z) * sin(x), sin(z) * sin(y) * sin(x) - cos(z) * sin(x), cos(y) * cos(x), 0],
+            [0, 0, 0, 1]
+        )
     }
     
     @inlinable
