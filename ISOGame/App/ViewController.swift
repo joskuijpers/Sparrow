@@ -20,7 +20,13 @@ class ViewController: NSViewController {
             fatalError("Metal view not set up in storyboard")
         }
         
-        renderer = Renderer(metalView: metalView)
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            fatalError("Metal device not available")
+        }
+                
+        print("Using device: \(device.name) (\(device.location))")
+        
+        renderer = Renderer(metalView: metalView, device: device)
     }
 }
 

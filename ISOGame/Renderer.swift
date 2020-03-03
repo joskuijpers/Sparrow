@@ -33,9 +33,8 @@ class Renderer: NSObject {
     let behaviorSystem: BehaviorSystem
     var rootEntity: Entity!
     
-    init(metalView: MTKView) {
+    init(metalView: MTKView, device: MTLDevice) {
         guard
-            let device = MTLCreateSystemDefaultDevice(),
             let commandQueue = device.makeCommandQueue() else {
                 fatalError("Metal GPU not available")
         }
