@@ -18,7 +18,7 @@ class Behavior {
     /// Called when the behavior starts
     open func onStart() {}
     /// Called on every frame update
-    open func onUpdate(deltaTime: TimeInterval) {}
+    open func onUpdate(deltaTime: Float) {}
     
     /// The transform component.
     var transform: Transform? {
@@ -53,7 +53,7 @@ Component that holds any behavior on the game object.
 fileprivate class BehaviorComponent: Component {
     private var behaviors = [Behavior]()
     
-    func update(deltaTime: TimeInterval) {
+    func update(deltaTime: Float) {
         for behavior in behaviors {
             behavior.onUpdate(deltaTime: deltaTime)
         }
@@ -78,7 +78,7 @@ fileprivate class BehaviorComponent: Component {
 class BehaviorSystem {
     private let behaviors = Nexus.shared().group(requires: BehaviorComponent.self)
     
-    func update(deltaTime: TimeInterval) {
+    func update(deltaTime: Float) {
         for behavior in behaviors {
             behavior.update(deltaTime: deltaTime)
         }

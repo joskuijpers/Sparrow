@@ -32,6 +32,8 @@ class Renderer: NSObject {
     let renderSystem: RenderSystem
     let behaviorSystem: BehaviorSystem
     var rootEntity: Entity!
+
+    var lastFrameTime: CFAbsoluteTime!
     
     init(metalView: MTKView, device: MTLDevice) {
         guard
@@ -67,7 +69,19 @@ class Renderer: NSObject {
         metalView.delegate = self
         
         mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
+    
+        /*
 
+         Scenario a) Single Command Buffer with Parallel Encoders
+         1) Divide up the objects into groups e.g. 4 groups.
+         2) Create MTLParallelRenderCommandEncoder and build renderCommandEncoder from it for each group.
+         3) Create a encoding worker (NSOperation) for each group
+         4) Create a NSOperationQueue (concurrent) and enqueue workers
+         5) Wait for queue to complete, close all encoders and a commit
+         This works beautifully, fps jumps 2-3x
+
+         */
+        
         
         buildScene()
     }
@@ -171,20 +185,26 @@ extension Renderer: MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
+        if lastFrameTime == nil {
+            lastFrameTime = CFAbsoluteTimeGetCurrent() - 1.0 / Double(view.preferredFramesPerSecond)
+        }
+        let currentTime = CFAbsoluteTimeGetCurrent()
+        let deltaTime = Float(currentTime - lastFrameTime!)
+        lastFrameTime = currentTime
+        
         guard let descriptor = view.currentRenderPassDescriptor,
             let commandBuffer = commandQueue.makeCommandBuffer(),
             let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
                 return
         }
         
-        let deltaTime = TimeInterval(1.0 / Double(view.preferredFramesPerSecond))
         behaviorSystem.update(deltaTime: deltaTime)
         
         renderEncoder.setDepthStencilState(depthStencilState)
         
         scene.updateUniforms()
         
-        renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene)
+        renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene, dt: deltaTime)
         
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {
@@ -204,7 +224,7 @@ class RenderSystem {
     
     let renderSet = RenderSet()
     
-    func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene) {
+    func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene, dt: Float) {
 //        let scene = SceneManager.activeScene
         
         // START BUILD LIGHTS
@@ -254,7 +274,7 @@ class RenderSystem {
         DebugRendering.shared.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
 
         // Easy testing
-        NSApplication.shared.mainWindow?.title = "Drawn meshes: \(renderSet.opaque.count)"
+        NSApplication.shared.mainWindow?.title = String(format: "Drawn meshes: %i, lights: %i", renderSet.opaque.count, lightCount)
     }
     
 }
@@ -270,9 +290,9 @@ class HelloWorldComponent: Behavior {
     init(seed: Int = 0) {
         rotationSpeed = (Float(seed) * 35972.326365396643).truncatingRemainder(dividingBy: 180)
     }
-    override func onUpdate(deltaTime: TimeInterval) {
+    override func onUpdate(deltaTime: Float) {
         if let rotation = transform?.rotation {
-            transform!.rotation = rotation + float3(0, rotationSpeed.degreesToRadians * Float(deltaTime), 0)
+            transform!.rotation = rotation + float3(0, rotationSpeed.degreesToRadians * deltaTime, 0)
         }
     }
 }

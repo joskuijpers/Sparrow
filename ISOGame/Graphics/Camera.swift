@@ -46,28 +46,28 @@ class Camera: Component {
 
 /// Simple debug camera with keyboard movement
 class DebugCameraBehavior: Behavior {
-    override func onUpdate(deltaTime: TimeInterval) {
+    override func onUpdate(deltaTime: Float) {
         guard let transform = self.transform else { return }
         
         var diff = float3.zero
         let speed: Float = 5.0
         
         if Input.shared.getKey(.w) {
-            diff = diff + float3(0, 0, 1) * Float(deltaTime) * speed
+            diff = diff + float3(0, 0, 1) * deltaTime * speed
         } else if Input.shared.getKey(.s) {
-            diff = diff - float3(0, 0, 1) * Float(deltaTime) * speed
+            diff = diff - float3(0, 0, 1) * deltaTime * speed
         }
         
         if Input.shared.getKey(.a) {
-            diff = diff - float3(1, 0, 0) * Float(deltaTime) * speed
+            diff = diff - float3(1, 0, 0) * deltaTime * speed
         } else if Input.shared.getKey(.d) {
-            diff = diff + float3(1, 0, 0) * Float(deltaTime) * speed
+            diff = diff + float3(1, 0, 0) * deltaTime * speed
         }
         
         if Input.shared.getKey(.q) {
-            diff = diff + float3(0, 1, 0) * Float(deltaTime) * speed
+            diff = diff + float3(0, 1, 0) * deltaTime * speed
         } else if Input.shared.getKey(.e) {
-            diff = diff - float3(0, 1, 0) * Float(deltaTime) * speed
+            diff = diff - float3(0, 1, 0) * deltaTime * speed
         }
         
         transform.translate(diff)

@@ -19,12 +19,17 @@ class ViewController: NSViewController {
         guard let metalView = view as? MTKView else {
             fatalError("Metal view not set up in storyboard")
         }
+
+        // Disable V-sync
+        // (metalView.layer as! CAMetalLayer).displaySyncEnabled = false
         
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("Metal device not available")
         }
-                
-        print("Using device: \(device.name) (\(device.location))")
+        
+        metalView.preferredFramesPerSecond = 60
+
+        print("Using device: \(device.name)")
         
         renderer = Renderer(metalView: metalView, device: device)
     }
