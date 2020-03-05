@@ -90,6 +90,16 @@ extension Mesh {
     func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms, submeshIndex: uint8, worldTransform: float4x4) {
         let submesh = submeshes[Int(submeshIndex)]
 
+        // TODO: apple does:
+            // mesh
+                // vertex buffers
+            // submesg
+                // textures
+                // material uniform
+        // but this does not work well when splitting the submesh rendering
+        
+        
+        
         renderEncoder.setRenderPipelineState(submesh.pipelineState)
         
         // Set vertex uniforms
@@ -106,6 +116,8 @@ extension Mesh {
             renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
         }
         
+        
+        // TODO: MOVE TO SUBMESH
         // Set textures
         renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
         renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
@@ -124,5 +136,6 @@ extension Mesh {
                                             indexType: submesh.mtkSubmesh.indexType,
                                             indexBuffer: submesh.mtkSubmesh.indexBuffer.buffer,
                                             indexBufferOffset: submesh.mtkSubmesh.indexBuffer.offset)
+        // END MOVE TO SUBMESH
     }
 }
