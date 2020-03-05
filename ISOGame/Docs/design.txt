@@ -160,3 +160,9 @@ RenderSystem
         etc
 
 
+
+
+
+
+
+Model space --modelMatrix-> World space --viewMatrix-> cameraCoords --projectionMatrix-> homogenous coords

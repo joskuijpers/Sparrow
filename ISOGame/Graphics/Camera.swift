@@ -8,16 +8,29 @@
 
 import MetalKit
 
+/**
+ Camera
+ */
 class Camera: Component {
     
+    /// Field of view in degrees
     var fovDegrees: Float = 70
+    
+    /// Field of view in radians
     var fovRadians: Float {
         return fovDegrees.degreesToRadians
     }
+    
+    /// Aspect ratio.
     var aspect: Float = 1
+    
+    /// Near plane distance from camera.
     var near: Float = 0.001
+    
+    /// Far plane distance from camera.
     var far: Float = 1000
     
+    /// The view matrix maps view space to homogenous coords
     var projectionMatrix: float4x4 {
         return float4x4(projectionFov: fovRadians,
                         near: near,
@@ -25,19 +38,31 @@ class Camera: Component {
                         aspect: aspect)
     }
     
+    /// The projection matrix maps world space to view space.
     var viewMatrix: float4x4 {
         guard let transform = self.transform else {
             fatalError("Camera needs a transform")
         }
         
-        let translateMatrix = float4x4(translation: transform.position)
-        let rotateMatrix = float4x4(rotation: transform.rotation)
-        let scaleMatrix = float4x4(scaling: transform.scale)
+        return transform.modelMatrix.inverse
         
-        return (translateMatrix * scaleMatrix * rotateMatrix).inverse
+//        let translateMatrix = float4x4(translation: transform.position)
+//        let rotateMatrix = float4x4(rotation: transform.rotation)
+//        let scaleMatrix = float4x4(scaling: transform.scale)
+        
+        
+//        return (translateMatrix * scaleMatrix * rotateMatrix).inverse
     }
     
-    func screenSizeWillChange(to size: CGSize) {
+    /// Frustum of the camera.
+    var frustum: Frustum {
+        return Frustum(viewProjectionMatrix: projectionMatrix * viewMatrix)
+    }
+    
+    /// Screen size changed.
+    ///
+    /// Updates the aspect ratio
+    func onScreenSizeWillChange(to size: CGSize) {
         aspect = Float(size.width / size.height)
     }
     

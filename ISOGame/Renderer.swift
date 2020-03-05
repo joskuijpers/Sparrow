@@ -186,6 +186,7 @@ extension Renderer: MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
+        // Calculate the frame duration for normalizing animations and gameplay.
         if lastFrameTime == nil {
             lastFrameTime = CFAbsoluteTimeGetCurrent() - 1.0 / Double(view.preferredFramesPerSecond)
         }
@@ -244,8 +245,8 @@ class RenderSystem {
         
         // BUILD QUEUE
         renderSet.clear()
-        let frustum = Frustum(viewProjectionMatrix: scene.uniforms.projectionMatrix * scene.uniforms.viewMatrix)
-        let (_, _, _, cameraWorldPosition) = scene.camera!.transform!.worldTransform.columns
+        let frustum = scene.camera!.frustum
+        let cameraWorldPosition = scene.camera!.transform!.worldTransform.columns.3
         
         // Build a small render queue by adding all items to it
         // TODO: culling
