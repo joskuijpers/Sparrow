@@ -136,7 +136,7 @@ public class DebugRendering {
 
         pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-        pipelineDescriptor.sampleCount = 4
+//        pipelineDescriptor.sampleCount = 4
         
         pipelineState = try! Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }

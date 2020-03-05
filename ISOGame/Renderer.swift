@@ -48,7 +48,7 @@ class Renderer: NSObject {
         
         metalView.device = device
         metalView.depthStencilPixelFormat = .depth32Float
-        metalView.sampleCount = 4
+//        metalView.sampleCount = 4
         
         self.commandQueue = commandQueue
         

@@ -61,7 +61,7 @@ private extension Submesh {
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-        pipelineDescriptor.sampleCount = 4  
+//        pipelineDescriptor.sampleCount = 4
         
         var pipelineState: MTLRenderPipelineState
         do {
