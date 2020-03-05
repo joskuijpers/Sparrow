@@ -56,6 +56,14 @@ class Camera: Component {
     
     /// Frustum of the camera.
     var frustum: Frustum {
+//        guard let transform = self.transform else {
+//            fatalError("Camera needs a transform")
+//        }
+//        let translateMatrix = float4x4(translation: float3(0,0,0))
+//        let rotateMatrix = float4x4(rotation: transform.rotation)
+//        let scaleMatrix = float4x4(scaling: transform.scale)
+//        let viewMatrix = (translateMatrix * scaleMatrix * rotateMatrix).inverse
+        
         return Frustum(viewProjectionMatrix: projectionMatrix * viewMatrix)
     }
     

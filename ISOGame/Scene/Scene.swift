@@ -35,7 +35,7 @@ class Scene {
         if let camera = camera {
             uniforms.projectionMatrix = camera.projectionMatrix
             uniforms.viewMatrix = camera.viewMatrix
-            fragmentUniforms.cameraPosition = camera.transform!.position
+            fragmentUniforms.cameraPosition = (camera.transform!.worldTransform * float4(camera.transform!.position, 1)).xyz
         }
     }
     

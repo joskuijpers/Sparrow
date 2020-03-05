@@ -202,10 +202,8 @@ extension Renderer: MTKViewDelegate {
         
         behaviorSystem.update(deltaTime: deltaTime)
         
+        
         renderEncoder.setDepthStencilState(depthStencilState)
-        
-        scene.updateUniforms()
-        
         renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene, dt: deltaTime)
         
         renderEncoder.endEncoding()
@@ -229,34 +227,96 @@ class RenderSystem {
     func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene, dt: Float) {
 //        let scene = SceneManager.activeScene
         
+        scene.updateUniforms()
+        
+        // Build list of visible lights
+        // For each visible light with shadow mapping: build render queue
+        // For camera: build render queue
+        
+        
+        // PASS: Depth prepass
+        //  Only do VertexShader, unless AlphaTest: then use fragment shader (function constant)
+        //  Output: depth only
+        // ENDPASS: Depth prepass
+        
+        // PASS: Shadows (RenderEncoder)
+        //  Depth only like depth prepass
+        //  Output: texture(s)
+        // END PASS: Shadows
+        
+        // PASS: SSAO (ComputeEncoder)
+        //  Supply: depth
+        //  Output: texture
+        // END PASS: SSAO
+        
+        // PASS: Light culling (ComputeEncoder)
+        //  Supply: depth buffer, lights buffer (in), culled lights buffer (out)
+        //  Output: buffer
+        // END PASS: Light Culling
+        
+        // PASS: Lighting (RenderEncoder)
+        //  Supply: ssao, culled lights buffer, lights buffer
+        //  Adjust: depth writing off, compare less
+        //  Draw: all visible geometry
+        //  Output: Rendertexture, float
+        // END PASS: Lighting
+        
+        // PASS: Bloom (ComputeEncoder)
+        //  Supply: lighting
+        //  Do: MPS Test > X => MPS Blur => MPS add to lighting texture
+        // END PASS: Bloom
+        
+        // PASS: ToneMapping
+        //  Input: lighting render texture
+        //  Output: drawable
+        // END PASS: Tonemapping
+        
+        // PASS: Debug
+        //  Draw: debug stuff
+        // END PASS: Debug
+        
+//        renderEncoder.setDepthStencilState(depthStencilState)
+        
+        
+        
+        renderSet.clear()
+        let frustum = scene.camera!.frustum
+        
+        
         // START BUILD LIGHTS
         // todo: limit with Bounds... culling...
         var lightsData = [LightData]()
         for light in lights {
-            lightsData.append(light.build())
-            DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
+            if frustum.intersects(bounds: light.bounds) != .outside {
+                lightsData.append(light.build())
+                DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
+            }
         }
         var lightCount = lightsData.count
         
+        
+        
         renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
         renderEncoder.setFragmentBytes(&lightsData, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
+        
+        
         // END BUILD LIGHTS
         
         
-        // BUILD QUEUE
-        renderSet.clear()
-        let frustum = scene.camera!.frustum
-        let cameraWorldPosition = scene.camera!.transform!.worldTransform.columns.3
-        
         // Build a small render queue by adding all items to it
-        // TODO: culling
         // TODO: sorting
         for (_, meshRenderer) in meshes {
-            meshRenderer.renderQueue(set: renderSet, frustum: frustum, viewPosition: cameraWorldPosition.xyz)
+            
+            // TODO:
+            // we need to add to any shadow queue and current camera queue
+            
+            meshRenderer.renderQueue(set: renderSet, frustum: frustum, viewPosition: scene.fragmentUniforms.cameraPosition)
         }
         
-        // Update fragment uniforms if possible here
+        renderEncoder.setCullMode(.back)
+//        renderEncoder.setTriangleFillMode(.lines) // Wireframe debugging
         
+        // Update fragment uniforms if possible here
         renderEncoder.setFragmentBytes(&scene.fragmentUniforms,
                                        length: MemoryLayout<FragmentUniforms>.stride,
                                        index: Int(BufferIndexFragmentUniforms.rawValue))
@@ -265,14 +325,14 @@ class RenderSystem {
         renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
 
         for item in renderSet.opaque {
-//            print("GET", index, "DO", item.depth, item.mesh, item.submeshIndex, item.worldTransform)
 //            renderEncoder.pushDebugGroup(meshSelector.mesh!.name)
+
             item.mesh.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms, fragmentUniforms: scene.fragmentUniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
+
 //            renderEncoder.popDebugGroup()
         }
         
-        DebugRendering.shared.gizmo(position: float3(0, 5, 0))
-        
+        // Render all debug things.
         DebugRendering.shared.render(renderEncoder: renderEncoder, vertexUniforms: scene.uniforms)
 
         // Easy testing
