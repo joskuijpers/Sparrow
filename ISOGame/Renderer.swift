@@ -194,17 +194,16 @@ extension Renderer: MTKViewDelegate {
         let deltaTime = Float(currentTime - lastFrameTime!)
         lastFrameTime = currentTime
         
-        guard let descriptor = view.currentRenderPassDescriptor,
-            let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
-                return
-        }
-        
         behaviorSystem.update(deltaTime: deltaTime)
         
-        
+        guard let descriptor = view.currentRenderPassDescriptor,
+            let commandBuffer = commandQueue.makeCommandBuffer(),
+            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else { // MOVE TO PASS
+                return
+        }
+
         renderEncoder.setDepthStencilState(depthStencilState)
-        renderSystem.render(renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene, dt: deltaTime)
+        renderSystem.render(commandBuffer: commandBuffer, renderEncoder: renderEncoder, irradianceCubeMap: irradianceCubeMap, scene: scene, dt: deltaTime)
         
         renderEncoder.endEncoding()
         guard let drawable = view.currentDrawable else {
@@ -224,23 +223,31 @@ class RenderSystem {
     
     let renderSet = RenderSet()
     
-    func render(renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene, dt: Float) {
+    func render(commandBuffer: MTLCommandBuffer, renderEncoder: MTLRenderCommandEncoder, irradianceCubeMap: MTLTexture, scene: Scene, dt: Float) {
 //        let scene = SceneManager.activeScene
         
         scene.updateUniforms()
+        
+//        let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
+//        renderEncoder.setDepthStencilState(depthStencilState)
+        
         
         // Build list of visible lights
         // For each visible light with shadow mapping: build render queue
         // For camera: build render queue
         
+        // Shaders: defaultShader, defaultDepthShader (for prepass and shadows. vertices position only. If also alphaTesting, add UVs and read albedo in fragment shader)
         
-        // PASS: Depth prepass
+        
+        // PASS: Depth prepass ([Parallel]RenderEncoder)
         //  Only do VertexShader, unless AlphaTest: then use fragment shader (function constant)
+        //  DepthStencilState: write=true, compare: less
         //  Output: depth only
         // ENDPASS: Depth prepass
         
         // PASS: Shadows (RenderEncoder)
         //  Depth only like depth prepass
+        //  DepthStencilState: write=true, compare: less
         //  Output: texture(s)
         // END PASS: Shadows
         
@@ -254,30 +261,60 @@ class RenderSystem {
         //  Output: buffer
         // END PASS: Light Culling
         
-        // PASS: Lighting (RenderEncoder)
+        // PASS: Lighting ([Parallel]RenderEncoder)
         //  Supply: ssao, culled lights buffer, lights buffer
+        //  DepthStencilState: write=false, compare: lessEqual
         //  Adjust: depth writing off, compare less
         //  Draw: all visible geometry
         //  Output: Rendertexture, float
         // END PASS: Lighting
         
-        // PASS: Bloom (ComputeEncoder)
+        // PASS: PostFX (ComputeEncoder -> MPS)
         //  Supply: lighting
         //  Do: MPS Test > X => MPS Blur => MPS add to lighting texture
-        // END PASS: Bloom
+        // END PASS: PostFX
         
-        // PASS: ToneMapping
+        // PASS: ToneMapping (ComputeEncoder)
         //  Input: lighting render texture
-        //  Output: drawable
+        //  Output: ldrTexture
         // END PASS: Tonemapping
         
         // PASS: Debug
+        //  Input: ldrTexture
         //  Draw: debug stuff
+        //  Output: ldrTexture
         // END PASS: Debug
+        
+        // PASS: Blit (BlitEncoder)
+        //  Input: ldrTexture
+        //  Draw to drawable texture
+        //  Should this be done in Debug or ToneMapping?
+        // END PASS: Blit
         
 //        renderEncoder.setDepthStencilState(depthStencilState)
         
-        
+        /*
+         
+    Make RenderPass struct / protocol
+         
+         DepthPrePass
+         SSAOPass
+         ShadowPass
+         LightingPass
+         BloomPass
+         ToneMappingPass
+         DebugRenderPass
+         FinalPass
+         
+         all have render(commandQueue)
+         their init(device) will create pipeline states, buffers, etc.
+         we can pass buffers from 1 to the other in their render() ??
+         
+         examples:
+         func SSAO.perform(commandBuffer, depth: MTLBuffer) -> (ssao: MTLBuffer) {}
+         func PostFX.perform(commandBuffer, hdrLighting: MTLBuffer) -> (hdrLighting: MTLBuffer) {}
+         
+         */
         
         renderSet.clear()
         let frustum = scene.camera!.frustum
