@@ -87,7 +87,7 @@ extension Mesh {
     /**
      Render the submesh at given index.
      */
-    func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms, fragmentUniforms: FragmentUniforms, submeshIndex: uint8, worldTransform: float4x4) {
+    func render(renderEncoder: MTLRenderCommandEncoder, uniforms: Uniforms, submeshIndex: uint8, worldTransform: float4x4) {
         let submesh = submeshes[Int(submeshIndex)]
 
         // TODO: apple does:
@@ -103,11 +103,11 @@ extension Mesh {
         renderEncoder.setRenderPipelineState(submesh.pipelineState)
         
         // Set vertex uniforms
-        var vertexUniforms = vertexUniforms
-        vertexUniforms.modelMatrix = worldTransform
-        vertexUniforms.normalMatrix = worldTransform.upperLeft
+        var uniforms = uniforms
+        uniforms.modelMatrix = worldTransform
+        uniforms.normalMatrix = worldTransform.upperLeft
         
-        renderEncoder.setVertexBytes(&vertexUniforms,
+        renderEncoder.setVertexBytes(&uniforms,
                                      length: MemoryLayout<Uniforms>.stride,
                                      index: Int(BufferIndexUniforms.rawValue))
         

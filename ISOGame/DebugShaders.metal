@@ -23,12 +23,12 @@ struct VertexOut {
 vertex VertexOut vertex_debug(
                               const constant VertexIn *vertexArray [[ buffer(0) ]],
                               unsigned int vid [[ vertex_id ]],
-                              constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]]
+                              constant CameraUniforms &cameraUniforms [[ buffer(BufferIndexCameraUniforms) ]]
                               ) {
     VertexIn in = vertexArray[vid];
     VertexOut out;
     
-    out.position = uniforms.projectionMatrix * uniforms.viewMatrix * float4(in.position, 1);
+    out.position = cameraUniforms.viewProjectionMatrix * float4(in.position, 1);
     out.color = in.color;
     
     return out;

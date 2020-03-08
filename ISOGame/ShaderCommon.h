@@ -13,25 +13,25 @@
 
 typedef struct {
     matrix_float4x4 modelMatrix;
+    matrix_float3x3 normalMatrix;
+} Uniforms;
+
+typedef struct {
+    vector_float3 cameraWorldPosition;
+    
     matrix_float4x4 viewMatrix;
     matrix_float4x4 projectionMatrix;
-    matrix_float3x3 normalMatrix;
-    
+    matrix_float4x4 viewProjectionMatrix;
     
 //    time uniforms->frameTime = (float) -[_baseTime timeIntervalSinceNow];
 //    uniforms->screenSize    = float2{(float)_mainViewWidth, (float)_mainViewHeight};
 //    uniforms->invScreenSize = 1.0f / uniforms->screenSize;
-    
-} Uniforms;
-
-typedef struct {
-    vector_float3 cameraPosition;
-} FragmentUniforms;
+} CameraUniforms;
 
 typedef enum {
     BufferIndexVertices = 0,
     BufferIndexUniforms = 11,
-    BufferIndexFragmentUniforms = 13,
+    BufferIndexCameraUniforms = 13,
     BufferIndexMaterials = 14,
 } BufferIndex;
 

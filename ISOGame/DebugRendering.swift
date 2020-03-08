@@ -90,19 +90,13 @@ public class DebugRendering {
     }
     
     /// Render all debug lines that were generated this frame
-    internal func render(renderEncoder: MTLRenderCommandEncoder, vertexUniforms: Uniforms) {
+    internal func render(renderEncoder: MTLRenderCommandEncoder) {
         if pipelineState == nil {
             makePipelineState()
         }
         
         renderEncoder.setRenderPipelineState(pipelineState!)
 
-        // Needed for project/view matrix
-        var vUniforms = vertexUniforms
-        renderEncoder.setVertexBytes(&vUniforms,
-                                     length: MemoryLayout<Uniforms>.stride,
-                                     index: Int(BufferIndexUniforms.rawValue))
-        
         updateBuffer()
         renderEncoder.setVertexBuffer(buffer, offset: 0, index: 0)
         renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: vertices.count)

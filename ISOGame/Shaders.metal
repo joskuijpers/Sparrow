@@ -63,11 +63,12 @@ struct LightingParams {
 
 vertex VertexOut vertex_main(
                              const VertexIn in [[ stage_in ]],
-                             constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]]
+                             constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]],
+                             constant CameraUniforms &cameraUniforms [[ buffer(BufferIndexCameraUniforms) ]]
                              ) {
     VertexOut out;
     
-    out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * in.position;
+    out.position = cameraUniforms.viewProjectionMatrix * uniforms.modelMatrix * in.position;
     out.worldPosition = (uniforms.modelMatrix * in.position).xyz;
     out.worldNormal = uniforms.normalMatrix * in.normal;
     out.worldTangent = uniforms.normalMatrix * in.tangent;
@@ -83,7 +84,7 @@ float3 specularTerm(LightingParams params);
 
 fragment float4 fragment_main(
                               VertexOut in [[ stage_in ]],
-                              constant FragmentUniforms &fragmentUniforms [[ buffer(BufferIndexFragmentUniforms) ]],
+                              constant CameraUniforms &cameraUniforms [[ buffer(BufferIndexCameraUniforms) ]],
                               constant Material &material [[ buffer(BufferIndexMaterials) ]],
                               texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]],
                               texture2d<float> normalTexture [[ texture(TextureNormal), function_constant(hasNormalTexture) ]],
@@ -184,7 +185,7 @@ fragment float4 fragment_main(
         float diff = max(dot(normal, lightDirection), 0.0);
         float3 diffuse = diff * lightColor * albedo;
         
-        float3 viewDir = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
+        float3 viewDir = normalize(cameraUniforms.cameraWorldPosition - in.worldPosition);
         float3 reflectDir = reflect(-lightDirection, normal);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
         float3 specular = 0.5 * spec * lightColor;

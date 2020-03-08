@@ -17,26 +17,13 @@ enum RenderPass {
 }
 
 class Scene {
-//    var inputController = InputController()
-
     var screenSize: CGSize
     var camera: Camera?
-    
-    var uniforms = Uniforms()
-    var fragmentUniforms = FragmentUniforms()
-    
+
     init(screenSize: CGSize) {
         self.screenSize = screenSize
         // setup scene
 //        screenSizeWillChange(to: screenSize)
-    }
-    
-    func updateUniforms() {
-        if let camera = camera {
-            uniforms.projectionMatrix = camera.projectionMatrix
-            uniforms.viewMatrix = camera.viewMatrix
-            fragmentUniforms.cameraPosition = (camera.transform!.worldTransform * float4(camera.transform!.position, 1)).xyz
-        }
     }
     
     /**
