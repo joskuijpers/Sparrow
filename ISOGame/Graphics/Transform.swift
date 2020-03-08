@@ -15,6 +15,7 @@ import Foundation
  generated from the properties.
  */
 class Transform: Component {
+    // localPosition
     /// Local node position
     var position: float3 = .zero {
         didSet {
@@ -23,6 +24,7 @@ class Transform: Component {
         }
     }
     
+    // localRotation
     /// Local Euler rotation. Setting this overwrites the rotation quaternion
     var rotation: float3 = .zero {
         didSet {
@@ -40,6 +42,7 @@ class Transform: Component {
         }
     }
     
+    // localScale
     /// Local scale
     var scale: float3 = .one {
         didSet {
@@ -66,6 +69,7 @@ class Transform: Component {
     private var _modelMatrix = matrix_identity_float4x4
     private var modelMatrixDirty = true
     
+    // localToWorldMatrix
     /// World transform matrix containing current world position, rotation and scaling transformations to make model local space to world space
     var worldTransform: float4x4 {
         if worldMatrixDirty {
@@ -98,17 +102,26 @@ class Transform: Component {
     /// World space right vector
     @inlinable
     var right: float3 {
-        return (float4(0, 0, 1, 1) * worldTransform).xyz
+        return normalize((float4(0, 0, 1, 1) * worldTransform).xyz)
     }
     
     /// World space forward vector
     @inlinable
     var forward: float3 {
-        return (float4(1, 0, 0, 1) * worldTransform).xyz
+        return normalize((float4(1, 0, 0, 1) * worldTransform).xyz)
+    }
+    
+    /// World space up vector
+    @inlinable
+    var up: float3 {
+        return normalize((float4(0, 1, 0, 1) * worldTransform).xyz)
     }
     
     
-    
+    // TODO: turn into position, and make position into localPosition like unity
+    var worldPosition: float3 {
+        return (float4(position, 1) * worldTransform).xyz
+    }
     
     func translate(_ d: float3) {
         position = position + d
