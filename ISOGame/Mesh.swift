@@ -87,7 +87,7 @@ extension Mesh {
     /**
      Render the submesh at given index.
      */
-    func render(renderEncoder: MTLRenderCommandEncoder, uniforms: Uniforms, submeshIndex: uint8, worldTransform: float4x4) {
+    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: uint8, worldTransform: float4x4) {
         let submesh = submeshes[Int(submeshIndex)]
 
         // TODO: apple does:
@@ -99,8 +99,11 @@ extension Mesh {
         // but this does not work well when splitting the submesh rendering
         
         
-        
-        renderEncoder.setRenderPipelineState(submesh.pipelineState)
+        if renderPass == .depthPrePass || renderPass == .shadows {
+            renderEncoder.setRenderPipelineState(submesh.depthPipelineState)
+        } else {
+            renderEncoder.setRenderPipelineState(submesh.pipelineState)
+        }
         
         // Set vertex uniforms
         var uniforms = uniforms
@@ -119,11 +122,16 @@ extension Mesh {
         
         // TODO: MOVE TO SUBMESH
         // Set textures
-        renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
-        renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
-        renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
-        renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
-        renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
+//        if (renderPass != .depthPrePass && renderPass != .shadows) || alphaTest {
+            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+//        }
+        
+        if renderPass != .depthPrePass && renderPass != .shadows {
+            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+            renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
+            renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
+            renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
+        }
         //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
         
         var materialPtr = submesh.material

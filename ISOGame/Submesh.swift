@@ -11,6 +11,7 @@ import MetalKit
 class Submesh {
     let mtkSubmesh: MTKSubmesh
     let pipelineState: MTLRenderPipelineState
+    let depthPipelineState: MTLRenderPipelineState
     let material: Material
     
     
@@ -30,6 +31,7 @@ class Submesh {
         
         textures = Textures(material: mdlSubmesh.material)
         pipelineState = Submesh.makePipelineState(textures: textures)
+        depthPipelineState = Submesh.makeDepthPipelineState()
         material = Material(material: mdlSubmesh.material)
     }
 }
@@ -61,7 +63,40 @@ private extension Submesh {
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-//        pipelineDescriptor.sampleCount = 4
+        pipelineDescriptor.sampleCount = Renderer.sampleCount
+        
+        var pipelineState: MTLRenderPipelineState
+        do {
+            pipelineState = try Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+        
+        return pipelineState
+    }
+    
+    static func makeDepthPipelineState() -> MTLRenderPipelineState {
+        let library = Renderer.library
+        
+        let vertexFunction = library?.makeFunction(name: "vertex_main_depth")
+        
+        // TODO: if alpha testing
+//        let functionConstants = makeFunctionConstants(textures: textures)
+//        let fragmentFunction: MTLFunction?
+//        do {
+//            fragmentFunction = try library?.makeFunction(name: "fragment_main_depth", constantValues: functionConstants)
+//        } catch {
+//            print(functionConstants)
+//            fatalError("No Metal function exists")
+//        }
+        
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.fragmentFunction = nil//fragmentFunction
+        
+        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Mesh.vertexDescriptor)
+        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+        pipelineDescriptor.sampleCount = Renderer.depthSampleCount
         
         var pipelineState: MTLRenderPipelineState
         do {

@@ -166,3 +166,57 @@ RenderSystem
 
 
 Model space --modelMatrix-> World space --viewMatrix-> cameraCoords --projectionMatrix-> homogenous coords
+
+
+
+
+
+
+
+
+
+IMGUI
+
+class DebugUI {
+    private static var shared
+    
+    // Window
+    func begin(title: String) {}
+    func end() {}
+    
+    func text(text: String) {
+    }
+    
+    func button(text: String) -> bool {
+        drawText
+        drawRect
+        
+        return left mouse pressed and mouse within rect bounds
+    }
+    
+    func radio(active: inout Bool, text: String) -> bool {
+    
+    }
+    
+    func checkbox(active: inout Bool, text: String) -> bool {
+    
+    }
+    
+    func slider(value: inout Float, min: Float, max: Float)
+    
+    
+    
+    on Begin():
+        dequeue a window
+        or create one
+    
+    button:
+        dequeue button
+    
+    etc
+    
+    Can this be done? Does it make sense?
+    
+    
+    
+}

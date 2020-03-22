@@ -11,21 +11,33 @@
 
 #import <simd/simd.h>
 
+#define MAX_LIGHTS_PER_TILE 256
+#define LIGHT_CULLING_TILE_SIZE 16
+
+/// Model uniforms
 typedef struct {
     matrix_float4x4 modelMatrix;
     matrix_float3x3 normalMatrix;
 } Uniforms;
 
+/// Camera uniforms.
 typedef struct {
     vector_float3 cameraWorldPosition;
     
     matrix_float4x4 viewMatrix;
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 viewProjectionMatrix;
+    matrix_float4x4 invProjectionMatrix;
+    matrix_float4x4 invViewProjectionMatrix;
     
 //    time uniforms->frameTime = (float) -[_baseTime timeIntervalSinceNow];
 //    uniforms->screenSize    = float2{(float)_mainViewWidth, (float)_mainViewHeight};
 //    uniforms->invScreenSize = 1.0f / uniforms->screenSize;
+    
+    vector_float2 physicalSize;
+    
+    vector_float4 invProjectionZ;           // A float4 containing the lower right 2x2 z,w block of inv projection matrix (column Major) ; viewZ = (X * projZ + Z) / (Y * projZ + W)
+    vector_float4 invProjectionZNormalized; // Same as invProjZ but the result is a Z from 0...1 instead of N...F; effectively linearizes Z for easy visualization/storage
 } CameraUniforms;
 
 typedef enum {
@@ -43,6 +55,7 @@ typedef enum {
     VertexAttributeBitangent = 4
 } VertexAttributes;
 
+/// Texture attribute positions
 typedef enum {
     TextureAlbedo = 0,
     TextureNormal = 1,
@@ -55,6 +68,7 @@ typedef enum {
     TextureIrradiance = 10
 } Textures;
 
+/// Material definition
 typedef struct {
     vector_float3 albedo;
     float shininess;
@@ -73,6 +87,7 @@ typedef enum {
 typedef struct {
     vector_float4 position;
     vector_float3 color;
+    float range;
 //    float intensity;
 //    vector_float3 attenuation;
     LightType type;

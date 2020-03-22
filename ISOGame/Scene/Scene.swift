@@ -8,14 +8,6 @@
 
 import MetalKit
 
-enum RenderPass {
-    case depthPrePass
-    case ssao
-    case shadow
-    case geometry
-    case postfx
-}
-
 class Scene {
     var screenSize: CGSize
     var camera: Camera?

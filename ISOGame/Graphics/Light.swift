@@ -55,6 +55,7 @@ class Light: Component {
             data.type = LightTypeDirectional
             data.color = color
             data.position = float4(direction, 0) // todo: replace direction with transform rotation
+            data.range = Float.infinity
         case .point:
             let transform = self.transform!
             
@@ -62,6 +63,7 @@ class Light: Component {
             data.color = color
             
             data.position = transform.worldTransform * float4(transform.position, 1)
+            data.range = 10
             
 //            let range: Float = 5
 //            self.bounds = Bounds(center: data.position.xyz, extents: float3(range, range, range))

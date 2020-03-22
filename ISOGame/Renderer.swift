@@ -14,15 +14,28 @@ extension Nexus {
     }
 }
 
+enum RenderPass {
+    case depthPrePass
+    case ssao
+    case shadows
+    case lighting
+    case postfx
+}
+
 class Renderer: NSObject {
     static var device: MTLDevice!
     static var library: MTLLibrary?
     static var colorPixelFormat: MTLPixelFormat!
     static var textureLoader: TextureLoader!
+    static var sampleCount = 1 // MSAA
+    static var depthSampleCount = 1 // MSAA
     
     let commandQueue: MTLCommandQueue!
 
-    let depthStencilState: MTLDepthStencilState
+    
+    
+    
+    
     
     var scene: Scene
     
@@ -45,11 +58,28 @@ class Renderer: NSObject {
     
     let renderSet = RenderSet()
     
+    let depthPassDescriptor: MTLRenderPassDescriptor
+    let lightCullComputeState: MTLComputePipelineState
+    
+    let depthStencilStateWrite: MTLDepthStencilState
+    let depthStencilStateNoWrite: MTLDepthStencilState
+    
+    /// Depth map (private) with scene depth
+    var depthMap: MTLTexture!
+    var lightsBuffer: MTLBuffer!
+    /// List of lights per threadgroup
+    var culledLightsBuffer: MTLBuffer!
+    
+    /// Size of thread groups for compute kernels
+    var threadgroupSize = MTLSizeMake(Int(LIGHT_CULLING_TILE_SIZE), Int(LIGHT_CULLING_TILE_SIZE), 1)
+    
+    /// Number of thread groups for compute kernels
+    var threadgroupCount = MTLSize()
+    
     
     init(metalView: MTKView, device: MTLDevice) {
-        guard
-            let commandQueue = device.makeCommandQueue() else {
-                fatalError("Metal GPU not available")
+        guard let commandQueue = device.makeCommandQueue() else {
+            fatalError("Metal GPU not available")
         }
         
         Renderer.device = device
@@ -60,37 +90,54 @@ class Renderer: NSObject {
         // Configure view
         metalView.device = device
         metalView.depthStencilPixelFormat = .depth32Float
-//        metalView.sampleCount = 4
+        metalView.sampleCount = Renderer.sampleCount
+        metalView.clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         
         self.commandQueue = commandQueue
         
-        depthStencilState = Renderer.buildDepthStencilState()!
-        irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
-        
-        Renderer.nexus = Nexus()
+        /// RENDER STATE
     
+        // Create pass descriptors
+        depthPassDescriptor = Renderer.buildDepthPassDescriptor()
         
+        lightCullComputeState = Renderer.buildLightCullComputeState(device: device)
+        
+        // Create stencil states
+        depthStencilStateWrite = Renderer.buildWriteDepthStencilState(device: device)
+        depthStencilStateNoWrite = Renderer.buildNoWriteDepthStencilState(device: device)
+        
+        
+        irradianceCubeMap = Renderer.buildEnvironmentTexture(device: device, "garage_pmrem.ktx")
+
+        
+        
+        
+        
+        
+        /// SCENE AS LONG AS SCENE MANAGER DOES NOT EXIST
+        
+        Renderer.nexus = Nexus() // MOVE
+
+        // Populate from nexus
         lights = Nexus.shared().group(requires: Light.self)
         meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
         
-        behaviorSystem = BehaviorSystem()
-        
-        
+        behaviorSystem = BehaviorSystem() // MOVE
         
         scene = Scene(screenSize: metalView.bounds.size)
         
+        
+        /// RENDER UNIFORMS
         uniforms = Uniforms()
         
         
         super.init()
         
-        // Further view configuration
-        metalView.clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
+        // Must be done after self...
         metalView.delegate = self
-        
-        // Update textures and cameras
-        mtkView(metalView, drawableSizeWillChange: metalView.bounds.size)
     
+        // Create textures
+        resize(size: metalView.bounds.size)
         
         
         // DEBUG: create a scene
@@ -100,7 +147,8 @@ class Renderer: NSObject {
     // For testing
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
-        camera.add(component: Transform())
+        let t = camera.add(component: Transform())
+        t.position = [0, 5, 0]
         let cameraComp = camera.add(component: Camera())
         camera.add(behavior: DebugCameraBehavior())
         scene.camera = cameraComp
@@ -129,9 +177,7 @@ class Renderer: NSObject {
 //        cube.add(component: MeshRenderer())
 //        // cube.add(behavior: HelloWorldComponent())
 //        Nexus.shared().addChild(cube, to: helmet)
-        
-        
-        
+
         let sphereMesh = Mesh(name: "ironSphere.obj")
         let sphereMesh2 = Mesh(name: "grassSphere.obj")
         let c = 1000
@@ -150,7 +196,7 @@ class Renderer: NSObject {
             sphere.add(behavior: HelloWorldComponent(seed: i))
         }
         
-        let l = 80
+        let l = 250
         for i in 0...l {
             let light = Nexus.shared().createEntity()
             let transform = light.add(component: Transform())
@@ -162,17 +208,31 @@ class Renderer: NSObject {
         }
     }
     
-    
-    
+}
+
+// MARK: - State building
+
+fileprivate extension Renderer {
     /// Create a simple depth stencil state that writes to the depth buffer
-    static func buildDepthStencilState() -> MTLDepthStencilState? {
+    static func buildWriteDepthStencilState(device: MTLDevice) -> MTLDepthStencilState {
         let descriptor = MTLDepthStencilDescriptor()
         
         descriptor.depthCompareFunction = .less
         descriptor.isDepthWriteEnabled = true
         
-        return Renderer.device.makeDepthStencilState(descriptor: descriptor)
+        return device.makeDepthStencilState(descriptor: descriptor)!
     }
+    
+    /// Build a depth state that does not weite to the depth buffer anymore and is just used for comparing.
+    static func buildNoWriteDepthStencilState(device: MTLDevice) -> MTLDepthStencilState {
+        let descriptor = MTLDepthStencilDescriptor()
+        
+        descriptor.depthCompareFunction = .less
+        descriptor.isDepthWriteEnabled = false
+        
+        return device.makeDepthStencilState(descriptor: descriptor)!
+    }
+        
     
     static func buildEnvironmentTexture(device: MTLDevice, _ name: String) -> MTLTexture {
         let textureLoader = MTKTextureLoader(device: device)
@@ -187,12 +247,171 @@ class Renderer: NSObject {
             fatalError("Could not load irradiance map: \(error)")
         }
     }
+    
+    /// Build the pass descriptor for the depth prepass
+    static func buildDepthPassDescriptor() -> MTLRenderPassDescriptor {
+        let passDescriptor = MTLRenderPassDescriptor()
+        
+        passDescriptor.depthAttachment.clearDepth = 1.0
+        passDescriptor.depthAttachment.loadAction = .clear
+        passDescriptor.depthAttachment.storeAction = .store
+        passDescriptor.depthAttachment.slice = 0
+
+        return passDescriptor
+    }
+    
+    static func buildLightCullComputeState(device: MTLDevice) -> MTLComputePipelineState {
+        guard let function = Renderer.library!.makeFunction(name: "lightculling") else {
+            fatalError("Light culling kernel does not exist")
+        }
+        
+        return try! device.makeComputePipelineState(function: function)
+    }
+    
+    /// Build the pass descriptor for the lighting pass.
+    static func buildLightingPassDescriptor() -> MTLRenderPassDescriptor {
+        let passDescriptor = MTLRenderPassDescriptor()
+        
+        // TODO
+//        passDescriptor.colorAttachments
+//        passDescriptor.depthAttachment
+//        passDescriptor.
+        
+        return passDescriptor
+    }
+    
+    func resize(size: CGSize) {
+        let depthMapDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float,
+                                                                          width: Int(size.width),
+                                                                          height: Int(size.height),
+                                                                          mipmapped: false)
+        
+        if Renderer.depthSampleCount > 1 {
+            depthMapDescriptor.textureType = .type2DMultisample
+        }
+        depthMapDescriptor.storageMode = .private
+        depthMapDescriptor.usage = [.renderTarget, .shaderRead]
+        depthMapDescriptor.sampleCount = Renderer.depthSampleCount
+        
+        depthMap = Renderer.device.makeTexture(descriptor: depthMapDescriptor)
+        depthMap?.label = "depthMap"
+        
+        // Update map
+        depthPassDescriptor.depthAttachment.texture = depthMap
+
+        // Update the buffer
+        threadgroupCount.width  = (depthMap.width  + threadgroupSize.width -  1) / threadgroupSize.width;
+        threadgroupCount.height = (depthMap.height + threadgroupSize.height - 1) / threadgroupSize.height;
+        threadgroupCount.depth = 1
+
+        // Space for every group, list of 256 lights
+        let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride
+        culledLightsBuffer = Renderer.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+    }
 }
+
+// MARK: - Render passes
+extension Renderer {
+    /// Do a prepass my rending all meshes for depth only.
+    func doDepthPrepass(commandBuffer: MTLCommandBuffer) {
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: depthPassDescriptor) else {
+            fatalError("Unable to create render encoder for depth prepass")
+        }
+        renderEncoder.label = "DepthPrepass"
+        
+        renderEncoder.setDepthStencilState(depthStencilStateWrite)
+        renderEncoder.setCullMode(.back)
+        
+        renderScene(onEncoder: renderEncoder, renderPass: .depthPrePass)
+        
+        renderEncoder.endEncoding()
+    }
+    
+    /// Light culling pass: get all the lights we can possibly see, and cull them per tile.
+    func doLightCullingPass(commandBuffer: MTLCommandBuffer) {
+        guard let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            fatalError("Unable to create compute encoder for light culling pass")
+        }
+        computeEncoder.label = "LightCullingPass"
+
+        // Cull lights to frustum
+        var lightsData = [LightData]()
+        let frustum = scene.camera!.frustum
+        for light in lights {
+            if frustum.intersects(bounds: light.bounds) != .outside {
+                lightsData.append(light.build())
+                DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
+            }
+        }
+        var lightCount = UInt(lightsData.count)
+        
+        // TODO: REUSE!
+        lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
+
+//        print("LIGHTS", lightCount)
+
+        computeEncoder.setComputePipelineState(lightCullComputeState)
+
+        // Camera
+        computeEncoder.setBytes(&scene.camera!.uniforms,
+                                     length: MemoryLayout<CameraUniforms>.stride,
+                                     index: 1)
+        
+        // Input
+        computeEncoder.setBuffer(lightsBuffer, offset: 0, index: 2)
+        computeEncoder.setBytes(&lightCount, length: MemoryLayout<UInt>.stride, index: 3)
+        computeEncoder.setTexture(depthMap, index: 0)
+        
+        // Output
+        computeEncoder.setBuffer(culledLightsBuffer, offset: 0, index: 4)
+        
+        computeEncoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
+        
+        computeEncoder.endEncoding()
+    }
+    
+    /// Do the lighting pass: render all meshes and use mesh, culled lights and SSAO to create lighting result
+    func doLightingPass(commandBuffer: MTLCommandBuffer, view: MTKView) {
+        guard let passDescriptor = view.currentRenderPassDescriptor,
+            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor) else {
+            fatalError("Unable to create render encoder for lighting pass")
+        }
+        renderEncoder.label = "LighingPass"
+        
+        // Do not write to depth: we already have it
+        renderEncoder.setDepthStencilState(depthStencilStateNoWrite)
+        renderEncoder.setCullMode(.back)
+        
+        // Light data: all lights, culled light indices, and horizontal tile count for finding the tile per pixel.
+        var count = UInt(threadgroupCount.width)
+        renderEncoder.setFragmentBytes(&count, length: MemoryLayout<UInt>.stride, index: 15)
+        renderEncoder.setFragmentBuffer(lightsBuffer, offset: 0, index: 16)
+        renderEncoder.setFragmentBuffer(culledLightsBuffer, offset: 0, index: 17)
+//        renderEncoder.setFragmentTexture(ssaoMap, index: 4)
+        
+        
+        
+        renderScene(onEncoder: renderEncoder, renderPass: .lighting)
+        
+        
+        
+        
+        DebugRendering.shared.render(renderEncoder: renderEncoder)
+        
+        
+        renderEncoder.endEncoding()
+    }
+    
+    // renderShadows using shadowRenderPass   [encoder setDepthBias:0.0f slopeScale:2.0f clamp:0];, draw scene
+}
+
+// MARK: - Render loop
 
 extension Renderer: MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         scene.screenSizeWillChange(to: size)
+        resize(size: size)
     }
     
     func draw(in view: MTKView) {
@@ -210,54 +429,35 @@ extension Renderer: MTKViewDelegate {
         
         let camera = scene.camera!
         camera.updateUniforms()
-        
-        
-        
-        guard let descriptor = view.currentRenderPassDescriptor,
-            let commandBuffer = commandQueue.makeCommandBuffer(),
-            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else { // MOVE TO PASS
+
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
                 return
         }
-
-        renderEncoder.setDepthStencilState(depthStencilState)
-
         
+        doDepthPrepass(commandBuffer: commandBuffer)
+        doLightCullingPass(commandBuffer: commandBuffer)
+        doLightingPass(commandBuffer: commandBuffer, view: view)
+        
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        commandBuffer.present(drawable)
+        commandBuffer.commit()
+    }
+    
+    /// Render the scene on given render encoder for given pass.
+    /// The pass determines the shaders used
+    func renderScene(onEncoder renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
+//        print("render scene \(renderPass)")
         renderSet.clear()
-        let frustum = scene.camera!.frustum
+        
+        let camera = scene.camera!
+        let frustum = camera.frustum
         
         
-        // START BUILD LIGHTS
-        // todo: limit with Bounds... culling...
-        var lightsData = [LightData]()
-        for light in lights {
-            if frustum.intersects(bounds: light.bounds) != .outside {
-                lightsData.append(light.build())
-                DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
-            }
-        }
-        var lightCount = lightsData.count
-        
-        
-        
-        renderEncoder.setFragmentBytes(&lightCount, length: MemoryLayout<Int>.stride, index: 15)
-        renderEncoder.setFragmentBytes(&lightsData, length: MemoryLayout<LightData>.stride * lightCount, index: 16)
-        
-        
-        // END BUILD LIGHTS
-        
-        
-        // Build a small render queue by adding all items to it
-        // TODO: sorting
         for (_, meshRenderer) in meshes {
-            
-            // TODO:
-            // we need to add to any shadow queue and current camera queue
-            
-            meshRenderer.renderQueue(set: renderSet, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
+            meshRenderer.renderQueue(set: renderSet, renderPass: renderPass, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
         }
-        
-        renderEncoder.setCullMode(.back)
-//        renderEncoder.setTriangleFillMode(.lines) // Wireframe debugging
         
         renderEncoder.setVertexBytes(&camera.uniforms,
                                      length: MemoryLayout<CameraUniforms>.stride,
@@ -266,30 +466,12 @@ extension Renderer: MTKViewDelegate {
                                        length: MemoryLayout<CameraUniforms>.stride,
                                        index: Int(BufferIndexCameraUniforms.rawValue))
         
-        // Set irradiance texture
-        renderEncoder.setFragmentTexture(irradianceCubeMap, index: Int(TextureIrradiance.rawValue))
-
         for item in renderSet.opaque {
-            item.mesh.render(renderEncoder: renderEncoder, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
+            item.mesh.render(renderEncoder: renderEncoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
         }
-        
-        // Render all debug things.
-        DebugRendering.shared.render(renderEncoder: renderEncoder)
-
-        // Easy testing
-        NSApplication.shared.mainWindow?.title = String(format: "Drawn meshes: %i, lights: %i", renderSet.opaque.count, lightCount)
-        
-        
-        
-        
-        renderEncoder.endEncoding()
-        guard let drawable = view.currentDrawable else {
-            return
-        }
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
     }
     
+
     /// Update uniforms
     func updateUniforms() {
 //        AAPLCameraUniforms* cullUniforms = (AAPLCameraUniforms*)currentFrame.viewData[0].cullUniformBuffer.contents;
@@ -309,10 +491,8 @@ extension Renderer: MTKViewDelegate {
     }
 }
 
-/**
- Render system. Renders lights and meshes.
- */
-    
+
+
 //        let scene = SceneManager.activeScene
         
         

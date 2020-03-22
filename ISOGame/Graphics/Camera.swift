@@ -30,6 +30,8 @@ class Camera: Component {
     /// Far plane distance from camera.
     var far: Float = 1000
     
+    private var screenSize = CGSize.zero
+    
     /// The view matrix maps view space to homogenous coords
     var projectionMatrix: float4x4 {
         return float4x4(projectionFov: fovRadians,
@@ -67,6 +69,7 @@ class Camera: Component {
     /// Updates the aspect ratio
     func onScreenSizeWillChange(to size: CGSize) {
         aspect = Float(size.width / size.height)
+        screenSize = size
     }
     
     // TODO, maybe: static Camera.main -> Camera { SceneManager.current.camera }
@@ -79,10 +82,19 @@ class Camera: Component {
         
         // Derived
         uniforms.viewProjectionMatrix = uniforms.projectionMatrix * uniforms.viewMatrix
-        
-//        _uniforms.invProjectionMatrix               = simd_inverse(_uniforms.projectionMatrix);
-//        _uniforms.invViewProjectionMatrix           = simd_inverse(_uniforms.viewProjectionMatrix);
+        uniforms.invProjectionMatrix = simd_inverse(uniforms.projectionMatrix)
+        uniforms.invViewProjectionMatrix = simd_inverse(uniforms.viewProjectionMatrix)
 //        _uniforms.invViewMatrix                     = simd_inverse(_uniforms.viewMatrix);
+        
+        uniforms.physicalSize = [Float(screenSize.width), Float(screenSize.height)]
+        
+        // Inverse column
+        uniforms.invProjectionZ = [ uniforms.invProjectionMatrix.columns.2.z, uniforms.invProjectionMatrix.columns.2.w,
+                                    uniforms.invProjectionMatrix.columns.3.z, uniforms.invProjectionMatrix.columns.3.w ]
+        
+        let bias = -near
+        let invScale = -far - near
+        uniforms.invProjectionZNormalized = [uniforms.invProjectionZ.x + (uniforms.invProjectionZ.y * bias), uniforms.invProjectionZ.y + invScale, uniforms.invProjectionZ.z + (uniforms.invProjectionZ.w * bias), uniforms.invProjectionZ.w * invScale]
         
         uniformsDirty = false
     }

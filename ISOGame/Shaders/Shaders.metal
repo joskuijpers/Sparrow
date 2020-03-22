@@ -37,6 +37,11 @@ struct VertexOut {
     float2 uv;
 };
 
+/// Vertex attributes for a depth-only pass
+struct VertexDepthOnlyOut {
+    float4 position [[ position ]];
+};
+
 /// Lighting calculation input,
 struct LightingParams {
     float3 albedo;
@@ -79,6 +84,28 @@ vertex VertexOut vertex_main(
     return out;
 }
 
+/// Depth only vertex function: only calculates vertex position
+vertex VertexDepthOnlyOut vertex_main_depth(
+                                            const VertexIn in [[ stage_in ]],
+                                            constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]],
+                                            constant CameraUniforms &cameraUniforms [[ buffer(BufferIndexCameraUniforms) ]]
+                                            ) {
+    VertexDepthOnlyOut out;
+    
+    out.position = cameraUniforms.viewProjectionMatrix * uniforms.modelMatrix * in.position;
+    
+//    out.uv = in.uv;
+    
+    return out;
+}
+
+
+
+
+
+
+
+
 float3 diffuseTerm(LightingParams params);
 float3 specularTerm(LightingParams params);
 
@@ -94,8 +121,9 @@ fragment float4 fragment_main(
                               texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]],
                               texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]],
                               
+                              constant uint &tileCount [[ buffer(15) ]],
                               constant LightData *lights [[ buffer(16) ]],
-                              constant int &lightsCount [[ buffer(15) ]]
+                              constant uint16_t *culledLights [[ buffer(17) ]]
                               ) {
     constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
     constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
@@ -161,8 +189,22 @@ fragment float4 fragment_main(
 //    parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
 //    parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
 //
-    for (int i = 0; i < lightsCount; ++i) {
-        LightData light = lights[i];
+//    uint outputIdx = (groupId.x + groupId.y * outputSize.x) * MAX_LIGHTS_PER_TILE;
+//    uint2 groupId            [[threadgroup_position_in_grid]],
+//    uint2 outputSize         [[threadgroups_per_grid]],
+    
+    uint tileX = in.position.x / LIGHT_CULLING_TILE_SIZE;
+    uint tileY = in.position.y / LIGHT_CULLING_TILE_SIZE;
+    uint tileIdx = (tileX + tileCount * tileY) * MAX_LIGHTS_PER_TILE;
+    culledLights += tileIdx;
+    
+    uint32_t numLights = culledLights[0];
+
+    return float4(0, 0, (1.0 / MAX_LIGHTS_PER_TILE * numLights), 1);
+    
+    for (int i = 0; i < numLights; ++i) {
+        uint32_t lightIndex = culledLights[i + 1];
+        LightData light = lights[lightIndex];
 
         float3 lightDirection = float3(1, 0, 0);
         float attenuation = 1.0;

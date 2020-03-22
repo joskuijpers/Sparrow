@@ -15,7 +15,7 @@ class MeshRenderer: Component {
     // receiveShadows: Bool
     
     /// Add renderables to render set
-    func renderQueue(set: RenderSet, frustum: Frustum, viewPosition: float3) {
+    func renderQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
         guard let mesh = get(component: MeshSelector.self)?.mesh,
             let transform = self.transform else {
             return
@@ -34,6 +34,6 @@ class MeshRenderer: Component {
         
         
         // if mesh.bounds inside frustum
-        mesh.addToRenderSet(set: set, pass: .geometry, viewPosition: viewPosition, worldTransform: wt)
+        mesh.addToRenderSet(set: set, pass: .lighting, viewPosition: viewPosition, worldTransform: wt)
     }
 }
