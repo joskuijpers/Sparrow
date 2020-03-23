@@ -34,6 +34,6 @@ class MeshRenderer: Component {
         
         
         // if mesh.bounds inside frustum
-        mesh.addToRenderSet(set: set, pass: .lighting, viewPosition: viewPosition, worldTransform: wt)
+        mesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: wt)
     }
 }

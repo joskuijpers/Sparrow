@@ -128,7 +128,7 @@ public class DebugRendering {
         pipelineDescriptor.vertexFunction = library.makeFunction(name: "vertex_debug")
         pipelineDescriptor.fragmentFunction = library.makeFunction(name: "fragment_debug")
 
-        pipelineDescriptor.colorAttachments[0].pixelFormat = Renderer.colorPixelFormat
+        pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba16Float
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 //        pipelineDescriptor.sampleCount = 4
         

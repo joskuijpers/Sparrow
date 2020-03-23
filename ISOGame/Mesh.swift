@@ -62,7 +62,7 @@ class Mesh {
      
      TODO: maybe pass the renderItem to update? so we don't need to allocate
      */
-    func addToRenderSet(set: RenderSet, pass: RenderPass, viewPosition: float3, worldTransform: float4x4) {
+    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4) {
         // What do we do with renderpass?
         // This function should be called only if the mesh survived culling!
 
@@ -127,6 +127,7 @@ extension Mesh {
 //        }
         
         if renderPass != .depthPrePass && renderPass != .shadows {
+            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
             renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
             renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
             renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))

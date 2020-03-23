@@ -16,16 +16,7 @@ typedef struct {
 } CullTileData;
 
 typedef struct {
-    float3 normal;
-    float offset;
-} CullPlane;
-
-typedef struct {
-    float tileMinZ;
-    float tileMaxZ;
-    float4 minZFrustumXY;
-    float4 maxZFrustumXY;
-//    float4 tileBoundingSphere;
+    float4 planes[6];
 } TileFrustum;
 
 /// Compute a tile frustum.
@@ -33,45 +24,61 @@ TileFrustum computeTileFrustum(
                                constant CameraUniforms &cameraUniforms,
                                uint2 groupId,
                                float tileMinZ,
-                               float tileMaxZ
+                               float tileMaxZ,
+                               uint2 outputSize
                                )
 {
-    float2 tileScale = float2(cameraUniforms.physicalSize) / float2(2 * LIGHT_CULLING_TILE_SIZE);
-    
-    float2 tileMinScale = float2(tileMinZ) / float2(cameraUniforms.projectionMatrix[0][0], cameraUniforms.projectionMatrix[1][1]);
-    float2 tileMaxScale = float2(tileMaxZ) / float2(cameraUniforms.projectionMatrix[0][0], cameraUniforms.projectionMatrix[1][1]);
-    
-    // Frustum corner positions
-    float2 frustumMinClipSpace = (1.0 - float2((int2)groupId.xy - 1) / tileScale.xy) * float2(-1.0, 1.0);
-    float2 frustumMaxClipSpace = (1.0 - float2((int2)groupId.xy + 1) / tileScale.xy) * float2(-1.0, 1.0);
-
+    TileFrustum frustum;
     
     
-    float4 minZFrustumXY, maxZFrustumXY;
+    float2 negativeStep = (2 * float2(groupId)) / float2(outputSize);
+    float2 positiveStep = (2 * float2(groupId + uint2(1, 1))) / float2(outputSize);
     
-    minZFrustumXY.xz = frustumMinClipSpace.xy;
-    minZFrustumXY.yw = frustumMaxClipSpace.xy;
+    frustum.planes[0] = float4( 1, 0, 0, 1 - negativeStep.x); // Left
+    frustum.planes[1] = float4(-1, 0, 0, -1 + positiveStep.x); // Right
+    frustum.planes[2] = float4( 0, 1, 0, 1 - negativeStep.y); // Bottom
+    frustum.planes[3] = float4( 0,-1, 0, -1 + positiveStep.y); // Top
+    frustum.planes[4] = float4( 0, 0,-1, -tileMinZ); // Near
+    frustum.planes[5] = float4( 0, 0, 1, tileMaxZ); // Far
     
-    maxZFrustumXY.xz = frustumMinClipSpace.xy;
-    maxZFrustumXY.yw = frustumMaxClipSpace.xy;
+    for (uint i = 0; i < 4; ++i) {
+        frustum.planes[i] *= cameraUniforms.viewProjectionMatrix;
+        frustum.planes[i] /= length(frustum.planes[i].xyz);
+    }
     
-    // Transform to view/camera space
-    minZFrustumXY *= tileMinScale.xxyy;
-    maxZFrustumXY *= tileMaxScale.xxyy;
+    frustum.planes[4] *= cameraUniforms.viewMatrix;
+    frustum.planes[4] /= length(frustum.planes[4].xyz);
+    frustum.planes[5] *= cameraUniforms.viewMatrix;
+    frustum.planes[5] /= length(frustum.planes[5].xyz);
     
-    // Possible todo: create a bounding sphere
-    
-    return { tileMinZ, tileMaxZ, minZFrustumXY, maxZFrustumXY };
+//    float2 tileScale = float2(cameraUniforms.physicalSize) / float2(2 * LIGHT_CULLING_TILE_SIZE);
+//
+//    float2 tileMinScale = float2(tileMinZ) / float2(cameraUniforms.projectionMatrix[0][0], cameraUniforms.projectionMatrix[1][1]);
+//    float2 tileMaxScale = float2(tileMaxZ) / float2(cameraUniforms.projectionMatrix[0][0], cameraUniforms.projectionMatrix[1][1]);
+//
+//    // Frustum corner positions
+//    float2 frustumMinClipSpace = (1.0 - float2((int2)groupId.xy - 1) / tileScale.xy) * float2(-1.0, 1.0);
+//    float2 frustumMaxClipSpace = (1.0 - float2((int2)groupId.xy + 1) / tileScale.xy) * float2(-1.0, 1.0);
+//
+    return frustum;
 }
 
 /// Get whether given light intersects the frustum.
 bool intersectsFrustumTile(LightData light, float3 lightPosView, float range, TileFrustum frustum) {
+    float dist = 0.0;
     
-//    for(int i = 0; i < 6; ++i) {
-//        if (dot(lightPosView, plane.xyz) + plane.w <= -range) {
-//            return false;
-//        }
-//    }
+    for(int i = 0; i < 6; ++i) {
+        float4 plane = frustum.planes[i];
+        
+        dist = dot(float4(lightPosView, 1), plane) + range;
+        if (dist <= 0.0) {
+            break;
+        }
+    }
+    
+    if (dist > 0.0) {
+        return true;
+    }
     
     return true;
 }
@@ -141,7 +148,7 @@ kernel void lightculling(
     float tileMinZ = as_type<float>(atomic_load_explicit(&atomicMinZ, metal::memory_order_relaxed));
     float tileMaxZ = as_type<float>(atomic_load_explicit(&atomicMaxZ, metal::memory_order_relaxed));
     
-    TileFrustum frustum = computeTileFrustum(cameraUniforms, groupId, tileMinZ, tileMaxZ);
+    TileFrustum frustum = computeTileFrustum(cameraUniforms, groupId, tileMinZ, tileMaxZ, outputSize);
     
     // Adjust pointer to output towards our own tile
     culledLights += outputIdx;
@@ -160,12 +167,12 @@ kernel void lightculling(
         }
         //// END TODO
         
-        bool inFrustumMinZ = (lightPosView.z + range) > -frustum.tileMinZ;
-        bool inFrustumMaxZ = (lightPosView.z - range) < frustum.tileMaxZ;
+//        bool inFrustumMinZ = (lightPosView.z + range) > -frustum.tileMinZ;
+//        bool inFrustumMaxZ = (lightPosView.z - range) < frustum.tileMaxZ;
 //        bool inFrustumNearZ = (lightPosView.z + range) > 0; // near camera, for transparents
         
         // Quick culling of min/max Z
-        if (inFrustumMaxZ && inFrustumMinZ) {
+//        if (inFrustumMaxZ && inFrustumMinZ) {
             // Tile frustum culling
             bool visible = intersectsFrustumTile(lightData, lightPosView, range, frustum);
             if (visible) {
@@ -176,7 +183,7 @@ kernel void lightculling(
                     culledLights[index + 1] = i;
                 }
             }
-        }
+//        }
     }
     
     threadgroup_barrier(mem_flags::mem_threadgroup);

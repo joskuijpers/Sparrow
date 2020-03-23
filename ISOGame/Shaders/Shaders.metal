@@ -188,18 +188,13 @@ fragment float4 fragment_main(
 //    parameters.roughness = roughness;
 //    parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
 //    parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
-//
-//    uint outputIdx = (groupId.x + groupId.y * outputSize.x) * MAX_LIGHTS_PER_TILE;
-//    uint2 groupId            [[threadgroup_position_in_grid]],
-//    uint2 outputSize         [[threadgroups_per_grid]],
-    
+
     uint tileX = in.position.x / LIGHT_CULLING_TILE_SIZE;
     uint tileY = in.position.y / LIGHT_CULLING_TILE_SIZE;
     uint tileIdx = (tileX + tileCount * tileY) * MAX_LIGHTS_PER_TILE;
     culledLights += tileIdx;
     
     uint32_t numLights = culledLights[0];
-
     return float4(0, 0, (1.0 / MAX_LIGHTS_PER_TILE * numLights), 1);
     
     for (int i = 0; i < numLights; ++i) {

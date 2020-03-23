@@ -18,14 +18,14 @@ enum RenderPass {
     case depthPrePass
     case ssao
     case shadows
-    case lighting
+    case opaqueLighting
+    case transparentLighting
     case postfx
 }
 
 class Renderer: NSObject {
     static var device: MTLDevice!
     static var library: MTLLibrary?
-    static var colorPixelFormat: MTLPixelFormat!
     static var textureLoader: TextureLoader!
     static var sampleCount = 1 // MSAA
     static var depthSampleCount = 1 // MSAA
@@ -60,15 +60,21 @@ class Renderer: NSObject {
     
     let depthPassDescriptor: MTLRenderPassDescriptor
     let lightCullComputeState: MTLComputePipelineState
+    let lightingPassDescriptor: MTLRenderPassDescriptor
+    let viewRenderPassDescriptor: MTLRenderPassDescriptor
+    let finalPipelineState: MTLRenderPipelineState
     
     let depthStencilStateWrite: MTLDepthStencilState
     let depthStencilStateNoWrite: MTLDepthStencilState
     
     /// Depth map (private) with scene depth
     var depthMap: MTLTexture!
+    /// HDR Lighting target
+    var lightingRenderTarget: MTLTexture!
     var lightsBuffer: MTLBuffer!
     /// List of lights per threadgroup
-    var culledLightsBuffer: MTLBuffer!
+    var culledLightsBufferOpaque: MTLBuffer!
+    var culledLightsBufferTransparent: MTLBuffer!
     
     /// Size of thread groups for compute kernels
     var threadgroupSize = MTLSizeMake(Int(LIGHT_CULLING_TILE_SIZE), Int(LIGHT_CULLING_TILE_SIZE), 1)
@@ -84,7 +90,6 @@ class Renderer: NSObject {
         
         Renderer.device = device
         Renderer.library = device.makeDefaultLibrary()
-        Renderer.colorPixelFormat = metalView.colorPixelFormat
         Renderer.textureLoader = TextureLoader()
         
         // Configure view
@@ -101,6 +106,11 @@ class Renderer: NSObject {
         depthPassDescriptor = Renderer.buildDepthPassDescriptor()
         
         lightCullComputeState = Renderer.buildLightCullComputeState(device: device)
+        
+        lightingPassDescriptor = Renderer.buildLightingPassDescriptor()
+        
+        viewRenderPassDescriptor = Renderer.buildViewRenderPassDescriptor()
+        finalPipelineState = Renderer.buildFinalPipelineState(colorPixelFormat: metalView.colorPixelFormat)
         
         // Create stencil states
         depthStencilStateWrite = Renderer.buildWriteDepthStencilState(device: device)
@@ -272,12 +282,53 @@ fileprivate extension Renderer {
     static func buildLightingPassDescriptor() -> MTLRenderPassDescriptor {
         let passDescriptor = MTLRenderPassDescriptor()
         
-        // TODO
-//        passDescriptor.colorAttachments
-//        passDescriptor.depthAttachment
-//        passDescriptor.
+        passDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+        passDescriptor.colorAttachments[0].loadAction = .clear
+        passDescriptor.colorAttachments[0].storeAction = .store
+        
+        passDescriptor.depthAttachment.loadAction = .load
+        passDescriptor.depthAttachment.storeAction = .store
+        passDescriptor.depthAttachment.slice = 0
         
         return passDescriptor
+    }
+    
+    /// Build a pass to render to the drawable
+    static func buildViewRenderPassDescriptor() -> MTLRenderPassDescriptor {
+        let passDescriptor = MTLRenderPassDescriptor()
+        
+        passDescriptor.colorAttachments[0].loadAction = .clear
+        passDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
+//        passDescriptor.colorAttachments[1].loadAction = .clear
+//        passDescriptor.colorAttachments[1].storeAction = .dontCare
+        
+        passDescriptor.depthAttachment.loadAction = .clear
+        passDescriptor.depthAttachment.storeAction = .dontCare
+        passDescriptor.depthAttachment.clearDepth = 1.0
+        
+        passDescriptor.stencilAttachment.loadAction = .clear
+        passDescriptor.stencilAttachment.storeAction = .dontCare
+        passDescriptor.stencilAttachment.clearStencil = 0
+        
+        if Renderer.sampleCount > 1 {
+            passDescriptor.colorAttachments[0].storeAction = .multisampleResolve
+        } else {
+            passDescriptor.colorAttachments[0].storeAction = .store
+        }
+        
+        return passDescriptor
+    }
+    
+    static func buildFinalPipelineState(colorPixelFormat: MTLPixelFormat) -> MTLRenderPipelineState {
+        let descriptor = MTLRenderPipelineDescriptor()
+        
+        descriptor.label = "FinalPipelineState"
+        descriptor.sampleCount = 1
+        descriptor.vertexFunction = Renderer.library!.makeFunction(name: "FSQuadVertexShader")
+        descriptor.fragmentFunction = Renderer.library!.makeFunction(name: "resolveShader")
+        descriptor.colorAttachments[0].pixelFormat = colorPixelFormat
+        
+        return try! Renderer.device.makeRenderPipelineState(descriptor: descriptor)
     }
     
     func resize(size: CGSize) {
@@ -296,8 +347,27 @@ fileprivate extension Renderer {
         depthMap = Renderer.device.makeTexture(descriptor: depthMapDescriptor)
         depthMap?.label = "depthMap"
         
-        // Update map
+        let hdrLightingDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float,
+                                                                             width: Int(size.width),
+                                                                             height: Int(size.height),
+                                                                             mipmapped: false)
+        if Renderer.sampleCount > 1 {
+            depthMapDescriptor.textureType = .type2DMultisample
+        }
+        hdrLightingDescriptor.storageMode = .private
+        hdrLightingDescriptor.usage = [.renderTarget, .shaderRead]
+        hdrLightingDescriptor.sampleCount = Renderer.sampleCount
+        
+        lightingRenderTarget = Renderer.device.makeTexture(descriptor: hdrLightingDescriptor)
+        lightingRenderTarget?.label = "hdrLighting"
+        
+        // Update passes
         depthPassDescriptor.depthAttachment.texture = depthMap
+        lightingPassDescriptor.depthAttachment.texture = depthMap
+        lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
+        
+        
+        
 
         // Update the buffer
         threadgroupCount.width  = (depthMap.width  + threadgroupSize.width -  1) / threadgroupSize.width;
@@ -306,7 +376,10 @@ fileprivate extension Renderer {
 
         // Space for every group, list of 256 lights
         let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride
-        culledLightsBuffer = Renderer.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferOpaque = Renderer.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferOpaque.label = "opaqueLightIndices"
+        culledLightsBufferTransparent = Renderer.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferTransparent.label = "transparentLightIndices"
     }
 }
 
@@ -348,14 +421,14 @@ extension Renderer {
         // TODO: REUSE!
         lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
 
-//        print("LIGHTS", lightCount)
+//        print("LIGHTS", lightCount) // CPU frustum culling
 
         computeEncoder.setComputePipelineState(lightCullComputeState)
 
         // Camera
         computeEncoder.setBytes(&scene.camera!.uniforms,
-                                     length: MemoryLayout<CameraUniforms>.stride,
-                                     index: 1)
+                                length: MemoryLayout<CameraUniforms>.stride,
+                                index: 1)
         
         // Input
         computeEncoder.setBuffer(lightsBuffer, offset: 0, index: 2)
@@ -363,7 +436,8 @@ extension Renderer {
         computeEncoder.setTexture(depthMap, index: 0)
         
         // Output
-        computeEncoder.setBuffer(culledLightsBuffer, offset: 0, index: 4)
+        computeEncoder.setBuffer(culledLightsBufferOpaque, offset: 0, index: 4)
+        computeEncoder.setBuffer(culledLightsBufferTransparent, offset: 0, index: 5)
         
         computeEncoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
         
@@ -371,12 +445,11 @@ extension Renderer {
     }
     
     /// Do the lighting pass: render all meshes and use mesh, culled lights and SSAO to create lighting result
-    func doLightingPass(commandBuffer: MTLCommandBuffer, view: MTKView) {
-        guard let passDescriptor = view.currentRenderPassDescriptor,
-            let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: passDescriptor) else {
+    func doLightingPass(commandBuffer: MTLCommandBuffer) {
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: lightingPassDescriptor) else {
             fatalError("Unable to create render encoder for lighting pass")
         }
-        renderEncoder.label = "LighingPass"
+        renderEncoder.label = "LightingPass"
         
         // Do not write to depth: we already have it
         renderEncoder.setDepthStencilState(depthStencilStateNoWrite)
@@ -386,14 +459,14 @@ extension Renderer {
         var count = UInt(threadgroupCount.width)
         renderEncoder.setFragmentBytes(&count, length: MemoryLayout<UInt>.stride, index: 15)
         renderEncoder.setFragmentBuffer(lightsBuffer, offset: 0, index: 16)
-        renderEncoder.setFragmentBuffer(culledLightsBuffer, offset: 0, index: 17)
-//        renderEncoder.setFragmentTexture(ssaoMap, index: 4)
-        
-        
-        
-        renderScene(onEncoder: renderEncoder, renderPass: .lighting)
-        
-        
+
+//        renderEncoder.setFragmentTexture(ssaoTexture, index: 4)
+
+        renderEncoder.setFragmentBuffer(culledLightsBufferOpaque, offset: 0, index: 17)
+        renderScene(onEncoder: renderEncoder, renderPass: .opaqueLighting)
+
+//        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
+//        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
         
         
         DebugRendering.shared.render(renderEncoder: renderEncoder)
@@ -402,8 +475,32 @@ extension Renderer {
         renderEncoder.endEncoding()
     }
     
+    func doFinalPass(commandBuffer: MTLCommandBuffer, view: MTKView) {
+        guard let drawable = view.currentDrawable else {
+            fatalError("Unable to get drawable")
+        }
+        
+        viewRenderPassDescriptor.colorAttachments[0].texture = drawable.texture
+        
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: viewRenderPassDescriptor) else {
+            fatalError("Unable to create render encoder for lighting pass")
+        }
+        renderEncoder.label = "FinalPass"
+        
+        renderEncoder.setRenderPipelineState(finalPipelineState)
+        renderEncoder.setFragmentTexture(lightingRenderTarget, index: 0)
+        
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        
+        renderEncoder.endEncoding()
+    }
+    
     // renderShadows using shadowRenderPass   [encoder setDepthBias:0.0f slopeScale:2.0f clamp:0];, draw scene
 }
+
+// CHANGE FINAL INTO 'RESOLVE'.
+// ADD BLIT ENCODER TO MOVE RESOLVED TO SCREEN
+
 
 // MARK: - Render loop
 
@@ -436,7 +533,12 @@ extension Renderer: MTKViewDelegate {
         
         doDepthPrepass(commandBuffer: commandBuffer)
         doLightCullingPass(commandBuffer: commandBuffer)
-        doLightingPass(commandBuffer: commandBuffer, view: view)
+        
+        // Perform lighting
+        doLightingPass(commandBuffer: commandBuffer)
+        
+        // Resolve HDR buffer with tone mapping and gamma correction and draw to screen
+        doFinalPass(commandBuffer: commandBuffer, view: view)
         
         guard let drawable = view.currentDrawable else {
             return
@@ -448,6 +550,19 @@ extension Renderer: MTKViewDelegate {
     /// Render the scene on given render encoder for given pass.
     /// The pass determines the shaders used
     func renderScene(onEncoder renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
+        
+        // TODO:
+        // build render set once for opaque and transparent objects
+        // for depth pass: render opaque objects
+        // for lightingOpaque: render opaque
+        // for lightingTransparent: render transparent
+        // for shadows: get separate render set and draw opaque only
+        
+        if renderPass == .transparentLighting {
+            return
+        }
+        
+        
 //        print("render scene \(renderPass)")
         renderSet.clear()
         
@@ -490,105 +605,6 @@ extension Renderer: MTKViewDelegate {
         
     }
 }
-
-
-
-//        let scene = SceneManager.activeScene
-        
-        
-        
-//        let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
-//        renderEncoder.setDepthStencilState(depthStencilState)
-        
-        
-        // Build list of visible lights
-        // For each visible light with shadow mapping: build render queue
-        // For camera: build render queue
-        
-        // Shaders: defaultShader, defaultDepthShader (for prepass and shadows. vertices position only. If also alphaTesting, add UVs and read albedo in fragment shader)
-        
-        
-        // PASS: Depth prepass ([Parallel]RenderEncoder)
-        //  Only do VertexShader, unless AlphaTest: then use fragment shader (function constant)
-        //  DepthStencilState: write=true, compare: less
-        //  Output: depth only
-        // ENDPASS: Depth prepass
-        
-        // PASS: Shadows (RenderEncoder)
-        //  Depth only like depth prepass
-        //  DepthStencilState: write=true, compare: less
-        //  Output: texture(s)
-        // END PASS: Shadows
-        
-        // PASS: SSAO (ComputeEncoder)
-        //  Supply: depth
-        //  Output: texture
-        // END PASS: SSAO
-        
-        // PASS: Light culling (ComputeEncoder)
-        //  Supply: depth buffer, lights buffer (in), culled lights buffer (out)
-        //  Output: buffer
-        // END PASS: Light Culling
-        
-        // PASS: Lighting ([Parallel]RenderEncoder)
-        //  Supply: ssao, culled lights buffer, lights buffer
-        //  DepthStencilState: write=false, compare: lessEqual
-        //  Adjust: depth writing off, compare less
-        //  Draw: all visible geometry
-        //  Output: Rendertexture, float
-        // END PASS: Lighting
-        
-        // PASS: PostFX (ComputeEncoder -> MPS)
-        //  Supply: lighting
-        //  Do: MPS Test > X => MPS Blur => MPS add to lighting texture
-        // END PASS: PostFX
-        
-        // PASS: ToneMapping (ComputeEncoder)
-        //  Input: lighting render texture
-        //  Output: ldrTexture
-        // END PASS: Tonemapping
-        
-        // PASS: Debug
-        //  Input: ldrTexture
-        //  Draw: debug stuff
-        //  Output: ldrTexture
-        // END PASS: Debug
-        
-        // PASS: Blit (BlitEncoder)
-        //  Input: ldrTexture
-        //  Draw to drawable texture
-        //  Should this be done in Debug or ToneMapping?
-        // END PASS: Blit
-        
-//        renderEncoder.setDepthStencilState(depthStencilState)
-        
-        /*
-         
-    Make RenderPass struct / protocol
-         
-         DepthPrePass
-         SSAOPass
-         ShadowPass
-         LightingPass
-         BloomPass
-         ToneMappingPass
-         DebugRenderPass
-         FinalPass
-         
-         all have render(commandQueue)
-         their init(device) will create pipeline states, buffers, etc.
-         we can pass buffers from 1 to the other in their render() ??
-         
-         examples:
-         func SSAO.perform(commandBuffer, depth: MTLBuffer) -> (ssao: MTLBuffer) {}
-         func PostFX.perform(commandBuffer, hdrLighting: MTLBuffer) -> (hdrLighting: MTLBuffer) {}
-         
-         */
-
-
-
-
-
 
 /// Behavior test
 class HelloWorldComponent: Behavior {
