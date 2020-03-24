@@ -237,7 +237,7 @@ fileprivate extension Renderer {
     static func buildNoWriteDepthStencilState(device: MTLDevice) -> MTLDepthStencilState {
         let descriptor = MTLDepthStencilDescriptor()
         
-        descriptor.depthCompareFunction = .less
+        descriptor.depthCompareFunction = .lessEqual
         descriptor.isDepthWriteEnabled = false
         
         return device.makeDepthStencilState(descriptor: descriptor)!
@@ -282,7 +282,7 @@ fileprivate extension Renderer {
     static func buildLightingPassDescriptor() -> MTLRenderPassDescriptor {
         let passDescriptor = MTLRenderPassDescriptor()
         
-        passDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+        passDescriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         passDescriptor.colorAttachments[0].loadAction = .clear
         passDescriptor.colorAttachments[0].storeAction = .store
         

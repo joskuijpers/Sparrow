@@ -197,10 +197,10 @@ fragment float4 fragment_main(
     uint32_t numLights = culledLights[0];
     return float4(0, 0, (1.0 / MAX_LIGHTS_PER_TILE * numLights), 1);
     
-    for (int i = 0; i < numLights; ++i) {
+    for (uint32_t i = 0; i < numLights; ++i) {
         uint32_t lightIndex = culledLights[i + 1];
         LightData light = lights[lightIndex];
-
+        
         float3 lightDirection = float3(1, 0, 0);
         float attenuation = 1.0;
 
