@@ -251,11 +251,6 @@ fragment float4 fragment_main(
     float3 ambient = float3(0.01) * albedo * ambientOcclusion;
     float3 color = ambient + lighting + emissiveColor;
     
-    // HDR Tone mapping
-    color = color / (color + float3(1.0));
-    // Gamma correction
-    color = pow(color, float3(1.0 / 2.2));
-    
     return float4(color, 1.0);
 }
 
