@@ -83,6 +83,11 @@ bool intersectsFrustumTile(LightData light, float3 lightPosView, float range, Ti
     return true;
 }
 
+// Converts a depth from the depth buffer into a view space depth.
+inline float linearizeDepth(constant CameraUniforms &cameraUniforms, float depth) {
+    return dot(float2(depth, 1), cameraUniforms.invProjectionZ.xz) / dot(float2(depth, 1), cameraUniforms.invProjectionZ.yw);
+}
+
 kernel void lightculling(
                          uint2 coordinates        [[thread_position_in_grid]],
                          uint threadId            [[thread_index_in_threadgroup]],
@@ -96,41 +101,41 @@ kernel void lightculling(
                          constant LightData *lights [[ buffer(2) ]],
                          constant uint &lightsCount [[ buffer(3) ]],
                          
-                         device uint16_t *culledLights [[ buffer(4) ]],
+                         device uint16_t *culledLightsOpaque [[ buffer(4) ]],
+                         device uint16_t *culledLightsTransparent [[ buffer(5) ]],
                          
-                         depth2d<float, access::read> depthTexture [[texture(0)]]
+                         depth2d<float, access::read> depthTexture [[texture(0)]],
+                         texture2d<float, access::write> debugTexture [[texture(1)]]
                          )
 {
+    if (any(coordinates >= uint2(depthTexture.get_width(), depthTexture.get_height()))) {
+        return;
+    }
     
     // Find min and max for this quad
-    float4 zs;
-    zs.x = depthTexture.read(coordinates * 2 + uint2(0, 0));
-    zs.y = depthTexture.read(coordinates * 2 + uint2(1, 0));
-    zs.z = depthTexture.read(coordinates * 2 + uint2(0, 1));
-    zs.w = depthTexture.read(coordinates * 2 + uint2(1, 1));
+    float depth = depthTexture.read(coordinates);
+//    float depth1 = depthTexture.read(coordinates * 2 + uint2(1, 0));
+//    float depth2 = depthTexture.read(coordinates * 2 + uint2(0, 1));
+//    float depth3 = depthTexture.read(coordinates * 2 + uint2(1, 1));
     
-    float4 depths;
-    depths.x = dot(float2(zs.x, 1), cameraUniforms.invProjectionZ.xz) / dot(float2(zs.x, 1), cameraUniforms.invProjectionZ.yw);
-    depths.y = dot(float2(zs.y, 1), cameraUniforms.invProjectionZ.xz) / dot(float2(zs.y, 1), cameraUniforms.invProjectionZ.yw);
-    depths.z = dot(float2(zs.z, 1), cameraUniforms.invProjectionZ.xz) / dot(float2(zs.z, 1), cameraUniforms.invProjectionZ.yw);
-    depths.w = dot(float2(zs.w, 1), cameraUniforms.invProjectionZ.xz) / dot(float2(zs.w, 1), cameraUniforms.invProjectionZ.yw);
+//    debugTexture.write(float4(depth, 0, 0, 1), coordinates);
+//    debugTexture.write(float4(depth, depth1, depth2, depth3), coordinates * 2 + uint2(0,1));
+//    debugTexture.write(float4(depth, depth1, depth2, depth3), coordinates * 2 + uint2(1,0));
+//    debugTexture.write(float4(depth, depth1, depth2, depth3), coordinates * 2 + uint2(1,1));
     
-    float4 minDepths = depths;
-    minDepths.xy = min(minDepths.xy, minDepths.zw);
-    float minDepth = min(minDepths.x, minDepths.y);
+    depth = linearizeDepth(cameraUniforms, depth);
     
-    float4 maxDepths = depths;
-    maxDepths.xy = min(maxDepths.xy, maxDepths.zw);
-    float maxDepth = min(maxDepths.x, maxDepths.y);
     
     // Tile-specific index of first light index in output list
     uint outputIdx = (groupId.x + groupId.y * outputSize.x) * MAX_LIGHTS_PER_TILE;
     
     threadgroup atomic_uint lightIndex;
+    threadgroup atomic_uint lightIndexTransparent;
     threadgroup atomic_uint atomicMinZ;
     threadgroup atomic_uint atomicMaxZ;
     
     atomic_store_explicit(&lightIndex, 0, metal::memory_order_relaxed);
+    atomic_store_explicit(&lightIndexTransparent, 0, metal::memory_order_relaxed);
     
     atomic_store_explicit(&atomicMinZ, 0x7F7FFFFF, metal::memory_order_relaxed);
     atomic_store_explicit(&atomicMaxZ, 0, metal::memory_order_relaxed);
@@ -139,11 +144,10 @@ kernel void lightculling(
     threadgroup_barrier(mem_flags::mem_threadgroup);
     
     // This will find the min and max for the whole threadgroup, as the variables are atomic.
-    atomic_fetch_min_explicit(&atomicMinZ, as_type<uint>(minDepth), metal::memory_order_relaxed);
-    atomic_fetch_min_explicit(&atomicMaxZ, as_type<uint>(maxDepth), metal::memory_order_relaxed);
+    atomic_fetch_min_explicit(&atomicMinZ, as_type<uint>(depth), metal::memory_order_relaxed);
+    atomic_fetch_max_explicit(&atomicMaxZ, as_type<uint>(depth), metal::memory_order_relaxed);
     
     threadgroup_barrier(mem_flags::mem_threadgroup);
-    
     
     float tileMinZ = as_type<float>(atomic_load_explicit(&atomicMinZ, metal::memory_order_relaxed));
     float tileMaxZ = as_type<float>(atomic_load_explicit(&atomicMaxZ, metal::memory_order_relaxed));
@@ -151,7 +155,8 @@ kernel void lightculling(
     TileFrustum frustum = computeTileFrustum(cameraUniforms, groupId, tileMinZ, tileMaxZ, outputSize);
     
     // Adjust pointer to output towards our own tile
-    culledLights += outputIdx;
+    culledLightsOpaque += outputIdx;
+    culledLightsTransparent += outputIdx;
     
     // Culling is performed on multiple threads (not 1 per tile). So we split the number of lights
     // across the threads evenly by starting at the tread ID and skipping ThreadNum lights each time.
@@ -180,7 +185,7 @@ kernel void lightculling(
                 uint32_t index = atomic_fetch_add_explicit(&lightIndex, 1, metal::memory_order_relaxed);
                 
                 if (index + 1 < MAX_LIGHTS_PER_TILE) {
-                    culledLights[index + 1] = i;
+                    culledLightsOpaque[index + 1] = i;
                 }
             }
 //        }
@@ -190,7 +195,11 @@ kernel void lightculling(
     
     // Put number of lights in first element
     uint totalLights = atomic_load_explicit(&lightIndex, metal::memory_order_relaxed);
-    culledLights[0] = min(totalLights, (uint)MAX_LIGHTS_PER_TILE - 1);
+    culledLightsOpaque[0] = min(totalLights, (uint)MAX_LIGHTS_PER_TILE - 1);
+    
+    
+    
+    debugTexture.write(float4(1-(depth / 50.f), tileMinZ / 50.f, tileMaxZ / 50.0f, 1), coordinates);
 }
 
 // Source: ModernRenderer. Has some special iOS optimizations

@@ -194,11 +194,11 @@ fragment float4 fragment_main(
     uint tileIdx = (tileX + tileCount * tileY) * MAX_LIGHTS_PER_TILE;
     culledLights += tileIdx;
     
-    uint32_t numLights = culledLights[0];
+    uint16_t numLights = culledLights[0];
     return float4(0, 0, (1.0 / MAX_LIGHTS_PER_TILE * numLights), 1);
     
-    for (uint32_t i = 0; i < numLights; ++i) {
-        uint32_t lightIndex = culledLights[i + 1];
+    for (uint16_t i = 0; i < numLights; ++i) {
+        uint16_t lightIndex = culledLights[i + 1];
         LightData light = lights[lightIndex];
         
         float3 lightDirection = float3(1, 0, 0);

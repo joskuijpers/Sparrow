@@ -68,7 +68,7 @@ class Renderer: NSObject {
     let depthStencilStateNoWrite: MTLDepthStencilState
     
     /// Depth map (private) with scene depth
-    var depthMap: MTLTexture!
+    var depthTexture: MTLTexture!
     /// HDR Lighting target
     var lightingRenderTarget: MTLTexture!
     var lightsBuffer: MTLBuffer!
@@ -332,47 +332,49 @@ fileprivate extension Renderer {
     }
     
     func resize(size: CGSize) {
-        let depthMapDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float,
+        let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float,
                                                                           width: Int(size.width),
                                                                           height: Int(size.height),
                                                                           mipmapped: false)
         
         if Renderer.depthSampleCount > 1 {
-            depthMapDescriptor.textureType = .type2DMultisample
+            depthTextureDescriptor.textureType = .type2DMultisample
         }
-        depthMapDescriptor.storageMode = .private
-        depthMapDescriptor.usage = [.renderTarget, .shaderRead]
-        depthMapDescriptor.sampleCount = Renderer.depthSampleCount
+        depthTextureDescriptor.storageMode = .private
+        depthTextureDescriptor.usage = [.renderTarget, .shaderRead]
+        depthTextureDescriptor.sampleCount = Renderer.depthSampleCount
         
-        depthMap = Renderer.device.makeTexture(descriptor: depthMapDescriptor)
-        depthMap?.label = "depthMap"
+        depthTexture = Renderer.device.makeTexture(descriptor: depthTextureDescriptor)
+        depthTexture?.label = "DepthTexture"
         
         let hdrLightingDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float,
                                                                              width: Int(size.width),
                                                                              height: Int(size.height),
                                                                              mipmapped: false)
         if Renderer.sampleCount > 1 {
-            depthMapDescriptor.textureType = .type2DMultisample
+            depthTextureDescriptor.textureType = .type2DMultisample
         }
         hdrLightingDescriptor.storageMode = .private
         hdrLightingDescriptor.usage = [.renderTarget, .shaderRead]
         hdrLightingDescriptor.sampleCount = Renderer.sampleCount
         
         lightingRenderTarget = Renderer.device.makeTexture(descriptor: hdrLightingDescriptor)
-        lightingRenderTarget?.label = "hdrLighting"
+        lightingRenderTarget?.label = "HDRLighting"
         
         // Update passes
-        depthPassDescriptor.depthAttachment.texture = depthMap
-        lightingPassDescriptor.depthAttachment.texture = depthMap
+        depthPassDescriptor.depthAttachment.texture = depthTexture
+        lightingPassDescriptor.depthAttachment.texture = depthTexture
         lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
         
         
         
 
         // Update the buffer
-        threadgroupCount.width  = (depthMap.width  + threadgroupSize.width -  1) / threadgroupSize.width;
-        threadgroupCount.height = (depthMap.height + threadgroupSize.height - 1) / threadgroupSize.height;
+        threadgroupCount.width  = (depthTexture.width  + threadgroupSize.width -  1) / threadgroupSize.width;
+        threadgroupCount.height = (depthTexture.height + threadgroupSize.height - 1) / threadgroupSize.height;
         threadgroupCount.depth = 1
+        
+        print("THREAD GROUP", threadgroupSize, threadgroupCount, depthTexture.width, depthTexture.height)
 
         // Space for every group, list of 256 lights
         let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride
@@ -405,41 +407,46 @@ extension Renderer {
         guard let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {
             fatalError("Unable to create compute encoder for light culling pass")
         }
-        computeEncoder.label = "LightCullingPass"
-
-        // Cull lights to frustum
-        var lightsData = [LightData]()
-        let frustum = scene.camera!.frustum
-        for light in lights {
-            if frustum.intersects(bounds: light.bounds) != .outside {
-                lightsData.append(light.build())
-                DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
-            }
-        }
-        var lightCount = UInt(lightsData.count)
+        computeEncoder.label = "LightCulling"
         
-        // TODO: REUSE!
-        lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
-
+        // MOVE TO DIFFERENT PART / FUNCTION
+            // Cull lights to frustum
+            var lightsData = [LightData]()
+            let frustum = scene.camera!.frustum
+            for light in lights {
+                if frustum.intersects(bounds: light.bounds) != .outside {
+                    lightsData.append(light.build())
+                    DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
+                }
+            }
+            var lightCount = UInt(lightsData.count)
+            
+            // TODO: REUSE!
+            lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
+        // END MOVE
+        
 //        print("LIGHTS", lightCount) // CPU frustum culling
+        
+        let debugTextDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: depthTexture.width, height: depthTexture.height, mipmapped: false)
+        debugTextDesc.usage = [.shaderWrite, .shaderRead]
+        let debugTexture = Renderer.device.makeTexture(descriptor: debugTextDesc)
 
         computeEncoder.setComputePipelineState(lightCullComputeState)
 
-        // Camera
         computeEncoder.setBytes(&scene.camera!.uniforms,
                                 length: MemoryLayout<CameraUniforms>.stride,
                                 index: 1)
         
-        // Input
         computeEncoder.setBuffer(lightsBuffer, offset: 0, index: 2)
         computeEncoder.setBytes(&lightCount, length: MemoryLayout<UInt>.stride, index: 3)
-        computeEncoder.setTexture(depthMap, index: 0)
+        computeEncoder.setTexture(depthTexture, index: 0)
+        computeEncoder.setTexture(debugTexture, index: 1)
         
-        // Output
         computeEncoder.setBuffer(culledLightsBufferOpaque, offset: 0, index: 4)
         computeEncoder.setBuffer(culledLightsBufferTransparent, offset: 0, index: 5)
         
         computeEncoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
+//        computeEncoder.dispatchThreads(MTLSizeMake(depthTexture.width, depthTexture.height, 1), threadsPerThreadgroup: threadgroupSize)
         
         computeEncoder.endEncoding()
     }
@@ -449,7 +456,7 @@ extension Renderer {
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: lightingPassDescriptor) else {
             fatalError("Unable to create render encoder for lighting pass")
         }
-        renderEncoder.label = "LightingPass"
+        renderEncoder.label = "Lighting"
         
         // Do not write to depth: we already have it
         renderEncoder.setDepthStencilState(depthStencilStateNoWrite)
@@ -485,7 +492,7 @@ extension Renderer {
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: viewRenderPassDescriptor) else {
             fatalError("Unable to create render encoder for lighting pass")
         }
-        renderEncoder.label = "FinalPass"
+        renderEncoder.label = "Resolve"
         
         renderEncoder.setRenderPipelineState(finalPipelineState)
         renderEncoder.setFragmentTexture(lightingRenderTarget, index: 0)
