@@ -211,7 +211,9 @@ class Renderer: NSObject {
         for i in 0...l {
             let light = Nexus.shared().createEntity()
             let transform = light.add(component: Transform())
-            transform.position = [Float(i / 15) * 1 - 25, 1 + Float(i / 100) * 0.5, Float(i % 15) * 1]
+            
+            let p = i - (l / 2)
+            transform.position = [Float(p / 15) * 1, 1 + Float(p / 100) * 0.5, Float(p % 15) * 1]
 
             let lightInfo = light.add(component: Light(type: .point))
             lightInfo.color = float3(min(0.01 * Float(l), 1), Float(0.1), 1 - min(0.01 * Float(l), 1))
@@ -420,12 +422,12 @@ extension Renderer {
         // MOVE TO DIFFERENT PART / FUNCTION
             // Cull lights to frustum
             var lightsData = [LightData]()
-            let frustum = scene.camera!.frustum
+//            let frustum = scene.camera!.frustum
             for light in lights {
-                if frustum.intersects(bounds: light.bounds) != .outside {
+//                if frustum.intersects(bounds: light.bounds) != .outside {
                     lightsData.append(light.build())
-                    DebugRendering.shared.gizmo(position: (float4(light.transform!.position, 1) * light.transform!.worldTransform).xyz)
-                }
+                    DebugRendering.shared.gizmo(position: (light.transform!.worldTransform * float4(light.transform!.position, 1)).xyz)
+//                }
             }
             var lightCount = UInt(lightsData.count)
             
