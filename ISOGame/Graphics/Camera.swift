@@ -84,7 +84,7 @@ class Camera: Component {
         uniforms.viewProjectionMatrix = uniforms.projectionMatrix * uniforms.viewMatrix
         uniforms.invProjectionMatrix = simd_inverse(uniforms.projectionMatrix)
         uniforms.invViewProjectionMatrix = simd_inverse(uniforms.viewProjectionMatrix)
-//        _uniforms.invViewMatrix                     = simd_inverse(_uniforms.viewMatrix);
+        uniforms.invViewMatrix = simd_inverse(uniforms.viewMatrix)
         
         uniforms.physicalSize = [Float(screenSize.width), Float(screenSize.height)]
         
@@ -93,8 +93,11 @@ class Camera: Component {
                                     uniforms.invProjectionMatrix.columns.3.z, uniforms.invProjectionMatrix.columns.3.w ]
         
         let bias = -near
-        let invScale = -far - near
-        uniforms.invProjectionZNormalized = [uniforms.invProjectionZ.x + (uniforms.invProjectionZ.y * bias), uniforms.invProjectionZ.y + invScale, uniforms.invProjectionZ.z + (uniforms.invProjectionZ.w * bias), uniforms.invProjectionZ.w * invScale]
+        let invScale = far - near
+        uniforms.invProjectionZNormalized = [uniforms.invProjectionZ.x + (uniforms.invProjectionZ.y * bias),
+                                             uniforms.invProjectionZ.y * invScale,
+                                             uniforms.invProjectionZ.z + (uniforms.invProjectionZ.w * bias),
+                                             uniforms.invProjectionZ.w * invScale]
         
         uniformsDirty = false
     }
@@ -127,5 +130,25 @@ class DebugCameraBehavior: Behavior {
         }
         
         transform.translate(diff)
+        
+        var rot: Float = 0
+        if Input.shared.getKey(.leftArrow) {
+            rot = rot + deltaTime * Float(-20).degreesToRadians
+        }
+        if Input.shared.getKey(.rightArrow) {
+            rot = rot + deltaTime * Float(20).degreesToRadians
+        }
+        transform.rotate(float3(0, rot, 0))
+        
+        var rotX: Float = 0
+        if Input.shared.getKey(.upArrow) {
+            rotX = rotX + deltaTime * Float(-20).degreesToRadians
+        }
+        if Input.shared.getKey(.downArrow) {
+            rotX = rotX + deltaTime * Float(20).degreesToRadians
+        }
+        transform.rotate(float3(rotX, 0, 0))
+        
+        
     }
 }

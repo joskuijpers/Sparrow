@@ -16,77 +16,97 @@ typedef struct {
 } CullTileData;
 
 typedef struct {
-    float4 planes[6];
+    float4 planes[4];
 } TileFrustum;
+
+/// Convert a point from clip to view space
+inline float4 clipToView(float4 in, constant CameraUniforms &cameraUniforms) {
+    float4 view = cameraUniforms.invProjectionMatrix * in;
+    view = view / view.w;
+    
+    return view;
+}
+
+/// Convert a point from screen to view space.
+inline float4 screenToView(float4 in, constant CameraUniforms &cameraUniforms) {
+    float2 texCoord = in.xy / cameraUniforms.physicalSize;
+    float4 clip = float4(float2(texCoord.x, 1 - texCoord.y) * 2 - 1, in.z, in.w);
+    
+    return clipToView(clip, cameraUniforms);
+}
+
+/// Compute a plane using 3 vertices
+float4 computeFrustumPlane(float3 p0, float3 p1, float3 p2) {
+    float4 plane;
+    
+    float3 v0 = p1 - p0;
+    float3 v2 = p2 - p0;
+    
+    plane.xyz = normalize(cross(v0, v2));
+    plane.w = dot(plane.xyz, p0);
+    
+    return plane;
+}
 
 /// Compute a tile frustum.
 TileFrustum computeTileFrustum(
                                constant CameraUniforms &cameraUniforms,
-                               uint2 groupId,
-                               float tileMinZ,
-                               float tileMaxZ,
-                               uint2 outputSize
+                               uint2 groupId
                                )
 {
     TileFrustum frustum;
+    const float3 eyePos = float3(0, 0, 0);
+    float4 screenSpace[4];
+    float3 viewSpace[4];
     
+    // https://www.3dgep.com/forward-plus/#Grid_Frustums_Compute_Shader
+    // Compute 4 corner points on the far clipping plane
+    screenSpace[0] = float4(float2((groupId + uint2(0, 0)) * LIGHT_CULLING_TILE_SIZE), 1, 1);
+    screenSpace[1] = float4(float2((groupId + uint2(1, 0)) * LIGHT_CULLING_TILE_SIZE), 1, 1);
+    screenSpace[2] = float4(float2((groupId + uint2(0, 1)) * LIGHT_CULLING_TILE_SIZE), 1, 1);
+    screenSpace[3] = float4(float2((groupId + uint2(1, 1)) * LIGHT_CULLING_TILE_SIZE), 1, 1);
     
-    float2 negativeStep = (2 * float2(groupId)) / float2(outputSize);
-    float2 positiveStep = (2 * float2(groupId + uint2(1, 1))) / float2(outputSize);
+    // Convert screen space to view space
     
-    frustum.planes[0] = float4( 1, 0, 0, 1 - negativeStep.x); // Left
-    frustum.planes[1] = float4(-1, 0, 0, -1 + positiveStep.x); // Right
-    frustum.planes[2] = float4( 0, 1, 0, 1 - negativeStep.y); // Bottom
-    frustum.planes[3] = float4( 0,-1, 0, -1 + positiveStep.y); // Top
-    frustum.planes[4] = float4( 0, 0,-1, -tileMinZ); // Near
-    frustum.planes[5] = float4( 0, 0, 1, tileMaxZ); // Far
-    
-    for (uint i = 0; i < 4; ++i) {
-        frustum.planes[i] *= cameraUniforms.viewProjectionMatrix;
-        frustum.planes[i] /= length(frustum.planes[i].xyz);
+    for (int i = 0; i < 4; ++i) {
+        viewSpace[i] = screenToView(screenSpace[i], cameraUniforms).xyz;
     }
     
-    frustum.planes[4] *= cameraUniforms.viewMatrix;
-    frustum.planes[4] /= length(frustum.planes[4].xyz);
-    frustum.planes[5] *= cameraUniforms.viewMatrix;
-    frustum.planes[5] /= length(frustum.planes[5].xyz);
+    // Build frustum planes
+    frustum.planes[0] = computeFrustumPlane(eyePos, viewSpace[2], viewSpace[0]);
+    frustum.planes[1] = computeFrustumPlane(eyePos, viewSpace[1], viewSpace[3]);
+    frustum.planes[2] = computeFrustumPlane(eyePos, viewSpace[0], viewSpace[1]);
+    frustum.planes[3] = computeFrustumPlane(eyePos, viewSpace[3], viewSpace[2]);
     
-//    float2 tileScale = float2(cameraUniforms.physicalSize) / float2(2 * LIGHT_CULLING_TILE_SIZE);
-//
-//    float2 tileMinScale = float2(tileMinZ) / float2(cameraUniforms.projectionMatrix[0][0], cameraUniforms.projectionMatrix[1][1]);
-//    float2 tileMaxScale = float2(tileMaxZ) / float2(cameraUniforms.projectionMatrix[0][0], cameraUniforms.projectionMatrix[1][1]);
-//
-//    // Frustum corner positions
-//    float2 frustumMinClipSpace = (1.0 - float2((int2)groupId.xy - 1) / tileScale.xy) * float2(-1.0, 1.0);
-//    float2 frustumMaxClipSpace = (1.0 - float2((int2)groupId.xy + 1) / tileScale.xy) * float2(-1.0, 1.0);
-//
     return frustum;
 }
 
-/// Get whether given light intersects the frustum.
-bool intersectsFrustumTile(LightData light, float3 lightPosView, float range, TileFrustum frustum) {
-    float dist = 0.0;
+bool sphereInsidePlane(float3 position, float radius, float4 plane) {
+    return dot(plane.xyz, position) - plane.w < -radius;
+}
+
+bool sphereInsideFrustum(float3 position, float radius, TileFrustum frustum, float zNear, float zFar) {
+    bool result = true;
     
-    for(int i = 0; i < 6; ++i) {
-        float4 plane = frustum.planes[i];
-        
-        dist = dot(float4(lightPosView, 1), plane) + range;
-        if (dist <= 0.0) {
-            break;
+    if (position.z + radius < zNear || position.z - radius > zFar) {
+        result = false;
+    }
+    
+    for (int i = 0; i < 4 && result; ++i) {
+        if (sphereInsidePlane(position, radius, frustum.planes[i])) {
+            result = false;
         }
     }
     
-    if (dist > 0.0) {
-        return true;
-    }
-    
-    return true;
+    return result;
 }
 
 // Converts a depth from the depth buffer into a view space depth.
 inline float linearizeDepth(constant CameraUniforms &cameraUniforms, float depth) {
     return dot(float2(depth, 1), cameraUniforms.invProjectionZ.xz) / dot(float2(depth, 1), cameraUniforms.invProjectionZ.yw);
 }
+
+inline float4 getHeatmapColor(uint x, uint num);
 
 kernel void lightculling(
                          uint2 coordinates        [[thread_position_in_grid]],
@@ -112,29 +132,18 @@ kernel void lightculling(
         return;
     }
     
-    // Find min and max for this quad
-    float depth = depthTexture.read(coordinates);
-//    float depth1 = depthTexture.read(coordinates * 2 + uint2(1, 0));
-//    float depth2 = depthTexture.read(coordinates * 2 + uint2(0, 1));
-//    float depth3 = depthTexture.read(coordinates * 2 + uint2(1, 1));
-    
-//    debugTexture.write(float4(depth, 0, 0, 1), coordinates);
-//    debugTexture.write(float4(depth, depth1, depth2, depth3), coordinates * 2 + uint2(0,1));
-//    debugTexture.write(float4(depth, depth1, depth2, depth3), coordinates * 2 + uint2(1,0));
-//    debugTexture.write(float4(depth, depth1, depth2, depth3), coordinates * 2 + uint2(1,1));
-    
-    depth = linearizeDepth(cameraUniforms, depth);
-    
+    // Depth of the pixel this thread covers
+    float depth = linearizeDepth(cameraUniforms, depthTexture.read(coordinates));
     
     // Tile-specific index of first light index in output list
     uint outputIdx = (groupId.x + groupId.y * outputSize.x) * MAX_LIGHTS_PER_TILE;
     
-    threadgroup atomic_uint lightIndex;
+    threadgroup atomic_uint lightIndexOpaque;
     threadgroup atomic_uint lightIndexTransparent;
     threadgroup atomic_uint atomicMinZ;
     threadgroup atomic_uint atomicMaxZ;
     
-    atomic_store_explicit(&lightIndex, 0, metal::memory_order_relaxed);
+    atomic_store_explicit(&lightIndexOpaque, 0, metal::memory_order_relaxed);
     atomic_store_explicit(&lightIndexTransparent, 0, metal::memory_order_relaxed);
     
     atomic_store_explicit(&atomicMinZ, 0x7F7FFFFF, metal::memory_order_relaxed);
@@ -152,7 +161,13 @@ kernel void lightculling(
     float tileMinZ = as_type<float>(atomic_load_explicit(&atomicMinZ, metal::memory_order_relaxed));
     float tileMaxZ = as_type<float>(atomic_load_explicit(&atomicMaxZ, metal::memory_order_relaxed));
     
-    TileFrustum frustum = computeTileFrustum(cameraUniforms, groupId, tileMinZ, tileMaxZ, outputSize);
+    // Create the near clip plane
+    float nearClipVS = clipToView(float4(0, 0, 0, 1), cameraUniforms).z;
+    
+    // Clipping plane for minimum depth value.
+    float4 minPlane = float4(0, 0, 1, tileMinZ);
+    
+    TileFrustum frustum = computeTileFrustum(cameraUniforms, groupId);
     
     // Adjust pointer to output towards our own tile
     culledLightsOpaque += outputIdx;
@@ -163,43 +178,56 @@ kernel void lightculling(
     for (uint i = threadId; i < lightsCount; i += blockDim.x * blockDim.y) {
         LightData lightData = lights[i];
         
-        //// TODO this is PointLight specific. Add spotlights and directional lights (?)
-        float3 lightPosView = lightData.position.xyz;
-        float range = lightData.range;
-        
-        if (lightData.type != LightTypePoint) {
-            continue;
-        }
-        //// END TODO
-        
-//        bool inFrustumMinZ = (lightPosView.z + range) > -frustum.tileMinZ;
-//        bool inFrustumMaxZ = (lightPosView.z - range) < frustum.tileMaxZ;
-//        bool inFrustumNearZ = (lightPosView.z + range) > 0; // near camera, for transparents
-        
-        // Quick culling of min/max Z
-//        if (inFrustumMaxZ && inFrustumMinZ) {
-            // Tile frustum culling
-            bool visible = intersectsFrustumTile(lightData, lightPosView, range, frustum);
-            if (visible) {
-                // Fetch next position in the tile light list
-                uint32_t index = atomic_fetch_add_explicit(&lightIndex, 1, metal::memory_order_relaxed);
+        switch (lightData.type) {
+            case LightTypePoint: {
+                float4 vsPosition = cameraUniforms.viewMatrix * lightData.position;
                 
+                if (sphereInsideFrustum(vsPosition.xyz, lightData.range, frustum, nearClipVS, tileMaxZ)) {
+                    // Fetch next position in the tile light list
+                    uint32_t index = atomic_fetch_add_explicit(&lightIndexTransparent, 1, metal::memory_order_relaxed);
+                    if (index + 1 < MAX_LIGHTS_PER_TILE) {
+                        culledLightsTransparent[index + 1] = i;
+                    }
+
+                    if (!sphereInsidePlane(vsPosition.xyz, lightData.range, minPlane)) {
+                        uint32_t index = atomic_fetch_add_explicit(&lightIndexOpaque, 1, metal::memory_order_relaxed);
+                        if (index + 1 < MAX_LIGHTS_PER_TILE) {
+                            culledLightsOpaque[index + 1] = i;
+                        }
+                    }
+                }
+                
+                break;
+            }
+            case LightTypeDirectional: {
+                uint32_t index = atomic_fetch_add_explicit(&lightIndexTransparent, 1, metal::memory_order_relaxed);
+                if (index + 1 < MAX_LIGHTS_PER_TILE) {
+                    culledLightsTransparent[index + 1] = i;
+                }
+                
+                index = atomic_fetch_add_explicit(&lightIndexOpaque, 1, metal::memory_order_relaxed);
                 if (index + 1 < MAX_LIGHTS_PER_TILE) {
                     culledLightsOpaque[index + 1] = i;
                 }
             }
-//        }
+            default: break;
+        }
     }
     
     threadgroup_barrier(mem_flags::mem_threadgroup);
     
     // Put number of lights in first element
-    uint totalLights = atomic_load_explicit(&lightIndex, metal::memory_order_relaxed);
-    culledLightsOpaque[0] = min(totalLights, (uint)MAX_LIGHTS_PER_TILE - 1);
+    uint totalLightsOpaque = atomic_load_explicit(&lightIndexOpaque, metal::memory_order_relaxed);
+    culledLightsOpaque[0] = min(totalLightsOpaque, (uint)MAX_LIGHTS_PER_TILE - 1);
     
+    uint totalLightsTransparent = atomic_load_explicit(&lightIndexTransparent, metal::memory_order_relaxed);
+    culledLightsTransparent[0] = min(totalLightsTransparent, (uint)MAX_LIGHTS_PER_TILE - 1);
     
+//    if (coordinates.x == 0 && coordinates.y == 0) {
+//        debugTexture.write(float4(totalLightsOpaque - 1, 0, 0, 1), coordinates);
+//    }
     
-    debugTexture.write(float4(1-(depth / 50.f), tileMinZ / 50.f, tileMaxZ / 50.0f, 1), coordinates);
+    debugTexture.write(float4(1-(depth / 100.f), tileMinZ / 50.f, tileMaxZ / 50.0f, (float)totalLightsOpaque / (float)MAX_LIGHTS_PER_TILE), coordinates);
 }
 
 // Source: ModernRenderer. Has some special iOS optimizations

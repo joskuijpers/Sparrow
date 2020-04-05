@@ -29,6 +29,7 @@ typedef struct {
     matrix_float4x4 viewProjectionMatrix;
     matrix_float4x4 invProjectionMatrix;
     matrix_float4x4 invViewProjectionMatrix;
+    matrix_float4x4 invViewMatrix;
     
 //    time uniforms->frameTime = (float) -[_baseTime timeIntervalSinceNow];
 //    uniforms->screenSize    = float2{(float)_mainViewWidth, (float)_mainViewHeight};
@@ -92,5 +93,17 @@ typedef struct {
 //    vector_float3 attenuation;
     LightType type;
 } LightData;
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif /* ShaderCommon_h */

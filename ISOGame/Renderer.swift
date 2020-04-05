@@ -133,8 +133,8 @@ class Renderer: NSObject {
         meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
         
         behaviorSystem = BehaviorSystem() // MOVE
-        
-        scene = Scene(screenSize: metalView.bounds.size)
+
+        scene = Scene(screenSize: metalView.drawableSize)
         
         
         /// RENDER UNIFORMS
@@ -147,7 +147,7 @@ class Renderer: NSObject {
         metalView.delegate = self
     
         // Create textures
-        resize(size: metalView.bounds.size)
+        resize(size: metalView.drawableSize)
         
         
         // DEBUG: create a scene
@@ -159,6 +159,7 @@ class Renderer: NSObject {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
         t.position = [0, 5, 0]
+        t.rotation = [Float(40.0).degreesToRadians, 0, 0]
         let cameraComp = camera.add(component: Camera())
         camera.add(behavior: DebugCameraBehavior())
         scene.camera = cameraComp
@@ -206,16 +207,25 @@ class Renderer: NSObject {
             sphere.add(behavior: HelloWorldComponent(seed: i))
         }
         
-        let l = 250
+        let l = 5
         for i in 0...l {
             let light = Nexus.shared().createEntity()
             let transform = light.add(component: Transform())
-            transform.position = [Float(i / 5) * 3, 2, Float(i % 5) * 3]
-            
+            transform.position = [Float(i / 15) * 1 - 25, 1 + Float(i / 100) * 0.5, Float(i % 15) * 1]
+
             let lightInfo = light.add(component: Light(type: .point))
             lightInfo.color = float3(min(0.01 * Float(l), 1), Float(0.1), 1 - min(0.01 * Float(l), 1))
             lightInfo.intensity = 1
         }
+        
+//                    let plight = Nexus.shared().createEntity()
+//                    let transform = plight.add(component: Transform())
+//                    transform.position = [0, 4, 1]
+//        
+//                    let lightInfo = plight.add(component: Light(type: .point))
+//                    lightInfo.color = float3(1,1,1)
+//                    lightInfo.intensity = 1
+        
     }
     
 }
@@ -373,8 +383,6 @@ fileprivate extension Renderer {
         threadgroupCount.width  = (depthTexture.width  + threadgroupSize.width -  1) / threadgroupSize.width;
         threadgroupCount.height = (depthTexture.height + threadgroupSize.height - 1) / threadgroupSize.height;
         threadgroupCount.depth = 1
-        
-        print("THREAD GROUP", threadgroupSize, threadgroupCount, depthTexture.width, depthTexture.height)
 
         // Space for every group, list of 256 lights
         let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride

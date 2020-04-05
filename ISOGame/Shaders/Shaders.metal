@@ -66,6 +66,33 @@ struct LightingParams {
 };
 
 
+
+
+
+static constant uint HEATMAP_LEVELS = 5;
+
+static constant float4 HEATMAP_COLORS[] =
+{
+    float4(0,0,0,0),
+    float4(0,0,1,1),
+    float4(0,1,1,1),
+    float4(0,1,0,1),
+    float4(1,1,0,1),
+    float4(1,0,0,1),
+};
+
+// Calculates the heatmap color based on a light count for the tile.
+inline float4 getHeatmapColor(uint x, uint num)
+{
+    float l = saturate((float)x / num) * HEATMAP_LEVELS;
+    float4 a = HEATMAP_COLORS[(uint)floor(l)];
+    float4 b = HEATMAP_COLORS[(uint)ceil(l)];
+    float4 heatmap = mix(a, b, l - floor(l));
+    return heatmap;
+}
+
+
+
 vertex VertexOut vertex_main(
                              const VertexIn in [[ stage_in ]],
                              constant Uniforms &uniforms [[ buffer(BufferIndexUniforms) ]],
@@ -189,16 +216,20 @@ fragment float4 fragment_main(
 //    parameters.viewDirection = normalize(fragmentUniforms.cameraPosition - in.worldPosition);
 //    parameters.NdotV = saturate(dot(parameters.normal, parameters.viewDirection));
 
+    // Calculate tile position
     uint tileX = in.position.x / LIGHT_CULLING_TILE_SIZE;
     uint tileY = in.position.y / LIGHT_CULLING_TILE_SIZE;
     uint tileIdx = (tileX + tileCount * tileY) * MAX_LIGHTS_PER_TILE;
+    // Shift to lights
     culledLights += tileIdx;
     
     uint16_t numLights = culledLights[0];
-    return float4(0, 0, (1.0 / MAX_LIGHTS_PER_TILE * numLights), 1);
+
+    
+    return getHeatmapColor(numLights, 10);
     
     for (uint16_t i = 0; i < numLights; ++i) {
-        uint16_t lightIndex = culledLights[i + 1];
+        uint16_t lightIndex = culledLights[i + 1]; // 0 = num lights
         LightData light = lights[lightIndex];
         
         float3 lightDirection = float3(1, 0, 0);
