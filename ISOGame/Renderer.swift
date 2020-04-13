@@ -56,7 +56,7 @@ class Renderer: NSObject {
     let meshes: Group<Requires2<MeshSelector, MeshRenderer>>
     var uniforms: Uniforms
     
-    let renderSet = RenderSet()
+    let cameraRenderSet = RenderSet()
     
     let depthPassDescriptor: MTLRenderPassDescriptor
     let lightCullComputeState: MTLComputePipelineState
@@ -471,8 +471,8 @@ extension Renderer {
         renderEncoder.setFragmentBuffer(culledLightsBufferOpaque, offset: 0, index: 17)
         renderScene(onEncoder: renderEncoder, renderPass: .opaqueLighting)
 
-//        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
-//        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
+        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
+        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
         
         
         DebugRendering.shared.render(renderEncoder: renderEncoder)
@@ -533,8 +533,8 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
-        // Fill render queues
-        // TODO!
+        // Fill render sets
+        fillRenderSets()
         
         // Render into depth first, used for culling and AO
         doDepthPrepass(commandBuffer: commandBuffer)
@@ -566,6 +566,22 @@ extension Renderer: MTKViewDelegate {
      
      */
     
+    func fillRenderSets() {
+        cameraRenderSet.clear()
+        
+        let camera = scene.camera!
+        let frustum = camera.frustum
+        
+        for (_, meshRenderer) in meshes {
+            // TODO: what render pass to use here?
+            meshRenderer.renderQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
+            
+            // Depth prepass: .opaque only
+            // Opaque pass: .opaque
+            // Transparent pass .transparent
+        }
+    }
+    
     /// Render the scene on given render encoder for given pass.
     /// The pass determines the shaders used
     func renderScene(onEncoder renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
@@ -581,47 +597,23 @@ extension Renderer: MTKViewDelegate {
             return
         }
         
-        
-//        print("render scene \(renderPass)")
-        renderSet.clear()
-        
-        let camera = scene.camera!
-        let frustum = camera.frustum
-        
-        
-        for (_, meshRenderer) in meshes {
-            meshRenderer.renderQueue(set: renderSet, renderPass: renderPass, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
-        }
-        
-        renderEncoder.setVertexBytes(&camera.uniforms,
+        var cameraUniforms = scene.camera!.uniforms
+        renderEncoder.setVertexBytes(&cameraUniforms,
                                      length: MemoryLayout<CameraUniforms>.stride,
                                      index: Int(BufferIndexCameraUniforms.rawValue))
-        renderEncoder.setFragmentBytes(&camera.uniforms,
+        renderEncoder.setFragmentBytes(&cameraUniforms,
                                        length: MemoryLayout<CameraUniforms>.stride,
                                        index: Int(BufferIndexCameraUniforms.rawValue))
         
-        for item in renderSet.opaque {
+        var renderQueue = cameraRenderSet.opaque
+        if renderPass == .opaqueLighting || renderPass == .depthPrePass {
+        } else if renderPass == .transparentLighting {
+            renderQueue = cameraRenderSet.translucent
+        }
+        
+        for item in renderQueue {
             item.mesh.render(renderEncoder: renderEncoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
         }
-    }
-    
-
-    /// Update uniforms
-    func updateUniforms() {
-//        AAPLCameraUniforms* cullUniforms = (AAPLCameraUniforms*)currentFrame.viewData[0].cullUniformBuffer.contents;
-//        *cullUniforms = cullCamera.uniforms;
-        
-//        let buffer: MTLBuffer
-//        var uniforms = buffer.contents() as! Uniforms
-//        uniforms.modelMatrix =
-        
-        // Camera uniforms
-        
-        // Uniforms
-        
-        // Lights
-        
-        
     }
 }
 
@@ -731,127 +723,6 @@ class HelloWorldComponent: Behavior {
     texture2d<float, access::read>  blueNoise   [[ id(AAPLGlobalTextureIndexBlueNoise) ]];
     texture3d<float, access::read>  perlinNoise [[ id(AAPLGlobalTextureIndexPerlinNoise) ]];
     texture2d<xhalf, access::read> ssao
- 
- 
- 
- // Indices for buffer bindings.
- typedef NS_ENUM(NSInteger, AAPLBufferIndex)
- {
-     AAPLBufferIndexUniforms = 0,
-     AAPLBufferIndexCameraUniforms,
- #if SUPPORT_RASTERIZATION_RATE
-     AAPLBufferIndexRasterizationRateUniforms,
- #endif
-     AAPLBufferIndexCommonCount,
-
-     AAPLBufferIndexVertexMeshPositions = AAPLBufferIndexCommonCount,
-     AAPLBufferIndexVertexMeshGenerics,
-     AAPLBufferIndexVertexMeshNormals,
-     AAPLBufferIndexVertexMeshTangents,
-     AAPLBufferIndexVertexCount,
-
-     AAPLBufferIndexFragmentMaterial = AAPLBufferIndexCommonCount,
-     AAPLBufferIndexFragmentGlobalTextures,
-     AAPLBufferIndexFragmentLightParams,
-     AAPLBufferIndexFragmentChunkViz,
-     AAPLBufferIndexFragmentCount,
-
-     AAPLBufferIndexPointLights = AAPLBufferIndexFragmentCount,
-     AAPLBufferIndexSpotLights,
-     AAPLBufferIndexLightCount,
-     AAPLBufferIndexPointLightIndices,
-     AAPLBufferIndexSpotLightIndices,
-
-     AAPLBufferIndexComputeEncodeArguments = AAPLBufferIndexCommonCount,
-     AAPLBufferIndexComputeCullCameraUniforms,
-     AAPLBufferIndexComputeUniforms,
-     AAPLBufferIndexComputeMaterial,
-     AAPLBufferIndexComputeChunks,
-     AAPLBufferIndexComputeChunkViz,
-     AAPLBufferIndexComputeExecutionRange,
-     AAPLBufferIndexComputeCount,
-     
-     AAPLBufferIndexVertexDepthOnlyICBBufferCount            = AAPLBufferIndexVertexMeshPositions+1,
-     AAPLBufferIndexVertexDepthOnlyICBAlphaMaskBufferCount   = AAPLBufferIndexVertexMeshGenerics+1,
-     AAPLBufferIndexVertexICBBufferCount                     = AAPLBufferIndexVertexCount,
-     
-     AAPLBufferIndexFragmentICBBufferCount                   = AAPLBufferIndexFragmentCount,
-     AAPLBufferIndexFragmentDepthOnlyICBAlphaMaskBufferCount = AAPLBufferIndexFragmentMaterial+1,
- };
- 
- 
- // Enum to index the members of the AAPLEncodeArguments argument buffer.
- typedef NS_ENUM(NSInteger, AAPLEncodeArgsIndex)
- {
-     AAPLEncodeArgsIndexCommandBuffer,
-     AAPLEncodeArgsIndexCommandBufferDepthOnly,
-     AAPLEncodeArgsIndexIndexBuffer,
-     AAPLEncodeArgsIndexVertexBuffer,
-     AAPLEncodeArgsIndexVertexNormalBuffer,
-     AAPLEncodeArgsIndexVertexTangentBuffer,
-     AAPLEncodeArgsIndexUVBuffer,
-     AAPLEncodeArgsIndexUniformBuffer,
-     AAPLEncodeArgsIndexGlobalTexturesBuffer,
-     AAPLEncodeArgsIndexLightParamsBuffer,
- };
- 
- // Indices for vertex attributes.
- typedef NS_ENUM(NSInteger, AAPLVertexAttribute)
- {
-     AAPLVertexAttributePosition = 0,
-     AAPLVertexAttributeNormal   = 1,
-     AAPLVertexAttributeTangent  = 2,
-     AAPLVertexAttributeTexcoord = 3,
- };
- 
- typedef struct AAPLCameraUniforms
- {
-     // Standard camera matrices.
-     simd::float4x4      viewMatrix;
-     simd::float4x4      projectionMatrix;
-     simd::float4x4      viewProjectionMatrix;
-     
-     // Inverse matrices.
-     simd::float4x4      invViewMatrix;
-     simd::float4x4      invProjectionMatrix;
-     simd::float4x4      invViewProjectionMatrix;
-     
-     simd::float4        worldFrustumPlanes[6]; // Frustum planes in world space.
-     
-     simd::float4        invProjZ;           // A float4 containing the lower right 2x2 z,w block of inv projection matrix (column Major) ; viewZ = (X * projZ + Z) / (Y * projZ + W)
-     simd::float4        invProjZNormalized; // Same as invProjZ but the result is a Z from 0...1 instead of N...F; effectively linearizes Z for easy visualization/storage
- } AAPLCameraUniforms;
-
- 
- 
- 
- 
- typedef struct AAPLUniforms
- {
-     // Screen resolution and inverse for texture sampling.
-     simd::float2        screenSize;
-     simd::float2        invScreenSize;
-     
-     // Physical resolution and inverse for adjusting between screen and physical space.
-     simd::float2        physicalSize;
-     simd::float2        invPhysicalSize;
-     
-     // Lighting environment
-//     float               exposure;
-     
-     simd::float3        globalNoiseOffset;
-     
-     // Frame counter and time for varying values over frames and time.
-     uint                frameCounter;
-     float               frameTime;
-} AAPLUniforms;
- 
- 
- Renderer.updateUniforms
- 
- 
- drawInMTKView: ++framecounter
- frameTime = deltaT
  
  
  */
