@@ -102,25 +102,25 @@ class Transform: Component {
     /// World space right vector
     @inlinable
     var right: float3 {
-        return normalize((float4(0, 0, 1, 1) * worldTransform).xyz)
+        return normalize((worldTransform * float4(1, 0, 0, 1)).xyz)
     }
     
     /// World space forward vector
     @inlinable
     var forward: float3 {
-        return normalize((float4(1, 0, 0, 1) * worldTransform).xyz)
+        return normalize((worldTransform * float4(0, 0, 1, 1)).xyz)
     }
     
     /// World space up vector
     @inlinable
     var up: float3 {
-        return normalize((float4(0, 1, 0, 1) * worldTransform).xyz)
+        return normalize((worldTransform * float4(0, 1, 0, 1)).xyz)
     }
     
     
     // TODO: turn into position, and make position into localPosition like unity
     var worldPosition: float3 {
-        return (float4(position, 1) * worldTransform).xyz
+        return (worldTransform * float4(position, 1)).xyz
     }
     
     func translate(_ d: float3) {

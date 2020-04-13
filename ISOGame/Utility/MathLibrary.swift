@@ -122,19 +122,6 @@ extension float4x4 {
         return float3x3(columns: (x, y, z))
     }
     
-    // MARK: - Left handed projection matrix
-    init(projectionFov fov: Float, near: Float, far: Float, aspect: Float, lhs: Bool = true) {
-        let y = 1 / tan(fov * 0.5)
-        let x = y / aspect
-        let z = lhs ? far / (far - near) : far / (near - far)
-        let X = float4( x,  0,  0,  0)
-        let Y = float4( 0,  y,  0,  0)
-        let Z = lhs ? float4( 0,  0,  z, 1) : float4( 0,  0,  z, -1)
-        let W = lhs ? float4( 0,  0,  z * -near,  0) : float4( 0,  0,  z * near,  0)
-        self.init()
-        columns = (X, Y, Z, W)
-    }
-    
     // left-handed LookAt
     init(eye: float3, center: float3, up: float3) {
         let z = normalize(center-eye)
@@ -148,6 +135,22 @@ extension float4x4 {
         
         self.init()
         columns = (X, Y, Z, W)
+    }
+    
+    init(perspectiveAspect aspect: Float, fovy: Float, near: Float, far: Float) {
+        // https://docs.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixperspectivelh?redirectedfrom=MSDN
+        
+        self.init()
+        
+        let yScale = 1 / tanf(fovy * 0.5)
+        let xScale = yScale / aspect
+        let zScale =  far / (far - near)
+        let wzScale = near * far / (near - far)
+        
+        self = float4x4(float4(xScale, 0, 0, 0),
+                        float4(0, yScale, 0, 0),
+                        float4(0, 0, zScale, 1),
+                        float4(0, 0, wzScale, 0))
     }
     
     // MARK:- Orthographic matrix

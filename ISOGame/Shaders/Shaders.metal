@@ -128,7 +128,14 @@ vertex VertexDepthOnlyOut vertex_main_depth(
 
 
 
-
+// Checks if a pixel is on the border of a tile.
+static bool isBorder(uint2 xy, uint tileSize)
+{
+    uint pixel_in_tile_x = (uint)floor((float)xy.x) % tileSize;
+    uint pixel_in_tile_y = (uint)floor((float)xy.y) % tileSize;
+    return ((pixel_in_tile_x == 0)
+            || (pixel_in_tile_y == 0));
+}
 
 
 
@@ -226,7 +233,11 @@ fragment float4 fragment_main(
     uint16_t numLights = culledLights[0];
 
     
-    return getHeatmapColor(numLights, 10);
+    float4 c = getHeatmapColor(numLights, MAX_LIGHTS_PER_TILE);
+    if(isBorder(uint2(in.position.xy), LIGHT_CULLING_TILE_SIZE))
+        c.rgb = float3(0, 0, 1);
+    
+    return c;
     
     for (uint16_t i = 0; i < numLights; ++i) {
         uint16_t lightIndex = culledLights[i + 1]; // 0 = num lights

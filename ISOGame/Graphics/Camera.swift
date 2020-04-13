@@ -25,19 +25,16 @@ class Camera: Component {
     var aspect: Float = 1
     
     /// Near plane distance from camera.
-    var near: Float = 0.001
+    var near: Float = 0.1
     
     /// Far plane distance from camera.
-    var far: Float = 1000
+    var far: Float = 100
     
     private var screenSize = CGSize.zero
     
     /// The view matrix maps view space to homogenous coords
     var projectionMatrix: float4x4 {
-        return float4x4(projectionFov: fovRadians,
-                        near: near,
-                        far: far,
-                        aspect: aspect)
+        return matrix_float4x4(perspectiveAspect: aspect, fovy: fovRadians, near: near, far: far)
     }
     
     /// The projection matrix maps world space to view space.
@@ -45,15 +42,8 @@ class Camera: Component {
         guard let transform = self.transform else {
             fatalError("Camera needs a transform")
         }
-        
+
         return transform.modelMatrix.inverse
-        
-//        let translateMatrix = float4x4(translation: transform.position)
-//        let rotateMatrix = float4x4(rotation: transform.rotation)
-//        let scaleMatrix = float4x4(scaling: transform.scale)
-        
-        
-//        return (translateMatrix * scaleMatrix * rotateMatrix).inverse
     }
     
     /// Frustum of the camera.
@@ -64,9 +54,7 @@ class Camera: Component {
     var uniforms = CameraUniforms()
     var uniformsDirty = true
     
-    /// Screen size changed.
-    ///
-    /// Updates the aspect ratio
+    /// Screen size changed. Updates the aspect ratio
     func onScreenSizeWillChange(to size: CGSize) {
         aspect = Float(size.width / size.height)
         screenSize = size
@@ -82,6 +70,7 @@ class Camera: Component {
         
         // Derived
         uniforms.viewProjectionMatrix = uniforms.projectionMatrix * uniforms.viewMatrix
+        
         uniforms.invProjectionMatrix = simd_inverse(uniforms.projectionMatrix)
         uniforms.invViewProjectionMatrix = simd_inverse(uniforms.viewProjectionMatrix)
         uniforms.invViewMatrix = simd_inverse(uniforms.viewMatrix)

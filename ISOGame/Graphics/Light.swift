@@ -63,7 +63,7 @@ class Light: Component {
             data.color = color
             
             data.position = transform.worldTransform * float4(transform.position, 1)
-            data.range = 10
+            data.range = 5
             
 //            let range: Float = 5
 //            self.bounds = Bounds(center: data.position.xyz, extents: float3(range, range, range))

@@ -72,6 +72,7 @@ class Renderer: NSObject {
     /// HDR Lighting target
     var lightingRenderTarget: MTLTexture!
     var lightsBuffer: MTLBuffer!
+    var lightsBufferCount: UInt = 0
     /// List of lights per threadgroup
     var culledLightsBufferOpaque: MTLBuffer!
     var culledLightsBufferTransparent: MTLBuffer!
@@ -204,30 +205,24 @@ class Renderer: NSObject {
                 sphere.add(component: MeshSelector(mesh: sphereMesh2))
             }
             sphere.add(component: MeshRenderer())
-            sphere.add(behavior: HelloWorldComponent(seed: i))
+//            sphere.add(behavior: HelloWorldComponent(seed: i))
         }
         
-        let l = 5
-        for i in 0...l {
-            let light = Nexus.shared().createEntity()
-            let transform = light.add(component: Transform())
-            
-            let p = i - (l / 2)
-            transform.position = [Float(p / 15) * 1, 1 + Float(p / 100) * 0.5, Float(p % 15) * 1]
+        let l = 500
+        for x in -20...20 {
+            for z in -20...20 {
+                for y in 0...3 {
+                    let light = Nexus.shared().createEntity()
+                    let transform = light.add(component: Transform())
+                    
+                    transform.position = [Float(x) * 1, Float(y) * 0.5, Float(z) * 1]
 
-            let lightInfo = light.add(component: Light(type: .point))
-            lightInfo.color = float3(min(0.01 * Float(l), 1), Float(0.1), 1 - min(0.01 * Float(l), 1))
-            lightInfo.intensity = 1
+                    let lightInfo = light.add(component: Light(type: .point))
+                    lightInfo.color = float3(min(0.01 * Float(l), 1), Float(0.1), 1 - min(0.01 * Float(l), 1))
+                    lightInfo.intensity = 1
+                }
+            }
         }
-        
-//                    let plight = Nexus.shared().createEntity()
-//                    let transform = plight.add(component: Transform())
-//                    transform.position = [0, 4, 1]
-//        
-//                    let lightInfo = plight.add(component: Light(type: .point))
-//                    lightInfo.color = float3(1,1,1)
-//                    lightInfo.intensity = 1
-        
     }
     
 }
@@ -412,51 +407,46 @@ extension Renderer {
         renderEncoder.endEncoding()
     }
     
+    /// Update the buffer containing a list of all lights
+    func updateLightsBuffer() {
+        var lightsData = [LightData]()
+        for light in lights {
+            lightsData.append(light.build())
+        }
+        
+        let lightCount = UInt(lightsData.count)
+        let neededSize = MemoryLayout<LightData>.stride * Int(lightCount)
+        if lightsBuffer != nil && lightsBuffer.allocatedSize >= neededSize {
+            lightsBuffer.contents().copyMemory(from: &lightsData, byteCount: neededSize)
+        } else {
+            lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
+        }
+        lightsBufferCount = lightCount
+    }
+    
     /// Light culling pass: get all the lights we can possibly see, and cull them per tile.
     func doLightCullingPass(commandBuffer: MTLCommandBuffer) {
         guard let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {
             fatalError("Unable to create compute encoder for light culling pass")
         }
         computeEncoder.label = "LightCulling"
-        
-        // MOVE TO DIFFERENT PART / FUNCTION
-            // Cull lights to frustum
-            var lightsData = [LightData]()
-//            let frustum = scene.camera!.frustum
-            for light in lights {
-//                if frustum.intersects(bounds: light.bounds) != .outside {
-                    lightsData.append(light.build())
-                    DebugRendering.shared.gizmo(position: (light.transform!.worldTransform * float4(light.transform!.position, 1)).xyz)
-//                }
-            }
-            var lightCount = UInt(lightsData.count)
-            
-            // TODO: REUSE!
-            lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
-        // END MOVE
-        
-//        print("LIGHTS", lightCount) // CPU frustum culling
-        
-        let debugTextDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: depthTexture.width, height: depthTexture.height, mipmapped: false)
-        debugTextDesc.usage = [.shaderWrite, .shaderRead]
-        let debugTexture = Renderer.device.makeTexture(descriptor: debugTextDesc)
 
         computeEncoder.setComputePipelineState(lightCullComputeState)
 
+        updateLightsBuffer()
+        
         computeEncoder.setBytes(&scene.camera!.uniforms,
                                 length: MemoryLayout<CameraUniforms>.stride,
                                 index: 1)
         
         computeEncoder.setBuffer(lightsBuffer, offset: 0, index: 2)
-        computeEncoder.setBytes(&lightCount, length: MemoryLayout<UInt>.stride, index: 3)
+        computeEncoder.setBytes(&lightsBufferCount, length: MemoryLayout<UInt>.stride, index: 3)
         computeEncoder.setTexture(depthTexture, index: 0)
-        computeEncoder.setTexture(debugTexture, index: 1)
         
         computeEncoder.setBuffer(culledLightsBufferOpaque, offset: 0, index: 4)
         computeEncoder.setBuffer(culledLightsBufferTransparent, offset: 0, index: 5)
         
         computeEncoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
-//        computeEncoder.dispatchThreads(MTLSizeMake(depthTexture.width, depthTexture.height, 1), threadsPerThreadgroup: threadgroupSize)
         
         computeEncoder.endEncoding()
     }
@@ -471,6 +461,7 @@ extension Renderer {
         // Do not write to depth: we already have it
         renderEncoder.setDepthStencilState(depthStencilStateNoWrite)
         renderEncoder.setCullMode(.back)
+        renderEncoder.setFrontFacing(.clockwise)
         
         // Light data: all lights, culled light indices, and horizontal tile count for finding the tile per pixel.
         var count = UInt(threadgroupCount.width)
@@ -514,10 +505,6 @@ extension Renderer {
     
     // renderShadows using shadowRenderPass   [encoder setDepthBias:0.0f slopeScale:2.0f clamp:0];, draw scene
 }
-
-// CHANGE FINAL INTO 'RESOLVE'.
-// ADD BLIT ENCODER TO MOVE RESOLVED TO SCREEN
-
 
 // MARK: - Render loop
 
