@@ -272,7 +272,7 @@ kernel void lightculling(
         
         switch (lightData.type) {
             case LightTypePoint: {
-                float4 vsPosition = cameraUniforms.viewMatrix * lightData.position;
+                float4 vsPosition = cameraUniforms.viewMatrix * float4(lightData.position, 1);
                 Sphere sphere = { vsPosition.xyz, lightData.range };
                 
                 if (sphereInsideFrustum(sphere, frustum, nearClipVS, maxDepthVS)) {

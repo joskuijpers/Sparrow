@@ -88,6 +88,7 @@ extension Mesh {
      Render the submesh at given index.
      */
     func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: uint8, worldTransform: float4x4) {
+        // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
         let submesh = submeshes[Int(submeshIndex)]
 
         // TODO: apple does:

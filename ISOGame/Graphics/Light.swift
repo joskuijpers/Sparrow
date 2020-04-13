@@ -28,9 +28,6 @@ class Light: Component {
     /// Light direction (for spot and directional lights). // TODO; replace with rotation of transform?
     var direction = float3(0, -1, 0)
     
-    /// Bounding box.
-    private(set) var bounds: Bounds = Bounds(minBounds: float3(repeating: -Float.infinity), maxBounds: float3(repeating: Float.infinity))
-    
     private var buildDataDirty = true
     
     // TODO: add set/get Kelvin (color), Candela (intensity)
@@ -54,27 +51,25 @@ class Light: Component {
         case .directional:
             data.type = LightTypeDirectional
             data.color = color
-            data.position = float4(direction, 0) // todo: replace direction with transform rotation
+            data.position = direction // TODO: replace direction with transform rotation
             data.range = Float.infinity
         case .point:
-            let transform = self.transform!
-            
             data.type = LightTypePoint
             data.color = color
             
-            data.position = transform.worldTransform * float4(transform.position, 1)
-            data.range = 5
-            
-//            let range: Float = 5
-//            self.bounds = Bounds(center: data.position.xyz, extents: float3(range, range, range))
+            data.position = self.transform!.worldPosition
+            data.range = 1
         }
+        
+        buildDataDirty = false
     }
     
     /// Acquire the render system light data
-    func build() -> LightData {
+    func build(into data: inout LightData) {
         if buildDataDirty {
             rebuildData()
         }
-        return data
+        
+        data = self.data
     }
 }

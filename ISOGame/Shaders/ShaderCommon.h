@@ -78,6 +78,7 @@ typedef struct {
     vector_float3 emission;
 } Material;
 
+/// Type of the light
 typedef enum {
     LightTypeDirectional = 0,
     LightTypeSpot = 1,
@@ -86,7 +87,7 @@ typedef enum {
 
 /// Data pertaining lights that is transferred from CPU to GPU
 typedef struct {
-    vector_float4 position;
+    vector_float3 position;
     vector_float3 color;
     float range;
 //    float intensity;

@@ -208,7 +208,6 @@ class Renderer: NSObject {
 //            sphere.add(behavior: HelloWorldComponent(seed: i))
         }
         
-        let l = 500
         for x in -20...20 {
             for z in -20...20 {
                 for y in 0...3 {
@@ -218,7 +217,7 @@ class Renderer: NSObject {
                     transform.position = [Float(x) * 1, Float(y) * 0.5, Float(z) * 1]
 
                     let lightInfo = light.add(component: Light(type: .point))
-                    lightInfo.color = float3(min(0.01 * Float(l), 1), Float(0.1), 1 - min(0.01 * Float(l), 1))
+                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
                     lightInfo.intensity = 1
                 }
             }
@@ -409,9 +408,9 @@ extension Renderer {
     
     /// Update the buffer containing a list of all lights
     func updateLightsBuffer() {
-        var lightsData = [LightData]()
-        for light in lights {
-            lightsData.append(light.build())
+        var lightsData = Array.init(repeating: LightData(), count: lights.count)
+        for (index, light) in lights.enumerated() {
+            light.build(into: &lightsData[index])
         }
         
         let lightCount = UInt(lightsData.count)
@@ -419,8 +418,9 @@ extension Renderer {
         if lightsBuffer != nil && lightsBuffer.allocatedSize >= neededSize {
             lightsBuffer.contents().copyMemory(from: &lightsData, byteCount: neededSize)
         } else {
-            lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: MemoryLayout<LightData>.stride * Int(lightCount), options: .storageModeShared)
+            lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: neededSize, options: .storageModeShared)
         }
+        
         lightsBufferCount = lightCount
     }
     
@@ -432,8 +432,6 @@ extension Renderer {
         computeEncoder.label = "LightCulling"
 
         computeEncoder.setComputePipelineState(lightCullComputeState)
-
-        updateLightsBuffer()
         
         computeEncoder.setBytes(&scene.camera!.uniforms,
                                 length: MemoryLayout<CameraUniforms>.stride,
@@ -483,7 +481,7 @@ extension Renderer {
         renderEncoder.endEncoding()
     }
     
-    func doFinalPass(commandBuffer: MTLCommandBuffer, view: MTKView) {
+    func doResolvePass(commandBuffer: MTLCommandBuffer, view: MTKView) {
         guard let drawable = view.currentDrawable else {
             fatalError("Unable to get drawable")
         }
@@ -491,7 +489,7 @@ extension Renderer {
         viewRenderPassDescriptor.colorAttachments[0].texture = drawable.texture
         
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: viewRenderPassDescriptor) else {
-            fatalError("Unable to create render encoder for lighting pass")
+            fatalError("Unable to create render encoder for resolve pass")
         }
         renderEncoder.label = "Resolve"
         
@@ -535,14 +533,23 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
+        // Fill render queues
+        // TODO!
+        
+        // Render into depth first, used for culling and AO
         doDepthPrepass(commandBuffer: commandBuffer)
+        
+        // Update list of lights
+        updateLightsBuffer()
+        
+        // Cull the lights
         doLightCullingPass(commandBuffer: commandBuffer)
         
-        // Perform lighting
+        // Perform lighting with culled lights
         doLightingPass(commandBuffer: commandBuffer)
         
         // Resolve HDR buffer with tone mapping and gamma correction and draw to screen
-        doFinalPass(commandBuffer: commandBuffer, view: view)
+        doResolvePass(commandBuffer: commandBuffer, view: view)
         
         guard let drawable = view.currentDrawable else {
             return
@@ -550,6 +557,14 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }
+    
+    /**
+     1: only once do a render queue filling
+     2: look into the light list building
+     
+     
+     
+     */
     
     /// Render the scene on given render encoder for given pass.
     /// The pass determines the shaders used
