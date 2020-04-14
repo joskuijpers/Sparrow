@@ -14,9 +14,7 @@ public class Component {
 //    var identifier: ComponentIdentifier { get }
     internal unowned var nexus: Nexus? = nil
     internal var entityId: EntityIdentifier? = nil
-    
-    required init() {}
-    
+
     /// Component was added to an entity. Set the nexus and entity ID so we can find the entity from the component.
     func onAddedToEntity(_ entity: Entity) {
         nexus = entity.nexus

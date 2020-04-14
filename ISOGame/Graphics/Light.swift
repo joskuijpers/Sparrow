@@ -40,12 +40,6 @@ class Light: Component {
         super.init()
     }
     
-    required init() {
-        self.type = .point
-        
-        super.init()
-    }
-    
     private func rebuildData() {
         switch (self.type) {
         case .directional:

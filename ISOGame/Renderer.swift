@@ -43,7 +43,11 @@ class Renderer: NSObject {
     
     fileprivate static var nexus: Nexus!
     
-    let behaviorSystem: BehaviorSystem
+    let rotatingBallSystem: RotatingBallSystem
+    let cameraSystem: CameraSystem
+    
+    
+    
     var rootEntity: Entity!
 
     var lastFrameTime: CFAbsoluteTime!
@@ -133,7 +137,8 @@ class Renderer: NSObject {
         lights = Nexus.shared().group(requires: Light.self)
         meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
         
-        behaviorSystem = BehaviorSystem() // MOVE
+        rotatingBallSystem = RotatingBallSystem(nexus: Nexus.shared())
+        cameraSystem = CameraSystem(nexus: Nexus.shared())
 
         scene = Scene(screenSize: metalView.drawableSize)
         
@@ -162,7 +167,6 @@ class Renderer: NSObject {
         t.position = [0, 5, 0]
         t.rotation = [Float(40.0).degreesToRadians, 0, 0]
         let cameraComp = camera.add(component: Camera())
-        camera.add(behavior: DebugCameraBehavior())
         scene.camera = cameraComp
         
         
@@ -205,7 +209,7 @@ class Renderer: NSObject {
                 sphere.add(component: MeshSelector(mesh: sphereMesh2))
             }
             sphere.add(component: MeshRenderer())
-//            sphere.add(behavior: HelloWorldComponent(seed: i))
+            sphere.add(component: RotationSpeed(seed: i))
         }
         
         for x in -5...5 {
@@ -530,8 +534,9 @@ extension Renderer: MTKViewDelegate {
         let deltaTime = Float(currentTime - lastFrameTime!)
         lastFrameTime = currentTime
         
-        // Update all behavior
-        behaviorSystem.update(deltaTime: deltaTime)
+        
+        cameraSystem.onUpdate(deltaTime: deltaTime)
+        rotatingBallSystem.onUpdate(deltaTime: deltaTime)
         
         
         let camera = scene.camera!
@@ -623,18 +628,82 @@ extension Renderer: MTKViewDelegate {
     }
 }
 
-/// Behavior test
-class HelloWorldComponent: Behavior {
-    let rotationSpeed: Float
+class RotationSpeed: Component {
+    let speed: Float
     
     init(seed: Int = 0) {
-        rotationSpeed = (Float(seed) * 35972.326365396643).truncatingRemainder(dividingBy: 180)
+        speed = (Float(seed) * 35972.326365396643).truncatingRemainder(dividingBy: 180)
     }
-    override func onUpdate(deltaTime: Float) {
-        if let rotation = transform?.rotation {
-            transform!.rotation = rotation + float3(0, rotationSpeed.degreesToRadians * deltaTime, 0)
+}
+
+/// Behavior test
+class RotatingBallSystem {
+    let entities: Group<Requires2<Transform, RotationSpeed>>
+    
+    init(nexus: Nexus) {
+        entities =  nexus.group(requiresAll: Transform.self, RotationSpeed.self)
+    }
+    
+    func onUpdate(deltaTime: Float) {
+        for (transform, rotationSpeed) in entities {
+            transform.rotation = transform.rotation + float3(0, rotationSpeed.speed.degreesToRadians * deltaTime, 0)
         }
     }
+}
+
+// Simple camera behavior
+class CameraSystem {
+    let cameras: Group<Requires2<Transform, Camera>>
+    
+    init(nexus: Nexus) {
+        cameras =  nexus.group(requiresAll: Transform.self, Camera.self)
+    }
+    
+    func onUpdate(deltaTime: Float) {
+        for (transform, _) in cameras {
+            var diff = float3.zero
+            let speed: Float = 5.0
+            
+            if Input.shared.getKey(.w) {
+                diff = diff + float3(0, 0, 1) * deltaTime * speed
+            } else if Input.shared.getKey(.s) {
+                diff = diff - float3(0, 0, 1) * deltaTime * speed
+            }
+            
+            if Input.shared.getKey(.a) {
+                diff = diff - float3(1, 0, 0) * deltaTime * speed
+            } else if Input.shared.getKey(.d) {
+                diff = diff + float3(1, 0, 0) * deltaTime * speed
+            }
+            
+            if Input.shared.getKey(.q) {
+                diff = diff + float3(0, 1, 0) * deltaTime * speed
+            } else if Input.shared.getKey(.e) {
+                diff = diff - float3(0, 1, 0) * deltaTime * speed
+            }
+            
+            transform.translate(diff)
+            
+            var rot: Float = 0
+            if Input.shared.getKey(.leftArrow) {
+                rot = rot + deltaTime * Float(-20).degreesToRadians
+            }
+            if Input.shared.getKey(.rightArrow) {
+                rot = rot + deltaTime * Float(20).degreesToRadians
+            }
+            transform.rotate(float3(0, rot, 0))
+            
+            var rotX: Float = 0
+            if Input.shared.getKey(.upArrow) {
+                rotX = rotX + deltaTime * Float(-20).degreesToRadians
+            }
+            if Input.shared.getKey(.downArrow) {
+                rotX = rotX + deltaTime * Float(20).degreesToRadians
+            }
+            transform.rotate(float3(rotX, 0, 0))
+        }
+    }
+
 }
 
 

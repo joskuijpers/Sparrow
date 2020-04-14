@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		800604B323F9F55C00B3FB7F /* Behavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B223F9F55C00B3FB7F /* Behavior.swift */; };
 		800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B423F9F6BB00B3FB7F /* Transform.swift */; };
 		800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B623F9F85000B3FB7F /* MeshSelector.swift */; };
 		800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B823F9F87D00B3FB7F /* MeshRenderer.swift */; };
@@ -104,7 +103,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		800604B223F9F55C00B3FB7F /* Behavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Behavior.swift; sourceTree = "<group>"; };
 		800604B423F9F6BB00B3FB7F /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		800604B623F9F85000B3FB7F /* MeshSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSelector.swift; sourceTree = "<group>"; };
 		800604B823F9F87D00B3FB7F /* MeshRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRenderer.swift; sourceTree = "<group>"; };
@@ -249,7 +247,6 @@
 		800604B123F9F54A00B3FB7F /* Gameplay */ = {
 			isa = PBXGroup;
 			children = (
-				800604B223F9F55C00B3FB7F /* Behavior.swift */,
 			);
 			path = Gameplay;
 			sourceTree = "<group>";
@@ -588,7 +585,6 @@
 				8015C6C323D647B100DFF109 /* Nexus+Component.swift in Sources */,
 				8099AAF923CE747300E03CE0 /* SceneObject.swift in Sources */,
 				8015C6C523D647B100DFF109 /* Component.swift in Sources */,
-				800604B323F9F55C00B3FB7F /* Behavior.swift in Sources */,
 				8015C6BE23D647B100DFF109 /* Group1.swift in Sources */,
 				8015C6C623D647B100DFF109 /* Group4.swift in Sources */,
 				80438C24240DC31B00099034 /* Input.swift in Sources */,

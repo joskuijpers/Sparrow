@@ -14,10 +14,6 @@ import Foundation
 class MeshSelector: Component {
     public var mesh: Mesh?
     
-    /// Init without a mesh set
-    required init() {
-    }
-    
     /// Init with a mesh
     init(mesh: Mesh) {
         self.mesh = mesh
