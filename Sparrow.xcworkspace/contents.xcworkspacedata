@@ -7,4 +7,7 @@
    <FileRef
       location = "group:SparrowSceneConverter/SparrowSceneConverter.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:SparrowECS/SparrowECS.xcodeproj">
+   </FileRef>
 </Workspace>
