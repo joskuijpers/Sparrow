@@ -26,14 +26,11 @@
 		8015C6C523D647B100DFF109 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AA23D647B000DFF109 /* Component.swift */; };
 		8015C6C623D647B100DFF109 /* Group4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AB23D647B000DFF109 /* Group4.swift */; };
 		8015C6C723D647B100DFF109 /* ComponentAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AC23D647B000DFF109 /* ComponentAccess.swift */; };
-		8015C6C823D647B100DFF109 /* NexusEventDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */; };
-		8015C6CA23D647B100DFF109 /* Nexus+SceneGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */; };
 		8015C6CB23D647B100DFF109 /* EntityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B023D647B000DFF109 /* EntityIdentifier.swift */; };
 		8015C6CC23D647B100DFF109 /* Nexus+GroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B123D647B000DFF109 /* Nexus+GroupUpdate.swift */; };
 		8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B223D647B000DFF109 /* Hashing.swift */; };
 		8015C6CE23D647B100DFF109 /* Group3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B323D647B100DFF109 /* Group3.swift */; };
 		8015C6CF23D647B100DFF109 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B423D647B100DFF109 /* Group.swift */; };
-		8015C6D023D647B100DFF109 /* NexusEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B523D647B100DFF109 /* NexusEvents.swift */; };
 		8015C6D123D647B100DFF109 /* Group5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B623D647B100DFF109 /* Group5.swift */; };
 		8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B723D647B100DFF109 /* Nexus+Entity.swift */; };
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
@@ -45,6 +42,7 @@
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
 		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
+		809258CF24464E5400D2025F /* Single.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809258CE24464E5400D2025F /* Single.swift */; };
 		8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAEE23BE127E00E03CE0 /* Bounds.swift */; };
 		8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF423BF7AB700E03CE0 /* Light.swift */; };
 		8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF623CCF60100E03CE0 /* RenderQueue.swift */; };
@@ -125,14 +123,11 @@
 		8015C6AA23D647B000DFF109 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
 		8015C6AB23D647B000DFF109 /* Group4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group4.swift; sourceTree = "<group>"; };
 		8015C6AC23D647B000DFF109 /* ComponentAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentAccess.swift; sourceTree = "<group>"; };
-		8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NexusEventDelegate.swift; sourceTree = "<group>"; };
-		8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+SceneGraph.swift"; sourceTree = "<group>"; };
 		8015C6B023D647B000DFF109 /* EntityIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityIdentifier.swift; sourceTree = "<group>"; };
 		8015C6B123D647B000DFF109 /* Nexus+GroupUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+GroupUpdate.swift"; sourceTree = "<group>"; };
 		8015C6B223D647B000DFF109 /* Hashing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashing.swift; sourceTree = "<group>"; };
 		8015C6B323D647B100DFF109 /* Group3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group3.swift; sourceTree = "<group>"; };
 		8015C6B423D647B100DFF109 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
-		8015C6B523D647B100DFF109 /* NexusEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NexusEvents.swift; sourceTree = "<group>"; };
 		8015C6B623D647B100DFF109 /* Group5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group5.swift; sourceTree = "<group>"; };
 		8015C6B723D647B100DFF109 /* Nexus+Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Entity.swift"; sourceTree = "<group>"; };
 		80438C1623FA0CF600099034 /* SceneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManager.swift; sourceTree = "<group>"; };
@@ -146,6 +141,7 @@
 		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086965B23B8DD150007E75D /* STF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = STF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086965D23B8DDA00007E75D /* box.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = box.gltf; sourceTree = SOURCE_ROOT; };
+		809258CE24464E5400D2025F /* Single.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Single.swift; sourceTree = "<group>"; };
 		8099AAEE23BE127E00E03CE0 /* Bounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bounds.swift; sourceTree = "<group>"; };
 		8099AAF423BF7AB700E03CE0 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
 		8099AAF623CCF60100E03CE0 /* RenderQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderQueue.swift; sourceTree = "<group>"; };
@@ -284,6 +280,7 @@
 		8015C6D323D64CDE00DFF109 /* Group */ = {
 			isa = PBXGroup;
 			children = (
+				809258CE24464E5400D2025F /* Single.swift */,
 				8015C6B423D647B100DFF109 /* Group.swift */,
 				8015C6A323D647AF00DFF109 /* Group1.swift */,
 				8015C6A423D647B000DFF109 /* Group2.swift */,
@@ -302,9 +299,6 @@
 			isa = PBXGroup;
 			children = (
 				8015C6A723D647B000DFF109 /* Nexus.swift */,
-				8015C6AF23D647B000DFF109 /* Nexus+SceneGraph.swift */,
-				8015C6AD23D647B000DFF109 /* NexusEventDelegate.swift */,
-				8015C6B523D647B100DFF109 /* NexusEvents.swift */,
 			);
 			name = Nexus;
 			sourceTree = "<group>";
@@ -489,6 +483,8 @@
 			dependencies = (
 			);
 			name = ISOGame;
+			packageProductDependencies = (
+			);
 			productName = ISOGame;
 			productReference = 80A462C6238F0FB6009435EB /* ISOGame.app */;
 			productType = "com.apple.product-type.application";
@@ -604,11 +600,9 @@
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				8015C6CE23D647B100DFF109 /* Group3.swift in Sources */,
 				80438C20240B0A2700099034 /* Frustum.swift in Sources */,
-				8015C6D023D647B100DFF109 /* NexusEvents.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
 				80A462DA238F100B009435EB /* GameView.swift in Sources */,
 				808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */,
-				8015C6CA23D647B100DFF109 /* Nexus+SceneGraph.swift in Sources */,
 				8015C6B823D647B100DFF109 /* GroupRequirementsManaging.swift in Sources */,
 				8015C6BD23D647B100DFF109 /* Entity.swift in Sources */,
 				8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */,
@@ -619,12 +613,12 @@
 				80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */,
 				80A462E9238F126F009435EB /* Submesh.swift in Sources */,
 				8015C6D123D647B100DFF109 /* Group5.swift in Sources */,
+				809258CF24464E5400D2025F /* Single.swift in Sources */,
 				8015C6CB23D647B100DFF109 /* EntityIdentifier.swift in Sources */,
 				8015C6C423D647B100DFF109 /* ComponentIdentifier.swift in Sources */,
 				80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */,
 				80A462ED238F14AC009435EB /* Shaders.metal in Sources */,
 				8064AF61242960CC0089FE11 /* Resolve.metal in Sources */,
-				8015C6C823D647B100DFF109 /* NexusEventDelegate.swift in Sources */,
 				8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */,
 				80438C1723FA0CF600099034 /* SceneManager.swift in Sources */,
 				8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */,

@@ -28,7 +28,6 @@ extension Nexus {
 
         /// test if component is already assigned
         guard !has(componentId: componentId, entityId: entityId) else {
-            delegate?.nexusNonFatalError("ComponentAdd collision: \(entityId) already has a component \(component)")
             assertionFailure("ComponentAdd collision: \(entityId) already has a component \(component)")
             return
         }
@@ -48,8 +47,6 @@ extension Nexus {
         component.onAddedToEntity(entity)
         
         update(groupMembership: entityId)
-
-        delegate?.nexusEvent(ComponentAdded(component: componentId, toEntity: entity.identifier))
     }
 
     /// Assign a component to an entity.
@@ -98,14 +95,12 @@ extension Nexus {
 
         update(groupMembership: entityId)
 
-        delegate?.nexusEvent(ComponentRemoved(component: componentId, from: entityId))
         return true
     }
 
     @discardableResult
     public final func removeAll(componentes entityId: EntityIdentifier) -> Bool {
         guard let allComponents = get(components: entityId) else {
-            delegate?.nexusNonFatalError("clearing components form entity \(entityId) with no components")
             return false
         }
         var iter = allComponents.makeIterator()

@@ -238,3 +238,110 @@ class DebugUI {
 - World
 - Transform has parent -> hierarchy
     - getChildren
+
+
+Group:
+World: Class
+    createEntity()
+    createEntity(from: Entity)
+    setSingleton
+    getSingleton
+Entity: uint64_t
+Component: Protocol
+System: Protocol
+
+
+
+## ECS
+
+
+#### Entity identifier
+```
+public struct EntityIdentifier: Identifiable {
+    /// provides 4294967295 unique identifiers since it's constrained to UInt32 - invalid.
+    public let id: Int
+
+    public init(_ uint32: UInt32) {
+        self.id = Int(uint32)
+    }
+}
+extension EntityIdentifier {
+    public static let invalid = EntityIdentifier(.max)
+}
+
+extension EntityIdentifier: Equatable { }
+extension EntityIdentifier: Hashable { }
+extension EntityIdentifier: Codable { }
+extension EntityIdentifier: Comparable {
+    @inlinable
+    public static func < (lhs: EntityIdentifier, rhs: EntityIdentifier) -> Bool {
+        return lhs.id < rhs.id
+    }
+}
+```
+
+#### Component identifier
+```
+public struct ComponentIdentifier: Identifiable {
+    /// provides 4294967295 unique identifiers since it's constrained to UInt32 - invalid.
+    public let id: Int
+
+    public init(_ uint32: UInt32) {
+        self.id = Int(uint32)
+    }
+}
+extension ComponentIdentifier {
+    public static let invalid = ComponentIdentifier(.max)
+}
+
+extension ComponentIdentifier: Equatable { }
+extension ComponentIdentifier: Hashable { }
+extension ComponentIdentifier: Codable { }
+extension ComponentIdentifier: Comparable {
+    @inlinable
+    public static func < (lhs: ComponentIdentifier, rhs: ComponentIdentifier) -> Bool {
+        return lhs.id < rhs.id
+    }
+}
+```
+
+#### Entity
+
+```
+class Entity {
+    entityId: EntityIdentifier
+    unowned world: World
+    
+    
+    == { entityId == entityId }
+}
+```
+
+#### Component
+
+```
+protocol Component {
+    
+}
+```
+
+#### World
+
+```
+class World {
+    
+    @usableFromInline final var entityStorage: UnorderedSparseSet<EntityIdentifier>
+    
+    @usableFromInline final var componentsByType: [ComponentIdentifier: ManagedContiguousArray<Component>]
+        component for entity = componentsByType[type].get(at: entityId)
+    
+    @usableFromInline final var componentIdsByEntity: [EntityIdentifier: Set<ComponentIdentifier>]
+    
+    @usableFromInline final var freeEntities: ContiguousArray<EntityIdentifier>
+
+
+    createEntity() -> Entity {}
+    createEntity(from existingEntity: Entity) {}
+    destroyEntity(_ entity: Entity)
+}
+```

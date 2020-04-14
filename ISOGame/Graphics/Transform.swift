@@ -73,11 +73,11 @@ class Transform: Component {
     /// World transform matrix containing current world position, rotation and scaling transformations to make model local space to world space
     var worldTransform: float4x4 {
         if worldMatrixDirty {
-            if let parent = entity?.parent, let parentTransform = parent.transform {
-                _worldTransform = parentTransform.worldTransform * modelMatrix
-            } else {
+//            if let parent = entity?.parent, let parentTransform = parent.transform {
+//                _worldTransform = parentTransform.worldTransform * modelMatrix
+//            } else {
                 _worldTransform = modelMatrix
-            }
+//            }
             
             worldMatrixDirty = false
         }

@@ -49,12 +49,10 @@ extension Nexus {
         switch (isMatch, isMember) {
         case (true, false):
             add(entityWithId: entityId, toGroupWithTraits: traits)
-            delegate?.nexusEvent(GroupMemberAdded(member: entityId, toGroup: traits))
             return
 
         case (false, true):
             remove(entityWithId: entityId, fromGroupWithTraits: traits)
-            delegate?.nexusEvent(GroupMemberRemoved(member: entityId, from: traits))
             return
 
         default:

@@ -27,14 +27,6 @@ public struct Requires2<A, B>: GroupRequirementsManaging where A: Component, B: 
         let compB: B = nexus.get(unsafeComponentFor: entityId)
         return (entity, compA, compB)
     }
-
-    public static func relativesDescending(nexus: Nexus, parentId: EntityIdentifier, childId: EntityIdentifier) -> (parent: (A, B), child: (A, B)) {
-        let pcA: A = nexus.get(unsafeComponentFor: parentId)
-        let pcB: B = nexus.get(unsafeComponentFor: parentId)
-        let ccA: A = nexus.get(unsafeComponentFor: childId)
-        let ccB: B = nexus.get(unsafeComponentFor: childId)
-        return (parent: (pcA, pcB), child: (ccA, ccB))
-    }
 }
 
 extension Nexus {

@@ -6,8 +6,6 @@
 //
 
 public final class Nexus {
-    public final weak var delegate: NexusEventDelegate?
-
     /// Main entity storage.
     /// Entities are tightly packed by EntityIdentifier.
     @usableFromInline final var entityStorage: UnorderedSparseSet<Entity>
@@ -29,22 +27,16 @@ public final class Nexus {
     /// - Value: Tightly packed EntityIdentifiers that represent the association of an entity to the Group.
     @usableFromInline final var groupMembersByTraits: [GroupTraitSet: UnorderedSparseSet<EntityIdentifier>]
 
-    /// - Key: A parent entity id.
-    /// - Value: Adjacency Set of all associated children.
-    @usableFromInline final var parentChildrenMap: [EntityIdentifier: Set<EntityIdentifier>]
-    
-    /// - Key: A child entity id.
-    /// - Value: The parent entity id.
-    @usableFromInline final var childParentMap: [EntityIdentifier: EntityIdentifier]
-
     public init() {
         entityStorage = UnorderedSparseSet<Entity>()
+        
         componentsByType = [:]
         componentIdsByEntity = [:]
+        
         freeEntities = ContiguousArray<EntityIdentifier>()
+        
         groupMembersByTraits = [:]
-        parentChildrenMap = [:]
-        childParentMap = [:]
+        
     }
 
     public final func clear() {
@@ -65,8 +57,6 @@ public final class Nexus {
         componentsByType.removeAll()
         componentIdsByEntity.removeAll()
         groupMembersByTraits.removeAll()
-        parentChildrenMap.removeAll()
-        childParentMap.removeAll()
     }
 
     deinit {
@@ -82,9 +72,7 @@ extension Nexus: Equatable {
             lhs.componentIdsByEntity == rhs.componentIdsByEntity &&
             lhs.freeEntities == rhs.freeEntities &&
             lhs.groupMembersByTraits == rhs.groupMembersByTraits &&
-            lhs.componentsByType.keys == rhs.componentsByType.keys &&
-            lhs.parentChildrenMap == rhs.parentChildrenMap &&
-            lhs.childParentMap == rhs.childParentMap
+            lhs.componentsByType.keys == rhs.componentsByType.keys
         // NOTE: components are not equatable (yet)
     }
 }
