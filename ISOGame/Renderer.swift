@@ -481,12 +481,10 @@ extension Renderer {
         renderEncoder.setFragmentBuffer(culledLightsBufferOpaque, offset: 0, index: 17)
         renderScene(onEncoder: renderEncoder, renderPass: .opaqueLighting)
 
-//        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
-//        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
-        
+        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
+        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
         
         DebugRendering.shared.render(renderEncoder: renderEncoder)
-        
         
         renderEncoder.endEncoding()
     }
