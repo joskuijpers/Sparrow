@@ -220,3 +220,21 @@ class DebugUI {
     
     
 }
+
+
+
+
+
+## Light culling
+
+- Move Frustum creation to separate compute that only runs after a resize
+- AABB culling on top of frustums for tighter culling
+- Spotlights (once added)
+- Remove buildLight from Light code. Add LightCullSystem that does this instead. (Add LightCullInfo component.)
+
+## ECS
+- Add singleton components (Entity with this component)
+- Single<>
+- World
+- Transform has parent -> hierarchy
+    - getChildren

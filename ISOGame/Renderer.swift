@@ -208,13 +208,13 @@ class Renderer: NSObject {
 //            sphere.add(behavior: HelloWorldComponent(seed: i))
         }
         
-        for x in -20...20 {
-            for z in -20...20 {
-                for y in 0...3 {
+        for x in -5...5 {
+            for z in -5...5 {
+                for y in 0...1 {
                     let light = Nexus.shared().createEntity()
                     let transform = light.add(component: Transform())
                     
-                    transform.position = [Float(x) * 1, Float(y) * 0.5, Float(z) * 1]
+                    transform.position = [Float(x) * 2, Float(y) * 0.5, Float(z) * 2]
 
                     let lightInfo = light.add(component: Light(type: .point))
                     lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
@@ -411,6 +411,7 @@ extension Renderer {
         var lightsData = Array.init(repeating: LightData(), count: lights.count)
         for (index, light) in lights.enumerated() {
             light.build(into: &lightsData[index])
+//            DebugRendering.shared.gizmo(position: lightsData[index].position)
         }
         
         let lightCount = UInt(lightsData.count)
@@ -424,7 +425,12 @@ extension Renderer {
         lightsBufferCount = lightCount
     }
     
-    /// Light culling pass: get all the lights we can possibly see, and cull them per tile.
+    /**
+     Light culling pass
+     
+     Using a list of lights and the scene depth, divide the screen into tiles and determine which
+     tiles have which lights.
+     */
     func doLightCullingPass(commandBuffer: MTLCommandBuffer) {
         guard let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {
             fatalError("Unable to create compute encoder for light culling pass")
@@ -448,8 +454,12 @@ extension Renderer {
         
         computeEncoder.endEncoding()
     }
-    
-    /// Do the lighting pass: render all meshes and use mesh, culled lights and SSAO to create lighting result
+
+    /**
+     Lighting pass
+     
+     Render all meshes with textures. Opaque first, then transparent.
+     */
     func doLightingPass(commandBuffer: MTLCommandBuffer) {
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: lightingPassDescriptor) else {
             fatalError("Unable to create render encoder for lighting pass")
@@ -471,8 +481,8 @@ extension Renderer {
         renderEncoder.setFragmentBuffer(culledLightsBufferOpaque, offset: 0, index: 17)
         renderScene(onEncoder: renderEncoder, renderPass: .opaqueLighting)
 
-        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
-        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
+//        renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
+//        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
         
         
         DebugRendering.shared.render(renderEncoder: renderEncoder)
@@ -561,11 +571,9 @@ extension Renderer: MTKViewDelegate {
     /**
      1: only once do a render queue filling
      2: look into the light list building
-     
-     
-     
      */
     
+    /// Fill the render sets with meshes.
     func fillRenderSets() {
         cameraRenderSet.clear()
         

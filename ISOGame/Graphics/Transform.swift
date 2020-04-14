@@ -85,19 +85,7 @@ class Transform: Component {
         return _worldTransform
     }
     private var _worldTransform = matrix_identity_float4x4
-    private var worldMatrixDirty = true {
-        didSet {
-//            if worldMatrixDirty {
-//                // TODO: optimize after moving parent/children to Transform
-//                nexus!.parentChildrenMap[entityId!]?.forEach({ (id) in
-//                    if let entity = nexus!.get(entity: id), let t = entity.get(component: Transform.self) {
-//                        t.worldMatrixDirty = true
-//                    }
-//                })
-//            }
-        }
-    }
-    // 6.6
+    private var worldMatrixDirty = true
     
     /// World space right vector
     @inlinable

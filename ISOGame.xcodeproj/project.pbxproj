@@ -11,7 +11,7 @@
 		800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B423F9F6BB00B3FB7F /* Transform.swift */; };
 		800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B623F9F85000B3FB7F /* MeshSelector.swift */; };
 		800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B823F9F87D00B3FB7F /* MeshRenderer.swift */; };
-		800E6DD223F2093D00412CCE /* design.txt in Resources */ = {isa = PBXBuildFile; fileRef = 800E6DD123F2093D00412CCE /* design.txt */; };
+		800E6DD223F2093D00412CCE /* design.md in Resources */ = {isa = PBXBuildFile; fileRef = 800E6DD123F2093D00412CCE /* design.md */; };
 		8015C6B823D647B100DFF109 /* GroupRequirementsManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C69D23D647AF00DFF109 /* GroupRequirementsManaging.swift */; };
 		8015C6BB23D647B100DFF109 /* ManagedContiguousArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */; };
 		8015C6BC23D647B100DFF109 /* UnorderedSparseSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */; };
@@ -110,7 +110,7 @@
 		800604B423F9F6BB00B3FB7F /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		800604B623F9F85000B3FB7F /* MeshSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSelector.swift; sourceTree = "<group>"; };
 		800604B823F9F87D00B3FB7F /* MeshRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRenderer.swift; sourceTree = "<group>"; };
-		800E6DD123F2093D00412CCE /* design.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = design.txt; sourceTree = "<group>"; };
+		800E6DD123F2093D00412CCE /* design.md */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; path = design.md; sourceTree = "<group>"; };
 		8015C69D23D647AF00DFF109 /* GroupRequirementsManaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupRequirementsManaging.swift; sourceTree = "<group>"; };
 		8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedContiguousArray.swift; sourceTree = "<group>"; };
 		8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnorderedSparseSet.swift; sourceTree = "<group>"; };
@@ -262,7 +262,7 @@
 			isa = PBXGroup;
 			children = (
 				8099AAF823CE747300E03CE0 /* SceneObject.swift */,
-				800E6DD123F2093D00412CCE /* design.txt */,
+				800E6DD123F2093D00412CCE /* design.md */,
 			);
 			path = Docs;
 			sourceTree = "<group>";
@@ -569,7 +569,7 @@
 				80A4631423906E1B009435EB /* chest-roughness.png in Resources */,
 				80A4630723906C71009435EB /* cube.obj in Resources */,
 				80A4634F23A2C367009435EB /* garage_pmrem.ktx in Resources */,
-				800E6DD223F2093D00412CCE /* design.txt in Resources */,
+				800E6DD223F2093D00412CCE /* design.md in Resources */,
 				80A4634823A02211009435EB /* plastic_metallic.png in Resources */,
 				80A4635B23A2CC25009435EB /* grass_roughness.png in Resources */,
 				80A4632C23971380009435EB /* rusted_iron_normal.png in Resources */,

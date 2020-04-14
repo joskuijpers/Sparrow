@@ -11,7 +11,7 @@
 
 #import <simd/simd.h>
 
-#define MAX_LIGHTS_PER_TILE 256
+#define MAX_LIGHTS_PER_TILE 255
 #define LIGHT_CULLING_TILE_SIZE 16
 
 /// Model uniforms

@@ -319,5 +319,3 @@ kernel void lightculling(
     uint totalLightsTransparent = atomic_load_explicit(&lightIndexTransparent, metal::memory_order_relaxed);
     culledLightsTransparent[0] = min(totalLightsTransparent, (uint)MAX_LIGHTS_PER_TILE - 1);
 }
-
-// Source: ModernRenderer. Has some special iOS optimizations

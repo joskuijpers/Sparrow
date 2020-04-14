@@ -58,7 +58,7 @@ class Light: Component {
             data.color = color
             
             data.position = self.transform!.worldPosition
-            data.range = 1
+            data.range = 5
         }
         
         buildDataDirty = false
