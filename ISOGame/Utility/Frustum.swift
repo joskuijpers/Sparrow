@@ -56,14 +56,17 @@ struct Frustum {
     ///
     /// - Parameter bounds: The bounds of the AABB to intersect with.
     /// - Returns: outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
+    @inlinable
     func intersects(bounds: Bounds) -> FrustumCullResult {
+//        let radius = length(bounds.extents)
+//        return intersects(sphereAt: bounds.center, radius: radius)
         let center = bounds.center
         let extents = bounds.extents
         var result: FrustumCullResult = .inside
 
         for i in 0..<6 {
             let plane = planes[i]
-            
+
             let m = dot(center, plane.xyz)
             let n = dot(extents, abs(plane.xyz))
 
@@ -83,6 +86,7 @@ struct Frustum {
     /// - Parameter position: Sphere center position.
     /// - Parameter radius: Sphere radius.
     /// - Returns: Whether the sphere is outside or inside
+    @inlinable
     func intersects(sphereAt position: float3, radius: Float) -> FrustumCullResult {
         for i in 0..<6 {
             let plane = planes[i]
