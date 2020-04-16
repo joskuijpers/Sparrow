@@ -15,25 +15,5 @@ class MeshRenderer: Component {
     // receiveShadows: Bool
     
     /// Add renderables to render set
-    func renderQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
-        guard let mesh = get(component: MeshSelector.self)?.mesh,
-            let transform = self.transform else {
-            return
-        }
-        
-        let wt = transform.worldTransform
-        let bounds = mesh.bounds * wt
-//        DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
-        
-
-        if frustum.intersects(bounds: bounds) == .outside {
-            return
-        }
-        
-        // If shadow pass and does not cast shadows: skip
-        
-        
-        // if mesh.bounds inside frustum
-        mesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: wt)
-    }
+    
 }

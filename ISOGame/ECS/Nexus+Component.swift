@@ -43,8 +43,6 @@ extension Nexus {
             componentIdsByEntity[entityId] = Set<ComponentIdentifier>()
         }
         componentIdsByEntity[entityId]!.insert(componentId) //, at: componentId.hashValue)
-
-        component.onAddedToEntity(entity)
         
         update(groupMembership: entityId)
     }

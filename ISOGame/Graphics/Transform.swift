@@ -120,17 +120,3 @@ class Transform: Component {
     }
 }
 
-extension Component {
-    /// Utility for getting the object transform, if available
-    var transform: Transform? {
-        guard let id = entityId else { return nil }
-        return nexus?.get(component: Transform.identifier, for: id) as? Transform
-    }
-}
-
-extension Entity {
-    /// Utility for getting the object transform, if available
-    var transform: Transform? {
-        return nexus.get(component: Transform.identifier, for: identifier) as? Transform
-    }
-}

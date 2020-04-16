@@ -45,6 +45,8 @@ class Renderer: NSObject {
     
     let rotatingBallSystem: RotatingBallSystem
     let cameraSystem: CameraSystem
+    let meshRenderSystem: MeshRenderSystem
+    let lightSystem: LightSystem
     
     
     
@@ -139,7 +141,9 @@ class Renderer: NSObject {
         
         rotatingBallSystem = RotatingBallSystem(nexus: Nexus.shared())
         cameraSystem = CameraSystem(nexus: Nexus.shared())
-
+        meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
+        lightSystem = LightSystem(nexus: Nexus.shared())
+        
         scene = Scene(screenSize: metalView.drawableSize)
         
         
@@ -202,15 +206,16 @@ class Renderer: NSObject {
             let sphere = Nexus.shared().createEntity()
             let transform = sphere.add(component: Transform())
             transform.position = [Float(i / q - q/2) * 3, 0, Float(i % q - q/2) * 3]
-            
+
             if i % 2 == 0 {
                 sphere.add(component: MeshSelector(mesh: sphereMesh))
             } else {
                 sphere.add(component: MeshSelector(mesh: sphereMesh2))
             }
             sphere.add(component: MeshRenderer())
-            sphere.add(component: RotationSpeed(seed: i))
+//            sphere.add(component: RotationSpeed(seed: i))
         }
+        
         
         for x in -5...5 {
             for z in -5...5 {
@@ -410,25 +415,6 @@ extension Renderer {
         renderEncoder.endEncoding()
     }
     
-    /// Update the buffer containing a list of all lights
-    func updateLightsBuffer() {
-        var lightsData = Array.init(repeating: LightData(), count: lights.count)
-        for (index, light) in lights.enumerated() {
-            light.build(into: &lightsData[index])
-//            DebugRendering.shared.gizmo(position: lightsData[index].position)
-        }
-        
-        let lightCount = UInt(lightsData.count)
-        let neededSize = MemoryLayout<LightData>.stride * Int(lightCount)
-        if lightsBuffer != nil && lightsBuffer.allocatedSize >= neededSize {
-            lightsBuffer.contents().copyMemory(from: &lightsData, byteCount: neededSize)
-        } else {
-            lightsBuffer = Renderer.device.makeBuffer(bytes: &lightsData, length: neededSize, options: .storageModeShared)
-        }
-        
-        lightsBufferCount = lightCount
-    }
-    
     /**
      Light culling pass
      
@@ -537,10 +523,8 @@ extension Renderer: MTKViewDelegate {
         
         cameraSystem.onUpdate(deltaTime: deltaTime)
         rotatingBallSystem.onUpdate(deltaTime: deltaTime)
-        
-        
-        let camera = scene.camera!
-        camera.updateUniforms()
+        cameraSystem.updateCameras()
+        lightsBuffer = lightSystem.updateLightBuffer(buffer: lightsBuffer, lightsCount: &lightsBufferCount)
 
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
                 return
@@ -551,10 +535,7 @@ extension Renderer: MTKViewDelegate {
         
         // Render into depth first, used for culling and AO
         doDepthPrepass(commandBuffer: commandBuffer)
-        
-        // Update list of lights
-        updateLightsBuffer()
-        
+
         // Cull the lights
         doLightCullingPass(commandBuffer: commandBuffer)
         
@@ -581,16 +562,9 @@ extension Renderer: MTKViewDelegate {
         cameraRenderSet.clear()
         
         let camera = scene.camera!
-        let frustum = camera.frustum
+        let frustum = camera.frustum!
         
-        for (_, meshRenderer) in meshes {
-            // TODO: what render pass to use here?
-            meshRenderer.renderQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
-            
-            // Depth prepass: .opaque only
-            // Opaque pass: .opaque
-            // Transparent pass .transparent
-        }
+        meshRenderSystem.buildQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
     }
     
     /// Render the scene on given render encoder for given pass.
@@ -703,7 +677,132 @@ class CameraSystem {
             transform.rotate(float3(rotX, 0, 0))
         }
     }
+    
+    /// Update camera with new data
+    func updateCameras() {
+        for (transform, camera) in cameras {
+            // View matrix changes whenever position or orientation of the camera changes
+//            let translateMatrix = float4x4(translation: transform.position)
+//            let rotateMatrix = float4x4(transform.quaternion)
+            
+            // TODO if has parent, take parent WorldMatrix and multiply
+//            let newViewMatrix = rotateMatrix * translateMatrix
+            let newViewMatrix = transform.worldTransform.inverse
+            
+            if newViewMatrix != camera.viewMatrix {
+                camera.viewMatrix = newViewMatrix
+                camera.uniformsDirty = true
+            }
 
+            if camera.uniformsDirty {
+                camera.frustum = Frustum(viewProjectionMatrix: camera.projectionMatrix * camera.viewMatrix)
+                
+                updateCameraUniforms(camera: camera, transform: transform, uniforms: &camera.uniforms)
+                
+                camera.uniformsDirty = false
+            }
+        }
+    }
+    
+    /// Update uniform structure with camera data
+    func updateCameraUniforms(camera: Camera, transform: Transform, uniforms: inout CameraUniforms) {
+        uniforms.viewMatrix = camera.viewMatrix
+        uniforms.projectionMatrix = camera.projectionMatrix
+        uniforms.cameraWorldPosition = transform.worldPosition
+        
+        // Derived
+        uniforms.viewProjectionMatrix = uniforms.projectionMatrix * uniforms.viewMatrix
+        
+        uniforms.invProjectionMatrix = simd_inverse(uniforms.projectionMatrix)
+        uniforms.invViewProjectionMatrix = simd_inverse(uniforms.viewProjectionMatrix)
+        uniforms.invViewMatrix = simd_inverse(uniforms.viewMatrix)
+        
+        uniforms.physicalSize = [Float(camera.screenSize.width), Float(camera.screenSize.height)]
+        
+        // Inverse column
+        uniforms.invProjectionZ = [ uniforms.invProjectionMatrix.columns.2.z, uniforms.invProjectionMatrix.columns.2.w,
+                                    uniforms.invProjectionMatrix.columns.3.z, uniforms.invProjectionMatrix.columns.3.w ]
+        
+        let bias = -camera.near
+        let invScale = camera.far - camera.near
+        uniforms.invProjectionZNormalized = [uniforms.invProjectionZ.x + (uniforms.invProjectionZ.y * bias),
+                                             uniforms.invProjectionZ.y * invScale,
+                                             uniforms.invProjectionZ.z + (uniforms.invProjectionZ.w * bias),
+                                             uniforms.invProjectionZ.w * invScale]
+        
+    }
+
+}
+
+class LightSystem {
+    let lights: Group<Requires2<Transform, Light>>
+    
+    init(nexus: Nexus) {
+        lights =  nexus.group(requiresAll: Transform.self, Light.self)
+    }
+    
+    func updateLightBuffer(buffer: MTLBuffer!, lightsCount: inout UInt) -> MTLBuffer? {
+        var buffer = buffer
+        
+        lightsCount = UInt(lights.count)
+        
+        // Reallocate if needed
+        // TODO: proper sizing with spare-size (blocks), and down sizing. Maybe some ManagedMTLBuffer class?
+        let bufferSizeRequired = lights.count * MemoryLayout<LightData>.stride
+        if buffer == nil || buffer!.allocatedSize < bufferSizeRequired {
+            buffer = Renderer.device.makeBuffer(length: bufferSizeRequired, options: .storageModeShared)
+        }
+
+        for (index, (transform, light)) in lights.enumerated() {
+            let ptr = buffer!.contents().advanced(by: index * MemoryLayout<LightData>.stride)
+            let lightPtr = ptr.assumingMemoryBound(to: LightData.self)
+
+            switch (light.type) {
+            case .directional:
+                lightPtr.pointee.type = LightTypeDirectional
+                lightPtr.pointee.color = light.color
+                lightPtr.pointee.position = light.direction // TODO: replace direction with transform rotation
+                lightPtr.pointee.range = Float.infinity
+            case .point:
+                lightPtr.pointee.type = LightTypePoint
+                lightPtr.pointee.color = light.color
+                lightPtr.pointee.position = transform.worldPosition
+                lightPtr.pointee.range = 5
+            }
+        }
+        
+        return buffer
+    }
+}
+
+class MeshRenderSystem {
+    let meshes: Group<Requires3<Transform, MeshSelector, MeshRenderer>>
+    
+    init(nexus: Nexus) {
+        meshes =  nexus.group(requiresAll: Transform.self, MeshSelector.self, MeshRenderer.self)
+    }
+    
+    func buildQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
+        for (transform, selector, _) in meshes {
+            // Empty mesh: no rendering
+            guard let mesh = selector.mesh else {
+                continue
+            }
+            
+            let wt = transform.worldTransform
+            let bounds = mesh.bounds * wt
+//             DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
+            
+            if frustum.intersects(bounds: bounds) == .outside {
+                continue
+            }
+            
+            // If shadow pass and does not cast shadows: skip
+            
+            // if mesh.bounds inside frustum
+            mesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: wt)
+        }
+    }
 }
 
 

@@ -232,12 +232,12 @@ fragment float4 fragment_main(
     
     uint16_t numLights = culledLights[0];
 
-    /* DEBUGGING LIGHT CULLING
+#if 0 // Light cull debugging
     float4 c = getHeatmapColor(numLights, MAX_LIGHTS_PER_TILE);
     if(isBorder(uint2(in.position.xy), LIGHT_CULLING_TILE_SIZE))
         c.rgb = float3(0, 0, 1);
     return c;
-     */
+#endif
     
     for (uint16_t i = 0; i < numLights; ++i) {
         uint16_t lightIndex = culledLights[i + 1]; // 0 = num lights
@@ -254,9 +254,8 @@ fragment float4 fragment_main(
         } else if (light.type == LightTypePoint) {
             lightDirection = normalize(light.position - in.worldPosition);
             float dist = length(light.position - in.worldPosition);
-
-            float range = 10; // TODO!
-            half attenNum = (range > 0) ? saturate(1.0 - powr(dist / range, 4)) : 1;
+            
+            half attenNum = (light.range > 0) ? saturate(1.0 - powr(dist / light.range, 4)) : 1;
 
             attenuation = attenNum / (dist * dist);
         }
