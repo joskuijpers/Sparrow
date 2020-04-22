@@ -252,7 +252,7 @@ fileprivate extension Renderer {
     static func buildNoWriteDepthStencilState(device: MTLDevice) -> MTLDepthStencilState {
         let descriptor = MTLDepthStencilDescriptor()
         
-        descriptor.depthCompareFunction = .equal
+        descriptor.depthCompareFunction = .lessEqual // might want to use equal for opaque and lessEqual for translucent
         descriptor.isDepthWriteEnabled = false
         
         return device.makeDepthStencilState(descriptor: descriptor)!
