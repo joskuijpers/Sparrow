@@ -40,7 +40,6 @@
 		8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */; };
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
-		8086965E23B8DDA10007E75D /* box.gltf in Resources */ = {isa = PBXBuildFile; fileRef = 8086965D23B8DDA00007E75D /* box.gltf */; };
 		809258CF24464E5400D2025F /* Single.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809258CE24464E5400D2025F /* Single.swift */; };
 		8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAEE23BE127E00E03CE0 /* Bounds.swift */; };
 		8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF423BF7AB700E03CE0 /* Light.swift */; };
@@ -531,7 +530,6 @@
 				80A4634723A02211009435EB /* plastic_ao.png in Resources */,
 				80A4635723A2CC25009435EB /* grass_albedo.png in Resources */,
 				80A4634623A02211009435EB /* plastic_albedo.png in Resources */,
-				8086965E23B8DDA10007E75D /* box.gltf in Resources */,
 				80A4634A23A02211009435EB /* plastic_roughness.png in Resources */,
 				80A4634D23A02220009435EB /* plasticSphere.obj in Resources */,
 				80A4633B239EE6B9009435EB /* gold_albedo.png in Resources */,
