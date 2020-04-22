@@ -24,7 +24,7 @@ class Transform: Component {
     }
     
     /// Local rotation quaternion
-    var localRotation = simd_quatf() {
+    var localRotation = simd_quatf(angle: 0, axis: [0,1,0]) {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
@@ -89,7 +89,13 @@ class Transform: Component {
 //
 //
         
-        return modelMatrix
+        if let parent = self.parent {
+            _worldTransform = parent.localToWorldMatrix * modelMatrix
+        } else {
+            _worldTransform = modelMatrix
+        }
+        
+        return _worldTransform
     }
     private var _worldTransform = matrix_identity_float4x4
     private var worldMatrixDirty = true
@@ -179,10 +185,13 @@ class Transform: Component {
         - worldPositionStays: If true, the parent-relative position, scale and rotation are modified such that the object keeps the same world space position, rotation and scale as before.
      */
     func setParent(_ transform: Transform, worldPositionStays: Bool = true) {
-        assertionFailure()
+        
+        
+        parent = transform
     }
     
-    
+    var children: Set<EntityIdentifier> = []
+    unowned var parent: Transform!
     
     
     
@@ -190,4 +199,3 @@ class Transform: Component {
 
     
 }
-

@@ -197,6 +197,11 @@ class Renderer: NSObject {
 //        cube.add(component: MeshRenderer())
 //        // cube.add(behavior: HelloWorldComponent())
 //        Nexus.shared().addChild(cube, to: helmet)
+        
+        
+        let boxGroup = Nexus.shared().createEntity()
+        let boxTransform = boxGroup.add(component: Transform())
+        boxGroup.add(component: RotationSpeed(seed: 100))
 
         let sphereMesh = Mesh(name: "ironSphere.obj")
         let sphereMesh2 = Mesh(name: "grassSphere.obj")
@@ -214,6 +219,13 @@ class Renderer: NSObject {
             }
             sphere.add(component: MeshRenderer())
 //            sphere.add(component: RotationSpeed(seed: i))
+            
+            
+            if i > 510 && i < 520 {
+                transform.setParent(boxTransform)
+                
+                transform.position = [Float(i / q - q/2) * 3, 2, Float(i % q - q/2) * 3]
+            }
         }
         
         
@@ -620,7 +632,8 @@ class RotatingBallSystem {
     
     func onUpdate(deltaTime: Float) {
         for (transform, rotationSpeed) in entities {
-            transform.eulerAngles = transform.eulerAngles + float3(0, rotationSpeed.speed.degreesToRadians * deltaTime, 0)
+            let q = simd_quatf(angle: rotationSpeed.speed.degreesToRadians * deltaTime * 0.5, axis: [0, 1, 0])
+            transform.localRotation = transform.localRotation * q
         }
     }
 }
@@ -636,7 +649,7 @@ class CameraSystem {
     func onUpdate(deltaTime: Float) {
         for (transform, _) in cameras {
             var diff = float3.zero
-            let speed: Float = 5.0
+            let speed: Float = 10.0
             
             if Input.shared.getKey(.w) {
                 diff = diff + float3(0, 0, 1) * deltaTime * speed
