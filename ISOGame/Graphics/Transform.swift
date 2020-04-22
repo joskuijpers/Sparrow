@@ -15,48 +15,49 @@ import Foundation
  generated from the properties.
  */
 class Transform: Component {
-    // localPosition
     /// Local node position
-    var position: float3 = .zero {
+    var localPosition: float3 = .zero {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
-        }
-    }
-    
-    // localRotation
-    /// Local Euler rotation. Setting this overwrites the rotation quaternion
-    var rotation: float3 = .zero {
-        didSet {
-            // TODO: optimize to single matrix. Must be a simple way to go from euler to quaternion (5.4%)
-            let rotationMatrix = float4x4(rotation: rotation)
-            quaternion = simd_quatf(rotationMatrix)
         }
     }
     
     /// Local rotation quaternion
-    var quaternion = simd_quatf() {
+    var localRotation = simd_quatf() {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
         }
     }
     
-    // localScale
     /// Local scale
-    var scale: float3 = .one {
+    var localScale: float3 = .one {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
         }
     }
 
+    /// Local Euler rotation. Setting this overwrites the rotation quaternion
+    var eulerAngles: float3 {
+        set {
+            let rot = float4x4(rotation: newValue)
+            localRotation = simd_quatf(rot)
+        }
+        get {
+            fatalError("Not implemented: not possible to convert quaternion to euler angles")
+        }
+    }
+    
+    // MARK:- Transformation matrices
+    
     /// The model matrix containing current local position, rotation and scaling transformations
     var modelMatrix: float4x4 {
         if modelMatrixDirty {
-            let translateMatrix = float4x4(translation: position)
-            let rotateMatrix = float4x4(quaternion)
-            let scaleMatrix = float4x4(scaling: scale)
+            let translateMatrix = float4x4(translation: localPosition)
+            let rotateMatrix = float4x4(localRotation)
+            let scaleMatrix = float4x4(scaling: localScale)
             
             _modelMatrix = translateMatrix * rotateMatrix * scaleMatrix
             
@@ -69,54 +70,124 @@ class Transform: Component {
     private var _modelMatrix = matrix_identity_float4x4
     private var modelMatrixDirty = true
     
-    // localToWorldMatrix
-    /// World transform matrix containing current world position, rotation and scaling transformations to make model local space to world space
-    var worldTransform: float4x4 {
-        if worldMatrixDirty {
-//            if let parent = entity?.parent, let parentTransform = parent.transform {
-//                _worldTransform = parentTransform.worldTransform * modelMatrix
-//            } else {
-                _worldTransform = modelMatrix
-//            }
-            
-            worldMatrixDirty = false
-        }
+    /// Matrix that transforms a point from local space to world space.
+    var localToWorldMatrix: float4x4 {
+        // TODO
         
-        return _worldTransform
+//        if worldMatrixDirty {
+//        //            if let parent = entity?.parent, let parentTransform = parent.transform {
+//        //                _worldTransform = parentTransform.worldTransform * modelMatrix
+//        //            } else {
+//                        _worldTransform = modelMatrix
+//        //            }
+//
+//                    worldMatrixDirty = false
+//                }
+//
+//                return _worldTransform
+//
+//
+//
+        
+        return modelMatrix
     }
     private var _worldTransform = matrix_identity_float4x4
     private var worldMatrixDirty = true
     
-    /// World space right vector
+    /// Matrix that transforms a point from world space to local space.
+    var worldToLocalMatrix: float4x4 {
+        return localToWorldMatrix.inverse
+    }
+    
+    // MARK: - Directional vectors with rotations applied.
+    
+    /**
+     A normalized vector representing the red (right side) axis of the transform in world space.
+     
+     This vector has rotations applied. To get the right vector without rotations, use float3.right.
+     */
     @inlinable
     var right: float3 {
-        return normalize((worldTransform * float4(1, 0, 0, 1)).xyz)
+//        return normalize((localToWorldMatrix * float4(1, 0, 0, 1)).xyz)
+        return [forward.z, forward.y, -forward.x]
     }
     
-    /// World space forward vector
+    /**
+    A normalized vector representing the blue (forward) axis of the transform in world space.
+    
+    This vector has rotations applied. To get the forward vector without rotations, use float3.forward.
+    */
     @inlinable
     var forward: float3 {
-        return normalize((worldTransform * float4(0, 0, 1, 1)).xyz)
+//        return normalize((localToWorldMatrix * float4(0, 0, 1, 1)).xyz)
+        return normalize([sin(eulerAngles.y), 0, cos(eulerAngles.y)])
     }
     
-    /// World space up vector
+    /**
+    A normalized vector representing the green (upwards) axis of the transform in world space.
+    
+    This vector has rotations applied. To get the up vector without rotations, use float3.up.
+    */
     @inlinable
     var up: float3 {
-        return normalize((worldTransform * float4(0, 1, 0, 1)).xyz)
+        return normalize((localToWorldMatrix * float4(0, 1, 0, 1)).xyz)
+    }
+    
+    /// The world space position of the Transform.
+    @inlinable
+    var position: float3 {
+        get {
+            localToWorldMatrix.columns.3.xyz
+        }
+        set {
+            // TEMP: use parent localToWorldMatrix
+            let parentWM = matrix_float4x4.identity().inverse
+            
+            localPosition = (parentWM * float4(newValue, 1)).xyz
+        }
+    }
+    
+    /// A Quaternion that stores the rotation of the Transform in world space.
+    @inlinable
+    var rotation: simd_quatf {
+        // TODO: multiply with parent rotation if any
+        return localRotation
+    }
+    
+    // MARK: - Updating transform
+    
+    /**
+     Moves the transform in the direction and distance of `translation`.
+     
+     - Parameter translation: Offset
+     */
+    func translate(_ translation: float3) {
+        localPosition = localPosition + translation
+    }
+    
+    // TODO: translate(x,y,z)
+    // TODO: translate(float3, relativeTo: Transform)
+    
+    // TODO: rotate(axis:float3,angle:Float)
+    // TODO: rotate(xAngle,yAngle,zAngle)
+    // TODO: rotate(eulers:float3)
+    
+    /**
+    Set the parent of the transform.
+     - Parameters:
+        - transform: The parent Transform to use
+        - worldPositionStays: If true, the parent-relative position, scale and rotation are modified such that the object keeps the same world space position, rotation and scale as before.
+     */
+    func setParent(_ transform: Transform, worldPositionStays: Bool = true) {
+        assertionFailure()
     }
     
     
-    // TODO: turn into position, and make position into localPosition like unity
-    var worldPosition: float3 {
-        return (worldTransform * float4(position, 1)).xyz
-    }
     
-    func translate(_ d: float3) {
-        position = position + d
-    }
     
-    func rotate(_ d: float3) {
-        rotation = rotation + d
-    }
+    
+    // parent
+
+    
 }
 

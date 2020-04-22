@@ -168,8 +168,8 @@ class Renderer: NSObject {
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
-        t.position = [0, 5, 0]
-        t.rotation = [Float(40.0).degreesToRadians, 0, 0]
+        t.localPosition = [0, 5, 0]
+        t.eulerAngles = [Float(40.0).degreesToRadians, 0, 0]
         let cameraComp = camera.add(component: Camera())
         scene.camera = cameraComp
         
@@ -223,7 +223,7 @@ class Renderer: NSObject {
                     let light = Nexus.shared().createEntity()
                     let transform = light.add(component: Transform())
                     
-                    transform.position = [Float(x) * 2, Float(y) * 0.5, Float(z) * 2]
+                    transform.position = [Float(x) * 2, Float(y) * 0.5 + 1.5, Float(z) * 2]
 
                     let lightInfo = light.add(component: Light(type: .point))
                     lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
@@ -252,7 +252,7 @@ fileprivate extension Renderer {
     static func buildNoWriteDepthStencilState(device: MTLDevice) -> MTLDepthStencilState {
         let descriptor = MTLDepthStencilDescriptor()
         
-        descriptor.depthCompareFunction = .lessEqual
+        descriptor.depthCompareFunction = .equal
         descriptor.isDepthWriteEnabled = false
         
         return device.makeDepthStencilState(descriptor: descriptor)!
@@ -620,7 +620,7 @@ class RotatingBallSystem {
     
     func onUpdate(deltaTime: Float) {
         for (transform, rotationSpeed) in entities {
-            transform.rotation = transform.rotation + float3(0, rotationSpeed.speed.degreesToRadians * deltaTime, 0)
+            transform.eulerAngles = transform.eulerAngles + float3(0, rotationSpeed.speed.degreesToRadians * deltaTime, 0)
         }
     }
 }
@@ -665,7 +665,6 @@ class CameraSystem {
             if Input.shared.getKey(.rightArrow) {
                 rot = rot + deltaTime * Float(20).degreesToRadians
             }
-            transform.rotate(float3(0, rot, 0))
             
             var rotX: Float = 0
             if Input.shared.getKey(.upArrow) {
@@ -674,7 +673,11 @@ class CameraSystem {
             if Input.shared.getKey(.downArrow) {
                 rotX = rotX + deltaTime * Float(20).degreesToRadians
             }
-            transform.rotate(float3(rotX, 0, 0))
+
+            let qy = simd_quatf(angle: rot, axis: [0, 1, 0])
+            let qx = simd_quatf(angle: rotX, axis: [1, 0, 0])
+            
+            transform.localRotation = qy * transform.localRotation * qx
         }
     }
     
@@ -687,7 +690,7 @@ class CameraSystem {
             
             // TODO if has parent, take parent WorldMatrix and multiply
 //            let newViewMatrix = rotateMatrix * translateMatrix
-            let newViewMatrix = transform.worldTransform.inverse
+            let newViewMatrix = transform.worldToLocalMatrix
             
             if newViewMatrix != camera.viewMatrix {
                 camera.viewMatrix = newViewMatrix
@@ -708,7 +711,7 @@ class CameraSystem {
     func updateCameraUniforms(camera: Camera, transform: Transform, uniforms: inout CameraUniforms) {
         uniforms.viewMatrix = camera.viewMatrix
         uniforms.projectionMatrix = camera.projectionMatrix
-        uniforms.cameraWorldPosition = transform.worldPosition
+        uniforms.cameraWorldPosition = transform.position
         
         // Derived
         uniforms.viewProjectionMatrix = uniforms.projectionMatrix * uniforms.viewMatrix
@@ -766,7 +769,7 @@ class LightSystem {
             case .point:
                 lightPtr.pointee.type = LightTypePoint
                 lightPtr.pointee.color = light.color
-                lightPtr.pointee.position = transform.worldPosition
+                lightPtr.pointee.position = transform.position
                 lightPtr.pointee.range = 5
             }
         }
@@ -789,7 +792,7 @@ class MeshRenderSystem {
                 continue
             }
             
-            let wt = transform.worldTransform
+            let wt = transform.localToWorldMatrix
             let bounds = mesh.bounds * wt
 //             DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
             

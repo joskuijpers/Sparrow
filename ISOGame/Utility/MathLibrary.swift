@@ -185,6 +185,24 @@ extension float3x3 {
     }
 }
 
+// MARK:- float3 Utilities
+extension float3 {
+    @inlinable
+    var forward: float3 {
+        return float3(0, 0, 1)
+    }
+    
+    @inlinable
+    var up: float3 {
+        return float3(0, 1, 0)
+    }
+    
+    @inlinable
+    var right: float3 {
+        return float3(1, 0, 0)
+    }
+}
+
 // MARK:- float4
 extension float4 {
     @inlinable

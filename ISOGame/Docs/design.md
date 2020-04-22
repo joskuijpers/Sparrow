@@ -345,3 +345,61 @@ class World {
     destroyEntity(_ entity: Entity)
 }
 ```
+
+
+MeshRenderer: Renderer
+Renderer:
+    localToWorldMatrix (ro)
+    worldToLocalMatrix (ro)
+    
+    renderPriority
+    
+
+PhysicsShape (instead of colliders)
+    type = box, capsule, sphere, cylinder, plane, convex hull, mesh
+    size, center, orientation
+    physicsMaterial
+PhysicsBody
+    motionType : static, dynamic, kinematic
+    mass
+    linear damping
+    angular damping
+    initial linear/angular velocities
+    gravity factor
+    
+    in unity this is composed of:
+PhysicsCollider, PhysicsVelocity, PhysicsMass, PhysicsDamping, PhysicaGravityFactor, PhysicsCustomData
+
+
+// UNITY DOTS
+protocol ComponentSystem {
+    func onUpdate() -> Void
+}
+
+protocol JobComponentSystem {
+func onUpdate() -> Void -> scheduling of jobs,  Job().schedule()
+}
+
+struct TriggerJob: TriggerEventsJob -> TriggerEvent{a, b}
+
+Single<PhysicsSettings>
+    gravity float3
+    solverIterationCount
+    threadCountHint
+    simulationType
+
+# UNITY DOTS
+
+PhysicsCollider
+PhysicsMass
+PhysicsVelocity
+PhysicsDamping
+RenderBounds
+    center + extends (AABB)
+WorldRenderBounds
+    center + extends (aabb)
+LocalToWorld
+Rotation
+Translation
+RenderMesh
+    mesh
