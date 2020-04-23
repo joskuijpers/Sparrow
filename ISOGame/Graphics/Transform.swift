@@ -145,10 +145,19 @@ class Transform: Component {
     /// A Quaternion that stores the rotation of the Transform in world space.
     @inlinable
     var rotation: simd_quatf {
-        if let parent = parent {
-            return localRotation * parent.rotation
+        get {
+            if let parent = parent {
+                return localRotation * parent.rotation
+            }
+            return localRotation
         }
-        return localRotation
+        set {
+            if let parent = parent {
+                // TODO: this is possibly wrong or not what is expected
+                localRotation = parent.rotation.conjugate * newValue
+            }
+            localRotation = newValue
+        }
     }
     
     // MARK: - Updating transform
