@@ -24,7 +24,7 @@ class Transform: Component {
     }
     
     /// Local rotation quaternion
-    var localRotation = simd_quatf(angle: 0, axis: [0,1,0]) {
+    var localRotation = simd_quatf(ix: 0, iy: 0, iz: 0, r: 1) {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
