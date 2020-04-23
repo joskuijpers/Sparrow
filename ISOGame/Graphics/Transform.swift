@@ -103,7 +103,7 @@ class Transform: Component {
      */
     @inlinable
     var right: float3 {
-        return localRotation.act([1, 0, 0])
+        return rotation.act([1, 0, 0])
     }
     
     /**
@@ -113,7 +113,7 @@ class Transform: Component {
     */
     @inlinable
     var forward: float3 {
-        return localRotation.act([0, 0, 1])
+        return rotation.act([0, 0, 1])
     }
     
     /**
@@ -123,7 +123,7 @@ class Transform: Component {
     */
     @inlinable
     var up: float3 {
-        return localRotation.act([0, 1, 0])
+        return rotation.act([0, 1, 0])
     }
     
     /// The world space position of the Transform.
@@ -145,7 +145,9 @@ class Transform: Component {
     /// A Quaternion that stores the rotation of the Transform in world space.
     @inlinable
     var rotation: simd_quatf {
-        // TODO: multiply with parent rotation if any
+        if let parent = parent {
+            return localRotation * parent.rotation
+        }
         return localRotation
     }
     
