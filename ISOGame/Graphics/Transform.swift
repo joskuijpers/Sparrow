@@ -103,8 +103,7 @@ class Transform: Component {
      */
     @inlinable
     var right: float3 {
-//        return normalize((localToWorldMatrix * float4(1, 0, 0, 1)).xyz)
-        return [forward.z, forward.y, -forward.x]
+        return localRotation.act([1, 0, 0])
     }
     
     /**
@@ -114,8 +113,7 @@ class Transform: Component {
     */
     @inlinable
     var forward: float3 {
-//        return normalize((localToWorldMatrix * float4(0, 0, 1, 1)).xyz)
-        return normalize([sin(eulerAngles.y), 0, cos(eulerAngles.y)])
+        return localRotation.act([0, 0, 1])
     }
     
     /**
@@ -125,7 +123,7 @@ class Transform: Component {
     */
     @inlinable
     var up: float3 {
-        return normalize((localToWorldMatrix * float4(0, 1, 0, 1)).xyz)
+        return localRotation.act([0, 1, 0])
     }
     
     /// The world space position of the Transform.
@@ -135,10 +133,12 @@ class Transform: Component {
             localToWorldMatrix.columns.3.xyz
         }
         set {
-            // TEMP: use parent localToWorldMatrix
-            let parentWM = matrix_float4x4.identity().inverse
-            
-            localPosition = (parentWM * float4(newValue, 1)).xyz
+            if let parent = parent {
+                let parentWM = parent.worldToLocalMatrix
+                localPosition = (parentWM * float4(newValue, 1)).xyz
+            } else {
+                localPosition = newValue
+            }
         }
     }
     
