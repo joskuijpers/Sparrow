@@ -14,8 +14,8 @@ import Metal
  */
 class MeshRenderer: Component {
     
-    // castShadows: Bool
-    // receiveShadows: Bool
+    let castShadows: Bool = false
+    let receiveShadows: Bool = false
     
 //    localToWorldMatrix (ro) (Renderer)
 //    worldToLocalMatrix (ro) (Renderer)

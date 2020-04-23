@@ -97,7 +97,7 @@ extension Nexus {
     }
 
     @discardableResult
-    public final func removeAll(componentes entityId: EntityIdentifier) -> Bool {
+    public final func removeAll(components entityId: EntityIdentifier) -> Bool {
         guard let allComponents = get(components: entityId) else {
             return false
         }

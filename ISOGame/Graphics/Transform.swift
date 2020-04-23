@@ -39,7 +39,11 @@ class Transform: Component {
         }
     }
 
-    /// Local Euler rotation. Setting this overwrites the rotation quaternion
+    /**
+     Local Euler rotation. Setting this overwrites the rotation quaternion.
+     
+     It is not possible to get euler angles.
+     */
     var eulerAngles: float3 {
         set {
             let rot = float4x4(rotation: newValue)
@@ -72,28 +76,13 @@ class Transform: Component {
     
     /// Matrix that transforms a point from local space to world space.
     var localToWorldMatrix: float4x4 {
-        // TODO
-        
 //        if worldMatrixDirty {
-//        //            if let parent = entity?.parent, let parentTransform = parent.transform {
-//        //                _worldTransform = parentTransform.worldTransform * modelMatrix
-//        //            } else {
-//                        _worldTransform = modelMatrix
-//        //            }
-//
-//                    worldMatrixDirty = false
-//                }
-//
-//                return _worldTransform
-//
-//
-//
-        
         if let parent = self.parent {
             _worldTransform = parent.localToWorldMatrix * modelMatrix
         } else {
             _worldTransform = modelMatrix
         }
+//        }
         
         return _worldTransform
     }
@@ -178,24 +167,29 @@ class Transform: Component {
     // TODO: rotate(xAngle,yAngle,zAngle)
     // TODO: rotate(eulers:float3)
     
+    // MARK: - Scene transform hierarchy
+    
     /**
     Set the parent of the transform.
      - Parameters:
-        - transform: The parent Transform to use
+        - transform: The Transform to parent onto. If nil, the transform will move to root level without a parent.
         - worldPositionStays: If true, the parent-relative position, scale and rotation are modified such that the object keeps the same world space position, rotation and scale as before.
      */
-    func setParent(_ transform: Transform, worldPositionStays: Bool = true) {
-        
+    func setParent(_ transform: Transform?, worldPositionStays: Bool = true) {
+        // Remove from current parent
+        if let parent = parent, let index = parent.children.firstIndex(where: { $0 === self }) {
+            parent.children.remove(at: index)
+        }
         
         parent = transform
+        
+        if let newParent = transform {
+            newParent.children.append(self)
+        }
     }
     
-    var children: Set<EntityIdentifier> = []
-    unowned var parent: Transform!
-    
-    
-    
-    // parent
-
-    
+    /// List of child transforms. Unordered.
+    internal var children: [Transform] = []
+    /// Parent of this transform, if any.
+    internal weak var parent: Transform?
 }

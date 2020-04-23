@@ -60,7 +60,7 @@ extension Nexus {
             return false
         }
 
-        if removeAll(componentes: entityId) {
+        if removeAll(components: entityId) {
             update(groupMembership: entityId)
         }
 

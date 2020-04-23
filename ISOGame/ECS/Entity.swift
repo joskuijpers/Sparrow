@@ -89,7 +89,7 @@ extension Entity {
 
     /// Remove all components from this entity.
     public func removeAllComponents() {
-        nexus.removeAll(componentes: identifier)
+        nexus.removeAll(components: identifier)
     }
     
     @inlinable
