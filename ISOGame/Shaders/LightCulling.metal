@@ -10,6 +10,7 @@
 using namespace metal;
 #import "ShaderCommon.h"
 
+/// A frustum plane in view space. XYZ=normal, W=distance
 typedef float4 TileFrustumPlane;
 
 typedef struct {
@@ -25,6 +26,7 @@ typedef struct {
     inline float3 getMax() { return center + extents; }
 } AABB;
 
+/// A sphere. XYZ=center, W=radius.
 typedef float4 Sphere;
 
 /// Convert a point from clip to view space
