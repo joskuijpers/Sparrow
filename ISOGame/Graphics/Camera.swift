@@ -30,7 +30,7 @@ class Camera: Component {
     var near: Float = 0.1
     
     /// Far plane distance from camera.
-    var far: Float = 100
+    var far: Float = 10000
     
     internal var screenSize = CGSize.zero
     

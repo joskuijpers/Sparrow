@@ -25,7 +25,7 @@ class Mesh {
     
     init(name: String) {
         guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
-            fatalError("Model: \(name) not found")
+            fatalError("Model \(name) not found")
         }
         
         let allocator = MTKMeshBufferAllocator(device: Renderer.device)
@@ -76,7 +76,7 @@ class Mesh {
             set.add(.opaque) { item in
                 item.depth = depth
                 item.mesh = self
-                item.submeshIndex = uint8(index)
+                item.submeshIndex = uint16(index)
                 item.worldTransform = worldTransform
             }
         }
@@ -89,7 +89,7 @@ extension Mesh {
     /**
      Render the submesh at given index.
      */
-    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: uint8, worldTransform: float4x4) {
+    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: uint16, worldTransform: float4x4) {
         // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
         let submesh = submeshes[Int(submeshIndex)]
 

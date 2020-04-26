@@ -168,7 +168,7 @@ class Renderer: NSObject {
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
-        t.localPosition = [0, 5, 0]
+        t.localPosition = [0, 0, 0]
         t.eulerAngles = [Float(40.0).degreesToRadians, 0, 0]
         let cameraComp = camera.add(component: Camera())
         scene.camera = cameraComp
@@ -178,7 +178,7 @@ class Renderer: NSObject {
         skyLight.add(component: Transform())
         let light = skyLight.add(component: Light(type: .directional))
         light.direction = float3(0, -5, 10)
-        light.color = float3(0, 0, 0)
+        light.color = float3(1, 1, 1)
         
         
 //        let helmet = Nexus.shared().createEntity()
@@ -198,51 +198,58 @@ class Renderer: NSObject {
 //        // cube.add(behavior: HelloWorldComponent())
 //        Nexus.shared().addChild(cube, to: helmet)
         
-        
-        let boxGroup = Nexus.shared().createEntity()
-        let boxTransform = boxGroup.add(component: Transform())
-        boxGroup.add(component: RotationSpeed(seed: 100))
-
-        let sphereMesh = Mesh(name: "ironSphere.obj")
-        let sphereMesh2 = Mesh(name: "grassSphere.obj")
-        let c = 1000
-        let q = Int(sqrtf(Float(c)))
-        for i in 0...c {
-            let sphere = Nexus.shared().createEntity()
-            let transform = sphere.add(component: Transform())
-            transform.position = [Float(i / q - q/2) * 3, 0, Float(i % q - q/2) * 3]
-
-            if i % 2 == 0 {
-                sphere.add(component: MeshSelector(mesh: sphereMesh))
-            } else {
-                sphere.add(component: MeshSelector(mesh: sphereMesh2))
-            }
-            sphere.add(component: MeshRenderer())
-//            sphere.add(component: RotationSpeed(seed: i))
-            
-            
-            if i > 510 && i < 520 {
-                transform.setParent(boxTransform)
-                
-                transform.position = [Float(i / q - q/2) * 3, 2, Float(i % q - q/2) * 3]
-            }
-        }
+        let sponza = Nexus.shared().createEntity()
+        let sponzat = sponza.add(component: Transform())
+        sponzat.localScale = [0.01, 0.01, 0.01]
+        sponza.add(component: MeshSelector(mesh: Mesh(name: "sponza.obj")))
+        sponza.add(component: MeshRenderer())
         
         
-        for x in -5...5 {
-            for z in -5...5 {
-                for y in 0...1 {
-                    let light = Nexus.shared().createEntity()
-                    let transform = light.add(component: Transform())
-                    
-                    transform.position = [Float(x) * 2, Float(y) * 0.5 + 1.5, Float(z) * 2]
+//        let boxGroup = Nexus.shared().createEntity()
+//        let boxTransform = boxGroup.add(component: Transform())
+//        boxGroup.add(component: RotationSpeed(seed: 100))
+//
+//        let sphereMesh = Mesh(name: "ironSphere.obj")
+//        let sphereMesh2 = Mesh(name: "grassSphere.obj")
+////        let c = 1000
+//        let c = 10
+//        let q = Int(sqrtf(Float(c)))
+//        for i in 0...c {
+//            let sphere = Nexus.shared().createEntity()
+//            let transform = sphere.add(component: Transform())
+//            transform.position = [Float(i / q - q/2) * 3, 0, Float(i % q - q/2) * 3]
+//
+//            if i % 2 == 0 {
+//                sphere.add(component: MeshSelector(mesh: sphereMesh))
+//            } else {
+//                sphere.add(component: MeshSelector(mesh: sphereMesh2))
+//            }
+//            sphere.add(component: MeshRenderer())
+////            sphere.add(component: RotationSpeed(seed: i))
+//
+//
+//            if i > 510 && i < 520 {
+//                transform.setParent(boxTransform)
+//
+//                transform.position = [Float(i / q - q/2) * 3, 2, Float(i % q - q/2) * 3]
+//            }
+//        }
 
-                    let lightInfo = light.add(component: Light(type: .point))
-                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
-                    lightInfo.intensity = 1
-                }
-            }
-        }
+//
+//        for x in -5...5 {
+//            for z in -5...5 {
+//                for y in 0...1 {
+//                    let light = Nexus.shared().createEntity()
+//                    let transform = light.add(component: Transform())
+//
+//                    transform.position = [Float(x) * 2, Float(y) * 0.5 + 1.5, Float(z) * 2]
+//
+//                    let lightInfo = light.add(component: Light(type: .point))
+//                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
+//                    lightInfo.intensity = 1
+//                }
+//            }
+//        }
     }
     
 }
@@ -579,21 +586,12 @@ extension Renderer: MTKViewDelegate {
         meshRenderSystem.buildQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
     }
     
-    /// Render the scene on given render encoder for given pass.
-    /// The pass determines the shaders used
+    /**
+     Render the scene on given render encoder for given pass.
+     
+     - Parameter renderPass: Pass determines the render queue to use.
+    */
     func renderScene(onEncoder renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
-        
-        // TODO:
-        // build render set once for opaque and transparent objects
-        // for depth pass: render opaque objects
-        // for lightingOpaque: render opaque
-        // for lightingTransparent: render transparent
-        // for shadows: get separate render set and draw opaque only
-        
-        if renderPass == .transparentLighting {
-            return
-        }
-        
         var cameraUniforms = scene.camera!.uniforms
         renderEncoder.setVertexBytes(&cameraUniforms,
                                      length: MemoryLayout<CameraUniforms>.stride,
@@ -803,22 +801,26 @@ class MeshRenderSystem {
         meshes =  nexus.group(requiresAll: Transform.self, MeshSelector.self, MeshRenderer.self)
     }
     
+    /**
+     Build the render queue by filling it with the appropriate meshes
+     */
     func buildQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
-        for (transform, selector, _) in meshes {
-            // Empty mesh: no rendering
+        for (transform, selector, renderer) in meshes {
             guard let mesh = selector.mesh else {
                 continue
             }
             
-            let wt = transform.localToWorldMatrix
-            let bounds = mesh.bounds * wt
-//             DebugRendering.shared.box(min: bounds.minBounds, max: bounds.maxBounds, color: [1,0,0])
-            
-            if frustum.intersects(bounds: bounds) == .outside {
+            if renderPass == .shadows && !renderer.castShadows {
                 continue
             }
             
-            // If shadow pass and does not cast shadows: skip
+            let wt = transform.localToWorldMatrix
+//            let bounds = mesh.bounds * wt
+//            print(bounds)
+            
+//            if frustum.intersects(bounds: bounds) == .outside {
+//                continue
+//            }
             
             // if mesh.bounds inside frustum
             mesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: wt)

@@ -93,7 +93,7 @@ class RenderSet {
 struct RenderQueueItem {
     var depth: Float = 0
     unowned var mesh: Mesh!
-    var submeshIndex: uint8 = 0
+    var submeshIndex: uint16 = 0
     var worldTransform: float4x4 = .identity()
 
     // numTextures
