@@ -170,8 +170,8 @@ fragment float4 fragment_main(
                               constant LightData *lights [[ buffer(16) ]],
                               constant uint16_t *culledLights [[ buffer(17) ]]
                               ) {
-    constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear, address::repeat);
-    constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear, address::repeat);
+    constexpr sampler linearSampler(filter::linear, mip_filter::linear, address::repeat);
+    constexpr sampler mipSampler(filter::linear, mip_filter::linear, address::repeat);
     
     float3 albedo;
     float alpha = 1;
@@ -225,13 +225,13 @@ fragment float4 fragment_main(
     
 //    return float4(metallic, metallic, metallic, 1);
 //    return float4(roughness, roughness, roughness, 1);
+//    return float4(normal, 1);
+//    return float4(ambientOcclusion, ambientOcclusion, ambientOcclusion, 1);
 
     
-    // DEF TODO:
-    // read shading model identifier
-    // 0 = default
-    // 1 = SSS
-    // ...
+    
+    
+    
     
     //https://seblagarde.wordpress.com/2012/01/08/pi-or-not-to-pi-in-game-lighting-equation/
     //https://learnopengl.com/PBR/Lighting

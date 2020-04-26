@@ -30,6 +30,7 @@ class Submesh {
         self.mtkSubmesh = mtkSubmesh
         
         print("Loading submesh \(mdlSubmesh.name)")
+//        let bounds = Bounds(minBounds: mdlMesh.boundingBox.minBounds, maxBounds: mdlMesh.boundingBox.maxBounds)
         
         textures = Textures(material: mdlSubmesh.material)
         pipelineState = Submesh.makePipelineState(textures: textures)
