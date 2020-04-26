@@ -28,10 +28,7 @@ typedef struct {
     inline float3 getMax() { return center + extents; }
 } AABB;
 
-typedef struct {
-    float3 center;
-    float radius;
-} Sphere;
+typedef float4 Sphere;
 
 /// Convert a point from clip to view space
 inline float4 clipToView(float4 clip, constant CameraUniforms &cameraUniforms) {
@@ -100,7 +97,7 @@ TileFrustum computeTileFrustum(
 }
 
 bool sphereInsidePlane(Sphere sphere, TileFrustumPlane plane) {
-    return dot(plane.normal, sphere.center) - plane.dist < -sphere.radius;
+    return dot(plane.normal, sphere.xyz) - plane.dist < -sphere.w;
 }
 
 bool sphereInsideFrustum(Sphere sphere, TileFrustum frustum, float zNear, float zFar) {
@@ -117,7 +114,7 @@ bool sphereInsideFrustum(Sphere sphere, TileFrustum frustum, float zNear, float 
 //    }
     
     // Unrolling is better
-    result = ((sphere.center.z + sphere.radius < zNear || sphere.center.z - sphere.radius > zFar) ? false : result);
+    result = ((sphere.z + sphere.w < zNear || sphere.z - sphere.w > zFar) ? false : result);
     result = ((sphereInsidePlane(sphere, frustum.planes[0])) ? false : result);
     result = ((sphereInsidePlane(sphere, frustum.planes[1])) ? false : result);
     result = ((sphereInsidePlane(sphere, frustum.planes[2])) ? false : result);
@@ -273,7 +270,7 @@ kernel void lightculling(
         switch (lightData.type) {
             case LightTypePoint: {
                 float4 vsPosition = cameraUniforms.viewMatrix * float4(lightData.position, 1);
-                Sphere sphere = { vsPosition.xyz, lightData.range };
+                Sphere sphere = float4(vsPosition.xyz, lightData.range);
                 
                 if (sphereInsideFrustum(sphere, frustum, nearClipVS, maxDepthVS)) {
                     // Fetch next position in the tile light list
