@@ -608,7 +608,7 @@ extension Renderer: MTKViewDelegate {
             renderQueue = cameraRenderSet.translucent
         }
         
-        for item in renderQueue {
+        for item in renderQueue.allItems() {
             item.mesh.render(renderEncoder: renderEncoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
         }
     }

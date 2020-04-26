@@ -9,6 +9,16 @@
 import Foundation
 import Metal
 
+/// The mesh render mode.
+enum RenderMode {
+    /// Opaque. Pixels always show.
+    case opaque
+    /// Alpha testing. Pixels either show or do not show.
+    case cutOut
+    /// Translucency, also named alpha blending. Pixels can have partial alpha.
+    case translucent
+}
+
 /**
  Renders meshes inserted by MeshSelector.
  */
@@ -21,7 +31,4 @@ class MeshRenderer: Component {
 //    worldToLocalMatrix (ro) (Renderer)
     // bounds
     // enabled (Renderer)
-    
-    /// Add renderables to render set
-    
 }

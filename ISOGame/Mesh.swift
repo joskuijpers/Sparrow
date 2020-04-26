@@ -73,10 +73,12 @@ class Mesh {
         for (index, _) in submeshes.enumerated() {
             // TODO: depending on submesh render mode, put in opaque or translucent
             
-//            set.opaque.add(depth: depth, mesh: self, submeshIndex: uint8(index), worldTransform: worldTransform)
-            var item = set.acquire()
-            item.set(depth: depth, mesh: self, submeshIndex: uint8(index), worldTransform: worldTransform)
-            set.add(item)
+            set.add(.opaque) { item in
+                item.depth = depth
+                item.mesh = self
+                item.submeshIndex = uint8(index)
+                item.worldTransform = worldTransform
+            }
         }
     }
 }
