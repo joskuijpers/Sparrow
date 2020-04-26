@@ -40,6 +40,7 @@ struct VertexOut {
 /// Vertex attributes for a depth-only pass
 struct VertexDepthOnlyOut {
     float4 position [[ position ]];
+    float2 uv;
 };
 
 /// Lighting calculation input,
@@ -120,14 +121,24 @@ vertex VertexDepthOnlyOut vertex_main_depth(
     VertexDepthOnlyOut out;
     
     out.position = cameraUniforms.viewProjectionMatrix * uniforms.modelMatrix * in.position;
-    
-//    out.uv = in.uv;
+    out.uv = in.uv;
     
     return out;
 }
 
+fragment void fragment_main_depth(VertexDepthOnlyOut in [[ stage_in ]],
+                            texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]]) {
+    if (hasAlbedoTexture) {
+        constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
+        float alpha = albedoTexture.sample(linearSampler, in.uv).a;
+        if (alpha < 0.1) {
+            discard_fragment();
+        }
+    }
+}
 
 
+#if 0
 // Checks if a pixel is on the border of a tile.
 static bool isBorder(uint2 xy, uint tileSize)
 {
@@ -136,7 +147,7 @@ static bool isBorder(uint2 xy, uint tileSize)
     return ((pixel_in_tile_x == 0)
             || (pixel_in_tile_y == 0));
 }
-
+#endif
 
 
 
@@ -163,10 +174,17 @@ fragment float4 fragment_main(
     constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
     
     float3 albedo;
+    float alpha = 1;
     if (hasAlbedoTexture) {
-        albedo = albedoTexture.sample(linearSampler, in.uv).rgb;
+        float4 s = albedoTexture.sample(linearSampler, in.uv);
+        albedo = s.rgb;
+        alpha = s.a;
     } else {
         albedo = material.albedo;
+    }
+    
+    if (alpha < 0.1) {
+        discard_fragment();
     }
     
     float3 normalValue;
@@ -292,7 +310,11 @@ fragment float4 fragment_main(
     float3 ambient = float3(0.01) * albedo * ambientOcclusion;
     float3 color = ambient + lighting + emissiveColor;
     
-    return float4(color, 1.0);
+    if (alpha < 0.1) {
+        discard_fragment();
+    }
+    
+    return float4(color, alpha);
 }
 
 

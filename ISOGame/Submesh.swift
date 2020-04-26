@@ -29,9 +29,11 @@ class Submesh {
     init(mdlSubmesh: MDLSubmesh, mtkSubmesh: MTKSubmesh) {
         self.mtkSubmesh = mtkSubmesh
         
+        print("Loading submesh \(mdlSubmesh.name)")
+        
         textures = Textures(material: mdlSubmesh.material)
         pipelineState = Submesh.makePipelineState(textures: textures)
-        depthPipelineState = Submesh.makeDepthPipelineState()
+        depthPipelineState = Submesh.makeDepthPipelineState(textures: textures)
         material = Material(material: mdlSubmesh.material)
     }
 }
@@ -62,6 +64,13 @@ private extension Submesh {
         pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Mesh.vertexDescriptor)
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba16Float
+        pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
+//        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
+//        pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+//        pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+
+        
+        
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         pipelineDescriptor.sampleCount = Renderer.sampleCount
         
@@ -75,24 +84,25 @@ private extension Submesh {
         return pipelineState
     }
     
-    static func makeDepthPipelineState() -> MTLRenderPipelineState {
+    static func makeDepthPipelineState(textures: Textures) -> MTLRenderPipelineState {
         let library = Renderer.library
         
         let vertexFunction = library?.makeFunction(name: "vertex_main_depth")
         
         // TODO: if alpha testing
-//        let functionConstants = makeFunctionConstants(textures: textures)
-//        let fragmentFunction: MTLFunction?
-//        do {
-//            fragmentFunction = try library?.makeFunction(name: "fragment_main_depth", constantValues: functionConstants)
-//        } catch {
-//            print(functionConstants)
-//            fatalError("No Metal function exists")
-//        }
+        let functionConstants = makeFunctionConstants(textures: textures)
+        let fragmentFunction: MTLFunction?
+        do {
+            fragmentFunction = try library?.makeFunction(name: "fragment_main_depth", constantValues: functionConstants)
+        } catch {
+            print(functionConstants)
+            fatalError("No Metal function exists")
+        }
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = nil//fragmentFunction
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+//        pipelineDescriptor.fragmentFunction = nil//fragmentFunction
         
         pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Mesh.vertexDescriptor)
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float

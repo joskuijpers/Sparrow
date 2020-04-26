@@ -399,9 +399,6 @@ fileprivate extension Renderer {
         depthPassDescriptor.depthAttachment.texture = depthTexture
         lightingPassDescriptor.depthAttachment.texture = depthTexture
         lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
-        
-        
-        
 
         // Update the buffer
         threadgroupCount.width  = (depthTexture.width  + threadgroupSize.width -  1) / threadgroupSize.width;

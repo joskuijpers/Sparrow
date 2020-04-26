@@ -29,20 +29,6 @@ vertex SimpleTexVertexOut FSQuadVertexShader(uint vid [[vertex_id]])
     return out;
 }
 
-
-
-// Checks if a pixel is on the border of a tile.
-static bool isBorder(uint2 xy, uint tileSize)
-{
-    uint pixel_in_tile_x = (uint)floor((float)xy.x) % tileSize;
-    uint pixel_in_tile_y = (uint)floor((float)xy.y) % tileSize;
-    return ((pixel_in_tile_x == 0)
-            | (pixel_in_tile_y == 0)
-            | (pixel_in_tile_x == tileSize-1)
-            | (pixel_in_tile_y == tileSize-1));
-}
-
-
 /// Resolves the HDR lighting into the final drawable. Applies tone mapping and gamma correction.
 fragment half4 resolveShader(
                               SimpleTexVertexOut in [[ stage_in ]],
