@@ -10,10 +10,7 @@
 using namespace metal;
 #import "ShaderCommon.h"
 
-typedef struct {
-    float3 normal;
-    float dist;
-} TileFrustumPlane;
+typedef float4 TileFrustumPlane;
 
 typedef struct {
     TileFrustumPlane planes[4];
@@ -56,10 +53,10 @@ TileFrustumPlane computeFrustumPlane(float3 p0, float3 p1, float3 p2) {
     float3 v0 = p1 - p0;
     float3 v2 = p2 - p0;
     
-    plane.normal = normalize(cross(v0, v2));
+    plane.xyz = normalize(cross(v0, v2));
     
     // Distance to the origin
-    plane.dist = dot(plane.normal, p0);
+    plane.w = dot(plane.xyz, p0);
     
     return plane;
 }
@@ -97,7 +94,7 @@ TileFrustum computeTileFrustum(
 }
 
 bool sphereInsidePlane(Sphere sphere, TileFrustumPlane plane) {
-    return dot(plane.normal, sphere.xyz) - plane.dist < -sphere.w;
+    return dot(plane.xyz, sphere.xyz) - plane.w < -sphere.w;
 }
 
 bool sphereInsideFrustum(Sphere sphere, TileFrustum frustum, float zNear, float zFar) {
@@ -252,7 +249,7 @@ kernel void lightculling(
     float nearClipVS = clipToView(float4(0, 0, 0, 1), cameraUniforms).z;
     
     // Clipping plane for minimum depth value.
-    TileFrustumPlane minPlane = { float3(0, 0, 1), minDepthVS };
+    TileFrustumPlane minPlane = float4(0, 0, 1, minDepthVS);
     
     TileFrustum frustum = computeTileFrustum(cameraUniforms, groupId);
     
