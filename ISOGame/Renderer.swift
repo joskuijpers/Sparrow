@@ -168,17 +168,17 @@ class Renderer: NSObject {
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
-        t.localPosition = [0, 0, 0]
-        t.eulerAngles = [Float(40.0).degreesToRadians, 0, 0]
+        t.localPosition = [-12.5, 1.4, -0.5]
+        t.eulerAngles = [0, Float(90.0).degreesToRadians, 0]
         let cameraComp = camera.add(component: Camera())
         scene.camera = cameraComp
         
         
-        let skyLight = Nexus.shared().createEntity()
-        skyLight.add(component: Transform())
-        let light = skyLight.add(component: Light(type: .directional))
-        light.direction = float3(0, -5, 10)
-        light.color = float3(1, 1, 1)
+    //        let skyLight = Nexus.shared().createEntity()
+    //        skyLight.add(component: Transform())
+    //        let light = skyLight.add(component: Light(type: .directional))
+    //        light.direction = float3(0, -5, 10)
+    //        light.color = float3(1, 1, 1)
         
         
 //        let helmet = Nexus.shared().createEntity()
@@ -235,21 +235,21 @@ class Renderer: NSObject {
 //            }
 //        }
 
-//
-//        for x in -5...5 {
-//            for z in -5...5 {
-//                for y in 0...1 {
-//                    let light = Nexus.shared().createEntity()
-//                    let transform = light.add(component: Transform())
-//
-//                    transform.position = [Float(x) * 2, Float(y) * 0.5 + 1.5, Float(z) * 2]
-//
-//                    let lightInfo = light.add(component: Light(type: .point))
-//                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
-//                    lightInfo.intensity = 1
-//                }
-//            }
-//        }
+
+        for x in -5...5 {
+            for z in -5...5 {
+                for y in 0...1 {
+                    let light = Nexus.shared().createEntity()
+                    let transform = light.add(component: Transform())
+
+                    transform.position = [Float(x) * 2, Float(y) * 3 - 1.5, Float(z) * 2]
+
+                    let lightInfo = light.add(component: Light(type: .point))
+                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
+                    lightInfo.intensity = 1
+                }
+            }
+        }
     }
     
 }

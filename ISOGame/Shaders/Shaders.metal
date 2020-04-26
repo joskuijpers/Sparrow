@@ -170,15 +170,19 @@ fragment float4 fragment_main(
                               constant LightData *lights [[ buffer(16) ]],
                               constant uint16_t *culledLights [[ buffer(17) ]]
                               ) {
-    constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear);
-    constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear);
+    constexpr sampler linearSampler(mip_filter::linear, mag_filter::linear, min_filter::linear, address::repeat);
+    constexpr sampler mipSampler(min_filter::linear, mag_filter::linear, mip_filter::linear, address::repeat);
     
     float3 albedo;
     float alpha = 1;
     if (hasAlbedoTexture) {
-        float4 s = albedoTexture.sample(linearSampler, in.uv);
-        albedo = s.rgb;
-        alpha = s.a;
+        float4 sample = albedoTexture.sample(linearSampler, in.uv);
+        albedo = sample.rgb;
+        alpha = sample.a;
+        
+        if (alpha < 0.1) {
+            discard_fragment();
+        }
     } else {
         albedo = material.albedo;
     }
@@ -186,7 +190,7 @@ fragment float4 fragment_main(
     if (alpha < 0.1) {
         discard_fragment();
     }
-    
+        
     float3 normalValue;
     if (hasNormalTexture) {
         normalValue = normalTexture.sample(linearSampler, in.uv).rgb * 2.0 - 1.0;
@@ -218,6 +222,10 @@ fragment float4 fragment_main(
     }
     
     float3 emissiveColor = material.emission;
+    
+//    return float4(metallic, metallic, metallic, 1);
+//    return float4(roughness, roughness, roughness, 1);
+
     
     // DEF TODO:
     // read shading model identifier
@@ -309,10 +317,6 @@ fragment float4 fragment_main(
     // Create an improvised Ambient term
     float3 ambient = float3(0.01) * albedo * ambientOcclusion;
     float3 color = ambient + lighting + emissiveColor;
-    
-    if (alpha < 0.1) {
-        discard_fragment();
-    }
     
     return float4(color, alpha);
 }
