@@ -403,3 +403,16 @@ Rotation
 Translation
 RenderMesh
     mesh
+
+
+
+
+//// SPONZA NEXT STEPS
+- Frustum cull also over submeshes
+- Fix metallic
+- Fix roughness
+- Try MSAA
+- Submesh sorting
+- Proper alphatest/alphablend function constants with material as input
+- Proper alphatest depth pipeline
+- Debug modes for metallic/normal/albedo/roughness/ao/culling
