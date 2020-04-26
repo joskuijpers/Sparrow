@@ -602,10 +602,14 @@ extension Renderer: MTKViewDelegate {
                                        length: MemoryLayout<CameraUniforms>.stride,
                                        index: Int(BufferIndexCameraUniforms.rawValue))
         
-        var renderQueue = cameraRenderSet.opaque
-        if renderPass == .opaqueLighting || renderPass == .depthPrePass {
-        } else if renderPass == .transparentLighting {
+        var renderQueue: RenderQueue!
+        switch renderPass {
+        case .opaqueLighting, .depthPrePass:
+            renderQueue = cameraRenderSet.opaque
+        case .transparentLighting:
             renderQueue = cameraRenderSet.translucent
+        default:
+            fatalError("Cannot render scene for render pass \(renderPass)")
         }
         
         for item in renderQueue.allItems() {
