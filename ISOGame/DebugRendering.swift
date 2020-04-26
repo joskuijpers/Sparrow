@@ -91,6 +91,10 @@ public class DebugRendering {
     
     /// Render all debug lines that were generated this frame
     internal func render(renderEncoder: MTLRenderCommandEncoder) {
+        if vertices.count == 0 {
+            return
+        }
+        
         if pipelineState == nil {
             makePipelineState()
         }
