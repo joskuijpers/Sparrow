@@ -222,7 +222,7 @@
 		8099AAF423BF7AB700E03CE0 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
 		8099AAF623CCF60100E03CE0 /* RenderQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderQueue.swift; sourceTree = "<group>"; };
 		8099AAF823CE747300E03CE0 /* SceneObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneObject.swift; sourceTree = "<group>"; };
-		80A462C6238F0FB6009435EB /* ISOGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ISOGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		80A462C6238F0FB6009435EB /* SparrowEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SparrowEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A462C9238F0FB6009435EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80A462CB238F0FB6009435EB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		80A462CD238F0FB9009435EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -513,7 +513,7 @@
 		80A462BD238F0FB6009435EB = {
 			isa = PBXGroup;
 			children = (
-				80A462C8238F0FB6009435EB /* ISOGame */,
+				80A462C8238F0FB6009435EB /* SparrowEngine */,
 				80A462C7238F0FB6009435EB /* Products */,
 				8086963423B8D8BC0007E75D /* Frameworks */,
 			);
@@ -522,12 +522,12 @@
 		80A462C7238F0FB6009435EB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80A462C6238F0FB6009435EB /* ISOGame.app */,
+				80A462C6238F0FB6009435EB /* SparrowEngine.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		80A462C8238F0FB6009435EB /* ISOGame */ = {
+		80A462C8238F0FB6009435EB /* SparrowEngine */ = {
 			isa = PBXGroup;
 			children = (
 				80A462DD238F10D7009435EB /* App */,
@@ -550,7 +550,7 @@
 				80438C1E2405DEB800099034 /* AppInfo */,
 				800E6DD323F2096E00412CCE /* Docs */,
 			);
-			path = ISOGame;
+			path = SparrowEngine;
 			sourceTree = "<group>";
 		};
 		80A462DD238F10D7009435EB /* App */ = {
@@ -703,9 +703,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		80A462C5238F0FB6009435EB /* ISOGame */ = {
+		80A462C5238F0FB6009435EB /* SparrowEngine */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "ISOGame" */;
+			buildConfigurationList = 80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "SparrowEngine" */;
 			buildPhases = (
 				80A462C2238F0FB6009435EB /* Sources */,
 				80A462C3238F0FB6009435EB /* Frameworks */,
@@ -715,11 +715,11 @@
 			);
 			dependencies = (
 			);
-			name = ISOGame;
+			name = SparrowEngine;
 			packageProductDependencies = (
 			);
 			productName = ISOGame;
-			productReference = 80A462C6238F0FB6009435EB /* ISOGame.app */;
+			productReference = 80A462C6238F0FB6009435EB /* SparrowEngine.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -750,7 +750,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				80A462C5238F0FB6009435EB /* ISOGame */,
+				80A462C5238F0FB6009435EB /* SparrowEngine */,
 			);
 		};
 /* End PBXProject section */
@@ -1076,20 +1076,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = ISOGame/ISOGame.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SparrowEngine/SparrowEngine.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 95XB3LMP34;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = ISOGame/Info.plist;
+				INFOPLIST_FILE = SparrowEngine/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.ISOGame;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.SparrowEngine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = ISOGame/Shaders/ShaderCommon.h;
+				SWIFT_OBJC_BRIDGING_HEADER = SparrowEngine/Shaders/ShaderCommon.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -1098,20 +1098,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = ISOGame/ISOGame.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SparrowEngine/SparrowEngine.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 95XB3LMP34;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = ISOGame/Info.plist;
+				INFOPLIST_FILE = SparrowEngine/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.ISOGame;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.SparrowEngine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = ISOGame/Shaders/ShaderCommon.h;
+				SWIFT_OBJC_BRIDGING_HEADER = SparrowEngine/Shaders/ShaderCommon.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -1128,7 +1128,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "ISOGame" */ = {
+		80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "SparrowEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80A462D7238F0FB9009435EB /* Debug */,

@@ -4,20 +4,20 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>SparrowECS.xcscheme_^#shared#^_</key>
+		<key>SparrowEngine-Optimized.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>5</integer>
+		</dict>
+		<key>SparrowEngine.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>809258D92446523000D2025F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>809258E22446523000D2025F</key>
+		<key>80A462C5238F0FB6009435EB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
