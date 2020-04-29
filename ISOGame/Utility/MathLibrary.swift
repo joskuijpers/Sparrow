@@ -223,3 +223,12 @@ extension float4 {
         self = [Float(d.x), Float(d.y), Float(d.z), Float(d.w)]
     }
 }
+
+// MARK:- Quaternion
+//extension simd_quatf {
+//    /// Creates a rotation with the specified forward and upwards directions.
+//    https://docs.unity3d.com/ScriptReference/Quaternion.LookRotation.html
+//    init(lookRotation forward: float3) {
+//        
+//    }
+//}

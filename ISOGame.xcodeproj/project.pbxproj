@@ -177,6 +177,7 @@
 		80A6F8AA2455DF9B00FE8CCF /* Lion_Normal.tga in Resources */ = {isa = PBXBuildFile; fileRef = 80A6F85D2455DF9A00FE8CCF /* Lion_Normal.tga */; };
 		80A6F8AB2455DF9B00FE8CCF /* Sponza_Floor_roughness.tga in Resources */ = {isa = PBXBuildFile; fileRef = 80A6F85E2455DF9A00FE8CCF /* Sponza_Floor_roughness.tga */; };
 		80A6F8AC2455DF9B00FE8CCF /* VaseHanging_normal.tga in Resources */ = {isa = PBXBuildFile; fileRef = 80A6F85F2455DF9A00FE8CCF /* VaseHanging_normal.tga */; };
+		80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A6F8AD2456174400FE8CCF /* Depth.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -357,6 +358,7 @@
 		80A6F85D2455DF9A00FE8CCF /* Lion_Normal.tga */ = {isa = PBXFileReference; lastKnownFileType = file; name = Lion_Normal.tga; path = SPONZA/Lion_Normal.tga; sourceTree = "<group>"; };
 		80A6F85E2455DF9A00FE8CCF /* Sponza_Floor_roughness.tga */ = {isa = PBXFileReference; lastKnownFileType = file; name = Sponza_Floor_roughness.tga; path = SPONZA/Sponza_Floor_roughness.tga; sourceTree = "<group>"; };
 		80A6F85F2455DF9A00FE8CCF /* VaseHanging_normal.tga */ = {isa = PBXFileReference; lastKnownFileType = file; name = VaseHanging_normal.tga; path = SPONZA/VaseHanging_normal.tga; sourceTree = "<group>"; };
+		80A6F8AD2456174400FE8CCF /* Depth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Depth.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -492,6 +494,7 @@
 				8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */,
 				80A462F7238F23AC009435EB /* ShaderCommon.h */,
 				80A462EC238F14AC009435EB /* Shaders.metal */,
+				80A6F8AD2456174400FE8CCF /* Depth.metal */,
 				8064AF60242960CC0089FE11 /* Resolve.metal */,
 				8064AF5B2427A9610089FE11 /* LightCulling.metal */,
 			);
@@ -911,6 +914,7 @@
 				808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */,
 				8015C6B823D647B100DFF109 /* GroupRequirementsManaging.swift in Sources */,
 				8015C6BD23D647B100DFF109 /* Entity.swift in Sources */,
+				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
 				8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */,
 				80A462E7238F126A009435EB /* Mesh.swift in Sources */,
 				8015C6C023D647B100DFF109 /* GroupTraitSet.swift in Sources */,

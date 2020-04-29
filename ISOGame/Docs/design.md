@@ -408,11 +408,80 @@ RenderMesh
 
 
 //// SPONZA NEXT STEPS
-- Frustum cull also over submeshes
-- Fix metallic
-- Fix roughness
+- Frustum cull also over submeshes -> Find bounds by iterating over vertices
+- Fix PBR math
 - Try MSAA
 - Submesh sorting
-- Proper alphatest/alphablend function constants with material as input
+- Proper alphatest/alphablend function constants with material as input -> TODO, finding info
 - Proper alphatest depth pipeline
 - Debug modes for metallic/normal/albedo/roughness/ao/culling
+- Do not keep re-creating the pipeline state for the same setups. It is better to keep the least amount of states
+
+
+
+Mesh {
+    name
+    [vertexBuffers]
+    [submeshes]
+    bounds -> is bounds of all vertices
+}
+
+Submesh {
+    indexBuffer
+    name
+    bounds -> is bounds of all vertices pointed to by index buffer
+}
+
+
+// API
+struct Material {
+    name -> string = ""
+    albedo -> float = (1,1,1)
+    metalness -> float = 0
+    roughness -> float = 0
+    emission -> float3 = (0,0,0)
+    
+    albedoTexture -> MTLTexture?
+    metalnessRoughnessAOTexture -> MTLTexture?
+    emissionTexture -> MTLTexture?
+    
+    ambientOcclusionScale -> float = 1
+    transparency -> float = 0
+    isDoubleSided -> boolean = false
+    cullMode -> CullMode(back front) = back
+    writesToDepthBuffer = true
+    shader -> Shader
+}
+-> gpuData (ShaderTextures, MaterialShaderData) (system? getter?)
+submesh.setMaterial
+encode/decode
+
+
+// Shader: any float values needed on GPU
+MaterialShaderData {
+    albedo
+    metallic
+    roughness
+    emission
+    ambientOcclusionScale
+    transparency
+}
+
+
+
+
+struct Shader {
+    id: UInt
+    vertexFunction -> MTLFunction
+    fragmentFunction -> MTLFunction
+    
+    encode: write function names
+    decode: load functions from default lib
+}
+
+class ShaderCache {
+    [shaders] -> id, never remove an item.
+    
+    depthOnlyOpaque
+    depthOnlyAlphaTest
+}

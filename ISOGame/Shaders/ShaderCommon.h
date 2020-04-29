@@ -72,7 +72,6 @@ typedef enum {
 /// Material definition
 typedef struct {
     vector_float3 albedo;
-    float shininess;
     float metallic;
     float roughness;
     vector_float3 emission;
