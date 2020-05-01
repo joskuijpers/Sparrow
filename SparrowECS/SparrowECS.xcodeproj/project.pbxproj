@@ -20,13 +20,6 @@
 			remoteGlobalIDString = 809258D92446523000D2025F;
 			remoteInfo = SparrowECS;
 		};
-		80A6F8B4245A19EC00FE8CCF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 80A6F8B0245A19EC00FE8CCF /* SparrowEngine.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 80A462C6238F0FB6009435EB;
-			remoteInfo = SparrowEngine;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -36,7 +29,6 @@
 		809258E32446523000D2025F /* SparrowECSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SparrowECSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		809258E82446523000D2025F /* SparrowECSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparrowECSTests.swift; sourceTree = "<group>"; };
 		809258EA2446523000D2025F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		80A6F8B0245A19EC00FE8CCF /* SparrowEngine.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SparrowEngine.xcodeproj; path = ../SparrowEngine/SparrowEngine.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +53,6 @@
 		809258D02446523000D2025F = {
 			isa = PBXGroup;
 			children = (
-				80A6F8B0245A19EC00FE8CCF /* SparrowEngine.xcodeproj */,
 				809258DC2446523000D2025F /* SparrowECS */,
 				809258E72446523000D2025F /* SparrowECSTests */,
 				809258DB2446523000D2025F /* Products */,
@@ -93,14 +84,6 @@
 				809258EA2446523000D2025F /* Info.plist */,
 			);
 			path = SparrowECSTests;
-			sourceTree = "<group>";
-		};
-		80A6F8B1245A19EC00FE8CCF /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				80A6F8B5245A19EC00FE8CCF /* SparrowEngine.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,12 +165,6 @@
 			mainGroup = 809258D02446523000D2025F;
 			productRefGroup = 809258DB2446523000D2025F /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 80A6F8B1245A19EC00FE8CCF /* Products */;
-					ProjectRef = 80A6F8B0245A19EC00FE8CCF /* SparrowEngine.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				809258D92446523000D2025F /* SparrowECS */,
@@ -195,16 +172,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		80A6F8B5245A19EC00FE8CCF /* SparrowEngine.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = SparrowEngine.app;
-			remoteRef = 80A6F8B4245A19EC00FE8CCF /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		809258D82446523000D2025F /* Resources */ = {
@@ -389,6 +356,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.SparrowECS;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -413,6 +381,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.SparrowECS;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
