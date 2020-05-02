@@ -30,6 +30,7 @@
 		80E216C0245C1F0600269C56 /* libassimpd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E216AF245C1F0600269C56 /* libassimpd.a */; };
 		80E216C1245C1F0600269C56 /* libzlibstaticd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E216B0245C1F0600269C56 /* libzlibstaticd.a */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
+		80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C5245C4FA000269C56 /* SAMaterial.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -157,6 +158,7 @@
 		80E216B0245C1F0600269C56 /* libzlibstaticd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libzlibstaticd.a; sourceTree = "<group>"; };
 		80E216B1245C1F0600269C56 /* shims.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shims.h; sourceTree = "<group>"; };
 		80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPlusPlusLinkage.cpp; sourceTree = "<group>"; };
+		80E216C5245C4FA000269C56 /* SAMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAMaterial.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +201,7 @@
 		8086960323B8D2B20007E75D /* SparrowSceneConverter */ = {
 			isa = PBXGroup;
 			children = (
+				80E216C4245C4F8400269C56 /* SparrowAsset */,
 				8086960423B8D2B20007E75D /* main.swift */,
 				80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */,
 				80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */,
@@ -392,6 +395,14 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
+		80E216C4245C4F8400269C56 /* SparrowAsset */ = {
+			isa = PBXGroup;
+			children = (
+				80E216C5245C4FA000269C56 /* SAMaterial.swift */,
+			);
+			path = SparrowAsset;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -469,6 +480,7 @@
 				80E216B3245C1F0600269C56 /* AiMatKey.swift in Sources */,
 				80E216BA245C1F0600269C56 /* AiLight.swift in Sources */,
 				80E216BB245C1F0600269C56 /* AiNode.swift in Sources */,
+				80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */,
 				8086960523B8D2B20007E75D /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

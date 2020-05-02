@@ -12,8 +12,11 @@ d 1.000000
 illum 4
 metallic 0.500000
 roughness 0.100000
-map_tangentSpaceNormal rusted_iron_normal.png
-map_Kd rusted_iron_albedo.png
-map_roughness rusted_iron_roughness.png
-map_metallic rusted_iron_metallic.png
 map_ao rusted_iron_ao.png
+map_Ka rusted_iron_metallic.png
+map_Kd rusted_iron_albedo.png
+map_Kn rusted_iron_normal.png
+map_metallic rusted_iron_metallic.png
+map_Ns rusted_iron_roughness.png
+map_roughness rusted_iron_roughness.png
+map_tangentSpaceNormal rusted_iron_normal.png
