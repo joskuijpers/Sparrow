@@ -9,6 +9,12 @@
 import Foundation
 import simd
 
+enum SAAlphaMode {
+    case opaque
+    case mask
+    case blend
+}
+
 /// A material.
 struct SAMaterial {
     var name: String
@@ -17,24 +23,27 @@ struct SAMaterial {
     var normals: SAMaterialProperty
     var metalnessRoughnessOcclusion: SAMaterialProperty
     var emissive: SAMaterialProperty
+//
+//    @property (nonatomic, assign) simd_float4 baseColorFactor;
+//    @property (nonatomic, assign) float metalnessFactor;
+//    @property (nonatomic, assign) float roughnessFactor;
+//    @property (nonatomic, assign) float normalTextureScale;
+//    @property (nonatomic, assign) float occlusionStrength;
+//    @property (nonatomic, assign) simd_float3 emissiveFactor;
+
+//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable baseColorTexture;
+//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable metallicRoughnessTexture;
+//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable normalTexture;
+//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable emissiveTexture;
+//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable occlusionTexture;
     
-    var blendMode: Int
-    var alphaMode: Int
+    var alphaMode: SAAlphaMode
+    var alphaCutoff: Float
 }
 
 /// A material property
 enum SAMaterialProperty {
-    case Texture(URL)
+    case Texture(Int)
     case Color(SIMD4<Float>)
     case None
-}
-
-extension SAMaterialProperty: CustomStringConvertible {
-    var description: String {
-        switch self {
-        case .Texture(let url): return "\(url.path)"
-        case .Color(let value): return "\(value)"
-        case .None: return "none"
-        }
-    }
 }

@@ -12,137 +12,17 @@ import CoreGraphics
 import ImageIO
 import Metal
 
-class Converter {
-    let aiScene: AiScene
-    let sourceUrl: URL
-    let destUrl: URL
-    let destUrlFolder: URL
-    
-    init(url: URL) throws {
-        sourceUrl = url
-
-        aiScene = try AiScene(file: sourceUrl.path,
-                              flags: [.removeRedundantMaterials, .genSmoothNormals])
-        
-        // Create new asset URL (hacky)
-        let filename = sourceUrl.lastPathComponent
-        
-        destUrl = sourceUrl
-            .deletingLastPathComponent()
-            .appendingPathComponent("sa", isDirectory: true)
-            .appendingPathComponent(filename, isDirectory: false)
-            .deletingPathExtension()
-            .appendingPathExtension("sa")
-        destUrlFolder = destUrl.deletingLastPathComponent()
-
-        // Create destination folder
-        try FileManager.default.createDirectory(at: destUrlFolder, withIntermediateDirectories: true, attributes: nil)
-        
-        print("FROM\n\t\(sourceUrl.path)\nTO\n\t\(destUrl.path)")
-        print(destUrlFolder.path)
-    }
-
-    /// Create a normalized SA material with proper image channels
-    func createMaterial(aiMaterial: AiMaterial) -> SAMaterial {
-        let name = aiMaterial.name ?? "material"
-        
-        // Albedo and alpha
-        let albedoTexture = createAlbedoTexture(aiMaterial: aiMaterial)
-        
-        // Create a color version
-        let albedoColor = aiMaterial.getMaterialColor(.COLOR_DIFFUSE) ?? SIMD4<Float>(0, 0, 0, 1)
-        let opacity = (aiMaterial.getMaterialFloatArray(.OPACITY) ?? [1.0]).first ?? 1.0
-        let albedoMultiplier = SIMD4<Float>(1, 1, 1, opacity)
-        
-        let albedo = createMaterialProperty(texture: albedoTexture, color: albedoColor * albedoMultiplier)
-
-        // Normal map
-        let normalMap = aiMaterial.getMaterialTexture(texType: .normals, texIndex: 0) ?? aiMaterial.getMaterialTexture(texType: .height, texIndex: 0)
-        let normals = createMaterialProperty(texture: normalMap, color: nil)
-        
-        // Metalness, roughness and AO
-        let mro = createMaterialProperty(texture: createMetalnessRoughnessAO(aiMaterial: aiMaterial), color: SIMD4<Float>(0, 0, 0, 0))
-
-        // Emissive
-        let emissiveTextureIn = aiMaterial.getMaterialTexture(texType: .emissive, texIndex: 0) ?? aiMaterial.getMaterialTexture(texType: .emissionColor, texIndex: 0)
-        let emissiveTexture = copyTexture(input: emissiveTextureIn, numChannels: 3)
-        let emissive: SAMaterialProperty = createMaterialProperty(texture: emissiveTexture, color: SIMD4<Float>(0, 0, 0, 0))
-        
-        return SAMaterial(name: name, albedo: albedo, normals: normals, metalnessRoughnessOcclusion: mro, emissive: emissive, blendMode: 0, alphaMode: 0)
-    }
-
-    /// Create a material property
-    func createMaterialProperty(texture: URL?, color: SIMD4<Float>?) -> SAMaterialProperty {
-        if let url = texture {
-            return SAMaterialProperty.Texture(url)
-        } else if let color = color {
-            return SAMaterialProperty.Color(color)
-        } else {
-            return SAMaterialProperty.None
-        }
-    }
-
-    func createMaterialProperty(texture: String?, color: SIMD4<Float>?) -> SAMaterialProperty {
-        if let texture = texture {
-            return createMaterialProperty(texture: URL(fileURLWithPath: texture, relativeTo: destUrl), color: color)
-        } else {
-            let texture: URL? = nil
-            return createMaterialProperty(texture: texture, color: color)
-        }
-    }
-    
-    func createAlbedoTexture(aiMaterial: AiMaterial) -> URL? {
-        let albedoPath = aiMaterial.getMaterialTexture(texType: .baseColor, texIndex: 0) ?? aiMaterial.getMaterialTexture(texType: .diffuse, texIndex: 0)
-        let opacityPath = aiMaterial.getMaterialTexture(texType: .opacity, texIndex: 0)
-        
-        if opacityPath != nil || albedoPath != nil {
-            if opacityPath == nil {
-                // Copy the whole albedo texture
-                return copyTexture(input: albedoPath, numChannels: 4)
-            } else {
-                print("[texture] Create new albedo texture with opacity")
-                return copyTexture(input: albedoPath, numChannels: 4)
-            }
-        } else {
-            return nil
-        }
-    }
-    
-    func createMetalnessRoughnessAO(aiMaterial: AiMaterial) -> URL? {
-        let inMetalness = aiMaterial.getMaterialTexture(texType: .metalness, texIndex: 0) ?? aiMaterial.getMaterialTexture(texType: .ambient, texIndex: 0)
-        let inRoughness = aiMaterial.getMaterialTexture(texType: .diffuseRoughness, texIndex: 0) ?? aiMaterial.getMaterialTexture(texType: .shininess, texIndex: 0)
-        let inAO = aiMaterial.getMaterialTexture(texType: .ambientOcclusion, texIndex: 0)
-        
-        print("[texture] Metalness \(inMetalness)")
-        print("[texture] Roughness \(inRoughness)")
-        print("[texture] AO \(inAO)")
-        
-        return copyTexture(input: inMetalness, numChannels: 4)
-//        return URL(fileURLWithPath: "mrao.tga", relativeTo: destUrl)
-    }
-    
-    func copyTexture(input: String?, numChannels: UInt) -> URL? {
-        guard let input = input else {
-            return nil
-        }
-        
-        let inputUrl = URL(fileURLWithPath: input, relativeTo: sourceUrl)
-        let outputUrl = URL(fileURLWithPath: input, relativeTo: destUrlFolder).deletingPathExtension().appendingPathExtension("png")
-        
-        print("[texture] Copy \(inputUrl.path) keeping \(numChannels) channels")
-        
-        let texture = Texture(url: inputUrl)
-
-        print("Image size: \(texture.size)")
-        print("Has alpha: \(texture.hasAlpha)")
-            
-        texture.write(url: outputUrl)
-        
-        print(texture.color(x: 10, y: 10))
-        
-        return outputUrl
-    }
-}
+/*
+ 
+ Reading GTLF: https://github.com/warrenm/GLTFKit
+ Reading OBJ: self-made
+ 
+ Writing SA: self-made -> In engine / SparrowAsset framework
+ Reading SA: self-made -> In engine / SparrowAsset framework
+ 
+ Converter: In this program
+ 
+ */
 
 /// Texture class with functionality for loading, saving, channel overwriting
 class Texture {
@@ -243,10 +123,10 @@ class Texture {
 
 let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/ironSphere.obj")
 let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj")
+let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj")
 
-let converter = try Converter(url: url2)
 
-print("")
-for material in converter.aiScene.materials {
-    print(converter.createMaterial(aiMaterial: material))
-}
+let importer = OBJImporter(url: url2)
+let asset = try? importer.generate()
+
+print("\(String(describing: asset))")

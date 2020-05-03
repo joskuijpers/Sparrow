@@ -9,6 +9,4 @@
 #ifndef SparrowSceneConverter_Bridging_Header_h
 #define SparrowSceneConverter_Bridging_Header_h
 
-#import "shims.h"
-
 #endif /* SparrowSceneConverter_Bridging_Header_h */
