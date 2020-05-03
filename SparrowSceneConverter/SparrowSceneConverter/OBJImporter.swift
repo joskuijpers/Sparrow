@@ -79,6 +79,7 @@ class StructuredTextParser {
     let identifierSet = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_"))
     let textSet = CharacterSet.alphanumerics.union(.punctuationCharacters)
     let floatSet = CharacterSet.decimalDigits.union(CharacterSet(charactersIn: "."))
+    let whitespaceNewlineSet = CharacterSet.whitespacesAndNewlines
     
     init(input: String) {
         self.input = input.unicodeScalars
@@ -99,7 +100,7 @@ class StructuredTextParser {
         var newIndex = index
         var newOffset = offset
 
-        while identifierSet.contains(input[newIndex]) {
+        while newIndex < input.endIndex, identifierSet.contains(input[newIndex]) {
             newIndex = input.index(after: newIndex)
             newOffset += 1
         }
@@ -173,6 +174,13 @@ class StructuredTextParser {
         skipNewlines()
     }
     
+    func skipWhitespaceAndNewlines() {
+        while index < input.endIndex, whitespaceNewlineSet.contains(input[index]) {
+            index = input.index(after: index)
+            offset += 1
+        }
+    }
+    
     /// Skip newlines
     func skipNewlines() {
         while index < input.endIndex, input[index] == "\n" {
@@ -214,6 +222,44 @@ class StructuredTextParser {
         return float3(parseFloat1(), parseFloat1(), parseFloat1())
     }
     
+    
+    /// Find location for offset
+    func offsetToLocation(_ search: Int) -> SourceLocation {
+        var line = 0
+        var column = 0
+        var index = input.startIndex
+        var offset = 0
+        
+        while index < input.endIndex {
+            if offset == search {
+                return SourceLocation(line: line, column: column)
+            }
+            
+            if input[index] == "\n" {
+                line += 1
+                column = 0
+            } else {
+                column += 1
+            }
+            
+            index = input.index(after: index)
+            offset += 1
+        }
+        
+        return SourceLocation(line: -1, column: -1)
+    }
+    
+    struct SourceLocation: CustomStringConvertible {
+        let line: Int
+        let column: Int
+        
+        var description: String {
+            if line == -1 && column == -1 {
+                return "?:?"
+            }
+            return "\(line + 1):\(column + 1)"
+        }
+    }
 }
 
 class ObjParser: StructuredTextParser {
@@ -243,7 +289,9 @@ class ObjParser: StructuredTextParser {
         while match("#") {
             skipLine()
         }
-
+        
+        skipWhitespaceAndNewlines()
+        
         let action = identifier()
         
         switch action {
@@ -294,6 +342,8 @@ class MtlParser: StructuredTextParser {
             lib.materials.append(mat)
         }
         
+        print("Found \(lib.materials.count) materials")
+        
         return lib
     }
     
@@ -305,7 +355,7 @@ class MtlParser: StructuredTextParser {
         }
 
         // Whitespace can precede an identifier
-        skipWhitespace()
+        skipWhitespaceAndNewlines()
         
         let action = identifier()
         
@@ -352,9 +402,10 @@ class MtlParser: StructuredTextParser {
             currentMaterial?.emissiveTexture = texture()
         case "map_d":
             currentMaterial?.alphaTexture = texture()
-            
+        case .none:
+            print("Could not read action at \(offsetToLocation(offset))")
         default:
-            print("Unhandled action: \(action) \(offset)")
+            print("Unhandled action: \(action!) at \(offsetToLocation(offset))")
             skipLine()
         }
         
