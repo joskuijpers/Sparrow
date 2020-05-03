@@ -9,5 +9,6 @@
 import Foundation
 
 struct SATexture {
-    var uri: String
+    let uri: URL
+//    var uri: String
 }

@@ -13,6 +13,7 @@ class OBJImporter {
     let url: URL
     var objFile: ObjFile?
     var mtlFile: MtlFile?
+    private var asset: SAAsset!
     
     init(url: URL) {
         guard url.pathExtension == "obj" else {
@@ -38,43 +39,134 @@ class OBJImporter {
     
     /// Build asset from values in memory
     private func buildAsset() -> SAAsset {
-        print("Build asset from \(String(describing: objFile)) \(String(describing: mtlFile))")
-        
-        return SAAsset(generator: "SparrowSceneConverter", origin: url.path, version: 1)
-    }
-    
-    
-    func x() {
+        let obj = objFile!
+        let mtl = mtlFile!
+        asset = SAAsset(generator: "SparrowSceneConverter", origin: url.path, version: 1)
         
         // Build index buffer
         struct VertexBufferItem: Hashable {
-            let vertex: float3
+            let position: float3
             let normal: float3
-            let tangent: float3
-            let bitangent: float3
+//            let tangent: float3 = float3(0, 1, 0)
+//            let bitangent: float3 = float3(0, 1, 0)
             let uv: float2
-            
-            
         }
         
-        var min = float3(Float.infinity, Float.infinity, Float.infinity)
-        var max = float3(-Float.infinity, -Float.infinity, -Float.infinity)
+        var meshMin = float3(Float.infinity, Float.infinity, Float.infinity)
+        var meshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
         
         var vertexBuffer: [VertexBufferItem] = []
-        var indexBuffer: [Int] = []
+        var indexBuffer: [UInt32] = [] // Optimization: depend index size on mesh size
+        var submeshes: [SASubmesh] = []
         
         // For each submesh
-            // indexBuffer = []
+        for (submeshIndex, submesh) in obj.submeshes.enumerated() {
+            var submeshMin = float3(Float.infinity, Float.infinity, Float.infinity)
+            var submeshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
+            
+            var indexBufferStart = indexBuffer.count
         
-            // For each face
-                // For each vertex
+            for face in submesh.faces {
+                for vertex in face.vertices {
                     // Add full vertex to vertex list
+                    let fVertex = VertexBufferItem(position: obj.positions[vertex.position - 1],
+                                                   normal: obj.normals[vertex.normal - 1],
+                                                   uv: obj.texCoords[vertex.texCoord - 1])
+                    vertexBuffer.append(fVertex)
+                    
                     // Add index to index buffer
+                    indexBuffer.append(UInt32(vertexBuffer.count - 1))
+                    
+                    // Update bounds of submesh
+                    submeshMin = min(submeshMin, fVertex.position)
+                    submeshMax = max(submeshMax, fVertex.position)
+                }
+            }
         
             // Create material
-            // put index buffer with submesh + name + material
-        // put vertex buffer with mesh
+            var material: Int?
+            if let materialName = submesh.material, let mat = mtl.materials.first(where: { $0.name == materialName }) {
+                var albedo = SAMaterialProperty.None
+                if let texture = mat.albedoTexture {
+                    albedo = SAMaterialProperty.Texture(addTexture(texture))
+                } else {
+                    albedo = SAMaterialProperty.Color(float4(mat.albedoColor, mat.alpha))
+                }
+                
+                var normals = SAMaterialProperty.None
+                if let texture = mat.normalTexture {
+                    normals = SAMaterialProperty.Texture(addTexture(texture))
+                }
+                
+                var emissive = SAMaterialProperty.None
+                if let texture = mat.emissiveTexture {
+                    emissive = SAMaterialProperty.Texture(addTexture(texture))
+                } else {
+                    emissive = SAMaterialProperty.Color(float4(mat.emissiveColor, 1))
+                }
+                
+                var rma = SAMaterialProperty.None
+                
+                let m = SAMaterial(name: mat.name,
+                                   albedo: albedo,
+                                   normals: normals,
+                                   roughnessMetalnessOcclusion: rma,
+                                   emissive: emissive,
+                                   alphaMode: .opaque,
+                                   alphaCutoff: 0.5)
+                material = addMaterial(m)
+            } else {
+                material = -1
+            }
+            
+            // Put index buffer with submesh + name + material + bounds.
+            let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBufferStart * MemoryLayout<UInt32>.stride, length: (indexBuffer.count - indexBufferStart) * MemoryLayout<UInt32>.stride))
+            
+            let submesh = SASubmesh(indices: bufferView, material: material!, min: submeshMin, max: submeshMax)
+            submeshes.append(submesh)
+            
+            // Update bounds of mesh using bounds of submesh
+            meshMin = min(meshMin, submeshMin)
+            meshMax = max(meshMax, submeshMax)
+        }
         
+        let dataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count + MemoryLayout<UInt32>.stride * indexBuffer.count
+        print("BUFFER SIZES \(vertexBuffer.count) \(indexBuffer.count) total data size \(dataSize)")
+        
+        let vertexDataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count
+        
+        // Create a buffer for vertices + index buffer
+        var data = Data(bytes: &vertexBuffer, count: MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count)
+        data.append(Data(bytes: &indexBuffer, count: MemoryLayout<UInt32>.stride * indexBuffer.count))
+
+        // Add to file
+        let buffer = addBuffer(SABuffer(size: data.count, data: data))
+        
+        let vertexAttributes: [SAVertexAttribute] = [
+            .position,
+            .normal,
+//            .tangent,
+//            .bitangent,
+            .uv0
+        ]
+        
+        let vertexBufferView = addBufferView(SABufferView(buffer: buffer, offset: 0, length: MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count))
+        let mesh = SAMesh(name: url.lastPathComponent,
+                          submeshes: submeshes,
+                          vertexBuffer: vertexBufferView,
+                          vertexAttributes: vertexAttributes,
+                          min: meshMin,
+                          max: meshMax)
+        addNodeAndMesh(mesh)
+        
+        // Update all buffer views with the buffer index
+        // for each submesh
+        for submesh in submeshes {
+            var bv = asset.bufferViews[submesh.indices]
+            bv.buffer = buffer
+            bv.offset += vertexDataSize
+            asset.bufferViews[submesh.indices] = bv
+        }
         
         // make unique
         // walk over all vertices
@@ -82,14 +174,64 @@ class OBJImporter {
             // if exists, point to it instead
             // needs hashable: [Vertex: Int] for quickly finding
         
-        // put all buffers behind each other, create buffer views
+        
+        return asset!
+    }
+    
+    func addTexture(_ url: URL) -> Int {
+        print("[obj] Add texture \(url)")
+        
+        asset.textures.append(SATexture(uri: url))
+        
+        return asset.textures.count - 1
+    }
+    
+    func addMaterial(_ material: SAMaterial) -> Int {
+        print("[obj] Add material \(material)")
+        
+        asset.materials.append(material)
+        
+        return asset.materials.count - 1
+    }
+    
+    func addBufferView(_ bufferView: SABufferView) -> Int {
+        print("[obj] Add bufferview \(bufferView)")
+        
+        asset.bufferViews.append(bufferView)
+        
+        return asset.bufferViews.count - 1
+    }
+    
+    func addBuffer(_ buffer: SABuffer) -> Int {
+        print("[obj] Add buffer \(buffer)")
+        
+        asset.buffers.append(buffer)
+        return asset.buffers.count - 1
+    }
+    
+    func addNodeAndMesh(_ mesh: SAMesh) {
+        print("[obj] Add node and mesh \(mesh)")
+        
+        asset.meshes.append(mesh)
+        let meshIndex = asset.meshes.count - 1
+        
+        let node = SANode(name: url.deletingPathExtension().lastPathComponent,
+                          matrix: matrix_identity_float4x4,
+                          children: [],
+                          mesh: meshIndex,
+                          camera: nil,
+                          light: nil)
+        asset.nodes.append(node)
+        
+        let scene = SAScene(nodes: [asset.nodes.count - 1])
+        asset.scenes.append(scene)
     }
 }
 
 struct ObjFile {
     var mtllib: String?
     
-    var vertices: [float3] = []
+    var positions: [float3] = []
     var normals: [float3] = []
     var texCoords: [float2] = []
     var submeshes: [ObjSubmesh] = []
@@ -122,7 +264,7 @@ struct ObjFace {
 }
 
 struct ObjVertex {
-    var vertex: Int
+    var position: Int
     var normal: Int
     var texCoord: Int
 }
@@ -350,7 +492,7 @@ class ObjParser: StructuredTextParser {
     var currentMaterial: String?
     var currentGroup: String?
     var currentObject: String?
-    var vertices: [float3] = []
+    var positions: [float3] = []
     var normals: [float3] = []
     var texCoords: [float2] = []
     var faces: [ObjFace] = []
@@ -371,7 +513,7 @@ class ObjParser: StructuredTextParser {
             finishSubmesh()
         }
         
-        obj.vertices = vertices
+        obj.positions = positions
         obj.normals = normals
         obj.texCoords = texCoords
         
@@ -407,7 +549,7 @@ class ObjParser: StructuredTextParser {
             currentMaterial = String(text())
             
         case "v":
-            vertices.append(parseFloat3())
+            positions.append(parseFloat3())
         case "vn":
             normals.append(parseFloat3())
         case "vt":
@@ -464,10 +606,10 @@ class ObjParser: StructuredTextParser {
                 var startIndex = 0
                 
                 for i in 0..<4 {
-                    let v0 = vertices[face.vertices[(i + 3) % 4].vertex - 1] // obj is 1-indexed
-                    let v1 = vertices[face.vertices[(i + 2) % 4].vertex - 1]
-                    let v2 = vertices[face.vertices[(i + 1) % 4].vertex - 1]
-                    let v = vertices[face.vertices[i].vertex - 1]
+                    let v0 = positions[face.vertices[(i + 3) % 4].position - 1] // obj is 1-indexed
+                    let v1 = positions[face.vertices[(i + 2) % 4].position - 1]
+                    let v2 = positions[face.vertices[(i + 1) % 4].position - 1]
+                    let v = positions[face.vertices[i].position - 1]
                     
                     let left = normalize(v0 - v)
                     let diag = normalize(v1 - v)
@@ -513,7 +655,7 @@ class ObjParser: StructuredTextParser {
         let tex = Int(items[1])!
         let norm = Int(items[2])!
         
-        return ObjVertex(vertex: vert, normal: norm, texCoord: tex)
+        return ObjVertex(position: vert, normal: norm, texCoord: tex)
     }
     
     /// Parse a face. Might give 2 faces when turning a quad into a triangle

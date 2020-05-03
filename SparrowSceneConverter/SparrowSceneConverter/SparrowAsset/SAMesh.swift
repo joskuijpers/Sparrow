@@ -11,12 +11,13 @@ import Foundation
 struct SAMesh {
     let name: String
     
-    var submeshes: [SASubmesh] = []
+    var submeshes: [SASubmesh]
     
     var vertexBuffer: Int // BufferView
-//    var vertexAttributes
+    var vertexAttributes: [SAVertexAttribute]
     
-    
+    var min: SIMD3<Float>
+    var max: SIMD3<Float>
     
 //    func addNormals(wotjAttributeNamed: String?, creaseThreshold: Float) {
 //
@@ -28,4 +29,16 @@ struct SAMesh {
                          bitangentAttributeNamed bitangentAttributeName: String?) {
         
     }
+}
+
+enum SAVertexAttribute {
+    case position
+    case normal
+    case tangent
+    case bitangent
+    case uv0
+    case uv1
+    case color0
+    case joints0
+    case weights0
 }

@@ -21,7 +21,7 @@ struct SAMaterial {
     
     var albedo: SAMaterialProperty
     var normals: SAMaterialProperty
-    var metalnessRoughnessOcclusion: SAMaterialProperty
+    var roughnessMetalnessOcclusion: SAMaterialProperty
     var emissive: SAMaterialProperty
 //
 //    @property (nonatomic, assign) simd_float4 baseColorFactor;

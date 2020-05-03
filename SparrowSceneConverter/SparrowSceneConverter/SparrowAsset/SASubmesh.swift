@@ -9,21 +9,9 @@
 import Foundation
 
 struct SASubmesh {
-    var mesh: SAMesh?
-    
     var indices: Int // BufferView
     var material: Int
     
-    var vertexAttributes: [SAVertexAttribute]
-}
-
-enum SAVertexAttribute {
-    case position
-    case normal
-    case tangent
-    case uv0
-    case uv1
-    case color0
-    case joints0
-    case weights0
+    var min: SIMD3<Float>
+    var max: SIMD3<Float>
 }
