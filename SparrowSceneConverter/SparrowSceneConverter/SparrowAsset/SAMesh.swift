@@ -13,6 +13,19 @@ struct SAMesh {
     
     var submeshes: [SASubmesh] = []
     
-    var vertices: Int // BufferView
+    var vertexBuffer: Int // BufferView
 //    var vertexAttributes
+    
+    
+    
+//    func addNormals(wotjAttributeNamed: String?, creaseThreshold: Float) {
+//
+//    }
+    
+    // https://developer.apple.com/documentation/modelio/mdlmesh/1391942-addtangentbasis
+    func addTangentBasis(forTextureCoordinateAttributeNamed textureCoordinateAttributeName: String,
+                         tangentAttributeNamed tangentAttributeName: String,
+                         bitangentAttributeNamed bitangentAttributeName: String?) {
+        
+    }
 }

@@ -20,6 +20,8 @@ import Metal
  Writing SA: self-made -> In engine / SparrowAsset framework
  Reading SA: self-made -> In engine / SparrowAsset framework
  
+ // RMA: Roughness Metalness AmbientOcclusion
+ 
  Converter: In this program
  
  */
@@ -126,7 +128,7 @@ let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowE
 let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj")
 
 
-let importer = OBJImporter(url: url2)
+let importer = OBJImporter(url: url1)
 let asset = try? importer.generate()
 
 print("\(String(describing: asset))")
