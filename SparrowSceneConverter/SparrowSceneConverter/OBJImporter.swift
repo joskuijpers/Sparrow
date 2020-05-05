@@ -56,15 +56,17 @@ class OBJImporter {
         var meshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
         
         var vertexBuffer: [VertexBufferItem] = []
-        var indexBuffer: [UInt32] = [] // Optimization: depend index size on mesh size
+        var indexBuffer = Data()
         var submeshes: [SASubmesh] = []
         
-        // For each submesh
-        for (submeshIndex, submesh) in obj.submeshes.enumerated() {
+        // Add indices and vertices for each submesh
+        for (_, submesh) in obj.submeshes.enumerated() {
             var submeshMin = float3(Float.infinity, Float.infinity, Float.infinity)
             var submeshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
             
-            var indexBufferStart = indexBuffer.count
+            var submeshIndexBuffer16: [UInt16] = []
+            var submeshIndexBuffer32: [UInt32] = []
+            let use16Bit = submesh.faces.count * 3 < UInt16.max
         
             for face in submesh.faces {
                 for vertex in face.vertices {
@@ -75,7 +77,11 @@ class OBJImporter {
                     vertexBuffer.append(fVertex)
                     
                     // Add index to index buffer
-                    indexBuffer.append(UInt32(vertexBuffer.count - 1))
+                    if use16Bit {
+                        submeshIndexBuffer16.append(UInt16(vertexBuffer.count - 1))
+                    } else {
+                        submeshIndexBuffer32.append(UInt32(vertexBuffer.count - 1))
+                    }
                     
                     // Update bounds of submesh
                     submeshMin = min(submeshMin, fVertex.position)
@@ -120,9 +126,16 @@ class OBJImporter {
             }
             
             // Put index buffer with submesh + name + material + bounds.
-            let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBufferStart * MemoryLayout<UInt32>.stride, length: (indexBuffer.count - indexBufferStart) * MemoryLayout<UInt32>.stride))
+            let ibSize = use16Bit ? MemoryLayout<UInt16>.stride * submeshIndexBuffer16.count : MemoryLayout<UInt32>.stride * submeshIndexBuffer32.count
+            let ibData = use16Bit ? Data(bytes: submeshIndexBuffer16, count: ibSize) : Data(bytes: submeshIndexBuffer32, count: ibSize)
+
+            // View into the final buffer
+            let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffer.count, length: ibSize))
             
-            let submesh = SASubmesh(indices: bufferView, material: material!, min: submeshMin, max: submeshMax)
+            // Add to final buffer
+            indexBuffer.append(ibData)
+            
+            let submesh = SASubmesh(indices: bufferView, material: material!, min: submeshMin, max: submeshMax, indexType: use16Bit ? .uint16 : .uint32)
             submeshes.append(submesh)
             
             // Update bounds of mesh using bounds of submesh
@@ -133,11 +146,10 @@ class OBJImporter {
         let dataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count + MemoryLayout<UInt32>.stride * indexBuffer.count
         print("BUFFER SIZES \(vertexBuffer.count) \(indexBuffer.count) total data size \(dataSize)")
         
+        // Create a final mesh buffer for vertices + index buffers
         let vertexDataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count
-        
-        // Create a buffer for vertices + index buffer
-        var data = Data(bytes: &vertexBuffer, count: MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count)
-        data.append(Data(bytes: &indexBuffer, count: MemoryLayout<UInt32>.stride * indexBuffer.count))
+        var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
+        data.append(indexBuffer)
 
         // Add to file
         let buffer = addBuffer(SABuffer(size: data.count, data: data))
@@ -150,7 +162,10 @@ class OBJImporter {
             .uv0
         ]
         
-        let vertexBufferView = addBufferView(SABufferView(buffer: buffer, offset: 0, length: MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count))
+        // Add buffer view for the vertices
+        let vertexBufferView = addBufferView(SABufferView(buffer: buffer, offset: 0, length: vertexDataSize))
+        
+        // Then finally create the mesh
         let mesh = SAMesh(name: url.lastPathComponent,
                           submeshes: submeshes,
                           vertexBuffer: vertexBufferView,
@@ -159,8 +174,8 @@ class OBJImporter {
                           max: meshMax)
         addNodeAndMesh(mesh)
         
-        // Update all buffer views with the buffer index
-        // for each submesh
+        // Update all buffer views with the buffer index, as originally the view pointed to the offset
+        // from first index buffer, and did not point to the buffer at all
         for submesh in submeshes {
             var bv = asset.bufferViews[submesh.indices]
             bv.buffer = buffer
@@ -179,39 +194,26 @@ class OBJImporter {
     }
     
     func addTexture(_ url: URL) -> Int {
-        print("[obj] Add texture \(url)")
-        
         asset.textures.append(SATexture(uri: url))
-        
         return asset.textures.count - 1
     }
     
     func addMaterial(_ material: SAMaterial) -> Int {
-        print("[obj] Add material \(material)")
-        
         asset.materials.append(material)
-        
         return asset.materials.count - 1
     }
     
     func addBufferView(_ bufferView: SABufferView) -> Int {
-        print("[obj] Add bufferview \(bufferView)")
-        
         asset.bufferViews.append(bufferView)
-        
         return asset.bufferViews.count - 1
     }
     
     func addBuffer(_ buffer: SABuffer) -> Int {
-        print("[obj] Add buffer \(buffer)")
-        
         asset.buffers.append(buffer)
         return asset.buffers.count - 1
     }
     
     func addNodeAndMesh(_ mesh: SAMesh) {
-        print("[obj] Add node and mesh \(mesh)")
-        
         asset.meshes.append(mesh)
         let meshIndex = asset.meshes.count - 1
         
