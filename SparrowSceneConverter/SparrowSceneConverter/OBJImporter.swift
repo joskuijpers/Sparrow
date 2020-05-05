@@ -124,7 +124,12 @@ class OBJImporter {
                 if let texture = mat.emissiveTexture {
                     emissive = SAMaterialProperty.Texture(addTexture(texture))
                 } else {
-                    emissive = SAMaterialProperty.Color(float4(mat.emissiveColor, 1))
+                    if mat.emissiveColor == float3(0, 0, 0) {
+                        // Save None so we spare 3 unused floats
+                        emissive = SAMaterialProperty.None
+                    } else {
+                        emissive = SAMaterialProperty.Color(float4(mat.emissiveColor, 1))
+                    }
                 }
                 
                 var rma = SAMaterialProperty.None
@@ -199,27 +204,27 @@ class OBJImporter {
         return asset!
     }
     
-    func addTexture(_ url: URL) -> Int {
+    private func addTexture(_ url: URL) -> Int {
         asset.textures.append(SATexture(uri: url))
         return asset.textures.count - 1
     }
     
-    func addMaterial(_ material: SAMaterial) -> Int {
+    private func addMaterial(_ material: SAMaterial) -> Int {
         asset.materials.append(material)
         return asset.materials.count - 1
     }
     
-    func addBufferView(_ bufferView: SABufferView) -> Int {
+    private func addBufferView(_ bufferView: SABufferView) -> Int {
         asset.bufferViews.append(bufferView)
         return asset.bufferViews.count - 1
     }
     
-    func addBuffer(_ buffer: SABuffer) -> Int {
+    private func addBuffer(_ buffer: SABuffer) -> Int {
         asset.buffers.append(buffer)
         return asset.buffers.count - 1
     }
     
-    func addNodeAndMesh(_ mesh: SAMesh) {
+    private func addNodeAndMesh(_ mesh: SAMesh) {
         asset.meshes.append(mesh)
         let meshIndex = asset.meshes.count - 1
         
