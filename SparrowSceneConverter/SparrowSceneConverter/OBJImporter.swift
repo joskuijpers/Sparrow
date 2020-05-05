@@ -37,14 +37,20 @@ class OBJImporter {
         return buildAsset()
     }
     
-    /// Build asset from values in memory
+    /**
+     Build asset from values in memory
+     
+     We first build a vertex list and index list for all submeshes. The submeshes put all indices behind each other,
+     creating the index buffer. In front of that we put the final vertex buffer. Each submes has a buffer view pointing somewhere
+     in the buffer. We try to optimize the indices by using an index as small as possible. On top of that, we only keep unique vertices.
+    */
     private func buildAsset() -> SAAsset {
         let obj = objFile!
         let mtl = mtlFile!
         asset = SAAsset(generator: "SparrowSceneConverter", origin: url.path, version: 1)
         
         // Build index buffer
-        struct VertexBufferItem: Hashable {
+        struct VertexBufferItem: Hashable, Equatable {
             let position: float3
             let normal: float3
 //            let tangent: float3 = float3(0, 1, 0)
@@ -56,9 +62,10 @@ class OBJImporter {
         var meshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
         
         var vertexBuffer: [VertexBufferItem] = []
+        var vertexMap: [VertexBufferItem:Int] = [:]
         var indexBuffer = Data()
         var submeshes: [SASubmesh] = []
-        
+
         // Add indices and vertices for each submesh
         for (_, submesh) in obj.submeshes.enumerated() {
             var submeshMin = float3(Float.infinity, Float.infinity, Float.infinity)
@@ -74,13 +81,22 @@ class OBJImporter {
                     let fVertex = VertexBufferItem(position: obj.positions[vertex.position - 1],
                                                    normal: obj.normals[vertex.normal - 1],
                                                    uv: obj.texCoords[vertex.texCoord - 1])
-                    vertexBuffer.append(fVertex)
+                    
+                    var index: Int = 0
+                    if let existingIndex = vertexMap[fVertex] {
+                        index = existingIndex
+                    } else {
+                        // Does not exist yet, add
+                        vertexBuffer.append(fVertex)
+                        index = vertexBuffer.count - 1
+                        vertexMap[fVertex] = index
+                    }
                     
                     // Add index to index buffer
                     if use16Bit {
-                        submeshIndexBuffer16.append(UInt16(vertexBuffer.count - 1))
+                        submeshIndexBuffer16.append(UInt16(index))
                     } else {
-                        submeshIndexBuffer32.append(UInt32(vertexBuffer.count - 1))
+                        submeshIndexBuffer32.append(UInt32(index))
                     }
                     
                     // Update bounds of submesh
@@ -143,9 +159,6 @@ class OBJImporter {
             meshMax = max(meshMax, submeshMax)
         }
         
-        let dataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count + MemoryLayout<UInt32>.stride * indexBuffer.count
-        print("BUFFER SIZES \(vertexBuffer.count) \(indexBuffer.count) total data size \(dataSize)")
-        
         // Create a final mesh buffer for vertices + index buffers
         let vertexDataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count
         var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
@@ -182,14 +195,7 @@ class OBJImporter {
             bv.offset += vertexDataSize
             asset.bufferViews[submesh.indices] = bv
         }
-        
-        // make unique
-        // walk over all vertices
-            // if does not exist yet, add to list
-            // if exists, point to it instead
-            // needs hashable: [Vertex: Int] for quickly finding
-        
-        
+
         return asset!
     }
     
