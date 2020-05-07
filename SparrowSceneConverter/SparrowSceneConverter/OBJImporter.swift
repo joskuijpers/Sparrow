@@ -167,8 +167,6 @@ class OBJImporter {
             meshMax = max(meshMax, submeshMax)
         }
         
-        print("Could have used 16 bit \(vertexMap.count < UInt16.max)")
-        
         // Create a final mesh buffer for vertices + index buffers
         let vertexDataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count
         var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
