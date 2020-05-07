@@ -37,12 +37,12 @@ struct SAMaterial: Codable {
 
 /// A material property
 enum SAMaterialProperty {
-    case None
-    case Color(SIMD4<Float>)
-    case Texture(Int)
+    case none
+    case color(SIMD4<Float>)
+    case texture(Int)
 }
 
-enum SAAlphaMode: UInt8 {
+enum SAAlphaMode: UInt8, Codable {
     case opaque
     case mask
     case blend
@@ -59,13 +59,13 @@ extension SAMaterialProperty: Codable {
         
         switch type {
         case 0:
-            self = SAMaterialProperty.None
+            self = SAMaterialProperty.none
         case 1:
             let color = try container.decode(SIMD4<Float>.self)
-            self = SAMaterialProperty.Color(color)
+            self = SAMaterialProperty.color(color)
         case 2:
             let texture = try container.decode(Int.self)
-            self = SAMaterialProperty.Texture(texture)
+            self = SAMaterialProperty.texture(texture)
         default:
             throw CodingError.unknownValue
         }
@@ -75,40 +75,14 @@ extension SAMaterialProperty: Codable {
         var container = encoder.unkeyedContainer()
         
         switch self {
-        case .None:
+        case .none:
             try container.encode(UInt8(0))
-        case .Color(let color):
+        case .color(let color):
             try container.encode(UInt8(1))
             try container.encode(color)
-        case .Texture(let texture):
+        case .texture(let texture):
             try container.encode(UInt8(2))
             try container.encode(texture)
         }
-    }
-}
-
-extension SAAlphaMode: Codable {
-    enum Key: CodingKey {
-        case rawValue
-    }
-    
-    enum CodingError: Error {
-       case unknownValue
-    }
-    
-    init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-        let rawValue = try container.decode(UInt8.self)
-        
-        guard let value = SAAlphaMode(rawValue: rawValue) else {
-            throw CodingError.unknownValue
-        }
-        
-        self = value
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try container.encode(self.rawValue)
     }
 }

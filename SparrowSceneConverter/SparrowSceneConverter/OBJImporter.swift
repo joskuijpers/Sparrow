@@ -108,31 +108,31 @@ class OBJImporter {
             // Create material
             var material: Int?
             if let materialName = submesh.material, let mat = mtl.materials.first(where: { $0.name == materialName }) {
-                var albedo = SAMaterialProperty.None
+                var albedo = SAMaterialProperty.none
                 if let texture = mat.albedoTexture {
-                    albedo = SAMaterialProperty.Texture(addTexture(texture))
+                    albedo = SAMaterialProperty.texture(addTexture(texture))
                 } else {
-                    albedo = SAMaterialProperty.Color(float4(mat.albedoColor, mat.alpha))
+                    albedo = SAMaterialProperty.color(float4(mat.albedoColor, mat.alpha))
                 }
                 
-                var normals = SAMaterialProperty.None
+                var normals = SAMaterialProperty.none
                 if let texture = mat.normalTexture {
-                    normals = SAMaterialProperty.Texture(addTexture(texture))
+                    normals = SAMaterialProperty.texture(addTexture(texture))
                 }
                 
-                var emissive = SAMaterialProperty.None
+                var emissive = SAMaterialProperty.none
                 if let texture = mat.emissiveTexture {
-                    emissive = SAMaterialProperty.Texture(addTexture(texture))
+                    emissive = SAMaterialProperty.texture(addTexture(texture))
                 } else {
                     if mat.emissiveColor == float3(0, 0, 0) {
                         // Save None so we spare 3 unused floats
-                        emissive = SAMaterialProperty.None
+                        emissive = SAMaterialProperty.none
                     } else {
-                        emissive = SAMaterialProperty.Color(float4(mat.emissiveColor, 1))
+                        emissive = SAMaterialProperty.color(float4(mat.emissiveColor, 1))
                     }
                 }
                 
-                var rma = SAMaterialProperty.None
+                var rma = SAMaterialProperty.none
                 
                 let m = SAMaterial(name: mat.name,
                                    albedo: albedo,

@@ -20,5 +20,5 @@ struct SAAsset: Codable {
     var scenes: [SAScene] = []
     var buffers: [SABuffer] = []
     var bufferViews: [SABufferView] = []
-//    var lights: [SALight] = []
+    var lights: [SALight] = []
 }

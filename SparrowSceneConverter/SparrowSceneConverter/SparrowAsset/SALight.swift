@@ -8,13 +8,13 @@
 
 import Foundation
 
-struct SALight {
+struct SALight: Codable {
     var type: SALightType
     
     // color, intensity, range, innerConeAngle, outerConeAngle
 }
 
-enum SALightType {
+enum SALightType: UInt8, Codable {
     case directional
     case point
     case spot
