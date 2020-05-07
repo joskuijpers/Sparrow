@@ -8,10 +8,10 @@
 
 import Foundation
 
-struct SASubmesh {
-    enum IndexType {
-        case uint16
-        case uint32
+struct SASubmesh: Codable {
+    enum IndexType: UInt8, Codable {
+        case uint16 = 0
+        case uint32 = 1
     }
     
     var indices: Int // BufferView

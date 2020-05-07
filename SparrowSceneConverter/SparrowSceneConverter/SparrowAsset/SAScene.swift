@@ -8,6 +8,6 @@
 
 import Foundation
 
-struct SAScene {
+struct SAScene: Codable {
     var nodes: [Int] = []
 }

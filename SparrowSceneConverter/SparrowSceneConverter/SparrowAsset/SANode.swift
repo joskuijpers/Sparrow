@@ -9,7 +9,7 @@
 import Foundation
 import simd
 
-struct SANode {
+struct SANode: Codable {
     let name: String
     
     var matrix: matrix_float4x4 = matrix_identity_float4x4
@@ -19,3 +19,4 @@ struct SANode {
     var camera: Int? = nil
     var light: Int? = nil
 }
+

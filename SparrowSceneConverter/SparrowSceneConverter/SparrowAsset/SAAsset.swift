@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SAAsset {
+struct SAAsset: Codable {
     var generator: String
     var origin: String
     var version: Int
@@ -20,5 +20,5 @@ struct SAAsset {
     var scenes: [SAScene] = []
     var buffers: [SABuffer] = []
     var bufferViews: [SABufferView] = []
-    var lights: [SALight] = []
+//    var lights: [SALight] = []
 }

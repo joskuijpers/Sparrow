@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SABufferView {
+struct SABufferView: Codable {
     var buffer: Int
     var offset: Int
     var length: Int

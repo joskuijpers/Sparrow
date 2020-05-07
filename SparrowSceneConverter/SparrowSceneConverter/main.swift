@@ -12,6 +12,8 @@ import CoreGraphics
 import ImageIO
 import Metal
 
+import StickyEncoding
+
 /*
  
  Reading GTLF: https://github.com/warrenm/GLTFKit
@@ -132,3 +134,20 @@ let importer = OBJImporter(url: url1)
 let asset = try? importer.generate()
 
 print("\(String(describing: asset))")
+
+
+let encoder = BinaryEncoder()
+let decoder = BinaryDecoder()
+
+
+do {
+    
+let data = try encoder.encode(asset!)
+print("DATA SIZE \(data.count)")
+
+let assetRev = try decoder.decode(SAAsset.self, from: data)
+print(assetRev)
+
+} catch {
+    print(error)
+}

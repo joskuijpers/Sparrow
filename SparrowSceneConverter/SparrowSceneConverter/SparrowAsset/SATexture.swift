@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SATexture {
+struct SATexture: Codable {
     let uri: URL
 //    var uri: String
 }

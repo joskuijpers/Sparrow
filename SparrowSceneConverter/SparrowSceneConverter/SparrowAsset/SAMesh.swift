@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SAMesh {
+struct SAMesh: Codable {
     let name: String
     
     var submeshes: [SASubmesh]
@@ -31,7 +31,7 @@ struct SAMesh {
     }
 }
 
-enum SAVertexAttribute {
+enum SAVertexAttribute: UInt8 {
     case position
     case normal
     case tangent
@@ -42,3 +42,30 @@ enum SAVertexAttribute {
     case joints0
     case weights0
 }
+
+extension SAVertexAttribute: Codable {
+    enum Key: CodingKey {
+        case rawValue
+    }
+    
+    enum CodingError: Error {
+       case unknownValue
+    }
+    
+    init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        let rawValue = try container.decode(UInt8.self)
+        
+        guard let value = SAVertexAttribute(rawValue: rawValue) else {
+            throw CodingError.unknownValue
+        }
+        
+        self = value
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(self.rawValue)
+    }
+}
+

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SABuffer {
+struct SABuffer: Codable {
     var size: Int
     var data: Data
 }

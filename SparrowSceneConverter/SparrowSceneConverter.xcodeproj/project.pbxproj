@@ -3,13 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		801E8408246464180021CEAD /* StickyEncoding in Frameworks */ = {isa = PBXBuildFile; productRef = 801E8407246464180021CEAD /* StickyEncoding */; };
+		801E840A246464190021CEAD /* StickyEncoding in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 801E8407246464180021CEAD /* StickyEncoding */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		801E840C246464370021CEAD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E840B246464370021CEAD /* Metal.framework */; };
+		801E840F24648F1B0021CEAD /* CodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E840E24648F1B0021CEAD /* CodableExtensions.swift */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
-		8086960E23B8D2CD0007E75D /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8086960C23B8D2CD0007E75D /* MetalKit.framework */; };
-		8086960F23B8D2CD0007E75D /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8086960D23B8D2CD0007E75D /* Metal.framework */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C5245C4FA000269C56 /* SAMaterial.swift */; };
 		80E216CA245DAF5600269C56 /* SAMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C9245DAF5600269C56 /* SAMesh.swift */; };
@@ -28,6 +30,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		801E8409246464180021CEAD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				801E840A246464190021CEAD /* StickyEncoding in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		808695FF23B8D2B20007E75D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -40,10 +53,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		801E840B246464370021CEAD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		801E840D246469E90021CEAD /* SparrowSceneConverter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SparrowSceneConverter.entitlements; sourceTree = "<group>"; };
+		801E840E24648F1B0021CEAD /* CodableExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableExtensions.swift; sourceTree = "<group>"; };
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		8086960C23B8D2CD0007E75D /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
-		8086960D23B8D2CD0007E75D /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
 		80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPlusPlusLinkage.cpp; sourceTree = "<group>"; };
 		80E216C5245C4FA000269C56 /* SAMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAMaterial.swift; sourceTree = "<group>"; };
@@ -67,8 +81,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8086960E23B8D2CD0007E75D /* MetalKit.framework in Frameworks */,
-				8086960F23B8D2CD0007E75D /* Metal.framework in Frameworks */,
+				801E840C246464370021CEAD /* Metal.framework in Frameworks */,
+				801E8408246464180021CEAD /* StickyEncoding in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +110,7 @@
 		8086960323B8D2B20007E75D /* SparrowSceneConverter */ = {
 			isa = PBXGroup;
 			children = (
+				801E840D246469E90021CEAD /* SparrowSceneConverter.entitlements */,
 				80E216C4245C4F8400269C56 /* SparrowAsset */,
 				8086960423B8D2B20007E75D /* main.swift */,
 				80E216DB245DBA6F00269C56 /* GLTFImporter.swift */,
@@ -109,8 +124,7 @@
 		8086960B23B8D2CD0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8086960D23B8D2CD0007E75D /* Metal.framework */,
-				8086960C23B8D2CD0007E75D /* MetalKit.framework */,
+				801E840B246464370021CEAD /* Metal.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -136,6 +150,7 @@
 				80E216D9245DB5B500269C56 /* SALight.swift */,
 				80E216D7245DB22F00269C56 /* SABuffer.swift */,
 				80E216E4245EF9EB00269C56 /* SABufferView.swift */,
+				801E840E24648F1B0021CEAD /* CodableExtensions.swift */,
 			);
 			path = SparrowAsset;
 			sourceTree = "<group>";
@@ -159,6 +174,7 @@
 				808695FD23B8D2B20007E75D /* Sources */,
 				808695FE23B8D2B20007E75D /* Frameworks */,
 				808695FF23B8D2B20007E75D /* CopyFiles */,
+				801E8409246464180021CEAD /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -166,6 +182,7 @@
 			);
 			name = SparrowSceneConverter;
 			packageProductDependencies = (
+				801E8407246464180021CEAD /* StickyEncoding */,
 			);
 			productName = SparrowSceneConverter;
 			productReference = 8086960123B8D2B20007E75D /* SparrowSceneConverter */;
@@ -197,6 +214,7 @@
 			);
 			mainGroup = 808695F823B8D2B20007E75D;
 			packageReferences = (
+				801E8406246464180021CEAD /* XCRemoteSwiftPackageReference "sticky-encoding" */,
 			);
 			productRefGroup = 8086960223B8D2B20007E75D /* Products */;
 			projectDirPath = "";
@@ -220,6 +238,7 @@
 				80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */,
 				80E216E5245EF9EB00269C56 /* SABufferView.swift in Sources */,
 				80E216CC245DAF5B00269C56 /* SANode.swift in Sources */,
+				801E840F24648F1B0021CEAD /* CodableExtensions.swift in Sources */,
 				80E216E3245DD18600269C56 /* MathLib.swift in Sources */,
 				80E216CE245DAF6000269C56 /* SASubmesh.swift in Sources */,
 				80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */,
@@ -361,7 +380,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_ENTITLEMENTS = SparrowSceneConverter/SparrowSceneConverter.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 95XB3LMP34;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -385,7 +405,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_ENTITLEMENTS = SparrowSceneConverter/SparrowSceneConverter.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 95XB3LMP34;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -426,6 +447,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		801E8406246464180021CEAD /* XCRemoteSwiftPackageReference "sticky-encoding" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stickytools/sticky-encoding";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "1.0.0-beta.5";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		801E8407246464180021CEAD /* StickyEncoding */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 801E8406246464180021CEAD /* XCRemoteSwiftPackageReference "sticky-encoding" */;
+			productName = StickyEncoding;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 808695F923B8D2B20007E75D /* Project object */;
 }
