@@ -65,7 +65,11 @@ class OBJImporter {
         var vertexMap: [VertexBufferItem:Int] = [:]
         var indexBuffer = Data()
         var submeshes: [SASubmesh] = []
-
+        
+        // Find total number of possible vertices
+        let totalMaxVertices = obj.submeshes.map { $0.faces.count * 3 }.reduce(0) {$0 + $1 }
+        let use16Bit = totalMaxVertices < UInt16.max
+        
         // Add indices and vertices for each submesh
         for (_, submesh) in obj.submeshes.enumerated() {
             var submeshMin = float3(Float.infinity, Float.infinity, Float.infinity)
@@ -73,8 +77,7 @@ class OBJImporter {
             
             var submeshIndexBuffer16: [UInt16] = []
             var submeshIndexBuffer32: [UInt32] = []
-            let use16Bit = submesh.faces.count * 3 < UInt16.max
-        
+
             for face in submesh.faces {
                 for vertex in face.vertices {
                     // Add full vertex to vertex list
@@ -164,6 +167,8 @@ class OBJImporter {
             meshMax = max(meshMax, submeshMax)
         }
         
+        print("Could have used 16 bit \(vertexMap.count < UInt16.max)")
+        
         // Create a final mesh buffer for vertices + index buffers
         let vertexDataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count
         var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
@@ -205,7 +210,12 @@ class OBJImporter {
     }
     
     private func addTexture(_ url: URL) -> Int {
-        asset.textures.append(SATexture(uri: url))
+        // Create the shortest path possible: relative to the asset
+        guard let relativePath = url.relativePath(from: self.url.deletingLastPathComponent()) else {
+            fatalError("Could not create relative path for texture")
+        }
+        
+        asset.textures.append(SATexture(relativePath: relativePath))
         return asset.textures.count - 1
     }
     
@@ -238,6 +248,31 @@ class OBJImporter {
         
         let scene = SAScene(nodes: [asset.nodes.count - 1])
         asset.scenes.append(scene)
+    }
+}
+
+extension URL {
+    func relativePath(from base: URL) -> String? {
+        // Ensure that both URLs represent files:
+        guard self.isFileURL && base.isFileURL else {
+            return nil
+        }
+
+        // Remove/replace "." and "..", make paths absolute:
+        let destComponents = self.standardized.pathComponents
+        let baseComponents = base.standardized.pathComponents
+
+        // Find number of common path components:
+        var i = 0
+        while i < destComponents.count && i < baseComponents.count
+            && destComponents[i] == baseComponents[i] {
+                i += 1
+        }
+
+        // Build relative path:
+        var relComponents = Array(repeating: "..", count: baseComponents.count - i)
+        relComponents.append(contentsOf: destComponents[i...])
+        return relComponents.joined(separator: "/")
     }
 }
 
