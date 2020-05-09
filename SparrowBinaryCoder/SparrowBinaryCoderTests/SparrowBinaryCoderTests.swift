@@ -295,6 +295,21 @@ class SparrowBinaryCoderTests: XCTestCase {
         AssertRoundtrip(SIMD3<Float>(253.23553,476.3252,347.6346))
     }
     
+    func testVector4f() throws {
+        struct Object: BinaryCodable {
+            let p: SIMD4<Float>
+            let v: SIMD4<Float>
+        }
+        let input = Object(p: [0, 1, 2, 3], v: [-5,-5,0, 1])
+        
+        let data = try BinaryEncoder.encode(input)
+        
+        XCTAssertEqual(data.count, 4 * 4 + 4 * 4)
+        AssertEqual(try BinaryDecoder.decode(Object.self, data: data), input)
+        
+        AssertRoundtrip(SIMD4<Float>(253.23553,476.3252,347.6346,100000))
+    }
+    
     
 }
 
