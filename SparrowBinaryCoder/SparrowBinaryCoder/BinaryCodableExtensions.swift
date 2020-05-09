@@ -127,4 +127,21 @@ extension Data: BinaryCodable {
 
 //MARK:- Vectors
 
+extension SIMD3: BinaryCodable where Scalar == Float {
+    
+    public func binaryEncode(to encoder: BinaryEncoder) throws {
+        try encoder.encode(self.x)
+        try encoder.encode(self.y)
+        try encoder.encode(self.z)
+    }
+    
+    public init(fromBinary decoder: BinaryDecoder) throws {
+        self.init(x: try decoder.decode(Float.self),
+                  y: try decoder.decode(Float.self),
+                  z: try decoder.decode(Float.self))
+    }
+    
+}
+
 //MARK:- Matrices
+
