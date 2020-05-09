@@ -12,7 +12,7 @@ import CoreGraphics
 import ImageIO
 import Metal
 
-import StickyEncoding
+//import StickyEncoding
 
 /*
  
@@ -130,24 +130,45 @@ let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowE
 let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj")
 
 
-let importer = OBJImporter(url: url1)
-let asset = try? importer.generate()
+//let importer = OBJImporter(url: url1)
+//let asset = try? importer.generate()
+//
+//print("\(String(describing: asset))")
+//
+//
+//let encoder = BinaryEncoder()
+//let decoder = BinaryDecoder()
+//
+//
+//do {
+//
+//    let data = try encoder.encode(asset!)
+//    print("DATA SIZE \(data.count)")
+//
+////    let assetRev = try decoder.decode(SAAsset.self, from: data)
+////    print(assetRev)
+//
+//} catch {
+//    print(error)
+//}
 
-print("\(String(describing: asset))")
 
-
-let encoder = BinaryEncoder()
-let decoder = BinaryDecoder()
 
 
 do {
+    struct Test: BinaryCodable {
+        let a: Int
+        let bcddd: Int
+        let t: String
+    }
     
-let data = try encoder.encode(asset!)
-print("DATA SIZE \(data.count)")
-
-let assetRev = try decoder.decode(SAAsset.self, from: data)
-print(assetRev)
-
+    let input = Test(a: 1000, bcddd: 43, t: "hello")
+    let data = try BinaryEncoder.encode(input)
+    
+    print("DATA SIZE \(data.count)")
+    
+    let output = try BinaryDecoder.decode(Test.self, data: data)
+    print("ROUNDTRIP \(output)")
 } catch {
     print(error)
 }

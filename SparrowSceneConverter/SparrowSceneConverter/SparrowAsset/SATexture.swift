@@ -9,6 +9,7 @@
 import Foundation
 
 struct SATexture: Codable {
-    let uri: URL
+//    let uri: URL
+    let relativePath: String
 //    var uri: String
 }
