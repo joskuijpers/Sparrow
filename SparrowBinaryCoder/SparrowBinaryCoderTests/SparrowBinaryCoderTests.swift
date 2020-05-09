@@ -203,7 +203,42 @@ class SparrowBinaryCoderTests: XCTestCase {
         AssertRoundtrip(company)
     }
 
-
+    func testStructWithPrimitiveOptional() throws {
+        struct MyOptional: BinaryCodable {
+            var opt: Int?
+        }
+        
+        AssertRoundtrip(MyOptional(opt: nil))
+        AssertRoundtrip(MyOptional(opt: 5))
+    }
+    
+    func testStructWithStringOptional() throws {
+        struct MyOptional: BinaryCodable {
+            var opt: String?
+        }
+        
+        AssertRoundtrip(MyOptional(opt: nil))
+        AssertRoundtrip(MyOptional(opt: "hello"))
+    }
+    
+    func testStructWithComplexOptional() throws {
+        struct MyValue: BinaryCodable {
+            var opt: Bool
+        }
+        struct MyOptional: BinaryCodable {
+            var opt: MyValue?
+        }
+        
+        AssertRoundtrip(MyOptional(opt: nil))
+        AssertRoundtrip(MyOptional(opt: MyValue(opt: true)))
+        AssertRoundtrip(MyOptional(opt: MyValue(opt: false)))
+    }
+    
+//    func testArrayWithOptional() throws {
+//        let input: [Int?] = [1, 5, nil, 2]
+//        
+//        AssertRoundtrip(input)
+//    }
 }
 
 /// Assert equal without Equal protocol

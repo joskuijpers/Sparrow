@@ -74,6 +74,13 @@ extension BinaryEncoder {
             throw Error.typeNotConformingToBinaryEncodable(type(of: encodable))
         }
     }
+    
+    func encodeIfPresent(_ encodable: Encodable?) throws {
+        try encode(encodable != nil)
+        if let value = encodable {
+            try encode(value)
+        }
+    }
 }
 
 extension BinaryEncoder: Encoder {
@@ -104,13 +111,72 @@ extension BinaryEncoder: Encoder {
         var codingPath: [CodingKey] {
             return []
         }
-
+        
         mutating func encode<T>(_ value: T, forKey key: Key) throws where T : Encodable {
             try encoder.encode(value)
         }
 
         mutating func encodeNil(forKey key: Key) throws {
-            print("NIL")
+        }
+        
+        func encodeIfPresent(_ value: Int?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: Int8?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+        
+        func encodeIfPresent(_ value: Int16?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: Int32?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: Int64?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+        
+        func encodeIfPresent(_ value: UInt?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+        
+        func encodeIfPresent(_ value: UInt8?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: UInt16?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: UInt32?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: UInt64?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+        
+        func encodeIfPresent(_ value: Bool?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+        
+        func encodeIfPresent(_ value: Float?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent(_ value: Double?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+        
+        func encodeIfPresent(_ value: String?, forKey key: Key) throws {
+            try encoder.encodeIfPresent(value)
+        }
+
+        func encodeIfPresent<T>(_ value: T?, forKey key: Key) throws where T : Encodable {
+            try encoder.encodeIfPresent(value)
         }
         
         mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -141,7 +207,7 @@ extension BinaryEncoder: Encoder {
         }
         
         mutating func encodeNil() throws {
-            print("NIL")
+            print("ENCODING NIL2")
         }
         
         mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
