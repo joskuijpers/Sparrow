@@ -285,8 +285,68 @@ extension BinaryDecoder: Decoder {
         }
         
         func decodeNil() -> Bool {
-            print("DECODING NIL2")
-            return true
+            let isOptionalPresent = try! decoder.decode(Bool.self)
+            return !isOptionalPresent
+        }
+        
+        func decodeIfPresent(_ type: Int.Type) throws -> Int? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Int8.Type) throws -> Int8? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Int16.Type) throws -> Int16? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Int32.Type) throws -> Int32? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Int64.Type) throws -> Int64? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: UInt.Type) throws -> UInt? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: UInt8.Type) throws -> UInt8? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: UInt16.Type) throws -> UInt16? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: UInt32.Type) throws -> UInt32? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: UInt64.Type) throws -> UInt64? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Bool.Type) throws -> Bool? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Float.Type) throws -> Float? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: Double.Type) throws -> Double? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent(_ type: String.Type) throws -> String? {
+            return try decoder.decodeIfPresent(type)
+        }
+        
+        func decodeIfPresent<T>(_ type: T.Type) throws -> T? where T : Decodable {
+            return try decoder.decodeIfPresent(type)
         }
         
         func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {

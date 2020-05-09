@@ -117,6 +117,7 @@ extension BinaryEncoder: Encoder {
         }
 
         mutating func encodeNil(forKey key: Key) throws {
+            // This is never called
         }
         
         func encodeIfPresent(_ value: Int?, forKey key: Key) throws {
@@ -207,7 +208,22 @@ extension BinaryEncoder: Encoder {
         }
         
         mutating func encodeNil() throws {
-            print("ENCODING NIL2")
+            // If we add nil from an optional, we always put down false. A present optional is true
+            try encoder.encode(false)
+        }
+        
+        func encodeIfPresent<T>(_ value: T?) throws where T : Encodable {
+            switch value {
+            case .some(let unwrappedValue):
+                try encoder.encode(true)
+                try encoder.encode(unwrappedValue)
+            case .none:
+                try encoder.encode(false)
+            }
+        }
+        
+        func encode<T>(_ value: T) throws where T : Encodable {
+            try encoder.encode(value)
         }
         
         mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -220,10 +236,6 @@ extension BinaryEncoder: Encoder {
         
         mutating func superEncoder() -> Encoder {
             return encoder
-        }
-        
-        func encode<T>(_ value: T) throws where T : Encodable {
-            try encoder.encode(value)
         }
     }
 }

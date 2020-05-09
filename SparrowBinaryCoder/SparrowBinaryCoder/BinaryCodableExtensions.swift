@@ -63,7 +63,13 @@ extension Array: BinaryCodable where Element: Codable {
     public func binaryEncode(to encoder: BinaryEncoder) throws {
         try encoder.encode(self.count)
         for element in self {
-            try element.encode(to: encoder)
+            // Prefer custom binaryEncode over encode so that we use the Optional
+            // binaryEncode for optionals
+            if let binaryElement = element as? BinaryEncodable {
+                try binaryElement.binaryEncode(to: encoder)
+            } else {
+                try element.encode(to: encoder)
+            }
         }
     }
     
@@ -71,12 +77,33 @@ extension Array: BinaryCodable where Element: Codable {
         let count = try decoder.decode(Int.self)
         self.init()
         self.reserveCapacity(count)
-        
+
         for _ in 0..<count {
             let decoded = try Element.init(from: decoder)
             self.append(decoded)
         }
     }
+}
+
+//MARK:- Optional
+
+extension Optional: BinaryEncodable where Wrapped: Encodable {
+    
+    // Special version
+    // The default encoding puts the value if there is any, and nil if there is none
+    // However, as we need to write down if there is no value to decode it, we need to add just that.
+    @inlinable
+    public func binaryEncode(to encoder: BinaryEncoder) throws {
+        var container = encoder.singleValueContainer()
+        
+        switch self {
+        case .none: try container.encodeNil()
+        case .some(let wrapped):
+            try container.encode(true) // custom part: mark as present
+            try container.encode(wrapped)
+        }
+    }
+    
 }
 
 //MARK:- Data

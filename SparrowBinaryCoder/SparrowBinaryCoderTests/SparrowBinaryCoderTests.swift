@@ -182,6 +182,10 @@ class SparrowBinaryCoderTests: XCTestCase {
         XCTAssertEqual(data.count, 8 + 3 * 8)
     }
     
+    func testArray() throws {
+        AssertRoundtrip([1,2,3,4,5,6])
+    }
+    
     func testComplexStruct() {
         struct Company: BinaryCodable {
             var name: String
@@ -234,11 +238,16 @@ class SparrowBinaryCoderTests: XCTestCase {
         AssertRoundtrip(MyOptional(opt: MyValue(opt: false)))
     }
     
-//    func testArrayWithOptional() throws {
-//        let input: [Int?] = [1, 5, nil, 2]
-//        
-//        AssertRoundtrip(input)
-//    }
+    func testArrayWithOptional() throws {
+        let input: [Int?] = [1, 5, nil, 2]
+        
+        let data = try BinaryEncoder.encode(input)
+        let expected: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2]
+        XCTAssertEqual(data, expected)
+
+        let output = try BinaryDecoder.decode([Int?].self, data: expected)
+        AssertEqual(input, output)
+    }
 }
 
 /// Assert equal without Equal protocol
