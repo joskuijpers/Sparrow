@@ -206,6 +206,12 @@ class SparrowBinaryCoderTests: XCTestCase {
         ])
         AssertRoundtrip(company)
     }
+    
+    
+    
+    
+    //MARK:- Optionals
+    
 
     func testStructWithPrimitiveOptional() throws {
         struct MyOptional: BinaryCodable {
@@ -248,6 +254,40 @@ class SparrowBinaryCoderTests: XCTestCase {
         let output = try BinaryDecoder.decode([Int?].self, data: expected)
         AssertEqual(input, output)
     }
+    
+    
+    
+    
+    
+    //MARK:- Data
+    
+    func testData() throws {
+//        let data: [UInt8] = [0,1,2,3,4,5,6,7,8,9]
+//        let input = Data(bytes: data, count: data.count)
+//
+//        let output = try BinaryEncoder.encode(input)
+//
+//        AssertRoundtrip(input)
+        
+        struct DataContainer: BinaryCodable {
+            let d: Data
+        }
+        
+        let data: [UInt8] = [0,1,2,3,4,5,6,7,8,9]
+        let input = DataContainer(d: Data(bytes: data, count: data.count))
+        
+        let output = try BinaryEncoder.encode(input)
+        
+        // Same size with length prefix
+        XCTAssertEqual(output.count, data.count + 8)
+        
+        AssertRoundtrip(input)
+    }
+    
+    
+    
+    
+    
 }
 
 /// Assert equal without Equal protocol

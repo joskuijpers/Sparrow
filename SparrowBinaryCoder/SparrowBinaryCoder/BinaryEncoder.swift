@@ -13,7 +13,7 @@ public protocol BinaryEncodable: Encodable {
 }
 
 extension BinaryEncodable {
-    func binaryEncode(to encoder: BinaryEncoder) throws {
+    public func binaryEncode(to encoder: BinaryEncoder) throws {
         try self.encode(to: encoder)
     }
 }
@@ -40,6 +40,10 @@ public class BinaryEncoder {
         withUnsafeBytes(of: &target) {
             data.append(contentsOf: $0)
         }
+    }
+    
+    internal func appendBytes(in bytes: [UInt8]) {
+        data.append(contentsOf: bytes)
     }
 }
 
