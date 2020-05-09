@@ -3,18 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		801E8408246464180021CEAD /* StickyEncoding in Frameworks */ = {isa = PBXBuildFile; productRef = 801E8407246464180021CEAD /* StickyEncoding */; };
-		801E840A246464190021CEAD /* StickyEncoding in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 801E8407246464180021CEAD /* StickyEncoding */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		801E840C246464370021CEAD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E840B246464370021CEAD /* Metal.framework */; };
-		801E840F24648F1B0021CEAD /* CodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E840E24648F1B0021CEAD /* CodableExtensions.swift */; };
-		801E84112465AF860021CEAD /* Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E84102465AF860021CEAD /* Encoding.swift */; };
-		801E84132466FEC90021CEAD /* BinaryCodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E84122466FEC90021CEAD /* BinaryCodableExtensions.swift */; };
-		801E84152466FF790021CEAD /* BinaryEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E84142466FF790021CEAD /* BinaryEncoder.swift */; };
-		801E84172466FF800021CEAD /* BinaryDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E84162466FF800021CEAD /* BinaryDecoder.swift */; };
+		801E843D24670F940021CEAD /* SparrowBinaryCoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C5245C4FA000269C56 /* SAMaterial.swift */; };
@@ -40,7 +34,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				801E840A246464190021CEAD /* StickyEncoding in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -59,11 +52,7 @@
 /* Begin PBXFileReference section */
 		801E840B246464370021CEAD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		801E840D246469E90021CEAD /* SparrowSceneConverter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SparrowSceneConverter.entitlements; sourceTree = "<group>"; };
-		801E840E24648F1B0021CEAD /* CodableExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableExtensions.swift; sourceTree = "<group>"; };
-		801E84102465AF860021CEAD /* Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encoding.swift; sourceTree = "<group>"; };
-		801E84122466FEC90021CEAD /* BinaryCodableExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryCodableExtensions.swift; sourceTree = "<group>"; };
-		801E84142466FF790021CEAD /* BinaryEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryEncoder.swift; sourceTree = "<group>"; };
-		801E84162466FF800021CEAD /* BinaryDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryDecoder.swift; sourceTree = "<group>"; };
+		801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowBinaryCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -89,8 +78,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				801E843D24670F940021CEAD /* SparrowBinaryCoder.framework in Frameworks */,
 				801E840C246464370021CEAD /* Metal.framework in Frameworks */,
-				801E8408246464180021CEAD /* StickyEncoding in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,10 +110,6 @@
 				801E840D246469E90021CEAD /* SparrowSceneConverter.entitlements */,
 				80E216C4245C4F8400269C56 /* SparrowAsset */,
 				8086960423B8D2B20007E75D /* main.swift */,
-				801E84102465AF860021CEAD /* Encoding.swift */,
-				801E84142466FF790021CEAD /* BinaryEncoder.swift */,
-				801E84162466FF800021CEAD /* BinaryDecoder.swift */,
-				801E84122466FEC90021CEAD /* BinaryCodableExtensions.swift */,
 				80E216DB245DBA6F00269C56 /* GLTFImporter.swift */,
 				80E216DD245DBA7600269C56 /* OBJImporter.swift */,
 				80E216E2245DD18600269C56 /* MathLib.swift */,
@@ -136,6 +121,7 @@
 		8086960B23B8D2CD0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */,
 				801E840B246464370021CEAD /* Metal.framework */,
 			);
 			name = Frameworks;
@@ -162,7 +148,6 @@
 				80E216D9245DB5B500269C56 /* SALight.swift */,
 				80E216D7245DB22F00269C56 /* SABuffer.swift */,
 				80E216E4245EF9EB00269C56 /* SABufferView.swift */,
-				801E840E24648F1B0021CEAD /* CodableExtensions.swift */,
 			);
 			path = SparrowAsset;
 			sourceTree = "<group>";
@@ -194,7 +179,6 @@
 			);
 			name = SparrowSceneConverter;
 			packageProductDependencies = (
-				801E8407246464180021CEAD /* StickyEncoding */,
 			);
 			productName = SparrowSceneConverter;
 			productReference = 8086960123B8D2B20007E75D /* SparrowSceneConverter */;
@@ -226,7 +210,6 @@
 			);
 			mainGroup = 808695F823B8D2B20007E75D;
 			packageReferences = (
-				801E8406246464180021CEAD /* XCRemoteSwiftPackageReference "sticky-encoding" */,
 			);
 			productRefGroup = 8086960223B8D2B20007E75D /* Products */;
 			projectDirPath = "";
@@ -242,23 +225,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				801E84112465AF860021CEAD /* Encoding.swift in Sources */,
 				80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */,
 				80E216DA245DB5B500269C56 /* SALight.swift in Sources */,
 				80E216CA245DAF5600269C56 /* SAMesh.swift in Sources */,
 				80E216DE245DBA7600269C56 /* OBJImporter.swift in Sources */,
-				801E84132466FEC90021CEAD /* BinaryCodableExtensions.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,
-				801E84152466FF790021CEAD /* BinaryEncoder.swift in Sources */,
 				80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */,
 				80E216E5245EF9EB00269C56 /* SABufferView.swift in Sources */,
 				80E216CC245DAF5B00269C56 /* SANode.swift in Sources */,
-				801E840F24648F1B0021CEAD /* CodableExtensions.swift in Sources */,
 				80E216E3245DD18600269C56 /* MathLib.swift in Sources */,
 				80E216CE245DAF6000269C56 /* SASubmesh.swift in Sources */,
 				80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */,
 				8086960523B8D2B20007E75D /* main.swift in Sources */,
-				801E84172466FF800021CEAD /* BinaryDecoder.swift in Sources */,
 				80E216D0245DB08D00269C56 /* SAScene.swift in Sources */,
 				80E216D4245DB13400269C56 /* SAAsset.swift in Sources */,
 				80E216D6245DB1CF00269C56 /* SACamera.swift in Sources */,
@@ -463,25 +441,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		801E8406246464180021CEAD /* XCRemoteSwiftPackageReference "sticky-encoding" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stickytools/sticky-encoding";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = "1.0.0-beta.5";
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		801E8407246464180021CEAD /* StickyEncoding */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 801E8406246464180021CEAD /* XCRemoteSwiftPackageReference "sticky-encoding" */;
-			productName = StickyEncoding;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 808695F923B8D2B20007E75D /* Project object */;
 }

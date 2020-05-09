@@ -35,7 +35,7 @@ public class BinaryEncoder {
         case typeNotConformingToEncodable(Any.Type)
     }
     
-    func appendBytes<T>(of: T) {
+    internal func appendBytes<T>(of: T) {
         var target = of
         withUnsafeBytes(of: &target) {
             data.append(contentsOf: $0)
@@ -44,15 +44,15 @@ public class BinaryEncoder {
 }
 
 extension BinaryEncoder {
-    func encode(_ value: Float) {
+    private func encode(_ value: Float) {
         appendBytes(of: CFConvertFloatHostToSwapped(value))
     }
     
-    func encode(_ value: Double) {
+    private func encode(_ value: Double) {
         appendBytes(of: CFConvertDoubleHostToSwapped(value))
     }
     
-    func encode(_ value: Bool) throws {
+    private func encode(_ value: Bool) throws {
         try encode(value ? 1 as UInt8 : 0 as UInt8)
     }
     

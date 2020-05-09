@@ -10,4 +10,7 @@
    <FileRef
       location = "group:SparrowECS/SparrowECS.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:SparrowBinaryCoder/SparrowBinaryCoder.xcodeproj">
+   </FileRef>
 </Workspace>

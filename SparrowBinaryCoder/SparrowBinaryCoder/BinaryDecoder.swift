@@ -27,21 +27,36 @@ public class BinaryDecoder {
         self.data = data
     }
     
-    static func decode<T: BinaryDecodable>(_ type: T.Type, data: [UInt8]) throws -> T {
-        return try BinaryDecoder(data: data).decode(T.self)
+    public static func decode<T: BinaryDecodable>(_ type: T.Type, data: [UInt8]) throws -> T {
+        let decoder = BinaryDecoder(data: data)
+        let value = try decoder.decode(T.self)
+        
+        if decoder.cursor != data.count {
+            throw Error.prematureEndOfDecoding
+        }
+        
+        return value
     }
     
     enum Error: Swift.Error {
         case prematureEndOfData
-        case typeNotConformingToBinaryDecoable(Decodable.Type)
-        case typeNotConformingToDecodable(Any.Type)
+        
+        case typeNotConformingToBinaryDecodable(Decodable.Type)
+        
         case intOutOfRange(Int64)
         case uintOutOfRange(UInt64)
+        
+        /// The encoded boolean value is not in a valid range (0-1)
         case boolOutOfRange(UInt8)
+        
+        /// String could not be created as the data is invalid UTF8
         case invalidUTF8([UInt8])
+        
+        /// The decoding ended but not all data was used yet. This can indicate a decoding with too small data type.
+        case prematureEndOfDecoding
     }
     
-    func read(_ byteCount: Int, into: UnsafeMutableRawPointer) throws {
+    internal func read(_ byteCount: Int, into: UnsafeMutableRawPointer) throws {
         if cursor + byteCount > data.count {
             throw Error.prematureEndOfData
         }
@@ -54,25 +69,25 @@ public class BinaryDecoder {
         cursor += byteCount
     }
     
-    func read<T>(into: inout T) throws {
+    internal func read<T>(into: inout T) throws {
         try read(MemoryLayout<T>.size, into: &into)
     }
 }
 
 extension BinaryDecoder {
-    func decode(_ type: Float.Type) throws -> Float {
+    private func decode(_ type: Float.Type) throws -> Float {
         var swapped = CFSwappedFloat32()
         try read(into: &swapped)
         return CFConvertFloatSwappedToHost(swapped)
     }
     
-    func decode(_ type: Double.Type) throws -> Double {
+    private func decode(_ type: Double.Type) throws -> Double {
         var swapped = CFSwappedFloat64()
         try read(into: &swapped)
         return CFConvertDoubleSwappedToHost(swapped)
     }
     
-    func decode(_ type: Bool.Type) throws -> Bool {
+    private func decode(_ type: Bool.Type) throws -> Bool {
         switch try decode(UInt8.self) {
         case 0: return false
         case 1: return true
@@ -109,7 +124,7 @@ extension BinaryDecoder {
             return try binaryT.init(fromBinary: self) as! T
             
         default:
-            throw Error.typeNotConformingToBinaryDecoable(type)
+            throw Error.typeNotConformingToBinaryDecodable(type)
         }
     }
 }
