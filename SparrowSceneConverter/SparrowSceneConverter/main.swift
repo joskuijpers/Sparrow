@@ -159,10 +159,11 @@ do {
     struct Test: BinaryCodable {
         let a: Int
         let bcddd: Int
+        let l: [Int]
         let t: String
     }
     
-    let input = Test(a: 1000, bcddd: 43, t: "hello")
+    let input = Test(a: 1000, bcddd: 43, l: [1], t: "hellow")
     let data = try BinaryEncoder.encode(input)
     
     print("DATA SIZE \(data.count)")
