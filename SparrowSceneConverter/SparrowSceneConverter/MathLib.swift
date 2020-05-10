@@ -6,7 +6,6 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-
 import simd
 
 public typealias float2 = SIMD2<Float>
