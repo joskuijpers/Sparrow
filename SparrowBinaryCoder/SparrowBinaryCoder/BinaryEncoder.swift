@@ -22,7 +22,7 @@ public class BinaryEncoder {
     fileprivate var data: [UInt8] = []
     
     /// Encoder a value with a binary encoder
-    static func encode(_ value: BinaryEncodable) throws -> [UInt8] {
+    public static func encode(_ value: BinaryEncodable) throws -> [UInt8] {
         let encoder = BinaryEncoder()
         try value.binaryEncode(to: encoder)
         return encoder.data

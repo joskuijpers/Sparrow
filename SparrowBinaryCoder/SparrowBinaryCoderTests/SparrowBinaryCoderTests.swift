@@ -8,6 +8,7 @@
 
 import XCTest
 @testable import SparrowBinaryCoder
+import simd
 
 class SparrowBinaryCoderTests: XCTestCase {
     struct Primitives: BinaryCodable {
@@ -310,7 +311,19 @@ class SparrowBinaryCoderTests: XCTestCase {
         AssertRoundtrip(SIMD4<Float>(253.23553,476.3252,347.6346,100000))
     }
     
+//MARK:- Matrices
     
+    func testMatrix4x4f() throws {
+        AssertRoundtrip(matrix_identity_float4x4)
+        
+        let mat = matrix_float4x4([0,1,2,3], [4,5,6,7], [8,9,10,11], [12,13,14,15])
+        AssertRoundtrip(mat)
+        
+        let data = try BinaryEncoder.encode(mat)
+        
+        // 4x4 matrix of floats (4 bytes)
+        XCTAssertEqual(data.count, 4 * 4 * 4)
+    }
 }
 
 /// Assert equal without Equal protocol
