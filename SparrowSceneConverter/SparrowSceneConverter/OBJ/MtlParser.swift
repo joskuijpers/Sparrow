@@ -17,8 +17,6 @@ class MtlParser: StructuredTextParser {
     init(url: URL) throws {
         self.url = url
         
-        print("TRY URL \(url)")
-        
         let input = try String(contentsOf: url)
         super.init(input: input)
     }
