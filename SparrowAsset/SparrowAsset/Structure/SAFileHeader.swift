@@ -9,7 +9,7 @@
 import SparrowBinaryCoder
 
 /// Sparrow Asset file header.
-public struct SAFileHeader: BinaryCodable {
+struct SAFileHeader: BinaryCodable {
     /// Indicator of the SparrowAsset file: a prefix.
     private(set) var indicator = SAFileHeaderIndicator() // Must be a var so codable can override it
     
@@ -17,17 +17,17 @@ public struct SAFileHeader: BinaryCodable {
     private(set) var version: SAFileVersion = .version1
     
     /// The generator used to generate the file.
-    public let generator: String
+    let generator: String
     
     /// The origin of the data used to generate the file. Useful for re-generation
-    public let origin: String
+    let origin: String
     
     /// The version of the asset file format
-    public enum SAFileVersion: UInt8, BinaryCodable {
+    enum SAFileVersion: UInt8, BinaryCodable {
         case version1 = 1
     }
     
-    public init(generator: String, origin: String?) {
+    init(generator: String, origin: String?) {
         self.generator = generator
         self.origin = origin ?? ""
     }

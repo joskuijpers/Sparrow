@@ -29,10 +29,6 @@ public struct SAAsset: BinaryCodable {
     public var bufferViews: [SABufferView] = []
     public var lights: [SALight] = []
     
-    public init(header: SAFileHeader) {
-        self.header = header
-    }
-    
     public init(generator: String, origin: String?) {
         self.header = SAFileHeader(generator: generator, origin: origin)
     }
