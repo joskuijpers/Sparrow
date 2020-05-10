@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		801E840C246464370021CEAD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E840B246464370021CEAD /* Metal.framework */; };
 		801E843D24670F940021CEAD /* SparrowBinaryCoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */; };
+		801E844A246829510021CEAD /* ObjParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E8449246829510021CEAD /* ObjParser.swift */; };
+		801E844C246829570021CEAD /* MtlParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844B246829570021CEAD /* MtlParser.swift */; };
+		801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844D246829770021CEAD /* StructuredTextParser.swift */; };
+		801E8450246829F40021CEAD /* ObjTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844F246829F40021CEAD /* ObjTypes.swift */; };
+		801E845224682A310021CEAD /* ToolExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E845124682A310021CEAD /* ToolExtensions.swift */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C5245C4FA000269C56 /* SAMaterial.swift */; };
@@ -22,7 +27,7 @@
 		80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216D7245DB22F00269C56 /* SABuffer.swift */; };
 		80E216DA245DB5B500269C56 /* SALight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216D9245DB5B500269C56 /* SALight.swift */; };
 		80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DB245DBA6F00269C56 /* GLTFImporter.swift */; };
-		80E216DE245DBA7600269C56 /* OBJImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* OBJImporter.swift */; };
+		80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporter.swift */; };
 		80E216E3245DD18600269C56 /* MathLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216E2245DD18600269C56 /* MathLib.swift */; };
 		80E216E5245EF9EB00269C56 /* SABufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216E4245EF9EB00269C56 /* SABufferView.swift */; };
 /* End PBXBuildFile section */
@@ -53,6 +58,11 @@
 		801E840B246464370021CEAD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		801E840D246469E90021CEAD /* SparrowSceneConverter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SparrowSceneConverter.entitlements; sourceTree = "<group>"; };
 		801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowBinaryCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		801E8449246829510021CEAD /* ObjParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjParser.swift; sourceTree = "<group>"; };
+		801E844B246829570021CEAD /* MtlParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MtlParser.swift; sourceTree = "<group>"; };
+		801E844D246829770021CEAD /* StructuredTextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructuredTextParser.swift; sourceTree = "<group>"; };
+		801E844F246829F40021CEAD /* ObjTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjTypes.swift; sourceTree = "<group>"; };
+		801E845124682A310021CEAD /* ToolExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToolExtensions.swift; path = OBJ/ToolExtensions.swift; sourceTree = "<group>"; };
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -68,7 +78,7 @@
 		80E216D7245DB22F00269C56 /* SABuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SABuffer.swift; sourceTree = "<group>"; };
 		80E216D9245DB5B500269C56 /* SALight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SALight.swift; sourceTree = "<group>"; };
 		80E216DB245DBA6F00269C56 /* GLTFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLTFImporter.swift; sourceTree = "<group>"; };
-		80E216DD245DBA7600269C56 /* OBJImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OBJImporter.swift; sourceTree = "<group>"; };
+		80E216DD245DBA7600269C56 /* ObjImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjImporter.swift; sourceTree = "<group>"; };
 		80E216E2245DD18600269C56 /* MathLib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathLib.swift; sourceTree = "<group>"; };
 		80E216E4245EF9EB00269C56 /* SABufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SABufferView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +96,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		801E8448246828A60021CEAD /* OBJ */ = {
+			isa = PBXGroup;
+			children = (
+				80E216DD245DBA7600269C56 /* ObjImporter.swift */,
+				801E844F246829F40021CEAD /* ObjTypes.swift */,
+				801E8449246829510021CEAD /* ObjParser.swift */,
+				801E844B246829570021CEAD /* MtlParser.swift */,
+				801E844D246829770021CEAD /* StructuredTextParser.swift */,
+			);
+			path = OBJ;
+			sourceTree = "<group>";
+		};
 		808695F823B8D2B20007E75D = {
 			isa = PBXGroup;
 			children = (
@@ -111,7 +133,8 @@
 				80E216C4245C4F8400269C56 /* SparrowAsset */,
 				8086960423B8D2B20007E75D /* main.swift */,
 				80E216DB245DBA6F00269C56 /* GLTFImporter.swift */,
-				80E216DD245DBA7600269C56 /* OBJImporter.swift */,
+				801E845124682A310021CEAD /* ToolExtensions.swift */,
+				801E8448246828A60021CEAD /* OBJ */,
 				80E216E2245DD18600269C56 /* MathLib.swift */,
 				80E216C8245DAF4500269C56 /* Support */,
 			);
@@ -228,10 +251,13 @@
 				80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */,
 				80E216DA245DB5B500269C56 /* SALight.swift in Sources */,
 				80E216CA245DAF5600269C56 /* SAMesh.swift in Sources */,
-				80E216DE245DBA7600269C56 /* OBJImporter.swift in Sources */,
+				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
+				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
+				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,
 				80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */,
 				80E216E5245EF9EB00269C56 /* SABufferView.swift in Sources */,
+				801E8450246829F40021CEAD /* ObjTypes.swift in Sources */,
 				80E216CC245DAF5B00269C56 /* SANode.swift in Sources */,
 				80E216E3245DD18600269C56 /* MathLib.swift in Sources */,
 				80E216CE245DAF6000269C56 /* SASubmesh.swift in Sources */,
@@ -239,7 +265,9 @@
 				8086960523B8D2B20007E75D /* main.swift in Sources */,
 				80E216D0245DB08D00269C56 /* SAScene.swift in Sources */,
 				80E216D4245DB13400269C56 /* SAAsset.swift in Sources */,
+				801E845224682A310021CEAD /* ToolExtensions.swift in Sources */,
 				80E216D6245DB1CF00269C56 /* SACamera.swift in Sources */,
+				801E844C246829570021CEAD /* MtlParser.swift in Sources */,
 				80E216D2245DB0E500269C56 /* SATexture.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
