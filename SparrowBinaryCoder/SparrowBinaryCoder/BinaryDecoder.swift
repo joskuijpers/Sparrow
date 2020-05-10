@@ -43,6 +43,7 @@ public class BinaryDecoder {
         
         case typeNotConformingToBinaryDecodable(Decodable.Type)
         
+        /// Value was out of range for an integer, or a reasonable integer was expected but not received. Always indicates structure mismatch.
         case intOutOfRange(Int64)
         case uintOutOfRange(UInt64)
         

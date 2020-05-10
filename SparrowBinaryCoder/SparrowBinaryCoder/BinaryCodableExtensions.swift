@@ -76,6 +76,13 @@ extension Array: BinaryCodable where Element: Codable {
     public init(fromBinary decoder: BinaryDecoder) throws {
         let count = try decoder.decode(Int.self)
         self.init()
+        
+        // Value can never be this high. if it is, we did read a byte too few
+        // before and a high bit was set for the count.
+        if count > UInt32.max {
+            throw BinaryDecoder.Error.intOutOfRange(Int64(count))
+        }
+        
         self.reserveCapacity(count)
 
         for _ in 0..<count {
