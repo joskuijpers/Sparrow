@@ -9,6 +9,9 @@
 import Foundation
 import SparrowBinaryCoder
 
+/**
+ Asset load for SparrowAsset (.sa) files.
+ */
 class SparrowAssetLoader {
     private let data: Data
     
@@ -24,6 +27,9 @@ class SparrowAssetLoader {
         
         /// The checksum was not valid.
         case invalidChecksum
+        
+        /// The extension was not `sa`.
+        case invalidExtension(String)
     }
     
     private init(data: Data) {
@@ -68,6 +74,10 @@ class SparrowAssetLoader {
     
     /// Load an asset from given URL.
     static func load(from url: URL) throws -> SAAsset {
+        if url.pathExtension != "sa" {
+            throw Error.invalidExtension(url.pathExtension)
+        }
+        
         let data = try Data(contentsOf: url, options: .dataReadingMapped)
         let loader = SparrowAssetLoader(data: data)
 
