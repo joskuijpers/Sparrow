@@ -84,7 +84,7 @@ private extension ObjImporter {
 //            let tx: Float = 0
 //            let ty: Float = 0
 //            let tz: Float = 0
-//            
+//
 //            let btx: Float = 0
 //            let bty: Float = 0
 //            let btz: Float = 0
@@ -93,6 +93,7 @@ private extension ObjImporter {
             let v: Float
         }
 
+        // Keep track of the mesh bounds
         var meshMin = float3(Float.infinity, Float.infinity, Float.infinity)
         var meshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
         
@@ -145,45 +146,7 @@ private extension ObjImporter {
             }
         
             // Create material
-            var material: Int?
-            if let materialName = submesh.material, let mat = mtl.materials.first(where: { $0.name == materialName }) {
-                var albedo = SAMaterialProperty.none
-                if let texture = mat.albedoTexture {
-                    albedo = SAMaterialProperty.texture(addTexture(texture))
-                } else {
-                    albedo = SAMaterialProperty.color(float4(mat.albedoColor, mat.alpha))
-                }
-                
-                var normals = SAMaterialProperty.none
-                if let texture = mat.normalTexture {
-                    normals = SAMaterialProperty.texture(addTexture(texture))
-                }
-                
-                var emissive = SAMaterialProperty.none
-                if let texture = mat.emissiveTexture {
-                    emissive = SAMaterialProperty.texture(addTexture(texture))
-                } else {
-                    if mat.emissiveColor == float3(0, 0, 0) {
-                        // Save None so we spare 3 unused floats
-                        emissive = SAMaterialProperty.none
-                    } else {
-                        emissive = SAMaterialProperty.color(float4(mat.emissiveColor, 1))
-                    }
-                }
-                
-                var rma = SAMaterialProperty.none
-                
-                let m = SAMaterial(name: mat.name,
-                                   albedo: albedo,
-                                   normals: normals,
-                                   roughnessMetalnessOcclusion: rma,
-                                   emissive: emissive,
-                                   alphaMode: .opaque,
-                                   alphaCutoff: 0.5)
-                material = addMaterial(m)
-            } else {
-                material = -1
-            }
+            let material = generateMaterial(submesh: submesh)
             
             // Put index buffer with submesh + name + material + bounds.
             let ibSize = use16Bit ? MemoryLayout<UInt16>.stride * submeshIndexBuffer16.count : MemoryLayout<UInt32>.stride * submeshIndexBuffer32.count
@@ -195,7 +158,11 @@ private extension ObjImporter {
             // Add to final buffer
             indexBuffer.append(ibData)
             
-            let submesh = SASubmesh(indices: bufferView, material: material!, min: submeshMin, max: submeshMax, indexType: use16Bit ? .uint16 : .uint32)
+            let submesh = SASubmesh(indices: bufferView,
+                                    material: material,
+                                    min: submeshMin,
+                                    max: submeshMax,
+                                    indexType: use16Bit ? .uint16 : .uint32)
             submeshes.append(submesh)
             
             // Update bounds of mesh using bounds of submesh
@@ -238,6 +205,48 @@ private extension ObjImporter {
             bv.buffer = buffer
             bv.offset += vertexDataSize
             asset.bufferViews[submesh.indices] = bv
+        }
+    }
+    
+    /// Generate a material definition from data provided in the mesh and material file.
+    private func generateMaterial(submesh: ObjSubmesh) -> Int {
+        if let materialName = submesh.material, let mat = mtlFile!.materials.first(where: { $0.name == materialName }) {
+            var albedo = SAMaterialProperty.none
+            if let texture = mat.albedoTexture {
+                albedo = SAMaterialProperty.texture(addTexture(texture))
+            } else {
+                albedo = SAMaterialProperty.color(float4(mat.albedoColor, mat.alpha))
+            }
+            
+            var normals = SAMaterialProperty.none
+            if let texture = mat.normalTexture {
+                normals = SAMaterialProperty.texture(addTexture(texture))
+            }
+            
+            var emissive = SAMaterialProperty.none
+            if let texture = mat.emissiveTexture {
+                emissive = SAMaterialProperty.texture(addTexture(texture))
+            } else {
+                if mat.emissiveColor == float3(0, 0, 0) {
+                    // Save None so we spare 3 unused floats
+                    emissive = SAMaterialProperty.none
+                } else {
+                    emissive = SAMaterialProperty.color(float4(mat.emissiveColor, 1))
+                }
+            }
+            
+            var rma = SAMaterialProperty.none
+            
+            let m = SAMaterial(name: mat.name,
+                               albedo: albedo,
+                               normals: normals,
+                               roughnessMetalnessOcclusion: rma,
+                               emissive: emissive,
+                               alphaMode: .opaque,
+                               alphaCutoff: 0.5)
+            return addMaterial(m)
+        } else {
+            return -1
         }
     }
 }
