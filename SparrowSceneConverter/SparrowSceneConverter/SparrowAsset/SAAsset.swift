@@ -14,6 +14,13 @@ struct SAAsset: BinaryCodable {
     /// File header with indicator, version, generator, and origin.
     let header: SAFileHeader
     
+    /**
+     File checksum.
+     
+     Composed of the sizes of the content lists.
+     */
+    var checksum: UInt = 0
+    
     var materials: [SAMaterial] = []
     var nodes: [SANode] = []
     var meshes: [SAMesh] = []
@@ -22,8 +29,6 @@ struct SAAsset: BinaryCodable {
     var buffers: [SABuffer] = []
     var bufferViews: [SABufferView] = []
     var lights: [SALight] = []
-    
-    var checksum: UInt = 0
     
     /// Update the checksum to match the content.
     mutating func updateChecksum() {
