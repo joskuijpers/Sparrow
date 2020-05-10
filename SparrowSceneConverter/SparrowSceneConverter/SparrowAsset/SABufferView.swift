@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SABufferView: Codable {
+struct SABufferView: BinaryCodable {
     var buffer: Int
     var offset: Int
     var length: Int

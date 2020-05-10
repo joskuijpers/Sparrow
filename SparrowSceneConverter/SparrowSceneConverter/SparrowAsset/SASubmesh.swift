@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SASubmesh: Codable {
-    enum IndexType: UInt8, Codable {
+struct SASubmesh: BinaryCodable {
+    enum IndexType: UInt8, BinaryCodable {
         case uint16 = 0
         case uint32 = 1
     }

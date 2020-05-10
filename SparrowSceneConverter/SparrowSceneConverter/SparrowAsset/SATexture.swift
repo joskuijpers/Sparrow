@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SATexture: Codable {
+struct SATexture: BinaryCodable {
 //    let uri: URL
     let relativePath: String
 //    var uri: String

@@ -7,7 +7,8 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SAScene: Codable {
+struct SAScene: BinaryCodable {
     var nodes: [Int] = []
 }

@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SAAsset: Codable {
+struct SAAsset: BinaryCodable {
     var generator: String
     var origin: String
     var version: Int

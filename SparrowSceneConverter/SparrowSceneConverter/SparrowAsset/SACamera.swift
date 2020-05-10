@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SACamera: Codable {
+struct SACamera: BinaryCodable {
     var type: SACameraType
     
     var aspectRatio: Float
@@ -20,7 +21,7 @@ struct SACamera: Codable {
 //    var ymag: Float
 }
 
-enum SACameraType: UInt8, Codable {
+enum SACameraType: UInt8, BinaryCodable {
     case perspective
 //    case orthographic
 }

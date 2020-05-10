@@ -7,14 +7,15 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SALight: Codable {
+struct SALight: BinaryCodable {
     var type: SALightType
     
     // color, intensity, range, innerConeAngle, outerConeAngle
 }
 
-enum SALightType: UInt8, Codable {
+enum SALightType: UInt8, BinaryCodable {
     case directional
     case point
     case spot

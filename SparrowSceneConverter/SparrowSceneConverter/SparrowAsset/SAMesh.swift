@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
-struct SAMesh: Codable {
+struct SAMesh: BinaryCodable {
     let name: String
     
     var submeshes: [SASubmesh]
@@ -31,7 +32,7 @@ struct SAMesh: Codable {
     }
 }
 
-enum SAVertexAttribute: UInt8, Codable {
+enum SAVertexAttribute: UInt8, BinaryCodable {
     case position
     case normal
     case tangent

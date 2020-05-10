@@ -8,8 +8,9 @@
 
 import Foundation
 import simd
+import SparrowBinaryCoder
 
-struct SANode: Codable {
+struct SANode: BinaryCodable {
     let name: String
     
     var matrix: matrix_float4x4 = matrix_identity_float4x4

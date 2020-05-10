@@ -8,9 +8,10 @@
 
 import Foundation
 import simd
+import SparrowBinaryCoder
 
 /// A material.
-struct SAMaterial: Codable {
+struct SAMaterial: BinaryCodable {
     var name: String
     
     var albedo: SAMaterialProperty
@@ -42,13 +43,13 @@ enum SAMaterialProperty {
     case texture(Int)
 }
 
-enum SAAlphaMode: UInt8, Codable {
+enum SAAlphaMode: UInt8, BinaryCodable {
     case opaque
     case mask
     case blend
 }
 
-extension SAMaterialProperty: Codable {
+extension SAMaterialProperty: BinaryCodable {
     enum CodingError: Error {
        case unknownValue
     }
