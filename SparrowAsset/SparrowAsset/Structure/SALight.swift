@@ -6,16 +6,15 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowBinaryCoder
 
-struct SALight: BinaryCodable {
-    var type: SALightType
+public struct SALight: BinaryCodable {
+    public var type: SALightType
     
     // color, intensity, range, innerConeAngle, outerConeAngle
 }
 
-enum SALightType: UInt8, BinaryCodable {
+public enum SALightType: UInt8, BinaryCodable {
     case directional
     case point
     case spot

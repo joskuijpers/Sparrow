@@ -6,7 +6,8 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
+import SparrowAsset
+
 import CoreGraphics
 import ImageIO
 import Metal

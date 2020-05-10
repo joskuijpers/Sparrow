@@ -6,18 +6,17 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import simd
 import SparrowBinaryCoder
 
 /// A material.
-struct SAMaterial: BinaryCodable {
-    var name: String
+public struct SAMaterial: BinaryCodable {
+    public let name: String
     
-    var albedo: SAMaterialProperty
-    var normals: SAMaterialProperty
-    var roughnessMetalnessOcclusion: SAMaterialProperty
-    var emissive: SAMaterialProperty
+    public let albedo: SAMaterialProperty
+    public let normals: SAMaterialProperty
+    public let roughnessMetalnessOcclusion: SAMaterialProperty
+    public let emissive: SAMaterialProperty
 //
 //    @property (nonatomic, assign) simd_float4 baseColorFactor;
 //    @property (nonatomic, assign) float metalnessFactor;
@@ -32,18 +31,34 @@ struct SAMaterial: BinaryCodable {
 //    @property (nonatomic, strong) GLTFTextureInfo * _Nullable emissiveTexture;
 //    @property (nonatomic, strong) GLTFTextureInfo * _Nullable occlusionTexture;
     
-    var alphaMode: SAAlphaMode
-    var alphaCutoff: Float
+    public let alphaMode: SAAlphaMode
+    public let alphaCutoff: Float
+    
+    public init(name: String,
+                albedo: SAMaterialProperty,
+                normals: SAMaterialProperty,
+                roughnessMetalnessOcclusion: SAMaterialProperty,
+                emissive: SAMaterialProperty,
+                alphaMode: SAAlphaMode,
+                alphaCutoff: Float) {
+        self.name = name
+        self.albedo = albedo
+        self.normals = normals
+        self.roughnessMetalnessOcclusion = roughnessMetalnessOcclusion
+        self.emissive = emissive
+        self.alphaMode = alphaMode
+        self.alphaCutoff = alphaCutoff
+    }
 }
 
 /// A material property
-enum SAMaterialProperty {
+public enum SAMaterialProperty {
     case none
     case color(SIMD4<Float>)
     case texture(Int)
 }
 
-enum SAAlphaMode: UInt8, BinaryCodable {
+public enum SAAlphaMode: UInt8, BinaryCodable {
     case opaque
     case mask
     case blend
@@ -54,7 +69,7 @@ extension SAMaterialProperty: BinaryCodable {
        case unknownValue
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         let type = try container.decode(UInt8.self)
         
@@ -72,7 +87,7 @@ extension SAMaterialProperty: BinaryCodable {
         }
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         
         switch self {

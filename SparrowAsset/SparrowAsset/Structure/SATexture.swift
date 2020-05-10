@@ -6,11 +6,12 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowBinaryCoder
 
-struct SATexture: BinaryCodable {
-//    let uri: URL
-    let relativePath: String
-//    var uri: String
+public struct SATexture: BinaryCodable {
+    public let relativePath: String
+    
+    public init(relativePath: String) {
+        self.relativePath = relativePath
+    }
 }

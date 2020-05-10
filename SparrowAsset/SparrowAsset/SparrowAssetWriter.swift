@@ -6,11 +6,10 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowBinaryCoder
 
 /// A writer for asset to the file system.
-class SparrowAssetWriter {
+public class SparrowAssetWriter {
     private let asset: SAAsset
     
     private init(asset: SAAsset) {

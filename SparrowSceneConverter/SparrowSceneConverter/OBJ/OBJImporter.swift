@@ -6,7 +6,7 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
+import SparrowAsset
 import simd
 
 class ObjImporter {
@@ -175,7 +175,7 @@ private extension ObjImporter {
         data.append(indexBuffer)
 
         // Add to file
-        let buffer = addBuffer(SABuffer(size: data.count, data: data))
+        let buffer = addBuffer(SABuffer(data: data))
         
         let vertexAttributes: [SAVertexAttribute] = [
             .position,
@@ -200,10 +200,11 @@ private extension ObjImporter {
         // Update all buffer views with the buffer index, as originally the view pointed to the offset
         // from first index buffer, and did not point to the buffer at all
         for submesh in submeshes {
-            var bv = asset.bufferViews[submesh.indices]
-            bv.buffer = buffer
-            bv.offset += vertexDataSize
-            asset.bufferViews[submesh.indices] = bv
+            let bv = asset.bufferViews[submesh.indices]
+            
+            let newView = SABufferView(buffer: buffer, offset: bv.offset + vertexDataSize, length: bv.length)
+            
+            asset.bufferViews[submesh.indices] = newView
         }
     }
     

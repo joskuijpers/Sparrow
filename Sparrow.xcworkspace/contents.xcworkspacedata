@@ -13,4 +13,7 @@
    <FileRef
       location = "group:SparrowBinaryCoder/SparrowBinaryCoder.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:SparrowAsset/SparrowAsset.xcodeproj">
+   </FileRef>
 </Workspace>

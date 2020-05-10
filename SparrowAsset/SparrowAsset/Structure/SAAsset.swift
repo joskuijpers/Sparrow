@@ -6,11 +6,10 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowBinaryCoder
 
 /// Sparrow Asset file format.
-struct SAAsset: BinaryCodable {
+public struct SAAsset: BinaryCodable {
     /// File header with indicator, version, generator, and origin.
     let header: SAFileHeader
     
@@ -19,19 +18,29 @@ struct SAAsset: BinaryCodable {
      
      Composed of the sizes of the content lists.
      */
-    var checksum: UInt = 0
+    private var checksum: UInt = 0
     
-    var materials: [SAMaterial] = []
-    var nodes: [SANode] = []
-    var meshes: [SAMesh] = []
-    var textures: [SATexture] = []
-    var scenes: [SAScene] = []
-    var buffers: [SABuffer] = []
-    var bufferViews: [SABufferView] = []
-    var lights: [SALight] = []
+    public var materials: [SAMaterial] = []
+    public var nodes: [SANode] = []
+    public var meshes: [SAMesh] = []
+    public var textures: [SATexture] = []
+    public var scenes: [SAScene] = []
+    public var buffers: [SABuffer] = []
+    public var bufferViews: [SABufferView] = []
+    public var lights: [SALight] = []
     
+    public init(header: SAFileHeader) {
+        self.header = header
+    }
+    
+    public init(generator: String, origin: String?) {
+        self.header = SAFileHeader(generator: generator, origin: origin)
+    }
+}
+
+extension SAAsset {
     /// Update the checksum to match the content.
-    mutating func updateChecksum() {
+    public mutating func updateChecksum() {
         checksum = generateChecksum()
     }
     
@@ -52,7 +61,7 @@ struct SAAsset: BinaryCodable {
     }
     
     /// Get whether the checksum is valid for the content.
-    func verifyChecksum() -> Bool {
+    public func verifyChecksum() -> Bool {
         return checksum == generateChecksum()
     }
 }

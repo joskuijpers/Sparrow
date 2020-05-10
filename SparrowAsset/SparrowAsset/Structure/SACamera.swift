@@ -6,22 +6,21 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowBinaryCoder
 
-struct SACamera: BinaryCodable {
-    var type: SACameraType
+public struct SACamera: BinaryCodable {
+    public var type: SACameraType
     
-    var aspectRatio: Float
-    var yfox: Float
-    var zfar: Float
-    var znear: Float
+    public var aspectRatio: Float
+    public var yfox: Float
+    public var zfar: Float
+    public var znear: Float
     
 //    var xmag: Float
 //    var ymag: Float
 }
 
-enum SACameraType: UInt8, BinaryCodable {
+public enum SACameraType: UInt8, BinaryCodable {
     case perspective
 //    case orthographic
 }

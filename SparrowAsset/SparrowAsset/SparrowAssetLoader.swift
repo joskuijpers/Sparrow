@@ -6,13 +6,12 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowBinaryCoder
 
 /**
  Asset load for SparrowAsset (.sa) files.
  */
-class SparrowAssetLoader {
+public class SparrowAssetLoader {
     private let data: Data
     
     enum Error: Swift.Error {
@@ -73,7 +72,7 @@ class SparrowAssetLoader {
     }
     
     /// Load an asset from given URL.
-    static func load(from url: URL) throws -> SAAsset {
+    public static func load(from url: URL) throws -> SAAsset {
         if url.pathExtension != "sa" {
             throw Error.invalidExtension(url.pathExtension)
         }
@@ -85,7 +84,7 @@ class SparrowAssetLoader {
     }
     
     /// Load an asset from given Data.
-    static func load(from data: Data) throws -> SAAsset {
+    public static func load(from data: Data) throws -> SAAsset {
         let loader = SparrowAssetLoader(data: data)
 
         return try loader.load()
