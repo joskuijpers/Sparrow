@@ -126,23 +126,25 @@ class Texture {
 
 
 
-let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/ironSphere.obj") // 48%
-let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj") // 45%
-let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj")
+let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/ironSphere.obj") // 48% -> 35%
+let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj") // 45% -> 35%
+let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj") // 44% -> 33%
 
 
 let url = url3
-let asset = try ObjImporter.import(from: url)
+var asset = try ObjImporter.import(from: url)
 
 
 print("\(String(describing: asset))")
-
+print("ASSET BUFFER \(asset.buffers)")
 
 do {
     let size = try FileManager.default.attributesOfItem(atPath: url.path)[.size] as! UInt64
     
     let data = try BinaryEncoder.encode(asset)
     print("DATA SIZE \(data.count) DOWN FROM ORIGINAL \(size), FOR TOTAL OF \(Float(data.count) / Float(size))")
+    
+    print(data[0 ..< 20])
 
 //    let assetRev = try BinaryDecoder.decode(SAAsset.self, data: data)
 //    print(assetRev)

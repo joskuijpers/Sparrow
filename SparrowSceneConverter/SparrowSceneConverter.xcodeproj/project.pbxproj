@@ -14,6 +14,9 @@
 		801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844D246829770021CEAD /* StructuredTextParser.swift */; };
 		801E8450246829F40021CEAD /* ObjTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844F246829F40021CEAD /* ObjTypes.swift */; };
 		801E845224682A310021CEAD /* ToolExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E845124682A310021CEAD /* ToolExtensions.swift */; };
+		801E8455246835FF0021CEAD /* SAFileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E8454246835FF0021CEAD /* SAFileHeader.swift */; };
+		804763CD24683CC60072DD04 /* SparrowAssetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804763CC24683CC60072DD04 /* SparrowAssetLoader.swift */; };
+		804763CF24683DD40072DD04 /* SparrowAssetWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804763CE24683DD40072DD04 /* SparrowAssetWriter.swift */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216C6245C4FA000269C56 /* SAMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C5245C4FA000269C56 /* SAMaterial.swift */; };
@@ -63,6 +66,9 @@
 		801E844D246829770021CEAD /* StructuredTextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructuredTextParser.swift; sourceTree = "<group>"; };
 		801E844F246829F40021CEAD /* ObjTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjTypes.swift; sourceTree = "<group>"; };
 		801E845124682A310021CEAD /* ToolExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ToolExtensions.swift; path = OBJ/ToolExtensions.swift; sourceTree = "<group>"; };
+		801E8454246835FF0021CEAD /* SAFileHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAFileHeader.swift; sourceTree = "<group>"; };
+		804763CC24683CC60072DD04 /* SparrowAssetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparrowAssetLoader.swift; sourceTree = "<group>"; };
+		804763CE24683DD40072DD04 /* SparrowAssetWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparrowAssetWriter.swift; sourceTree = "<group>"; };
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -170,6 +176,7 @@
 			children = (
 				80E216C5245C4FA000269C56 /* SAMaterial.swift */,
 				80E216D3245DB13400269C56 /* SAAsset.swift */,
+				801E8454246835FF0021CEAD /* SAFileHeader.swift */,
 				80E216CB245DAF5B00269C56 /* SANode.swift */,
 				80E216C9245DAF5600269C56 /* SAMesh.swift */,
 				80E216CD245DAF6000269C56 /* SASubmesh.swift */,
@@ -179,6 +186,8 @@
 				80E216D9245DB5B500269C56 /* SALight.swift */,
 				80E216D7245DB22F00269C56 /* SABuffer.swift */,
 				80E216E4245EF9EB00269C56 /* SABufferView.swift */,
+				804763CC24683CC60072DD04 /* SparrowAssetLoader.swift */,
+				804763CE24683DD40072DD04 /* SparrowAssetWriter.swift */,
 			);
 			path = SparrowAsset;
 			sourceTree = "<group>";
@@ -257,10 +266,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */,
+				801E8455246835FF0021CEAD /* SAFileHeader.swift in Sources */,
 				80E216DA245DB5B500269C56 /* SALight.swift in Sources */,
 				80E216CA245DAF5600269C56 /* SAMesh.swift in Sources */,
 				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
 				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
+				804763CF24683DD40072DD04 /* SparrowAssetWriter.swift in Sources */,
 				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,
 				80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */,
@@ -277,6 +288,7 @@
 				80E216D6245DB1CF00269C56 /* SACamera.swift in Sources */,
 				801E844C246829570021CEAD /* MtlParser.swift in Sources */,
 				80E216D2245DB0E500269C56 /* SATexture.swift in Sources */,
+				804763CD24683CC60072DD04 /* SparrowAssetLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
