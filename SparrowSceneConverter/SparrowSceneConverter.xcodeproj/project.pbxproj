@@ -27,7 +27,7 @@
 		80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216D7245DB22F00269C56 /* SABuffer.swift */; };
 		80E216DA245DB5B500269C56 /* SALight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216D9245DB5B500269C56 /* SALight.swift */; };
 		80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DB245DBA6F00269C56 /* GLTFImporter.swift */; };
-		80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporter.swift */; };
+		80E216DE245DBA7600269C56 /* OBJImporterXXX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* OBJImporterXXX.swift */; };
 		80E216E3245DD18600269C56 /* MathLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216E2245DD18600269C56 /* MathLib.swift */; };
 		80E216E5245EF9EB00269C56 /* SABufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216E4245EF9EB00269C56 /* SABufferView.swift */; };
 /* End PBXBuildFile section */
@@ -78,7 +78,7 @@
 		80E216D7245DB22F00269C56 /* SABuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SABuffer.swift; sourceTree = "<group>"; };
 		80E216D9245DB5B500269C56 /* SALight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SALight.swift; sourceTree = "<group>"; };
 		80E216DB245DBA6F00269C56 /* GLTFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLTFImporter.swift; sourceTree = "<group>"; };
-		80E216DD245DBA7600269C56 /* ObjImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjImporter.swift; sourceTree = "<group>"; };
+		80E216DD245DBA7600269C56 /* OBJImporterXXX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OBJImporterXXX.swift; sourceTree = "<group>"; };
 		80E216E2245DD18600269C56 /* MathLib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathLib.swift; sourceTree = "<group>"; };
 		80E216E4245EF9EB00269C56 /* SABufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SABufferView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -99,7 +99,7 @@
 		801E8448246828A60021CEAD /* OBJ */ = {
 			isa = PBXGroup;
 			children = (
-				80E216DD245DBA7600269C56 /* ObjImporter.swift */,
+				80E216DD245DBA7600269C56 /* OBJImporterXXX.swift */,
 				801E844F246829F40021CEAD /* ObjTypes.swift */,
 				801E8449246829510021CEAD /* ObjParser.swift */,
 				801E844B246829570021CEAD /* MtlParser.swift */,
@@ -253,7 +253,7 @@
 				80E216CA245DAF5600269C56 /* SAMesh.swift in Sources */,
 				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
 				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
-				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
+				80E216DE245DBA7600269C56 /* OBJImporterXXX.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,
 				80E216D8245DB22F00269C56 /* SABuffer.swift in Sources */,
 				80E216E5245EF9EB00269C56 /* SABufferView.swift in Sources */,
