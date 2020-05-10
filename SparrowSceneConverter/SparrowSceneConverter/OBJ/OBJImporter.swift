@@ -53,6 +53,7 @@ private extension ObjImporter {
         }
         
         buildAsset()
+        asset.updateChecksum()
         
         return asset
     }
@@ -67,22 +68,36 @@ private extension ObjImporter {
     func buildAsset() {
         let obj = objFile!
         let mtl = mtlFile!
-        asset = SAAsset(generator: "SparrowSceneConverter", origin: url.path, version: 1)
         
-        // Build index buffer
-        struct VertexBufferItem: Hashable, Equatable {
-            let position: float3
-            let normal: float3
-//            let tangent: float3 = float3(0, 1, 0)
-//            let bitangent: float3 = float3(0, 1, 0)
-            let uv: float2
+        let header = SAFileHeader(version: .version1, generator: "SparrowSceneConverter", origin: url.path)
+        asset = SAAsset(header: header)
+        
+        // Vertex format. SIMD can't be used here due to the massive padding to keep alignment.
+        struct Vertex: Hashable, Equatable {
+            let x: Float
+            let y: Float
+            let z: Float
+            let nx: Float
+            let ny: Float
+            let nz: Float
+            
+//            let tx: Float = 0
+//            let ty: Float = 0
+//            let tz: Float = 0
+//            
+//            let btx: Float = 0
+//            let bty: Float = 0
+//            let btz: Float = 0
+            
+            let u: Float
+            let v: Float
         }
-        
+
         var meshMin = float3(Float.infinity, Float.infinity, Float.infinity)
         var meshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
         
-        var vertexBuffer: [VertexBufferItem] = []
-        var vertexMap: [VertexBufferItem:Int] = [:]
+        var vertexBuffer: [Vertex] = []
+        var vertexMap: [Vertex:Int] = [:]
         var indexBuffer = Data()
         var submeshes: [SASubmesh] = []
         
@@ -101,9 +116,10 @@ private extension ObjImporter {
             for face in submesh.faces {
                 for vertex in face.vertices {
                     // Add full vertex to vertex list
-                    let fVertex = VertexBufferItem(position: obj.positions[vertex.position - 1],
-                                                   normal: obj.normals[vertex.normal - 1],
-                                                   uv: obj.texCoords[vertex.texCoord - 1])
+                    let position = obj.positions[vertex.position - 1]
+                    let normal = obj.normals[vertex.normal - 1]
+                    let uv = obj.texCoords[vertex.texCoord - 1]
+                    let fVertex = Vertex(x: position.x, y: position.y, z: position.z, nx: normal.x, ny: normal.y, nz: normal.z, u: uv.x, v: uv.y)
                     
                     var index: Int = 0
                     if let existingIndex = vertexMap[fVertex] {
@@ -123,8 +139,8 @@ private extension ObjImporter {
                     }
                     
                     // Update bounds of submesh
-                    submeshMin = min(submeshMin, fVertex.position)
-                    submeshMax = max(submeshMax, fVertex.position)
+                    submeshMin = min(submeshMin, position)
+                    submeshMax = max(submeshMax, position)
                 }
             }
         
@@ -188,7 +204,7 @@ private extension ObjImporter {
         }
         
         // Create a final mesh buffer for vertices + index buffers
-        let vertexDataSize = MemoryLayout<VertexBufferItem>.stride * vertexBuffer.count
+        let vertexDataSize = MemoryLayout<Vertex>.stride * vertexBuffer.count
         var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
         data.append(indexBuffer)
 
