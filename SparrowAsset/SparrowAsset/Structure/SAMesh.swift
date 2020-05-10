@@ -16,16 +16,14 @@ public struct SAMesh: BinaryCodable {
     public let vertexBuffer: Int // BufferView
     public let vertexAttributes: [SAVertexAttribute]
     
-    public let min: SIMD3<Float>
-    public let max: SIMD3<Float>
+    public let bounds: SABounds
     
-    public init(name: String, submeshes: [SASubmesh], vertexBuffer: Int, vertexAttributes: [SAVertexAttribute], min: SIMD3<Float>, max: SIMD3<Float>) {
+    public init(name: String, submeshes: [SASubmesh], vertexBuffer: Int, vertexAttributes: [SAVertexAttribute], bounds: SABounds) {
         self.name = name
         self.submeshes = submeshes
         self.vertexBuffer = vertexBuffer
         self.vertexAttributes = vertexAttributes
-        self.min = min
-        self.max = max
+        self.bounds = bounds
     }
 }
 

@@ -17,16 +17,14 @@ public struct SASubmesh: BinaryCodable {
     public var indices: Int // BufferView
     public let material: Int
     
-    public let min: SIMD3<Float>
-    public let max: SIMD3<Float>
+    public let bounds: SABounds
     
     public let indexType: IndexType
     
-    public init(indices: Int, material: Int, min: SIMD3<Float>, max: SIMD3<Float>, indexType: IndexType) {
+    public init(indices: Int, material: Int, bounds: SABounds, indexType: IndexType) {
         self.indices = indices
         self.material = material
-        self.min = min
-        self.max = max
+        self.bounds = bounds
         self.indexType = indexType
     }
 }

@@ -25,6 +25,7 @@
 		804764122468A7F30072DD04 /* SABuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804763FD2468A7F20072DD04 /* SABuffer.swift */; };
 		804764132468A7F30072DD04 /* SASubmesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804763F92468A7F10072DD04 /* SASubmesh.swift */; };
 		804764142468A7F30072DD04 /* SAFileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804764032468A7F30072DD04 /* SAFileHeader.swift */; };
+		804764172468AE8D0072DD04 /* SABounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804764162468AE8D0072DD04 /* SABounds.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		804764042468A7F30072DD04 /* SAAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAAsset.swift; sourceTree = "<group>"; };
 		804764052468A7F30072DD04 /* SATexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SATexture.swift; sourceTree = "<group>"; };
 		804764062468A7F30072DD04 /* SAScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAScene.swift; sourceTree = "<group>"; };
+		804764162468AE8D0072DD04 /* SABounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SABounds.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 				804763FC2468A7F20072DD04 /* SALight.swift */,
 				804763FD2468A7F20072DD04 /* SABuffer.swift */,
 				804764002468A7F20072DD04 /* SABufferView.swift */,
+				804764162468AE8D0072DD04 /* SABounds.swift */,
 			);
 			path = Structure;
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 				804764082468A7F30072DD04 /* SATexture.swift in Sources */,
 				804764132468A7F30072DD04 /* SASubmesh.swift in Sources */,
 				8047640F2468A7F30072DD04 /* SANode.swift in Sources */,
+				804764172468AE8D0072DD04 /* SABounds.swift in Sources */,
 				8047640D2468A7F30072DD04 /* SACamera.swift in Sources */,
 				804764142468A7F30072DD04 /* SAFileHeader.swift in Sources */,
 				8047640A2468A7F30072DD04 /* SABufferView.swift in Sources */,

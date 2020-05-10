@@ -92,8 +92,7 @@ private extension ObjImporter {
         }
 
         // Keep track of the mesh bounds
-        var meshMin = float3(Float.infinity, Float.infinity, Float.infinity)
-        var meshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
+        var meshBounds = SABounds()
         
         var vertexBuffer: [Vertex] = []
         var vertexMap: [Vertex:Int] = [:]
@@ -106,8 +105,7 @@ private extension ObjImporter {
         
         // Add indices and vertices for each submesh
         for (_, submesh) in obj.submeshes.enumerated() {
-            var submeshMin = float3(Float.infinity, Float.infinity, Float.infinity)
-            var submeshMax = float3(-Float.infinity, -Float.infinity, -Float.infinity)
+            var submeshBounds = SABounds()
             
             var submeshIndexBuffer16: [UInt16] = []
             var submeshIndexBuffer32: [UInt32] = []
@@ -138,8 +136,7 @@ private extension ObjImporter {
                     }
                     
                     // Update bounds of submesh
-                    submeshMin = min(submeshMin, position)
-                    submeshMax = max(submeshMax, position)
+                    submeshBounds = submeshBounds.containing(position)
                 }
             }
         
@@ -158,14 +155,12 @@ private extension ObjImporter {
             
             let submesh = SASubmesh(indices: bufferView,
                                     material: material,
-                                    min: submeshMin,
-                                    max: submeshMax,
+                                    bounds: submeshBounds,
                                     indexType: use16Bit ? .uint16 : .uint32)
             submeshes.append(submesh)
             
             // Update bounds of mesh using bounds of submesh
-            meshMin = min(meshMin, submeshMin)
-            meshMax = max(meshMax, submeshMax)
+            meshBounds = meshBounds.containing(submeshBounds)
         }
         
         // Create a final mesh buffer for vertices + index buffers
@@ -192,8 +187,7 @@ private extension ObjImporter {
                           submeshes: submeshes,
                           vertexBuffer: vertexBufferView,
                           vertexAttributes: vertexAttributes,
-                          min: meshMin,
-                          max: meshMax)
+                          bounds: meshBounds)
         addNodeAndMesh(mesh)
         
         // Update all buffer views with the buffer index, as originally the view pointed to the offset
