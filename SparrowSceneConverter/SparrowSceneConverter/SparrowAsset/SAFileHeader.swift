@@ -12,10 +12,10 @@ import SparrowBinaryCoder
 /// Sparrow Asset file header.
 struct SAFileHeader: BinaryCodable {
     /// Indicator of the SparrowAsset file: a prefix.
-    private let indicator = SAFileHeaderIndicator()
+    let indicator: SAFileHeaderIndicator
     
     /// Version of the file format
-    var version: SAFileVersion
+    let version: SAFileVersion
     
     /// The generator used to generate the file.
     var generator: String
@@ -27,13 +27,26 @@ struct SAFileHeader: BinaryCodable {
     enum SAFileVersion: UInt8, BinaryCodable {
         case version1 = 1
     }
+    
+    init(generator: String, origin: String?) {
+        self.indicator = SAFileHeaderIndicator()
+        self.version = .version1
+        self.generator = generator
+        self.origin = origin ?? ""
+    }
 }
 
 /// File header indicator: 3 bytes 'SA '
 struct SAFileHeaderIndicator: BinaryCodable {
     // A string has a size encoded which we want to ignore for this special case.
+    private let p1: UInt8
+    private let p2: UInt8
+    private let p3: UInt8
     
-    private let p1 = UInt8("S".utf8.first!)
-    private let p2 = UInt8("A".utf8.first!)
-    private let p3 = UInt8(" ".utf8.first!)
+    init() {
+        // Note: cannot use default values as they are not read!
+        p1 = UInt8("S".utf8.first!)
+        p2 = UInt8("A".utf8.first!)
+        p3 = UInt8(" ".utf8.first!)
+    }
 }

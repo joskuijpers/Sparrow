@@ -11,7 +11,7 @@ import SparrowBinaryCoder
 
 /// A writer for asset to the file system.
 class SparrowAssetWriter {
-    let asset: SAAsset
+    private let asset: SAAsset
     
     private init(asset: SAAsset) {
         self.asset = asset

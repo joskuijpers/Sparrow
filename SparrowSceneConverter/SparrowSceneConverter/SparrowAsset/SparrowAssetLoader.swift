@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import SparrowBinaryCoder
 
 class SparrowAssetLoader {
+    private let data: Data
     
     enum Error: Swift.Error {
         /// The file is not a valid asset
@@ -16,15 +18,66 @@ class SparrowAssetLoader {
         
         /// The version of the asset does not match the version of the code.
         case invalidAssetVersion
+        
+        /// The file is incomplete or broken
+        case brokenFile(Swift.Error)
+        
+        /// The checksum was not valid.
+        case invalidChecksum
     }
     
-    /**
-     Load an asset from given URL.
-     */
+    private init(data: Data) {
+        self.data = data
+    }
+    
+    private func load() throws -> SAAsset {
+        let bytes = [UInt8](data)
+        
+        // Check if data > header size
+        if bytes.count <= MemoryLayout<SAFileHeader>.size {
+            throw Error.invalidAssetFormat
+        }
+        
+        // Verify header indication
+        let validHeader = try BinaryEncoder.encode(SAFileHeaderIndicator())
+        if Array(bytes[0..<validHeader.count]) != validHeader {
+            throw Error.invalidAssetFormat
+        }
+        
+        // Read header. Check version. Do not assume the rest of the file is decodable
+        let version = try BinaryDecoder.decode(SAFileHeader.SAFileVersion.self, data: [bytes[3]])
+        if version != .version1 { // TODO: PUT HIS 1 SOMEWHERE
+            throw Error.invalidAssetVersion
+        }
+
+        var asset: SAAsset!
+        do {
+            // Read the whole file
+            asset = try BinaryDecoder.decode(SAAsset.self, data: bytes)
+        } catch {
+            throw Error.brokenFile(error)
+        }
+        // `asset` will never be nil: it will either be a value or brokenFile has thrown
+        
+        if !asset.verifyChecksum() {
+            throw Error.invalidChecksum
+        }
+        
+        return asset
+    }
+    
+    /// Load an asset from given URL.
     static func load(from url: URL) throws -> SAAsset {
-        
-        
-        let header = SAFileHeader(version: .version1, generator: "test", origin: "test")
-        return SAAsset(header: header)
+        let data = try Data(contentsOf: url, options: .dataReadingMapped)
+        let loader = SparrowAssetLoader(data: data)
+
+        return try loader.load()
+    }
+    
+    /// Load an asset from given Data.
+    static func load(from data: Data) throws -> SAAsset {
+        let loader = SparrowAssetLoader(data: data)
+
+        return try loader.load()
     }
 }

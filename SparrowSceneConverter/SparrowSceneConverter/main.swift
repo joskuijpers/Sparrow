@@ -130,9 +130,19 @@ let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/R
 
 let url = url1
 
-// Import asset from .obj file
-let asset = try ObjImporter.import(from: url)
-
-// Output in binary
-let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/\(url.deletingPathExtension().lastPathComponent).sa")
-try SparrowAssetWriter.write(asset, to: outputUrl)
+do {
+    // Import asset from .obj file
+    let asset = try ObjImporter.import(from: url)
+    
+    // Output in binary
+    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/\(url.deletingPathExtension().lastPathComponent).sa")
+//    try SparrowAssetWriter.write(asset, to: outputUrl)
+    
+    let roundTrip = try SparrowAssetLoader.load(from: outputUrl)
+    
+    print("INPUT    ", asset.buffers)
+    print("ROUNDTRIP", roundTrip.buffers)
+    
+} catch {
+    print(error)
+}

@@ -67,9 +67,8 @@ private extension ObjImporter {
     */
     func buildAsset() {
         let obj = objFile!
-        let mtl = mtlFile!
         
-        let header = SAFileHeader(version: .version1, generator: "SparrowSceneConverter", origin: url.path)
+        let header = SAFileHeader(generator: "SparrowSceneConverter", origin: url.path)
         asset = SAAsset(header: header)
         
         // Vertex format. SIMD can't be used here due to the massive padding to keep alignment.
