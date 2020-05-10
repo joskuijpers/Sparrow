@@ -29,7 +29,7 @@ class SparrowAssetWriter {
         let data = Data(try writer.toBytes())
         try data.write(to: url)
         
-        print("Written SparrowAsset of \(data.count / 1024) KiB to \(url)")
+        print("Written SparrowAsset of \(data.count / 1024) KiB to \(url.path)")
     }
     
     /// Write the asset to a Data instance.
