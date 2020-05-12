@@ -123,7 +123,14 @@ class Texture {
     }
 }
 
-
+func getAlbedoTexturePath(asset: SAAsset, material: SAMaterial) -> String? {
+    switch material.albedo {
+    case .texture(let index):
+        return asset.textures[index].relativePath
+    default:
+        return nil
+    }
+}
 
 let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/ironSphere.obj") // 48% -> 35%
 let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj") // 45% -> 35%
@@ -136,14 +143,16 @@ do {
     let asset = try ObjImporter.import(from: url)
     
     // Output in binary
-    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/\(url.deletingPathExtension().lastPathComponent).sa")
-//    try SparrowAssetWriter.write(asset, to: outputUrl)
+    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/\(url.deletingPathExtension().lastPathComponent).spa")
+    try SparrowAssetWriter.write(asset, to: outputUrl)
     
     let roundTrip = try SparrowAssetLoader.load(from: outputUrl)
     
-    print("INPUT    ", asset.buffers)
-    print("ROUNDTRIP", roundTrip.buffers)
+    print("INPUT     \(String(describing: getAlbedoTexturePath(asset: asset, material: asset.materials[0])))")
+    print("ROUNDTRIP \(String(describing: getAlbedoTexturePath(asset: roundTrip, material: roundTrip.materials[0])))")
     
 } catch {
     print(error)
 }
+
+

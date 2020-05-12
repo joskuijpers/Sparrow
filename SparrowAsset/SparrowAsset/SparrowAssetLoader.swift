@@ -73,7 +73,7 @@ public class SparrowAssetLoader {
     
     /// Load an asset from given URL.
     public static func load(from url: URL) throws -> SAAsset {
-        if url.pathExtension != "sa" {
+        if url.pathExtension != "spa" {
             throw Error.invalidExtension(url.pathExtension)
         }
         

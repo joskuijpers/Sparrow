@@ -37,6 +37,6 @@ struct SAFileHeader: BinaryCodable {
 struct SAFileHeaderIndicator: BinaryCodable {
     // A string has a size encoded which we want to ignore for this special case.
     private var p1 = UInt8("S".utf8.first!)
-    private var p2 = UInt8("A".utf8.first!)
-    private var p3 = UInt8(" ".utf8.first!)
+    private var p2 = UInt8("P".utf8.first!)
+    private var p3 = UInt8("A".utf8.first!)
 }
