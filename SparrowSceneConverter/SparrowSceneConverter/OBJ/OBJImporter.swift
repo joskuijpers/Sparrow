@@ -134,8 +134,6 @@ private extension ObjImporter {
         }
     }
     
-    
-    
     /// Generate the list of submeshes with indexed buffers
     private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) -> ([SASubmesh], Data) where V: ObjTestVertex {
         var vertexBuffer: [V] = []
@@ -160,7 +158,6 @@ private extension ObjImporter {
                     if let existingIndex = vertexMap[packedVertex] {
                         index = existingIndex
                     } else {
-                        // Does not exist yet, add
                         vertexBuffer.append(packedVertex)
                         index = vertexBuffer.count - 1
                         vertexMap[packedVertex] = index
@@ -185,7 +182,7 @@ private extension ObjImporter {
             // View into the final index buffer
             let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffer.count, length: ibSize))
             
-            // Add to final buffer
+            // Add to final index buffer
             indexBuffer.append(ibData)
             
             let submesh = SASubmesh(indices: bufferView,
@@ -249,89 +246,6 @@ private extension ObjImporter {
             return -1
         }
     }
-    
-    
-
-    
-    struct TexturedVertex: ObjTestVertex {
-        init(obj: ObjFile, vertex: ObjVertex) {
-            let position = obj.positions[vertex.position - 1]
-            let normal = obj.normals[vertex.normal - 1]
-            let uv = obj.texCoords[vertex.texCoord - 1]
-            
-            x = position.x
-            y = position.y
-            z = position.z
-            
-            nx = normal.x
-            ny = normal.y
-            nz = normal.z
-            
-            u = uv.x
-            v = uv.y
-        }
-        
-        let x: Float
-        let y: Float
-        let z: Float
-        
-        let nx: Float
-        let ny: Float
-        let nz: Float
-        
-        let u: Float
-        let v: Float
-    }
-
-    struct TexturedTangentVertex: ObjTestVertex {
-        init(obj: ObjFile, vertex: ObjVertex) {
-            let position = obj.positions[vertex.position - 1]
-            let normal = obj.normals[vertex.normal - 1]
-            let uv = obj.texCoords[vertex.texCoord - 1]
-            
-            x = position.x
-            y = position.y
-            z = position.z
-            
-            nx = normal.x
-            ny = normal.y
-            nz = normal.z
-            
-            tx = 0
-            ty = 0
-            tz = 0
-            
-            btx = 0
-            bty = 0
-            btz = 0
-            
-            u = uv.x
-            v = uv.y
-        }
-        
-        let x: Float
-        let y: Float
-        let z: Float
-        
-        let nx: Float
-        let ny: Float
-        let nz: Float
-        
-        let tx: Float
-        let ty: Float
-        let tz: Float
-
-        let btx: Float
-        let bty: Float
-        let btz: Float
-        
-        let u: Float
-        let v: Float
-    }
-}
-
-protocol ObjTestVertex: Hashable {
-    init(obj: ObjFile, vertex: ObjVertex)
 }
 
 //MARK: - Adding items to the asset
@@ -379,3 +293,84 @@ private extension ObjImporter {
     }
 }
 
+fileprivate protocol ObjTestVertex: Hashable {
+    init(obj: ObjFile, vertex: ObjVertex)
+}
+
+/// A vertex with position,normals and texture coordinates
+fileprivate struct TexturedVertex: ObjTestVertex {
+    init(obj: ObjFile, vertex: ObjVertex) {
+        let position = obj.positions[vertex.position - 1]
+        let normal = obj.normals[vertex.normal - 1]
+        let uv = obj.texCoords[vertex.texCoord - 1]
+        
+        x = position.x
+        y = position.y
+        z = position.z
+        
+        nx = normal.x
+        ny = normal.y
+        nz = normal.z
+        
+        u = uv.x
+        v = uv.y
+    }
+    
+    let x: Float
+    let y: Float
+    let z: Float
+    
+    let nx: Float
+    let ny: Float
+    let nz: Float
+    
+    let u: Float
+    let v: Float
+}
+
+/// A vertex with position,normals, tangents and texture coordinates
+fileprivate struct TexturedTangentVertex: ObjTestVertex {
+    init(obj: ObjFile, vertex: ObjVertex) {
+        let position = obj.positions[vertex.position - 1]
+        let normal = obj.normals[vertex.normal - 1]
+        let uv = obj.texCoords[vertex.texCoord - 1]
+        
+        x = position.x
+        y = position.y
+        z = position.z
+        
+        nx = normal.x
+        ny = normal.y
+        nz = normal.z
+        
+        tx = 0
+        ty = 0
+        tz = 0
+        
+        btx = 0
+        bty = 0
+        btz = 0
+        
+        u = uv.x
+        v = uv.y
+    }
+    
+    let x: Float
+    let y: Float
+    let z: Float
+    
+    let nx: Float
+    let ny: Float
+    let nz: Float
+    
+    let tx: Float
+    let ty: Float
+    let tz: Float
+
+    let btx: Float
+    let bty: Float
+    let btz: Float
+    
+    let u: Float
+    let v: Float
+}
