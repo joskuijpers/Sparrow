@@ -140,7 +140,7 @@ let url = url1
 
 do {
     // Import asset from .obj file
-    let asset = try ObjImporter.import(from: url)
+    let asset = try ObjImporter.import(from: url, options: [.generateTangents])
     
     // Output in binary
     let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/\(url.deletingPathExtension().lastPathComponent).spa")

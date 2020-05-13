@@ -11,6 +11,7 @@ import simd
 
 class ObjImporter {
     private let url: URL
+    private let generateTangents: Bool
     
     private var objFile: ObjFile?
     private var mtlFile: MtlFile?
@@ -21,19 +22,34 @@ class ObjImporter {
         case fileFormatNotSupported
     }
     
-    private init(url: URL) throws {
+    enum Options {
+        /// Generate tangents and bitangents
+        case generateTangents
+    }
+    
+    private init(url: URL, options: [Options] = []) throws {
         guard url.pathExtension == "obj" else {
             throw Error.fileFormatNotSupported
         }
         
         self.url = url
+        
+        var generateTangents = false
+        for option in options {
+            switch option {
+            case .generateTangents:
+                generateTangents = true
+            }
+        }
+        
+        self.generateTangents = generateTangents
     }
     
     /**
      Import an asset from given URL.
      */
-    static func `import`(from url: URL) throws -> SAAsset {
-        let importer = try ObjImporter(url: url)
+    static func `import`(from url: URL, options: [Options] = []) throws -> SAAsset {
+        let importer = try ObjImporter(url: url, options: options)
         
         return try importer.generate()
     }
@@ -70,114 +86,31 @@ private extension ObjImporter {
         
         asset = SAAsset(generator: "SparrowSceneConverter", origin: url.path)
         
-        // Vertex format. SIMD can't be used here due to the massive padding to keep alignment.
-        struct Vertex: Hashable, Equatable {
-            let x: Float
-            let y: Float
-            let z: Float
-            let nx: Float
-            let ny: Float
-            let nz: Float
-            
-//            let tx: Float = 0
-//            let ty: Float = 0
-//            let tz: Float = 0
-//
-//            let btx: Float = 0
-//            let bty: Float = 0
-//            let btz: Float = 0
-            
-            let u: Float
-            let v: Float
-        }
-
-        // Keep track of the mesh bounds
+        // Build all submeshes and buffers depending on config
         var meshBounds = SABounds()
+        var vertexDataSize: Int = 0
+        var submeshes: [SASubmesh]
+        var data: Data
         
-        var vertexBuffer: [Vertex] = []
-        var vertexMap: [Vertex:Int] = [:]
-        var indexBuffer = Data()
-        var submeshes: [SASubmesh] = []
-        
-        // Find total number of possible vertices
-        let totalMaxVertices = obj.submeshes.map { $0.faces.count * 3 }.reduce(0) {$0 + $1 }
-        let use16Bit = totalMaxVertices < UInt16.max
-        
-        // Add indices and vertices for each submesh
-        for (_, submesh) in obj.submeshes.enumerated() {
-            var submeshBounds = SABounds()
-            
-            var submeshIndexBuffer16: [UInt16] = []
-            var submeshIndexBuffer32: [UInt32] = []
-
-            for face in submesh.faces {
-                for vertex in face.vertices {
-                    // Add full vertex to vertex list
-                    let position = obj.positions[vertex.position - 1]
-                    let normal = obj.normals[vertex.normal - 1]
-                    let uv = obj.texCoords[vertex.texCoord - 1]
-                    let fVertex = Vertex(x: position.x, y: position.y, z: position.z, nx: normal.x, ny: normal.y, nz: normal.z, u: uv.x, v: uv.y)
-                    
-                    var index: Int = 0
-                    if let existingIndex = vertexMap[fVertex] {
-                        index = existingIndex
-                    } else {
-                        // Does not exist yet, add
-                        vertexBuffer.append(fVertex)
-                        index = vertexBuffer.count - 1
-                        vertexMap[fVertex] = index
-                    }
-                    
-                    // Add index to index buffer
-                    if use16Bit {
-                        submeshIndexBuffer16.append(UInt16(index))
-                    } else {
-                        submeshIndexBuffer32.append(UInt32(index))
-                    }
-                    
-                    // Update bounds of submesh
-                    submeshBounds = submeshBounds.containing(position)
-                }
-            }
-        
-            // Create material
-            let material = generateMaterial(submesh: submesh)
-            
-            // Put index buffer with submesh + name + material + bounds.
-            let ibSize = use16Bit ? MemoryLayout<UInt16>.stride * submeshIndexBuffer16.count : MemoryLayout<UInt32>.stride * submeshIndexBuffer32.count
-            let ibData = use16Bit ? Data(bytes: submeshIndexBuffer16, count: ibSize) : Data(bytes: submeshIndexBuffer32, count: ibSize)
-
-            // View into the final buffer
-            let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffer.count, length: ibSize))
-            
-            // Add to final buffer
-            indexBuffer.append(ibData)
-            
-            let submesh = SASubmesh(indices: bufferView,
-                                    material: material,
-                                    bounds: submeshBounds,
-                                    indexType: use16Bit ? .uint16 : .uint32)
-            submeshes.append(submesh)
-            
-            // Update bounds of mesh using bounds of submesh
-            meshBounds = meshBounds.containing(submeshBounds)
+        if generateTangents {
+            (submeshes, data) = generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedTangentVertex.self)
+        } else {
+            (submeshes, data) = generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedVertex.self)
         }
-        
-        // Create a final mesh buffer for vertices + index buffers
-        let vertexDataSize = MemoryLayout<Vertex>.stride * vertexBuffer.count
-        var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
-        data.append(indexBuffer)
-
+    
         // Add to file
         let buffer = addBuffer(SABuffer(data: data))
         
-        let vertexAttributes: [SAVertexAttribute] = [
+        var vertexAttributes: [SAVertexAttribute] = [
             .position,
-            .normal,
-//            .tangent,
-//            .bitangent,
-            .uv0
+            .normal
         ]
+        if generateTangents {
+            vertexAttributes.append(.tangent)
+            vertexAttributes.append(.bitangent)
+        }
+        vertexAttributes.append(.uv0)
+
         
         // Add buffer view for the vertices
         let vertexBufferView = addBufferView(SABufferView(buffer: buffer, offset: 0, length: vertexDataSize))
@@ -199,6 +132,80 @@ private extension ObjImporter {
             
             asset.bufferViews[submesh.indices] = newView
         }
+    }
+    
+    
+    
+    /// Generate the list of submeshes with indexed buffers
+    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) -> ([SASubmesh], Data) where V: ObjTestVertex {
+        var vertexBuffer: [V] = []
+        var vertexMap: [V:Int] = [:]
+        
+        var submeshes: [SASubmesh] = []
+        
+        var indexBuffer = Data()
+        
+        // Add indices and vertices for each submesh
+        for (_, submesh) in obj.submeshes.enumerated() {
+            var submeshBounds = SABounds()
+            var submeshIndexBuffer: [UInt32] = []
+
+            for face in submesh.faces {
+                for vertex in face.vertices {
+                    // Add full vertex to vertex list
+                    let packedVertex = vertexType.init(obj: obj, vertex: vertex)
+                    
+                    // Indexing: only use each vertex once
+                    var index: Int = 0
+                    if let existingIndex = vertexMap[packedVertex] {
+                        index = existingIndex
+                    } else {
+                        // Does not exist yet, add
+                        vertexBuffer.append(packedVertex)
+                        index = vertexBuffer.count - 1
+                        vertexMap[packedVertex] = index
+                    }
+                    
+                    // Add index to index buffer
+                    submeshIndexBuffer.append(UInt32(index))
+                    
+                    // Update bounds of submesh
+                    let position = obj.positions[vertex.position - 1]
+                    submeshBounds = submeshBounds.containing(position)
+                }
+            }
+        
+            // Create material
+            let material = generateMaterial(submesh: submesh)
+            
+            // Put index buffer with submesh + name + material + bounds.
+            let ibSize = MemoryLayout<UInt32>.stride * submeshIndexBuffer.count
+            let ibData = Data(bytes: submeshIndexBuffer, count: ibSize)
+
+            // View into the final index buffer
+            let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffer.count, length: ibSize))
+            
+            // Add to final buffer
+            indexBuffer.append(ibData)
+            
+            let submesh = SASubmesh(indices: bufferView,
+                                    material: material,
+                                    bounds: submeshBounds,
+                                    indexType: .uint32)
+            submeshes.append(submesh)
+            
+            // Update bounds of mesh using bounds of submesh
+            meshBounds = meshBounds.containing(submeshBounds)
+        }
+        
+        // Create a final mesh buffer for vertices + index buffers
+        vertexDataSize = MemoryLayout<V>.stride * vertexBuffer.count
+        
+        // Create a data buffer of vertex+index buffer
+        var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
+        data.append(indexBuffer)
+
+        return (submeshes, data)
     }
     
     /// Generate a material definition from data provided in the mesh and material file.
@@ -242,6 +249,89 @@ private extension ObjImporter {
             return -1
         }
     }
+    
+    
+
+    
+    struct TexturedVertex: ObjTestVertex {
+        init(obj: ObjFile, vertex: ObjVertex) {
+            let position = obj.positions[vertex.position - 1]
+            let normal = obj.normals[vertex.normal - 1]
+            let uv = obj.texCoords[vertex.texCoord - 1]
+            
+            x = position.x
+            y = position.y
+            z = position.z
+            
+            nx = normal.x
+            ny = normal.y
+            nz = normal.z
+            
+            u = uv.x
+            v = uv.y
+        }
+        
+        let x: Float
+        let y: Float
+        let z: Float
+        
+        let nx: Float
+        let ny: Float
+        let nz: Float
+        
+        let u: Float
+        let v: Float
+    }
+
+    struct TexturedTangentVertex: ObjTestVertex {
+        init(obj: ObjFile, vertex: ObjVertex) {
+            let position = obj.positions[vertex.position - 1]
+            let normal = obj.normals[vertex.normal - 1]
+            let uv = obj.texCoords[vertex.texCoord - 1]
+            
+            x = position.x
+            y = position.y
+            z = position.z
+            
+            nx = normal.x
+            ny = normal.y
+            nz = normal.z
+            
+            tx = 0
+            ty = 0
+            tz = 0
+            
+            btx = 0
+            bty = 0
+            btz = 0
+            
+            u = uv.x
+            v = uv.y
+        }
+        
+        let x: Float
+        let y: Float
+        let z: Float
+        
+        let nx: Float
+        let ny: Float
+        let nz: Float
+        
+        let tx: Float
+        let ty: Float
+        let tz: Float
+
+        let btx: Float
+        let bty: Float
+        let btz: Float
+        
+        let u: Float
+        let v: Float
+    }
+}
+
+protocol ObjTestVertex: Hashable {
+    init(obj: ObjFile, vertex: ObjVertex)
 }
 
 //MARK: - Adding items to the asset
