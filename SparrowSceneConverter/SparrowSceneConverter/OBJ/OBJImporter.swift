@@ -138,6 +138,7 @@ private extension ObjImporter {
     private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) -> ([SASubmesh], Data) where V: ObjTestVertex {
         var vertexBuffer: [V] = []
         var vertexMap: [V:Int] = [:]
+        var totalVertices = 0
         
         var submeshes: [SASubmesh] = []
         
@@ -169,6 +170,8 @@ private extension ObjImporter {
                     // Update bounds of submesh
                     let position = obj.positions[vertex.position - 1]
                     submeshBounds = submeshBounds.containing(position)
+                    
+                    totalVertices += 1
                 }
             }
         
@@ -195,6 +198,8 @@ private extension ObjImporter {
             // Update bounds of mesh using bounds of submesh
             meshBounds = meshBounds.containing(submeshBounds)
         }
+        
+        print("Before indexing: \(totalVertices), after: \(vertexBuffer.count)")
         
         // Create a final mesh buffer for vertices + index buffers
         vertexDataSize = MemoryLayout<V>.stride * vertexBuffer.count
