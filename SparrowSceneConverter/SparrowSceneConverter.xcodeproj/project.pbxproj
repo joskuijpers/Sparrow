@@ -20,6 +20,7 @@
 		80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DB245DBA6F00269C56 /* GLTFImporter.swift */; };
 		80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporter.swift */; };
 		80E216E3245DD18600269C56 /* MathLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216E2245DD18600269C56 /* MathLib.swift */; };
+		80E86F02246DEF8E00925150 /* SpatialFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E86F00246DB70200925150 /* SpatialFinder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +62,7 @@
 		80E216DB245DBA6F00269C56 /* GLTFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLTFImporter.swift; sourceTree = "<group>"; };
 		80E216DD245DBA7600269C56 /* ObjImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjImporter.swift; sourceTree = "<group>"; };
 		80E216E2245DD18600269C56 /* MathLib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathLib.swift; sourceTree = "<group>"; };
+		80E86F00246DB70200925150 /* SpatialFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SpatialFinder.swift; path = SparrowSceneConverter/SpatialFinder.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				80E216DD245DBA7600269C56 /* ObjImporter.swift */,
 				801E844F246829F40021CEAD /* ObjTypes.swift */,
 				801E8449246829510021CEAD /* ObjParser.swift */,
+				80E86F00246DB70200925150 /* SpatialFinder.swift */,
 				801E844B246829570021CEAD /* MtlParser.swift */,
 				801E844D246829770021CEAD /* StructuredTextParser.swift */,
 			);
@@ -221,6 +224,7 @@
 			files = (
 				80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */,
 				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
+				80E86F02246DEF8E00925150 /* SpatialFinder.swift in Sources */,
 				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
 				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,

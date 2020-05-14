@@ -198,6 +198,7 @@ class ObjParser: StructuredTextParser {
             throw Error.noNormalsOrUvs
         }
         
+        // Phase 1: generate tangent and bitangent based on normal and texcoords
         for (faceIndex, face) in faces.enumerated() {
             let p0 = face.vertices[0]
             let p1 = face.vertices[1]
@@ -242,11 +243,95 @@ class ObjParser: StructuredTextParser {
             }
         }
         
-        let posEpsilon: Float = 10e-6
+        // TODO! ACTUALLY FIND
+        let boundsMax = float3(1,1,1)
+        let boundsMin = float3(-1,-1,-1)
+        
+        
+        let posEpsilon: Float = length(boundsMax - boundsMin) * Float(1e-4)
         let angleEpsilon: Float = 0.9999
+        let fLimit: Float = cos(Float(45).degreesToRadians)
         // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp#L239
         
         // bitangent = cross(normal, tangent.xyz) * tangent.w
+        
+        // Second pass: smoothing
+        
+        // Make a list of all vertices
+        let allVertices = faces.flatMap { $0.vertices }
+        let spatialFinder = SpatialFinder(allVertices.map { positions[$0.position - 1] })
+        
+        var done = Set<Int>()
+        
+        for (vertexIndex, vertex) in allVertices.enumerated() {
+            if done.contains(vertexIndex) {
+                continue
+            }
+
+            // get position, normal, tangent, bitangent
+            let position = positions[vertex.position - 1]
+            let normal = normals[vertex.normal - 1]
+            let tangent = vertex.tangent
+            let bitangent = vertex.bitangent
+            
+            // get vertex indices close to origPos with posEpsilon
+            let nearVertices = spatialFinder.near(position, radius: posEpsilon)
+            
+            var closeVertices: [Int] = [vertexIndex]
+
+            // Look at the near vertices
+            for nearVertex in nearVertices {
+                let vertex = allVertices[nearVertex]
+                
+                if done.contains(nearVertex) {
+                    continue
+                }
+                
+                if dot(normals[vertex.normal - 1], normal) < angleEpsilon {
+                    continue
+                }
+                if dot(vertex.tangent, tangent) < fLimit {
+                    continue
+                }
+                if dot(vertex.bitangent, bitangent) < fLimit {
+                    continue
+                }
+                
+                closeVertices.append(nearVertex)
+                done.insert(nearVertex)
+            }
+            
+            // Average the values of each close vertex
+            var smoothTangent = float3(0, 0, 0)
+            var smoothBitangent = float3(0, 0, 0)
+            
+            for closeIndex in closeVertices {
+                smoothTangent += allVertices[closeIndex].tangent
+                smoothBitangent += allVertices[closeIndex].bitangent
+            }
+            smoothTangent = normalize(smoothTangent)
+            smoothBitangent = normalize(smoothBitangent)
+            
+            
+            print("OLD \(tangent) NEW \(smoothTangent)")
+            
+            // oh no... we lost reference to the original........ fuck.
+            // we should put a vertex array into this class, and use faces -> vertexes as [Int] into that array
+            // this means we need to do some refactoring...
+            
+            for closeIndex in closeVertices {
+//                tangent = smoothTangent
+//                bitangent = smoothBiangent
+                done.insert(closeIndex)
+            }
+        }
+        
+
+//        for face in faces {
+//            for vertex in face.vertices {
+//                print("P/N", positions[vertex.position-1], "UV", texCoords[vertex.texCoord - 1], "T", vertex.tangent, "BT", vertex.bitangent)
+//            }
+//        }
     }
     
     /// Parse a vertex of a face
