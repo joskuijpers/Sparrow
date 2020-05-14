@@ -59,7 +59,7 @@ private extension ObjImporter {
     
     /// Generate the asset
     func generate() throws -> SAAsset {
-        let objParser = try ObjParser(url: url)
+        let objParser = try ObjParser(url: url, generateTangents: generateTangents)
         objFile = try objParser.parse()
         
         if let mtlPath = objFile?.mtllib,
@@ -188,7 +188,8 @@ private extension ObjImporter {
             let submesh = SASubmesh(indices: bufferView,
                                     material: material,
                                     bounds: submeshBounds,
-                                    indexType: .uint32)
+                                    indexType: .uint32,
+                                    primitiveType: .triangle)
             submeshes.append(submesh)
             
             // Update bounds of mesh using bounds of submesh
@@ -343,13 +344,13 @@ fileprivate struct TexturedTangentVertex: ObjTestVertex {
         ny = normal.y
         nz = normal.z
         
-        tx = 0
-        ty = 0
-        tz = 0
+        tx = vertex.tangent.x
+        ty = vertex.tangent.y
+        tz = vertex.tangent.z
         
-        btx = 0
-        bty = 0
-        btz = 0
+        btx = vertex.bitangent.x
+        bty = vertex.bitangent.y
+        btz = vertex.bitangent.z
         
         u = uv.x
         v = uv.y

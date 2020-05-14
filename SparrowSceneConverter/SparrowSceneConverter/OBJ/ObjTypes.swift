@@ -48,6 +48,8 @@ struct ObjVertex {
     var position: Int
     var normal: Int
     var texCoord: Int
+    var tangent: float3 = float3(0, 0, 0)
+    var bitangent: float3 = float3(0, 0, 0)
 }
 
 struct ObjSubmesh {

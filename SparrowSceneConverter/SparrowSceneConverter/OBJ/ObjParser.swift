@@ -11,6 +11,8 @@ import simd
 
 class ObjParser: StructuredTextParser {
     let url: URL
+    let shouldGenerateTangents: Bool
+    
     var obj = ObjFile()
     var currentMaterial: String?
     var currentGroup: String?
@@ -22,11 +24,20 @@ class ObjParser: StructuredTextParser {
     
     enum Error: Swift.Error {
         case invalidFace(Substring, SourceLocation)
+        
+        /// The face is not supported
         case unsupportedFace(Int, SourceLocation)
+        
+        /// The faces are not triangle and are unsupported for tangent generation
+        case noTangentsForNonTriangle
+        
+        /// There are no normals or UVs, required for tangent generation
+        case noNormalsOrUvs
     }
     
-    init(url: URL) throws {
+    init(url: URL, generateTangents: Bool) throws {
         self.url = url
+        self.shouldGenerateTangents = generateTangents
         
         let input = try String(contentsOf: url)
         super.init(input: input)
@@ -118,12 +129,17 @@ class ObjParser: StructuredTextParser {
         // Triangulate all meshes
         try triangulate()
         
+        // Save time by not always generating
+        if shouldGenerateTangents {
+            try generateTangents()
+        }
+        
         print("[obj] Building submesh with name \(name), faces \(faces.count), material \(String(describing: currentMaterial))")
         obj.submeshes.append(ObjSubmesh(name: name, material: currentMaterial, faces: faces))
     }
     
-    /// Triangulate the faces. Supports triangles (no conversion) and quads (fast conversion)
     // https://github.com/assimp/assimp/blob/master/code/PostProcessing/TriangulateProcess.cpp#L227
+    /// Triangulate the faces. Supports triangles (no conversion) and quads (fast conversion)
     private func triangulate() throws {
         var result: [ObjFace] = []
 
@@ -171,17 +187,80 @@ class ObjParser: StructuredTextParser {
         faces = result
     }
     
+    // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp
+    /// Generate tangents and bitangents
+    private func generateTangents() throws {
+        if faces[0].vertices.count != 3 {
+            throw Error.noTangentsForNonTriangle
+        }
+        
+        if faces[0].vertices[0].normal == 0 || faces[0].vertices[0].texCoord == 0 {
+            throw Error.noNormalsOrUvs
+        }
+        
+        for (faceIndex, face) in faces.enumerated() {
+            let p0 = face.vertices[0]
+            let p1 = face.vertices[1]
+            let p2 = face.vertices[2]
+            
+            // Position difference
+            let v = positions[p1.position - 1] - positions[p0.position - 1]
+            let w = positions[p2.position - 1] - positions[p0.position - 1]
+            
+            var s = texCoords[p1.texCoord - 1] - texCoords[p0.texCoord - 1]
+            var t = texCoords[p2.texCoord - 1] - texCoords[p0.texCoord - 1]
+
+            let dirCorrection: Float = (t.x * s.y - t.y * s.x) < 0.0 ? -1 : 1;
+
+            if s.x * t.y == s.y * t.x {
+                s = [0, 1]
+                t = [1, 0]
+            }
+
+            let tangent = (w * s.y - v * t.y) * dirCorrection
+            let bitangent = (w * s.x - v * t.x) * dirCorrection
+
+            for (index, vertex) in face.vertices.enumerated() {
+                let normal = normals[vertex.normal - 1]
+                
+                var localTangent = normalize(tangent - normal * (tangent * normal))
+                var localBitangent = normalize(bitangent - normal * (bitangent * normal))
+
+                let invalidTangent = localTangent.x.isNaN || localTangent.y.isNaN || localTangent.z.isNaN
+                let invalidBitangent = localBitangent.x.isNaN || localBitangent.y.isNaN || localBitangent.z.isNaN
+
+                if invalidTangent != invalidBitangent {
+                    if invalidTangent {
+                        localTangent = normalize(cross(normal, localBitangent))
+                    } else {
+                        localBitangent = normalize(cross(localTangent, normal))
+                    }
+                }
+
+                faces[faceIndex].vertices[index].tangent = localTangent
+                faces[faceIndex].vertices[index].bitangent = localBitangent
+            }
+        }
+        
+        let posEpsilon: Float = 10e-6
+        let angleEpsilon: Float = 0.9999
+        // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp#L239
+        
+        // bitangent = cross(normal, tangent.xyz) * tangent.w
+    }
+    
     /// Parse a vertex of a face
     func vertex(input: Substring) throws -> ObjVertex {
         let items = input.split(separator: "/")
         
         if items.count != 3 {
+            // todo: support tex = 0, normal = 0
             throw Error.invalidFace(input, offsetToLocation(offset))
         }
         
         let vert = Int(items[0])!
-        let tex = Int(items[1])!
-        let norm = Int(items[2])!
+        let tex = items.count >= 2 ? Int(items[1])! : 0
+        let norm = items.count >= 3 ? Int(items[2])! : 0
         
         return ObjVertex(position: vert, normal: norm, texCoord: tex)
     }
