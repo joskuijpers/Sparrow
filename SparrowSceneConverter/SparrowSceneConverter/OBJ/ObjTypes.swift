@@ -41,7 +41,7 @@ struct MtlMaterial {
 }
 
 struct ObjFace {
-    var vertices: [ObjVertex]
+    var vertIndices: [Int]
 }
 
 struct ObjVertex {
@@ -56,4 +56,5 @@ struct ObjSubmesh {
     let name: String
     let material: String?
     let faces: [ObjFace]
+    let vertices: [ObjVertex]
 }

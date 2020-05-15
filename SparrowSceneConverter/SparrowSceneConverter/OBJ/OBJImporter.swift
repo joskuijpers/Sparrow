@@ -138,8 +138,7 @@ private extension ObjImporter {
     private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) -> ([SASubmesh], Data) where V: ObjTestVertex {
         var vertexBuffer: [V] = []
         var vertexMap: [V:Int] = [:]
-        var totalVertices = 0
-        
+
         var submeshes: [SASubmesh] = []
         
         var indexBuffer = Data()
@@ -149,30 +148,26 @@ private extension ObjImporter {
             var submeshBounds = SABounds()
             var submeshIndexBuffer: [UInt32] = []
 
-            for face in submesh.faces {
-                for vertex in face.vertices {
-                    // Add full vertex to vertex list
-                    let packedVertex = vertexType.init(obj: obj, vertex: vertex)
-                    
-                    // Indexing: only use each vertex once
-                    var index: Int = 0
-                    if let existingIndex = vertexMap[packedVertex] {
-                        index = existingIndex
-                    } else {
-                        vertexBuffer.append(packedVertex)
-                        index = vertexBuffer.count - 1
-                        vertexMap[packedVertex] = index
-                    }
-                    
-                    // Add index to index buffer
-                    submeshIndexBuffer.append(UInt32(index))
-                    
-                    // Update bounds of submesh
-                    let position = obj.positions[vertex.position - 1]
-                    submeshBounds = submeshBounds.containing(position)
-                    
-                    totalVertices += 1
+            for vertex in submesh.vertices {
+                // Add full vertex to vertex list
+                let packedVertex = vertexType.init(obj: obj, vertex: vertex)
+                
+                // Indexing: only use each vertex once
+                var index: Int = 0
+                if let existingIndex = vertexMap[packedVertex] {
+                    index = existingIndex
+                } else {
+                    vertexBuffer.append(packedVertex)
+                    index = vertexBuffer.count - 1
+                    vertexMap[packedVertex] = index
                 }
+                
+                // Add index to index buffer
+                submeshIndexBuffer.append(UInt32(index))
+                
+                // Update bounds of submesh
+                let position = obj.positions[vertex.position - 1]
+                submeshBounds = submeshBounds.containing(position)
             }
         
             // Create material
@@ -199,7 +194,7 @@ private extension ObjImporter {
             meshBounds = meshBounds.containing(submeshBounds)
         }
         
-        print("Before indexing: \(totalVertices), after: \(vertexBuffer.count)")
+        print("Before indexing: \(obj.submeshes.reduce(0, { $0 + $1.vertices.count })), after: \(vertexBuffer.count)")
         
         // Create a final mesh buffer for vertices + index buffers
         vertexDataSize = MemoryLayout<V>.stride * vertexBuffer.count

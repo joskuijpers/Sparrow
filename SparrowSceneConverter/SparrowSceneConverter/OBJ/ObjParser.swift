@@ -17,6 +17,8 @@ class ObjParser: StructuredTextParser {
     var currentMaterial: String?
     var currentGroup: String?
     var currentObject: String?
+    
+    var vertices: [ObjVertex] = []
     var positions: [float3] = []
     var normals: [float3] = []
     var texCoords: [float2] = []
@@ -115,6 +117,7 @@ class ObjParser: StructuredTextParser {
         
         currentGroup = name
         faces = []
+        vertices = []
     }
     
     func finishSubmesh() throws {
@@ -135,25 +138,58 @@ class ObjParser: StructuredTextParser {
         }
         
         print("[obj] Building submesh with name \(name), faces \(faces.count), material \(String(describing: currentMaterial))")
-        obj.submeshes.append(ObjSubmesh(name: name, material: currentMaterial, faces: faces))
+        obj.submeshes.append(ObjSubmesh(name: name, material: currentMaterial, faces: faces, vertices: vertices))
     }
     
+    /// Parse a vertex of a face
+    func vertex(input: Substring) throws -> ObjVertex {
+        let items = input.split(separator: "/")
+        
+        if items.count != 3 {
+            // todo: support tex = 0, normal = 0
+            throw Error.invalidFace(input, offsetToLocation(offset))
+        }
+        
+        let vert = Int(items[0])!
+        let tex = items.count >= 2 ? Int(items[1])! : 0
+        let norm = items.count >= 3 ? Int(items[2])! : 0
+        
+        return ObjVertex(position: vert, normal: norm, texCoord: tex)
+    }
+    
+    /// Parse a face. Might give 2 faces when turning a quad into a triangle
+    func face() throws -> ObjFace {
+        let verts = try restOfLine()
+            .split(separator: " ")
+            .map({ (str) -> Int in
+                let vert = try vertex(input: str)
+                vertices.append(vert)
+                return vertices.count - 1
+            })
+            
+        return ObjFace(vertIndices: verts)
+    }
+}
+
+// MARK: - Post processing actions
+
+extension ObjParser {
     // https://github.com/assimp/assimp/blob/master/code/PostProcessing/TriangulateProcess.cpp#L227
     /// Triangulate the faces. Supports triangles (no conversion) and quads (fast conversion)
     private func triangulate() throws {
         var result: [ObjFace] = []
 
         for face in faces {
-            if face.vertices.count == 3 {
+            if face.vertIndices.count == 3 {
                 result.append(face)
-            } else if face.vertices.count == 4 {
+            } else if face.vertIndices.count == 4 {
                 var startIndex = 0
                 
                 for i in 0..<4 {
-                    let v0 = positions[face.vertices[(i + 3) % 4].position - 1] // obj is 1-indexed
-                    let v1 = positions[face.vertices[(i + 2) % 4].position - 1]
-                    let v2 = positions[face.vertices[(i + 1) % 4].position - 1]
-                    let v = positions[face.vertices[i].position - 1]
+                    let v0 = positions[vertices[face.vertIndices[(i + 3) % 4]].position - 1] // obj is 1-indexed
+                    let v1 = positions[vertices[face.vertIndices[(i + 2) % 4]].position - 1]
+                    let v2 = positions[vertices[face.vertIndices[(i + 1) % 4]].position - 1]
+                    let v = positions[vertices[face.vertIndices[i]].position - 1]
                     
                     let left = normalize(v0 - v)
                     let diag = normalize(v1 - v)
@@ -166,21 +202,21 @@ class ObjParser: StructuredTextParser {
                     }
                 }
                 
-                let temp = [face.vertices[0], face.vertices[1], face.vertices[2], face.vertices[3]]
+                let temp = [face.vertIndices[0], face.vertIndices[1], face.vertIndices[2], face.vertIndices[3]]
                 
-                result.append(ObjFace(vertices: [
+                result.append(ObjFace(vertIndices: [
                     temp[startIndex],
                     temp[(startIndex + 1) % 4],
                     temp[(startIndex + 2) % 4],
                 ]))
                 
-                result.append(ObjFace(vertices: [
+                result.append(ObjFace(vertIndices: [
                     temp[startIndex],
                     temp[(startIndex + 2) % 4],
                     temp[(startIndex + 3) % 4],
                 ]))
             } else {
-                throw Error.unsupportedFace(face.vertices.count, offsetToLocation(offset))
+                throw Error.unsupportedFace(face.vertIndices.count, offsetToLocation(offset))
             }
         }
         
@@ -190,19 +226,19 @@ class ObjParser: StructuredTextParser {
     // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp
     /// Generate tangents and bitangents
     private func generateTangents() throws {
-        if faces[0].vertices.count != 3 {
+        if faces[0].vertIndices.count != 3 {
             throw Error.noTangentsForNonTriangle
         }
         
-        if faces[0].vertices[0].normal == 0 || faces[0].vertices[0].texCoord == 0 {
+        if vertices[faces[0].vertIndices[0]].normal == 0 || vertices[faces[0].vertIndices[0]].texCoord == 0 {
             throw Error.noNormalsOrUvs
         }
         
         // Phase 1: generate tangent and bitangent based on normal and texcoords
         for (faceIndex, face) in faces.enumerated() {
-            let p0 = face.vertices[0]
-            let p1 = face.vertices[1]
-            let p2 = face.vertices[2]
+            let p0 = vertices[face.vertIndices[0]]
+            let p1 = vertices[face.vertIndices[1]]
+            let p2 = vertices[face.vertIndices[2]]
             
             // Position difference
             let v = positions[p1.position - 1] - positions[p0.position - 1]
@@ -221,8 +257,8 @@ class ObjParser: StructuredTextParser {
             let tangent = (w * s.y - v * t.y) * dirCorrection
             let bitangent = (w * s.x - v * t.x) * dirCorrection
 
-            for (index, vertex) in face.vertices.enumerated() {
-                let normal = normals[vertex.normal - 1]
+            for vertIndex in face.vertIndices {
+                let normal = normals[vertices[vertIndex].normal - 1]
                 
                 var localTangent = normalize(tangent - normal * (tangent * normal))
                 var localBitangent = normalize(bitangent - normal * (bitangent * normal))
@@ -238,32 +274,28 @@ class ObjParser: StructuredTextParser {
                     }
                 }
 
-                faces[faceIndex].vertices[index].tangent = localTangent
-                faces[faceIndex].vertices[index].bitangent = localBitangent
+                vertices[vertIndex].tangent = localTangent
+                vertices[vertIndex].bitangent = localBitangent
             }
         }
         
-        // TODO! ACTUALLY FIND
-        let boundsMax = float3(1,1,1)
-        let boundsMin = float3(-1,-1,-1)
+        // Phase 2: smoothing
+        // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp#L239
         
+        let (boundsMax, boundsMin) = vertices
+            .map { positions[$0.position - 1] }
+            .reduce((float3(Float.infinity, Float.infinity, Float.infinity), float3(-Float.infinity, -Float.infinity, -Float.infinity))) {
+                (min($0.0, $1), max($0.1, $1))
+        }
         
         let posEpsilon: Float = length(boundsMax - boundsMin) * Float(1e-4)
         let angleEpsilon: Float = 0.9999
-        let fLimit: Float = cos(Float(45).degreesToRadians)
-        // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp#L239
+        let fLimit: Float = cos(Float(45).degreesToRadians) // TODO: configurable
         
-        // bitangent = cross(normal, tangent.xyz) * tangent.w
-        
-        // Second pass: smoothing
-        
-        // Make a list of all vertices
-        let allVertices = faces.flatMap { $0.vertices }
-        let spatialFinder = SpatialFinder(allVertices.map { positions[$0.position - 1] })
-        
+        let spatialFinder = SpatialFinder(vertices.map { positions[$0.position - 1] })
         var done = Set<Int>()
         
-        for (vertexIndex, vertex) in allVertices.enumerated() {
+        for (vertexIndex, vertex) in vertices.enumerated() {
             if done.contains(vertexIndex) {
                 continue
             }
@@ -274,14 +306,15 @@ class ObjParser: StructuredTextParser {
             let tangent = vertex.tangent
             let bitangent = vertex.bitangent
             
-            // get vertex indices close to origPos with posEpsilon
+            // Find any vertices near to what we are
             let nearVertices = spatialFinder.near(position, radius: posEpsilon)
             
+            // List of vertices that are both near and like the current vertex
             var closeVertices: [Int] = [vertexIndex]
 
             // Look at the near vertices
             for nearVertex in nearVertices {
-                let vertex = allVertices[nearVertex]
+                let vertex = vertices[nearVertex]
                 
                 if done.contains(nearVertex) {
                     continue
@@ -306,56 +339,17 @@ class ObjParser: StructuredTextParser {
             var smoothBitangent = float3(0, 0, 0)
             
             for closeIndex in closeVertices {
-                smoothTangent += allVertices[closeIndex].tangent
-                smoothBitangent += allVertices[closeIndex].bitangent
+                smoothTangent += vertices[closeIndex].tangent
+                smoothBitangent += vertices[closeIndex].bitangent
             }
             smoothTangent = normalize(smoothTangent)
             smoothBitangent = normalize(smoothBitangent)
-            
-            
-            print("OLD \(tangent) NEW \(smoothTangent)")
-            
-            // oh no... we lost reference to the original........ fuck.
-            // we should put a vertex array into this class, and use faces -> vertexes as [Int] into that array
-            // this means we need to do some refactoring...
-            
+
             for closeIndex in closeVertices {
-//                tangent = smoothTangent
-//                bitangent = smoothBiangent
+                vertices[closeIndex].tangent = smoothTangent
+                vertices[closeIndex].bitangent = smoothBitangent
                 done.insert(closeIndex)
             }
         }
-        
-
-//        for face in faces {
-//            for vertex in face.vertices {
-//                print("P/N", positions[vertex.position-1], "UV", texCoords[vertex.texCoord - 1], "T", vertex.tangent, "BT", vertex.bitangent)
-//            }
-//        }
-    }
-    
-    /// Parse a vertex of a face
-    func vertex(input: Substring) throws -> ObjVertex {
-        let items = input.split(separator: "/")
-        
-        if items.count != 3 {
-            // todo: support tex = 0, normal = 0
-            throw Error.invalidFace(input, offsetToLocation(offset))
-        }
-        
-        let vert = Int(items[0])!
-        let tex = items.count >= 2 ? Int(items[1])! : 0
-        let norm = items.count >= 3 ? Int(items[2])! : 0
-        
-        return ObjVertex(position: vert, normal: norm, texCoord: tex)
-    }
-    
-    /// Parse a face. Might give 2 faces when turning a quad into a triangle
-    func face() throws -> ObjFace {
-        let verts = try restOfLine()
-            .split(separator: " ")
-            .map { try vertex(input: $0) }
-            
-        return ObjFace(vertices: verts)
     }
 }
