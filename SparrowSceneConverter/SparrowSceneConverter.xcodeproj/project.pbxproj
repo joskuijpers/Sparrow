@@ -85,7 +85,6 @@
 				80E216DD245DBA7600269C56 /* ObjImporter.swift */,
 				801E844F246829F40021CEAD /* ObjTypes.swift */,
 				801E8449246829510021CEAD /* ObjParser.swift */,
-				80E86F00246DB70200925150 /* SpatialFinder.swift */,
 				801E844B246829570021CEAD /* MtlParser.swift */,
 				801E844D246829770021CEAD /* StructuredTextParser.swift */,
 			);
@@ -125,6 +124,7 @@
 				801E8448246828A60021CEAD /* OBJ */,
 				8086960423B8D2B20007E75D /* main.swift */,
 				801E845124682A310021CEAD /* ToolExtensions.swift */,
+				80E86F00246DB70200925150 /* SpatialFinder.swift */,
 				80E216E2245DD18600269C56 /* MathLib.swift */,
 				80E216C8245DAF4500269C56 /* Support */,
 			);
