@@ -18,7 +18,7 @@
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DB245DBA6F00269C56 /* GLTFImporter.swift */; };
-		80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporter.swift */; };
+		80E216DE245DBA7600269C56 /* ObjImporterR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporterR.swift */; };
 		80E216E3245DD18600269C56 /* MathLib.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216E2245DD18600269C56 /* MathLib.swift */; };
 		80E86F02246DEF8E00925150 /* SpatialFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E86F00246DB70200925150 /* SpatialFinder.swift */; };
 /* End PBXBuildFile section */
@@ -60,7 +60,7 @@
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
 		80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPlusPlusLinkage.cpp; sourceTree = "<group>"; };
 		80E216DB245DBA6F00269C56 /* GLTFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLTFImporter.swift; sourceTree = "<group>"; };
-		80E216DD245DBA7600269C56 /* ObjImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjImporter.swift; sourceTree = "<group>"; };
+		80E216DD245DBA7600269C56 /* ObjImporterR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjImporterR.swift; sourceTree = "<group>"; };
 		80E216E2245DD18600269C56 /* MathLib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathLib.swift; sourceTree = "<group>"; };
 		80E86F00246DB70200925150 /* SpatialFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SpatialFinder.swift; path = SparrowSceneConverter/SpatialFinder.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -82,7 +82,7 @@
 		801E8448246828A60021CEAD /* OBJ */ = {
 			isa = PBXGroup;
 			children = (
-				80E216DD245DBA7600269C56 /* ObjImporter.swift */,
+				80E216DD245DBA7600269C56 /* ObjImporterR.swift */,
 				801E844F246829F40021CEAD /* ObjTypes.swift */,
 				801E8449246829510021CEAD /* ObjParser.swift */,
 				80E86F00246DB70200925150 /* SpatialFinder.swift */,
@@ -226,7 +226,7 @@
 				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
 				80E86F02246DEF8E00925150 /* SpatialFinder.swift in Sources */,
 				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
-				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
+				80E216DE245DBA7600269C56 /* ObjImporterR.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,
 				801E8450246829F40021CEAD /* ObjTypes.swift in Sources */,
 				80E216E3245DD18600269C56 /* MathLib.swift in Sources */,
