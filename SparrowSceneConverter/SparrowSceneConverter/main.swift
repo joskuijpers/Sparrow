@@ -136,7 +136,7 @@ let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowE
 let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj") // 45% -> 35%
 let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj") // 44% -> 33%
 
-let url = url1
+let url = url2
 
 do {
     // Import asset from .obj file

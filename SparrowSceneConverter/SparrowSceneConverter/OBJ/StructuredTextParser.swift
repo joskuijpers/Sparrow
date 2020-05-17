@@ -203,7 +203,7 @@ class StructuredTextParser {
             offset += 1
         }
         
-        return SourceLocation(line: -1, column: -1)
+        return SourceLocation(line: -1, column: search)
     }
     
     struct SourceLocation: CustomStringConvertible {

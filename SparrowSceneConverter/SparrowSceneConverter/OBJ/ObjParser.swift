@@ -235,7 +235,7 @@ extension ObjParser {
         }
         
         // Phase 1: generate tangent and bitangent based on normal and texcoords
-        for (faceIndex, face) in faces.enumerated() {
+        for face in faces {
             let p0 = vertices[face.vertIndices[0]]
             let p1 = vertices[face.vertIndices[1]]
             let p2 = vertices[face.vertIndices[2]]
