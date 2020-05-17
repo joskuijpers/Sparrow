@@ -14,7 +14,7 @@ import Foundation
  Holds position, rotation and scale. Has access to forward and right vectors, and transformation matrices
  generated from the properties.
  */
-class Transform: Component {
+final class Transform: Component {
     /// Local node position
     var localPosition: float3 = .zero {
         didSet {

@@ -22,7 +22,7 @@ enum RenderMode {
 /**
  Renders meshes inserted by MeshSelector.
  */
-class MeshRenderer: Component {
+final class MeshRenderer: Component {
     
     let castShadows: Bool = false
     let receiveShadows: Bool = false

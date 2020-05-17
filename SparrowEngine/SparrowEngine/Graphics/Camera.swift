@@ -13,7 +13,7 @@ import MetalKit
  
  TODO: did set any of the fov/near/far/aspect properties -> set uniforms dirty
  */
-class Camera: Component {
+final class Camera: Component {
     
     /// Field of view in degrees
     var fovDegrees: Float = 70

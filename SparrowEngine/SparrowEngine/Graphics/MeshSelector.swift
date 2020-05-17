@@ -11,7 +11,7 @@ import Foundation
 /**
  Selects a mesh
  */
-class MeshSelector: Component {
+final class MeshSelector: Component {
     public var mesh: Mesh?
     
     /// Init with a mesh
