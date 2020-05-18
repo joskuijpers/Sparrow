@@ -15,13 +15,13 @@
 #define LIGHT_CULLING_TILE_SIZE 16
 
 /// Model uniforms
-typedef struct {
+struct Uniforms {
     matrix_float4x4 modelMatrix;
     matrix_float3x3 normalMatrix;
-} Uniforms;
+};
 
 /// Camera uniforms.
-typedef struct {
+struct CameraUniforms {
     vector_float3 cameraWorldPosition;
     
     matrix_float4x4 viewMatrix;
@@ -39,25 +39,25 @@ typedef struct {
     
     vector_float4 invProjectionZ;           // A float4 containing the lower right 2x2 z,w block of inv projection matrix (column Major) ; viewZ = (X * projZ + Z) / (Y * projZ + W)
     vector_float4 invProjectionZNormalized; // Same as invProjZ but the result is a Z from 0...1 instead of N...F; effectively linearizes Z for easy visualization/storage
-} CameraUniforms;
+};
 
-typedef enum {
+enum BufferIndex {
     BufferIndexVertices = 0,
     BufferIndexUniforms = 11,
     BufferIndexCameraUniforms = 13,
     BufferIndexMaterials = 14,
-} BufferIndex;
+};
 
-typedef enum {
+enum VertexAttributes {
     VertexAttributePosition = 0,
     VertexAttributeNormal = 1,
     VertexAttributeUV0 = 2,
     VertexAttributeTangent = 3,
     VertexAttributeBitangent = 4
-} VertexAttributes;
+};
 
 /// Texture attribute positions
-typedef enum {
+enum Textures {
     TextureAlbedo = 0,
     TextureNormal = 1,
     TextureSpecular = 2,
@@ -67,10 +67,10 @@ typedef enum {
     TextureAmbientOcclusion = 6,
     
     TextureIrradiance = 10
-} Textures;
+};
 
 /// Material definition
-typedef struct {
+struct Material {
     vector_float3 albedo;
     vector_float3 emission;
     
@@ -78,35 +78,23 @@ typedef struct {
     float roughness;
     
     // Use packing into float4 later to skip padding
-} Material;
+};
 
 /// Type of the light
-typedef enum {
+enum LightType {
     LightTypeDirectional = 0,
     LightTypeSpot = 1,
     LightTypePoint = 2
-} LightType;
+};
 
 /// Data pertaining lights that is transferred from CPU to GPU
-typedef struct {
+struct LightData {
     vector_float3 position;
     vector_float3 color;
     float range;
 //    float intensity;
 //    vector_float3 attenuation;
-    LightType type;
-} LightData;
-
-
-
-
-
-
-
-
-
-
-
-
+    enum LightType type;
+};
 
 #endif /* ShaderCommon_h */
