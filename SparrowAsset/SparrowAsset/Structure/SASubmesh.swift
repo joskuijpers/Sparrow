@@ -18,6 +18,9 @@ public struct SASubmesh: BinaryCodable {
         case triangle
     }
     
+    /// Name of the submesh. For debugging only.
+    public let name: String
+    
     /// Buffer view reference for the index buffer
     public var indices: Int
     
@@ -33,7 +36,8 @@ public struct SASubmesh: BinaryCodable {
     /// The type of primitive that is to be rendered.
     public let primitiveType: PrimitiveType
     
-    public init(indices: Int, material: Int, bounds: SABounds, indexType: IndexType, primitiveType: PrimitiveType) {
+    public init(name: String, indices: Int, material: Int, bounds: SABounds, indexType: IndexType, primitiveType: PrimitiveType) {
+        self.name = name
         self.indices = indices
         self.material = material
         self.bounds = bounds

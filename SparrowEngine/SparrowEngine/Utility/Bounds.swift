@@ -6,8 +6,7 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
-import Metal
+import simd
 
 /**
 Axis aligned bounding box for wrapping bounds of objects, in worldspace.

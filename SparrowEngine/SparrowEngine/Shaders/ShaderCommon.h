@@ -51,7 +51,7 @@ typedef enum {
 typedef enum {
     VertexAttributePosition = 0,
     VertexAttributeNormal = 1,
-    VertexAttributeUV = 2,
+    VertexAttributeUV0 = 2,
     VertexAttributeTangent = 3,
     VertexAttributeBitangent = 4
 } VertexAttributes;
@@ -72,9 +72,12 @@ typedef enum {
 /// Material definition
 typedef struct {
     vector_float3 albedo;
+    vector_float3 emission;
+    
     float metallic;
     float roughness;
-    vector_float3 emission;
+    
+    // Use packing into float4 later to skip padding
 } Material;
 
 /// Type of the light

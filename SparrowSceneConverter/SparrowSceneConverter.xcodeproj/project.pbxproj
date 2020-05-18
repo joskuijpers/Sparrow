@@ -103,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				8086960323B8D2B20007E75D /* SparrowSceneConverter */,
-				80E21642245C1F0600269C56 /* External */,
 				8086960223B8D2B20007E75D /* Products */,
 				8086960B23B8D2CD0007E75D /* Frameworks */,
 			);
@@ -139,13 +138,6 @@
 				801E840B246464370021CEAD /* Metal.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		80E21642245C1F0600269C56 /* External */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = External;
 			sourceTree = "<group>";
 		};
 		80E216C8245DAF4500269C56 /* Support */ = {

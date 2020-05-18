@@ -183,7 +183,8 @@ private extension ObjImporter {
             // Add to final index buffer
             indexBuffer.append(ibData)
             
-            let submesh = SASubmesh(indices: bufferView,
+            let submesh = SASubmesh(name: submesh.name,
+                                    indices: bufferView,
                                     material: material,
                                     bounds: submeshBounds,
                                     indexType: .uint32,
@@ -195,6 +196,7 @@ private extension ObjImporter {
         }
         
         print("Before indexing: \(obj.submeshes.reduce(0, { $0 + $1.vertices.count })), after: \(vertexBuffer.count)")
+        print("Vertex size: \(MemoryLayout<V>.size)")
         
         // Create a final mesh buffer for vertices + index buffers
         vertexDataSize = MemoryLayout<V>.stride * vertexBuffer.count

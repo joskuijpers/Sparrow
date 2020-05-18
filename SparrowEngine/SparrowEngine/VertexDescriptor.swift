@@ -6,41 +6,80 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
+import Metal
+import SparrowAsset
 
-extension MDLVertexDescriptor {
-    
-    static var defaultVertexDescriptor: MDLVertexDescriptor = {
-        let vertexDescriptor = MDLVertexDescriptor()
+class VertexDescriptor {
+
+    /// Build a vertex descriptor using a list of Sparrow Asset vertex attributes. Order of the attributes defines position within the interleaved buffer.
+    class func build(from attributes: [SAVertexAttribute]) -> MTLVertexDescriptor {
+        let descriptor = MTLVertexDescriptor()
+        
+        print("BUILD VD FROM \(attributes)")
+        
         var offset = 0
         
-        // Position
-        let positionAttribute = MDLVertexAttribute(name: MDLVertexAttributePosition,
-                                                   format: .float3,
-                                                   offset: offset,
-                                                   bufferIndex: 0)
-        vertexDescriptor.attributes[Int(VertexAttributePosition.rawValue)] = positionAttribute
-        offset += MemoryLayout<float3>.stride
+        for attribute in attributes {
+            switch attribute {
+            case .position:
+                let index = Int(VertexAttributePosition.rawValue)
+                
+                descriptor.attributes[index].format = .float3
+                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].offset = offset
+                
+                // Do not use float3 stride! That is unpacked
+                offset += MemoryLayout<Float>.size * 3
+                
+            case .normal:
+                let index = Int(VertexAttributeNormal.rawValue)
+                
+                descriptor.attributes[index].format = .float3
+                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].offset = offset
+                
+                // Do not use float3 stride! That is unpacked
+                offset += MemoryLayout<Float>.size * 3
+                
+            case .tangent:
+                let index = Int(VertexAttributeTangent.rawValue)
+                
+                descriptor.attributes[index].format = .float3
+                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].offset = offset
+                
+                // Do not use float3 stride! That is unpacked
+                offset += MemoryLayout<Float>.size * 3
+                
+            case .bitangent:
+                let index = Int(VertexAttributeBitangent.rawValue)
+                
+                descriptor.attributes[index].format = .float3
+                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].offset = offset
+                
+                // Do not use float3 stride! That is unpacked
+                offset += MemoryLayout<Float>.size * 3
+
+            case .uv0:
+                let index = Int(VertexAttributeUV0.rawValue)
+                
+                descriptor.attributes[index].format = .float2
+                descriptor.attributes[index].bufferIndex = 0
+                descriptor.attributes[index].offset = offset
+                
+                // Do not use float2 stride! That is unpacked
+                offset += MemoryLayout<Float>.size * 2
+                
+            default:
+                print("Unsupported attribute \(attribute)")
+            }
+        }
         
-        // Normal
-        let normalAttribute = MDLVertexAttribute(name: MDLVertexAttributeNormal,
-                                                 format: .float3,
-                                                 offset: offset,
-                                                 bufferIndex: 0)
-        vertexDescriptor.attributes[Int(VertexAttributeNormal.rawValue)] = normalAttribute
-        offset += MemoryLayout<float3>.stride
+        print("TOTAL VERTEX SIZE \(offset)")
         
-        // UV
-        let uvAttribute = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
-                                             format: .float2,
-                                             offset: offset,
-                                             bufferIndex: 0)
-        vertexDescriptor.attributes[Int(VertexAttributeUV.rawValue)] = uvAttribute
-        offset += MemoryLayout<float2>.stride
+        descriptor.layouts[0].stride = offset
         
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: offset)
-        
-        return vertexDescriptor
-    }()
-    
+        return descriptor
+    }
 }

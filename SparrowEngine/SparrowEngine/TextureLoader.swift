@@ -61,7 +61,6 @@ class TextureLoader {
             cache[imageName] = texture
             
             print("[texture] Loaded \(texture.imageName) (\(Float(texture.mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
-//            print("[texture] size \(Float(allocatedSize) / 1024 / 1024) MiB")
 
             return texture
         }
@@ -100,9 +99,7 @@ class TextureLoader {
     }
 }
 
-/**
- A texture.
- */
+/// A texture.
 struct Texture {
     let imageName: String
     let mtlTexture: MTLTexture

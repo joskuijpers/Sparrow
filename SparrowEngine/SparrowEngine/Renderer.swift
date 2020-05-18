@@ -201,7 +201,7 @@ class Renderer: NSObject {
         let sponza = Nexus.shared().createEntity()
         let sponzat = sponza.add(component: Transform())
         sponzat.localScale = [0.01, 0.01, 0.01]
-        sponza.add(component: MeshSelector(mesh: Mesh(name: "sponza.obj")))
+        sponza.add(component: MeshSelector(mesh: try! Mesh(name: "ironSphere.spa")))
         sponza.add(component: MeshRenderer())
         
         
@@ -236,20 +236,20 @@ class Renderer: NSObject {
 //        }
 
 
-        for x in -5...5 {
-            for z in -5...5 {
-                for y in 0...1 {
-                    let light = Nexus.shared().createEntity()
-                    let transform = light.add(component: Transform())
-
-                    transform.position = [Float(x) * 2, Float(y) * 3 - 1.5, Float(z) * 2]
-
-                    let lightInfo = light.add(component: Light(type: .point))
-                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
-                    lightInfo.intensity = 1
-                }
-            }
-        }
+//        for x in -5...5 {
+//            for z in -5...5 {
+//                for y in 0...1 {
+//                    let light = Nexus.shared().createEntity()
+//                    let transform = light.add(component: Transform())
+//
+//                    transform.position = [Float(x) * 2, Float(y) * 3 - 1.5, Float(z) * 2]
+//
+//                    let lightInfo = light.add(component: Light(type: .point))
+//                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
+//                    lightInfo.intensity = 1
+//                }
+//            }
+//        }
     }
     
 }

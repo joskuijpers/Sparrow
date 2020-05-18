@@ -6,53 +6,84 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
+import Metal
+import SparrowAsset
 
+/**
+ A mesh.
+ 
+ Contains submeshes and other info needed for rendering.
+ */
 class Mesh {
-    private let mtkMesh: MTKMesh
-    private let mdlMesh: MDLMesh
-    let submeshes: [Submesh]
-    
+    /// Name of the mesh. Usefull for debugging
     let name: String
+    
+    /// Bounds of the mesh
     let bounds: Bounds
     
-    // TODO get rid of this
-    static var vertexDescriptor: MDLVertexDescriptor = MDLVertexDescriptor.defaultVertexDescriptor
+    /// List of submeshes
+    let submeshes: [Submesh]
     
-    var vertexBuffers: [MTKMeshBuffer] {
-        self.mtkMesh.vertexBuffers
+    private let asset: SAAsset
+    private let buffers: [MTLBuffer]
+    let vertexDescriptor: MTLVertexDescriptor
+    
+    enum Error: Swift.Error {
+        /// Asset could not be found.
+        case notFound
+        
+        /// Asset contents currently not supported
+        case unsupportedAsset(String)
     }
     
-    init(name: String) {
+    init(name: String) throws {
         guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
-            fatalError("Model \(name) not found")
+            throw Error.notFound
+        }
+        let device = Renderer.device!
+        
+        print("[mesh] Loading from \(assetUrl)")
+
+        let saAsset = try SparrowAssetLoader.load(from: assetUrl)
+        asset = saAsset
+
+        // Assume a single mesh
+        guard asset.meshes.count == 1 else {
+            throw Error.unsupportedAsset("Asset contains more than one mesh")
         }
         
-        let allocator = MTKMeshBufferAllocator(device: Renderer.device)
-        let asset = MDLAsset(url: assetUrl,
-                             vertexDescriptor: MDLVertexDescriptor.defaultVertexDescriptor,
-                             bufferAllocator: allocator)
+        let saMesh = asset.meshes[0]
         
-        self.name = name
+        self.name = saMesh.name
         
-        let meshes = asset.childObjects(of: MDLMesh.self) as! [MDLMesh]
-        if meshes.count != 1 {
-            fatalError("Model \(name) contains \(meshes.count) meshes instead of 1")
+        // Create vertex descriptor
+        let vertexDescriptor = VertexDescriptor.build(from: saMesh.vertexAttributes)
+        self.vertexDescriptor = vertexDescriptor
+        
+        // Create MTL buffer(s)
+        buffers = asset.buffers.map { (buffer) -> MTLBuffer in
+            buffer.data.withUnsafeBytes { (ptr) -> MTLBuffer in
+                guard let mtlBuffer = device.makeBuffer(bytes: ptr.baseAddress!, length: buffer.size, options: .storageModeShared) else {
+                    fatalError("Unable to allocate MTLBuffer for mesh")
+                }
+                
+                print("Created MTL buffer \(mtlBuffer)")
+                
+                return mtlBuffer
+            }
         }
         
-        mdlMesh = meshes.first!
-        mdlMesh.addTangentBasis(forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
-                                            tangentAttributeNamed: MDLVertexAttributeTangent,
-                                            bitangentAttributeNamed: MDLVertexAttributeBitangent)
-        Mesh.vertexDescriptor = mdlMesh.vertexDescriptor
+        // Create submeshes
+        submeshes = saMesh.submeshes.map({ (saSubmesh) -> Submesh in
+            Submesh(saAsset: saAsset, saSubmesh: saSubmesh, vertexDescriptor: vertexDescriptor)
+        })
         
-        mtkMesh = try! MTKMesh(mesh: mdlMesh, device: Renderer.device)
         
-        submeshes = zip(mdlMesh.submeshes!, mtkMesh.submeshes).map { mesh in
-            Submesh(mdlSubmesh: mesh.0 as! MDLSubmesh, mtkSubmesh: mesh.1)
-        }
+        // Store bounds
+        bounds = Bounds(from: saMesh.bounds)
         
-        bounds = Bounds(minBounds: mdlMesh.boundingBox.minBounds, maxBounds: mdlMesh.boundingBox.maxBounds)
+
+        print("Loaded mesh \(self.name) with bounds \(bounds)")
     }
     
     /**
@@ -66,20 +97,22 @@ class Mesh {
         // What do we do with renderpass?
         // This function should be called only if the mesh survived culling!
 
-        // Calculate approximate depth, used for render sorting
-        let (_, _, _, translation) = worldTransform.columns
-        let depth: Float = distance(viewPosition, translation.xyz)
+//        print("Add mesh to render set (needs culling of submeshes)")
         
-        for (index, _) in submeshes.enumerated() {
-            // TODO: depending on submesh render mode, put in opaque or translucent
-            
-            set.add(.opaque) { item in
-                item.depth = depth
-                item.mesh = self
-                item.submeshIndex = uint16(index)
-                item.worldTransform = worldTransform
-            }
-        }
+        // Calculate approximate depth, used for render sorting
+//        let (_, _, _, translation) = worldTransform.columns
+//        let depth: Float = distance(viewPosition, translation.xyz)
+//
+//        for (index, _) in submeshes.enumerated() {
+//            // TODO: depending on submesh render mode, put in opaque or translucent
+//
+//            set.add(.opaque) { item in
+//                item.depth = depth
+//                item.mesh = self
+//                item.submeshIndex = uint16(index)
+//                item.worldTransform = worldTransform
+//            }
+//        }
     }
 }
 
@@ -91,63 +124,67 @@ extension Mesh {
      */
     func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: uint16, worldTransform: float4x4) {
         // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
-        let submesh = submeshes[Int(submeshIndex)]
+//        let submesh = submeshes[Int(submeshIndex)]
+        
+        print("Render submesh")
+        
 
-        // TODO: apple does:
-            // mesh
-                // vertex buffers
-            // submesg
-                // textures
-                // material uniform
-        // but this does not work well when splitting the submesh rendering
-        
-        
-        if renderPass == .depthPrePass || renderPass == .shadows {
-            renderEncoder.setRenderPipelineState(submesh.depthPipelineState)
-        } else {
-            renderEncoder.setRenderPipelineState(submesh.pipelineState)
-        }
-        
-        // Set vertex uniforms
-        var uniforms = uniforms
-        uniforms.modelMatrix = worldTransform
-        uniforms.normalMatrix = worldTransform.upperLeft
-        
-        renderEncoder.setVertexBytes(&uniforms,
-                                     length: MemoryLayout<Uniforms>.stride,
-                                     index: Int(BufferIndexUniforms.rawValue))
-        
-        // Set vertex buffers
-        for (index, vertexBuffer) in mtkMesh.vertexBuffers.enumerated() {
-            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
-        }
-        
-        
-        // TODO: MOVE TO SUBMESH
-        // Set textures
-//        if (renderPass != .depthPrePass && renderPass != .shadows) || alphaTest {
-            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+//
+//        // TODO: apple does:
+//            // mesh
+//                // vertex buffers
+//            // submesg
+//                // textures
+//                // material uniform
+//        // but this does not work well when splitting the submesh rendering
+//
+//
+//        if renderPass == .depthPrePass || renderPass == .shadows {
+//            renderEncoder.setRenderPipelineState(submesh.depthPipelineState)
+//        } else {
+//            renderEncoder.setRenderPipelineState(submesh.pipelineState)
 //        }
-        
-        if renderPass != .depthPrePass && renderPass != .shadows {
-            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
-        }
-        //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
-        
-        var materialPtr = submesh.material
-        renderEncoder.setFragmentBytes(&materialPtr,
-                                       length: MemoryLayout<Material>.stride,
-                                       index: Int(BufferIndexMaterials.rawValue))
-        
-        renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                            indexCount: submesh.mtkSubmesh.indexCount,
-                                            indexType: submesh.mtkSubmesh.indexType,
-                                            indexBuffer: submesh.mtkSubmesh.indexBuffer.buffer,
-                                            indexBufferOffset: submesh.mtkSubmesh.indexBuffer.offset)
-        // END MOVE TO SUBMESH
+//
+//        // Set vertex uniforms
+//        var uniforms = uniforms
+//        uniforms.modelMatrix = worldTransform
+//        uniforms.normalMatrix = worldTransform.upperLeft
+//
+//        renderEncoder.setVertexBytes(&uniforms,
+//                                     length: MemoryLayout<Uniforms>.stride,
+//                                     index: Int(BufferIndexUniforms.rawValue))
+//
+//        // Set vertex buffers
+//        for (index, vertexBuffer) in mtkMesh.vertexBuffers.enumerated() {
+//            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
+//        }
+//
+//
+//        // TODO: MOVE TO SUBMESH
+//        // Set textures
+////        if (renderPass != .depthPrePass && renderPass != .shadows) || alphaTest {
+//            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+////        }
+//
+//        if renderPass != .depthPrePass && renderPass != .shadows {
+//            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
+//        }
+//        //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
+//
+//        var materialPtr = submesh.material
+//        renderEncoder.setFragmentBytes(&materialPtr,
+//                                       length: MemoryLayout<Material>.stride,
+//                                       index: Int(BufferIndexMaterials.rawValue))
+//
+//        renderEncoder.drawIndexedPrimitives(type: .triangle,
+//                                            indexCount: submesh.mtkSubmesh.indexCount,
+//                                            indexType: submesh.mtkSubmesh.indexType,
+//                                            indexBuffer: submesh.mtkSubmesh.indexBuffer.buffer,
+//                                            indexBufferOffset: submesh.mtkSubmesh.indexBuffer.offset)
+//        // END MOVE TO SUBMESH
     }
 }

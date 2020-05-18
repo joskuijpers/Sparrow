@@ -15,15 +15,14 @@ constant float pi_inv = 0.31830988618;
 
 constant bool hasAlbedoTexture [[ function_constant(0) ]];
 constant bool hasNormalTexture [[ function_constant(1) ]];
-constant bool hasRoughnessTexture [[ function_constant(2) ]];
-constant bool hasMetallicTexture [[ function_constant(3) ]];
-//constant bool hasEmissionTexture [[ function_constant(4) ]];
-constant bool hasAmbientOcclusionTexture [[ function_constant(5) ]];
+constant bool hasRoughnessMetalnessOcclusionTexture [[ function_constant(2) ]];
+constant bool hasEmissionTexture [[ function_constant(3) ]];
+
 
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
     float3 normal       [[ attribute(VertexAttributeNormal) ]];
-    float2 uv           [[ attribute(VertexAttributeUV) ]];
+    float2 uv           [[ attribute(VertexAttributeUV0) ]];
     float3 tangent      [[ attribute(VertexAttributeTangent) ]];
     float3 bitangent    [[ attribute(VertexAttributeBitangent) ]];
 };
@@ -130,10 +129,8 @@ fragment float4 fragment_main(
                               constant Material &material [[ buffer(BufferIndexMaterials) ]],
                               texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]],
                               texture2d<float> normalTexture [[ texture(TextureNormal), function_constant(hasNormalTexture) ]],
-                              texture2d<float> roughnessTexture [[ texture(TextureRoughness), function_constant(hasRoughnessTexture) ]],
-                              texture2d<float> metallicTexture [[ texture(TextureMetallic), function_constant(hasMetallicTexture) ]],
-//                              texture2d<float> emissionTexture [[ texture(TextureNormal), function_constant(hasEmissionTexture) ]]
-                              texture2d<float> aoTexture [[ texture(TextureAmbientOcclusion), function_constant(hasAmbientOcclusionTexture) ]],
+                              texture2d<float> rmoTexture [[ texture(TextureRoughness), function_constant(hasRoughnessMetalnessOcclusionTexture) ]],
+                              texture2d<float> emissionTexture [[ texture(TextureNormal), function_constant(hasEmissionTexture) ]],
                               texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]],
                               
                               constant uint &tileCount [[ buffer(15) ]],
@@ -170,25 +167,16 @@ fragment float4 fragment_main(
     float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
     float3 normal = normalize(TBN * normalValue);
     
-    float metallic;
-    if (hasMetallicTexture) {
-        metallic = metallicTexture.sample(linearSampler, in.uv).r;
+    float metallic, roughness, ambientOcclusion;
+    if (hasRoughnessMetalnessOcclusionTexture) {
+        float3 rmo = rmoTexture.sample(linearSampler, in.uv).rgb;
+        roughness = rmo.r;
+        metallic = rmo.g;
+        ambientOcclusion = rmo.b;
     } else {
         metallic = material.metallic;
-    }
-    
-    float roughness;
-    if (hasRoughnessTexture) {
-        roughness = roughnessTexture.sample(linearSampler, in.uv).r;
-    } else {
         roughness = material.roughness;
-    }
-    
-    float ambientOcclusion;
-    if (hasAmbientOcclusionTexture) {
-        ambientOcclusion = aoTexture.sample(linearSampler, in.uv).r;
-    } else {
-        ambientOcclusion = 1.0;
+        ambientOcclusion = 0;
     }
     
     float3 emissiveColor = material.emission;

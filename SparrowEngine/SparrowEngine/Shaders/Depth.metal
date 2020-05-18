@@ -16,7 +16,7 @@ constant bool hasAlbedoTexture [[ function_constant(0) ]];
 struct VertexIn {
     float4 position     [[ attribute(VertexAttributePosition) ]];
     float3 normal       [[ attribute(VertexAttributeNormal) ]];
-    float2 uv           [[ attribute(VertexAttributeUV) ]];
+    float2 uv           [[ attribute(VertexAttributeUV0) ]];
     float3 tangent      [[ attribute(VertexAttributeTangent) ]];
     float3 bitangent    [[ attribute(VertexAttributeBitangent) ]];
 };

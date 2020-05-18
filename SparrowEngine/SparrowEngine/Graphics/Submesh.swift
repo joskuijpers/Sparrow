@@ -7,45 +7,45 @@
 //
 
 import MetalKit
+import SparrowAsset
 
 /**
  A submesh uses the vertex buffer from a mesh with its own index buffer. It has a single material.
  */
 class Submesh {
-    let mtkSubmesh: MTKSubmesh
+    let name: String
+    
     let pipelineState: MTLRenderPipelineState
     let depthPipelineState: MTLRenderPipelineState
     let material: Material
-    let name: String
+    
     
     /// List of textures available to the submesh
     struct Textures {
         let albedo: MTLTexture?
         let normal: MTLTexture?
-        let roughness: MTLTexture?
-        let metallic: MTLTexture?
+        let roughnessMetalnessOcclusion: MTLTexture?
         let emission: MTLTexture?
-        let ambientOcclusion: MTLTexture?
     }
     
     let textures: Textures
     
-    init(mdlSubmesh: MDLSubmesh, mtkSubmesh: MTKSubmesh) {
-        self.mtkSubmesh = mtkSubmesh
-        self.name = mdlSubmesh.name
+    init(saAsset: SAAsset, saSubmesh: SASubmesh, vertexDescriptor: MTLVertexDescriptor) {
+        name = saSubmesh.name
 
-        print("Loading submesh \(name)")
+        print("[mesh] Loading submesh \(name)")
     
 
 //        let bounds = Bounds(minBounds: mdlMesh.boundingBox.minBounds, maxBounds: mdlMesh.boundingBox.maxBounds)
         
-        textures = Textures(material: mdlSubmesh.material)
-        material = Material(material: mdlSubmesh.material)
+        print(saAsset.materials.count, saSubmesh.material)
+        textures = Textures(saMaterial: saAsset.materials[saSubmesh.material], saAsset: saAsset)
+        material = Material(saMaterial: saAsset.materials[saSubmesh.material], saAsset: saAsset)
         
         // TODO: make only one and cache based on texture-list (used/not used) and material setup (alphatest/blend)
         let functionConstants = Submesh.makeFunctionConstants(textures: textures)
-        pipelineState = Submesh.makePipelineState(functionConstants: functionConstants)
-        depthPipelineState = Submesh.makeDepthPipelineState(functionConstants: functionConstants)
+        pipelineState = Submesh.makePipelineState(functionConstants: functionConstants, vertexDescriptor: vertexDescriptor)
+        depthPipelineState = Submesh.makeDepthPipelineState(functionConstants: functionConstants, vertexDescriptor: vertexDescriptor)
     }
 }
 
@@ -54,7 +54,7 @@ class Submesh {
 private extension Submesh {
     /// Create a pipeline state for this submesh, using the vertex descriptor from the model
     // TODO: add configuration of vertex function for the model
-    static func makePipelineState(functionConstants: MTLFunctionConstantValues) -> MTLRenderPipelineState {
+    static func makePipelineState(functionConstants: MTLFunctionConstantValues, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
         let library = Renderer.library
         
         let vertexFunction = library?.makeFunction(name: "vertex_main")!
@@ -64,7 +64,7 @@ private extension Submesh {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Mesh.vertexDescriptor)
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor
         
         pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba16Float
 //        pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
@@ -88,7 +88,7 @@ private extension Submesh {
     }
     
     /// Make a pipeline state for the depth prepass. This state uses the least amount of textures and smallest vertex size.
-    static func makeDepthPipelineState(functionConstants: MTLFunctionConstantValues) -> MTLRenderPipelineState {
+    static func makeDepthPipelineState(functionConstants: MTLFunctionConstantValues, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
         let library = Renderer.library
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         
@@ -108,7 +108,7 @@ private extension Submesh {
             pipelineDescriptor.vertexFunction = vertexFunction
         }
         
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(Mesh.vertexDescriptor)
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
         pipelineDescriptor.sampleCount = Renderer.depthSampleCount
         
@@ -132,17 +132,11 @@ private extension Submesh {
         property = textures.normal != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 1)
         
-        property = textures.roughness != nil
+        property = textures.roughnessMetalnessOcclusion != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 2)
-        
-        property = textures.metallic != nil
-        functionConstants.setConstantValue(&property, type: .bool, index: 3)
-        
+
         property = textures.emission != nil
-        functionConstants.setConstantValue(&property, type: .bool, index: 4)
-        
-        property = textures.ambientOcclusion != nil
-        functionConstants.setConstantValue(&property, type: .bool, index: 5)
+        functionConstants.setConstantValue(&property, type: .bool, index: 3)
         
         return functionConstants
     }
@@ -151,53 +145,61 @@ private extension Submesh {
 private extension Submesh.Textures {
     
     /// Initialize a texture set using an MDLMaterial
-    init(material: MDLMaterial?) {
-        func property(with semantic: MDLMaterialSemantic) -> MTLTexture? {
-            guard let property = material?.property(with: semantic),
-                property.type == .string,
-                let filename = property.stringValue,
-                let texture = Renderer.textureLoader.load(imageName: filename)
-            else {
+    init(saMaterial: SAMaterial, saAsset: SAAsset) {
+        print("CREATE MATERIAL")
+        
+        func property(_ property: SAMaterialProperty) -> MTLTexture? {
+            switch property {
+            case .texture(let textureId):
+                let path = saAsset.textures[textureId].relativePath
+                
+                // TODO: need to use path relative to the asset
+                print("[mesh] Acquiring texture \(path)")
+                guard let texture = Renderer.textureLoader.load(imageName: path) else {
+                    fatalError("Unable to load texture \(path)")
+                }
+
+                return texture.mtlTexture
+            default:
                 return nil
             }
-            
-            return texture.mtlTexture
         }
-        
-        albedo = property(with: .baseColor)
-        normal = property(with: .tangentSpaceNormal)
-        roughness = property(with: .roughness)
-        metallic = property(with: .metallic)
-        emission = property(with: .emission)
-        ambientOcclusion = property(with: .ambientOcclusion)
+
+        albedo = property(saMaterial.albedo)
+        normal = property(saMaterial.normals)
+        roughnessMetalnessOcclusion = property(saMaterial.roughnessMetalnessOcclusion)
+        emission = property(saMaterial.emissive)
     }
 }
 
 private extension Material {
     
     /// Initialiaze a Material structure using an MDLMaterial
-    init(material: MDLMaterial?) {
+    init(saMaterial: SAMaterial, saAsset: SAAsset) {
         self.init()
         
-        if let albedo = material?.property(with: .baseColor),
-            albedo.type == .float3 {
-            self.albedo = albedo.float3Value
-        }
-
-        if let roughness = material?.property(with: .roughness),
-            roughness.type == .float {
-            self.roughness = roughness.floatValue
-        }
-        
-        if let metallic = material?.property(with: .metallic),
-            metallic.type == .float {
-            self.metallic = metallic.floatValue
+        func property(_ property: SAMaterialProperty) -> float4? {
+            switch property {
+            case .color(let color):
+                return color;
+            default:
+                return nil
+            }
         }
         
-        // Gives weird values
-//        if let emission = material?.property(with: .emission),
-//            emission.type == .float3 {
-//            self.emission = emission.float3Value
-//        }
+        if let color = property(saMaterial.albedo) {
+            albedo = color.xyz // TODO add alpha
+        }
+        
+        if let rma = property(saMaterial.roughnessMetalnessOcclusion) {
+            metallic = rma.x
+            roughness = rma.y
+        }
+        
+        if let color = property(saMaterial.emissive) {
+            emission = color.xyz
+        }
+        
+        print("MEM SIZE", MemoryLayout<Material>.size)
     }
 }
