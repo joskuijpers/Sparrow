@@ -20,6 +20,8 @@ class ObjImporter {
     enum Error: Swift.Error {
         /// The ObjImporter only supports .obj files.
         case fileFormatNotSupported
+        /// Material was not found
+        case invalidMaterial(String?)
     }
     
     enum Options {
@@ -68,7 +70,7 @@ private extension ObjImporter {
             mtlFile = try mtlParser.parse()
         }
         
-        buildAsset()
+        try buildAsset()
         asset.updateChecksum()
         
         return asset
@@ -81,7 +83,7 @@ private extension ObjImporter {
      creating the index buffer. In front of that we put the final vertex buffer. Each submes has a buffer view pointing somewhere
      in the buffer. We try to optimize the indices by using an index as small as possible. On top of that, we only keep unique vertices.
     */
-    func buildAsset() {
+    func buildAsset() throws {
         let obj = objFile!
         
         asset = SAAsset(generator: "SparrowSceneConverter", origin: url.path)
@@ -93,9 +95,9 @@ private extension ObjImporter {
         var data: Data
         
         if generateTangents {
-            (submeshes, data) = generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedTangentVertex.self)
+            (submeshes, data) = try generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedTangentVertex.self)
         } else {
-            (submeshes, data) = generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedVertex.self)
+            (submeshes, data) = try generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedVertex.self)
         }
     
         // Add to file
@@ -135,7 +137,7 @@ private extension ObjImporter {
     }
     
     /// Generate the list of submeshes with indexed buffers
-    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) -> ([SASubmesh], Data) where V: ObjTestVertex {
+    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SASubmesh], Data) where V: ObjTestVertex {
         var vertexBuffer: [V] = []
         var vertexMap: [V:Int] = [:]
 
@@ -171,7 +173,7 @@ private extension ObjImporter {
             }
         
             // Create material
-            let material = generateMaterial(submesh: submesh)
+            let material = try generateMaterial(submesh: submesh)
             
             // Put index buffer with submesh + name + material + bounds.
             let ibSize = MemoryLayout<UInt32>.stride * submeshIndexBuffer.count
@@ -209,7 +211,7 @@ private extension ObjImporter {
     }
     
     /// Generate a material definition from data provided in the mesh and material file.
-    private func generateMaterial(submesh: ObjSubmesh) -> Int {
+    private func generateMaterial(submesh: ObjSubmesh) throws -> Int {
         if let materialName = submesh.material, let mat = mtlFile!.materials.first(where: { $0.name == materialName }) {
             var albedo = SAMaterialProperty.none
             if let texture = mat.albedoTexture {
@@ -246,7 +248,7 @@ private extension ObjImporter {
                                alphaCutoff: 0.5)
             return addMaterial(m)
         } else {
-            return -1
+            throw Error.invalidMaterial(submesh.material)
         }
     }
 }
