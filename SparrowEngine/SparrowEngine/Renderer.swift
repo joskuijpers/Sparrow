@@ -27,6 +27,7 @@ class Renderer: NSObject {
     static var device: MTLDevice!
     static var library: MTLLibrary?
     static var textureLoader: TextureLoader!
+    static var meshLoader: MeshLoader!
     static var sampleCount = 1 // MSAA
     static var depthSampleCount = 1 // MSAA
     
@@ -98,6 +99,7 @@ class Renderer: NSObject {
         Renderer.device = device
         Renderer.library = device.makeDefaultLibrary()
         Renderer.textureLoader = TextureLoader()
+        Renderer.meshLoader = MeshLoader(device: device)
         
         // Configure view
         metalView.device = device
@@ -168,8 +170,9 @@ class Renderer: NSObject {
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
-        t.localPosition = [-12.5, 1.4, -0.5]
-        t.eulerAngles = [0, Float(90.0).degreesToRadians, 0]
+        t.localPosition = [0, 0, -2]
+//        t.localPosition = [-12.5, 1.4, -0.5]
+        t.eulerAngles = [0, Float(0.0).degreesToRadians, 0]
         let cameraComp = camera.add(component: Camera())
         scene.camera = cameraComp
         
@@ -200,8 +203,12 @@ class Renderer: NSObject {
         
         let sponza = Nexus.shared().createEntity()
         let sponzat = sponza.add(component: Transform())
-        sponzat.localScale = [0.01, 0.01, 0.01]
-        sponza.add(component: MeshSelector(mesh: try! Mesh(name: "ironSphere.spa")))
+        sponzat.localScale = [1, 1, 1]
+//        sponzat.localScale = [0.01, 0.01, 0.01]
+        
+//        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
+        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
+        sponza.add(component: MeshSelector(mesh: sponzaMesh))
         sponza.add(component: MeshRenderer())
         
         

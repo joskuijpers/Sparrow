@@ -6,7 +6,6 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import ModelIO
 import MetalKit
 
 /**
@@ -29,6 +28,7 @@ class TextureLoader {
         return total
     }
     
+    /// Initialize a new texture loader.
     init() {
         mtkTextureLoader = MTKTextureLoader(device: Renderer.device)
     }

@@ -60,11 +60,8 @@ enum VertexAttributes {
 enum Textures {
     TextureAlbedo = 0,
     TextureNormal = 1,
-    TextureSpecular = 2,
-    TextureRoughness = 3,
-    TextureMetallic = 4,
-    TextureEmissive = 5,
-    TextureAmbientOcclusion = 6,
+    TextureRoughnessMetalnessOcclusion = 3,
+    TextureEmissive = 4,
     
     TextureIrradiance = 10
 };

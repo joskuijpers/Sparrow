@@ -136,14 +136,14 @@ let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowE
 let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj") // 45% -> 35%
 let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj") // 44% -> 33%
 
-let url = url2
+let url = url1
 
 do {
     // Import asset from .obj file
     let asset = try ObjImporter.import(from: url, options: [.generateTangents])
     
     // Output in binary
-    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/\(url.deletingPathExtension().lastPathComponent).spa")
+    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/\(url.deletingPathExtension().lastPathComponent).spa")
     try SparrowAssetWriter.write(asset, to: outputUrl)
     
     let roundTrip = try SparrowAssetLoader.load(from: outputUrl)

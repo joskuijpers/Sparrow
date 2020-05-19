@@ -13,11 +13,20 @@ import SparrowAsset
  A submesh uses the vertex buffer from a mesh with its own index buffer. It has a single material.
  */
 class Submesh {
+    /// Name of the submesh for debugging
     let name: String
     
     let pipelineState: MTLRenderPipelineState
     let depthPipelineState: MTLRenderPipelineState
+    
+    /// Material of the mesh. Passed to the shader as uniform.
     let material: Material
+    
+    /// Submesh bounds. Used for culling.
+    let bounds: Bounds
+    
+    
+    let saSubmesh: SASubmesh
     
     
     /// List of textures available to the submesh
@@ -34,18 +43,23 @@ class Submesh {
         name = saSubmesh.name
 
         print("[mesh] Loading submesh \(name)")
+        
+        self.saSubmesh = saSubmesh
     
 
 //        let bounds = Bounds(minBounds: mdlMesh.boundingBox.minBounds, maxBounds: mdlMesh.boundingBox.maxBounds)
         
-        print(saAsset.materials.count, saSubmesh.material)
-        textures = Textures(saMaterial: saAsset.materials[saSubmesh.material], saAsset: saAsset)
-        material = Material(saMaterial: saAsset.materials[saSubmesh.material], saAsset: saAsset)
+        let saMaterial = saAsset.materials[saSubmesh.material]
+        
+        textures = Textures(saMaterial: saMaterial, saAsset: saAsset)
+        material = Material(saMaterial: saMaterial, saAsset: saAsset)
         
         // TODO: make only one and cache based on texture-list (used/not used) and material setup (alphatest/blend)
         let functionConstants = Submesh.makeFunctionConstants(textures: textures)
-        pipelineState = Submesh.makePipelineState(functionConstants: functionConstants, vertexDescriptor: vertexDescriptor)
-        depthPipelineState = Submesh.makeDepthPipelineState(functionConstants: functionConstants, vertexDescriptor: vertexDescriptor)
+        pipelineState = Submesh.makePipelineState(functionConstants: functionConstants, vertexDescriptor: vertexDescriptor, alphaMode: saMaterial.alphaMode)
+        depthPipelineState = Submesh.makeDepthPipelineState(functionConstants: functionConstants, vertexDescriptor: vertexDescriptor, alphaMode: saMaterial.alphaMode)
+        
+        bounds = Bounds(from: saSubmesh.bounds)
     }
 }
 
@@ -54,7 +68,7 @@ class Submesh {
 private extension Submesh {
     /// Create a pipeline state for this submesh, using the vertex descriptor from the model
     // TODO: add configuration of vertex function for the model
-    static func makePipelineState(functionConstants: MTLFunctionConstantValues, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
+    static func makePipelineState(functionConstants: MTLFunctionConstantValues, vertexDescriptor: MTLVertexDescriptor, alphaMode: SAAlphaMode) -> MTLRenderPipelineState {
         let library = Renderer.library
         
         let vertexFunction = library?.makeFunction(name: "vertex_main")!
@@ -88,15 +102,13 @@ private extension Submesh {
     }
     
     /// Make a pipeline state for the depth prepass. This state uses the least amount of textures and smallest vertex size.
-    static func makeDepthPipelineState(functionConstants: MTLFunctionConstantValues, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
+    static func makeDepthPipelineState(functionConstants: MTLFunctionConstantValues, vertexDescriptor: MTLVertexDescriptor, alphaMode: SAAlphaMode) -> MTLRenderPipelineState {
         let library = Renderer.library
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        
-        let hasAlphaTesting = true // TODO fill with appropriate data
-        
+
         // Use a special setup when the material needs alpha testing, so for opaque materials
         // we can completely skip UV coords and fragment shader.
-        if hasAlphaTesting {
+        if alphaMode == .mask {
             let vertexFunction = library?.makeFunction(name: "vertex_main_depth_alphatest")!
             let fragmentFunction = try! library?.makeFunction(name: "fragment_main_depth_alphatest", constantValues: functionConstants)
             

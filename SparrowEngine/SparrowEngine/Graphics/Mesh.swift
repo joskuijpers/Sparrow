@@ -36,6 +36,9 @@ class Mesh {
         case unsupportedAsset(String)
     }
     
+    let ibo: Int
+    let ibn: Int
+    
     init(name: String) throws {
         guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
             throw Error.notFound
@@ -78,6 +81,9 @@ class Mesh {
             Submesh(saAsset: saAsset, saSubmesh: saSubmesh, vertexDescriptor: vertexDescriptor)
         })
         
+        ibo = saAsset.bufferViews[saMesh.submeshes[0].indices].offset
+        ibn = saAsset.bufferViews[saMesh.submeshes[0].indices].length / MemoryLayout<UInt32>.size
+        
         
         // Store bounds
         bounds = Bounds(from: saMesh.bounds)
@@ -100,19 +106,23 @@ class Mesh {
 //        print("Add mesh to render set (needs culling of submeshes)")
         
         // Calculate approximate depth, used for render sorting
-//        let (_, _, _, translation) = worldTransform.columns
-//        let depth: Float = distance(viewPosition, translation.xyz)
+        let (_, _, _, translation) = worldTransform.columns
+        let depth: Float = distance(viewPosition, translation.xyz)
 //
-//        for (index, _) in submeshes.enumerated() {
-//            // TODO: depending on submesh render mode, put in opaque or translucent
-//
-//            set.add(.opaque) { item in
-//                item.depth = depth
-//                item.mesh = self
-//                item.submeshIndex = uint16(index)
-//                item.worldTransform = worldTransform
-//            }
-//        }
+        for (index, _) in submeshes.enumerated() {
+            // TODO: depending on submesh render mode, put in opaque or translucent
+            // SO store render mode inside the mesh...
+            // TODO: add submesh culling
+
+            if index == 0 {
+                set.add(.opaque) { item in
+                    item.depth = depth
+                    item.mesh = self
+                    item.submeshIndex = UInt16(index)
+                    item.worldTransform = worldTransform
+                }
+            }
+        }
     }
 }
 
@@ -122,13 +132,14 @@ extension Mesh {
     /**
      Render the submesh at given index.
      */
-    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: uint16, worldTransform: float4x4) {
+    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
         // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
-//        let submesh = submeshes[Int(submeshIndex)]
-        
-        print("Render submesh")
-        
+        let submesh = submeshes[Int(submeshIndex)]
 
+        
+        
+        
+        
 //
 //        // TODO: apple does:
 //            // mesh
@@ -137,54 +148,56 @@ extension Mesh {
 //                // textures
 //                // material uniform
 //        // but this does not work well when splitting the submesh rendering
-//
-//
-//        if renderPass == .depthPrePass || renderPass == .shadows {
-//            renderEncoder.setRenderPipelineState(submesh.depthPipelineState)
-//        } else {
-//            renderEncoder.setRenderPipelineState(submesh.pipelineState)
-//        }
-//
-//        // Set vertex uniforms
-//        var uniforms = uniforms
-//        uniforms.modelMatrix = worldTransform
-//        uniforms.normalMatrix = worldTransform.upperLeft
-//
-//        renderEncoder.setVertexBytes(&uniforms,
-//                                     length: MemoryLayout<Uniforms>.stride,
-//                                     index: Int(BufferIndexUniforms.rawValue))
-//
-//        // Set vertex buffers
-//        for (index, vertexBuffer) in mtkMesh.vertexBuffers.enumerated() {
-//            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: 0, index: index)
-//        }
-//
-//
-//        // TODO: MOVE TO SUBMESH
-//        // Set textures
-////        if (renderPass != .depthPrePass && renderPass != .shadows) || alphaTest {
+
+        if renderPass == .depthPrePass || renderPass == .shadows {
+            renderEncoder.setRenderPipelineState(submesh.depthPipelineState)
+        } else {
+            renderEncoder.setRenderPipelineState(submesh.pipelineState)
+        }
+        
+
+        // Set vertex uniforms
+        var uniforms = uniforms
+        uniforms.modelMatrix = worldTransform
+        uniforms.normalMatrix = worldTransform.upperLeft
+
+        renderEncoder.setVertexBytes(&uniforms,
+                                     length: MemoryLayout<Uniforms>.stride,
+                                     index: Int(BufferIndexUniforms.rawValue))
+
+        // Set vertex buffers
+        for index in 0..<buffers.count {
+            renderEncoder.setVertexBuffer(buffers[index], offset: 0, index: index)
+        }
+
+
+        // TODO: MOVE TO SUBMESH
+        // Set textures
+//        if (renderPass == .depthPrePass || renderPass != .shadows) && alphaTest {
 //            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
-////        }
-//
-//        if renderPass != .depthPrePass && renderPass != .shadows {
-//            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
-//            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
-//            renderEncoder.setFragmentTexture(submesh.textures.roughness, index: Int(TextureRoughness.rawValue))
-//            renderEncoder.setFragmentTexture(submesh.textures.metallic, index: Int(TextureMetallic.rawValue))
-//            renderEncoder.setFragmentTexture(submesh.textures.ambientOcclusion, index: Int(TextureAmbientOcclusion.rawValue))
 //        }
-//        //                    renderEncoder.setFragmentTexture(submesh.textures.emissive, index: Int(TextureEmission.rawValue))
-//
-//        var materialPtr = submesh.material
-//        renderEncoder.setFragmentBytes(&materialPtr,
-//                                       length: MemoryLayout<Material>.stride,
-//                                       index: Int(BufferIndexMaterials.rawValue))
-//
-//        renderEncoder.drawIndexedPrimitives(type: .triangle,
-//                                            indexCount: submesh.mtkSubmesh.indexCount,
-//                                            indexType: submesh.mtkSubmesh.indexType,
-//                                            indexBuffer: submesh.mtkSubmesh.indexBuffer.buffer,
-//                                            indexBufferOffset: submesh.mtkSubmesh.indexBuffer.offset)
-//        // END MOVE TO SUBMESH
+
+        if renderPass != .depthPrePass && renderPass != .shadows {
+            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+            renderEncoder.setFragmentTexture(submesh.textures.roughnessMetalnessOcclusion, index: Int(TextureRoughnessMetalnessOcclusion.rawValue))
+            renderEncoder.setFragmentTexture(submesh.textures.emission, index: Int(TextureEmissive.rawValue))
+        }
+        
+
+        var materialPtr = submesh.material
+        renderEncoder.setFragmentBytes(&materialPtr,
+                                       length: MemoryLayout<Material>.size,
+                                       index: Int(BufferIndexMaterials.rawValue))
+
+        // Move this to submesh. Store this info in submesh when loading (SA buffer index, index type, offset)
+        
+        renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                            indexCount: ibn,
+                                            indexType: .uint32,
+                                            indexBuffer: buffers[0],
+                                            indexBufferOffset: ibo)
+
+        // END MOVE TO SUBMESH
     }
 }

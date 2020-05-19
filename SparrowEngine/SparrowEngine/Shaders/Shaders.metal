@@ -129,7 +129,7 @@ fragment float4 fragment_main(
                               constant Material &material [[ buffer(BufferIndexMaterials) ]],
                               texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]],
                               texture2d<float> normalTexture [[ texture(TextureNormal), function_constant(hasNormalTexture) ]],
-                              texture2d<float> rmoTexture [[ texture(TextureRoughness), function_constant(hasRoughnessMetalnessOcclusionTexture) ]],
+                              texture2d<float> rmoTexture [[ texture(TextureRoughnessMetalnessOcclusion), function_constant(hasRoughnessMetalnessOcclusionTexture) ]],
                               texture2d<float> emissionTexture [[ texture(TextureNormal), function_constant(hasEmissionTexture) ]],
                               texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]],
                               
