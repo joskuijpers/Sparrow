@@ -81,8 +81,8 @@ class Mesh {
             Submesh(saAsset: saAsset, saSubmesh: saSubmesh, vertexDescriptor: vertexDescriptor)
         })
         
-        ibo = saAsset.bufferViews[saMesh.submeshes[0].indices].offset
-        ibn = saAsset.bufferViews[saMesh.submeshes[0].indices].length / MemoryLayout<UInt32>.size
+        ibo = saAsset.bufferViews[saMesh.submeshes[10].indices].offset
+        ibn = saAsset.bufferViews[saMesh.submeshes[10].indices].length / MemoryLayout<UInt32>.size
         
         
         // Store bounds
@@ -114,7 +114,7 @@ class Mesh {
             // SO store render mode inside the mesh...
             // TODO: add submesh culling
 
-            if index == 0 {
+            if index == 10 {
                 set.add(.opaque) { item in
                     item.depth = depth
                     item.mesh = self

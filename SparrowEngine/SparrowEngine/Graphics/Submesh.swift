@@ -42,7 +42,7 @@ class Submesh {
     init(saAsset: SAAsset, saSubmesh: SASubmesh, vertexDescriptor: MTLVertexDescriptor) {
         name = saSubmesh.name
 
-        print("[mesh] Loading submesh \(name)")
+//        print("[mesh] Loading submesh \(name)")
         
         self.saSubmesh = saSubmesh
     
@@ -158,15 +158,13 @@ private extension Submesh.Textures {
     
     /// Initialize a texture set using an MDLMaterial
     init(saMaterial: SAMaterial, saAsset: SAAsset) {
-        print("CREATE MATERIAL")
-        
         func property(_ property: SAMaterialProperty) -> MTLTexture? {
             switch property {
             case .texture(let textureId):
                 let path = saAsset.textures[textureId].relativePath
                 
                 // TODO: need to use path relative to the asset
-                print("[mesh] Acquiring texture \(path)")
+//                print("[mesh] Acquiring texture \(path)")
                 guard let texture = Renderer.textureLoader.load(imageName: path) else {
                     fatalError("Unable to load texture \(path)")
                 }
@@ -211,7 +209,5 @@ private extension Material {
         if let color = property(saMaterial.emissive) {
             emission = color.xyz
         }
-        
-        print("MEM SIZE", MemoryLayout<Material>.size)
     }
 }

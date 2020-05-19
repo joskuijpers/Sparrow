@@ -170,9 +170,9 @@ class Renderer: NSObject {
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
-        t.localPosition = [0, 0, -2]
-//        t.localPosition = [-12.5, 1.4, -0.5]
-        t.eulerAngles = [0, Float(0.0).degreesToRadians, 0]
+//        t.localPosition = [0, 0, -2]
+        t.localPosition = [-12.5, 1.4, -0.5]
+        t.eulerAngles = [0, Float(90.0).degreesToRadians, 0]
         let cameraComp = camera.add(component: Camera())
         scene.camera = cameraComp
         
@@ -203,11 +203,11 @@ class Renderer: NSObject {
         
         let sponza = Nexus.shared().createEntity()
         let sponzat = sponza.add(component: Transform())
-        sponzat.localScale = [1, 1, 1]
-//        sponzat.localScale = [0.01, 0.01, 0.01]
+//        sponzat.localScale = [1, 1, 1]
+        sponzat.localScale = [0.01, 0.01, 0.01]
         
-//        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
-        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
+        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
+//        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
         sponza.add(component: MeshSelector(mesh: sponzaMesh))
         sponza.add(component: MeshRenderer())
         
@@ -432,6 +432,7 @@ extension Renderer {
         
         renderEncoder.setDepthStencilState(depthStencilStateWrite)
         renderEncoder.setCullMode(.back)
+        renderEncoder.setFrontFacing(.clockwise)
         
         renderScene(onEncoder: renderEncoder, renderPass: .depthPrePass)
         
