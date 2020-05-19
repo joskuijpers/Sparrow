@@ -177,39 +177,47 @@ extension ObjParser {
     // https://github.com/assimp/assimp/blob/master/code/PostProcessing/TriangulateProcess.cpp#L227
     /// Triangulate the faces. Supports triangles (no conversion) and quads (fast conversion)
     private func triangulate() throws {
+        // Do not run if there are no non-triangles
+        let needed = faces.filter { $0.vertIndices.count != 3 }.count > 0
+        if !needed {
+            return
+        }
+        
         var result: [ObjFace] = []
 
         for face in faces {
-            if face.vertIndices.count == 3 {
+            let numIndices = face.vertIndices.count
+            if numIndices == 3 {
                 result.append(face)
-            } else if face.vertIndices.count == 4 {
+            } else if numIndices == 4 {
                 var startIndex = 0
-                
+
                 for i in 0..<4 {
                     let v0 = positions[vertices[face.vertIndices[(i + 3) % 4]].position - 1] // obj is 1-indexed
                     let v1 = positions[vertices[face.vertIndices[(i + 2) % 4]].position - 1]
                     let v2 = positions[vertices[face.vertIndices[(i + 1) % 4]].position - 1]
+
                     let v = positions[vertices[face.vertIndices[i]].position - 1]
-                    
+
                     let left = normalize(v0 - v)
                     let diag = normalize(v1 - v)
                     let right = normalize(v2 - v)
-                    
+
                     let angle = acos(dot(left, diag)) + acos(dot(right, diag))
                     if angle > π {
                         startIndex = i
                         break
                     }
                 }
-                
+
                 let temp = [face.vertIndices[0], face.vertIndices[1], face.vertIndices[2], face.vertIndices[3]]
-                
+
                 result.append(ObjFace(vertIndices: [
                     temp[startIndex],
                     temp[(startIndex + 1) % 4],
                     temp[(startIndex + 2) % 4],
                 ]))
-                
+
                 result.append(ObjFace(vertIndices: [
                     temp[startIndex],
                     temp[(startIndex + 2) % 4],

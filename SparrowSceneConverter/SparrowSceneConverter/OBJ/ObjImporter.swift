@@ -150,28 +150,32 @@ private extension ObjImporter {
             var submeshBounds = SABounds()
             var submeshIndexBuffer: [UInt32] = []
 
-            for vertex in submesh.vertices {
-                // Add full vertex to vertex list
-                let packedVertex = vertexType.init(obj: obj, vertex: vertex)
-                
-                // Indexing: only use each vertex once
-                var index: Int = 0
-                if let existingIndex = vertexMap[packedVertex] {
-                    index = existingIndex
-                } else {
-                    vertexBuffer.append(packedVertex)
-                    index = vertexBuffer.count - 1
-                    vertexMap[packedVertex] = index
+            for face in submesh.faces {
+                for vertexIndex in face.vertIndices {
+                    let vertex = submesh.vertices[vertexIndex]
+                    
+                    // Add full vertex to vertex list
+                    let packedVertex = vertexType.init(obj: obj, vertex: vertex)
+                    
+                    // Indexing: only use each vertex once
+                    var index: Int = 0
+                    if let existingIndex = vertexMap[packedVertex] {
+                        index = existingIndex
+                    } else {
+                        vertexBuffer.append(packedVertex)
+                        index = vertexBuffer.count - 1
+                        vertexMap[packedVertex] = index
+                    }
+                    
+                    // Add index to index buffer
+                    submeshIndexBuffer.append(UInt32(index))
+                    
+                    // Update bounds of submesh
+                    let position = obj.positions[vertex.position - 1]
+                    submeshBounds = submeshBounds.containing(position)
                 }
-                
-                // Add index to index buffer
-                submeshIndexBuffer.append(UInt32(index))
-                
-                // Update bounds of submesh
-                let position = obj.positions[vertex.position - 1]
-                submeshBounds = submeshBounds.containing(position)
             }
-        
+
             // Create material
             let material = try generateMaterial(submesh: submesh)
             
