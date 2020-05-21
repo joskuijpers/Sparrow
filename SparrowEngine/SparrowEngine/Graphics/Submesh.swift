@@ -12,7 +12,7 @@ import SparrowAsset
 /**
  A submesh uses the vertex buffer from a mesh with its own index buffer. It has a single material.
  */
-class Submesh {
+struct Submesh {
     /// Name of the submesh for debugging
     let name: String
     
@@ -71,7 +71,7 @@ class Submesh {
 private extension Submesh {
 
     /// Called when the material changed, either on init or during runtime.
-    private func onMaterialChanged() {
+    private mutating func onMaterialChanged() {
         shaderMaterialData = material.buildShaderData()
         
         do {
@@ -82,7 +82,7 @@ private extension Submesh {
     }
     
     /// Rebuild the pipeline state. Used when render properties change or when the mesh material changes.
-    private func rebuildPipelineState() throws {
+    private mutating func rebuildPipelineState() throws {
         let library = Renderer.library!
         let device = Renderer.device!
         
@@ -202,7 +202,8 @@ extension Submesh {
         }
 
         // Update material constants
-        renderEncoder.setFragmentBytes(&shaderMaterialData,
+        var materialData = shaderMaterialData
+        renderEncoder.setFragmentBytes(&materialData,
                                        length: MemoryLayout<ShaderMaterialData>.size,
                                        index: Int(BufferIndexMaterials.rawValue))
 

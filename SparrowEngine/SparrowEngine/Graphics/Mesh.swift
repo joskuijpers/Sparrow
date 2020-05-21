@@ -45,9 +45,6 @@ extension Mesh {
     /// Ask the mesh to add to the render set if within frustum.
     @inlinable
     func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
-        // What do we do with renderpass?
-        // This function should be called only if the mesh survived culling!
-        
         let bounds = self.bounds * worldTransform
         if frustum.intersects(bounds: bounds) == .outside {
             // Mesh is not in frustum
@@ -75,7 +72,6 @@ extension Mesh {
             renderEncoder.setVertexBuffer(buffers[index], offset: 0, index: index)
         }
         
-        // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
         let submesh = submeshes[Int(submeshIndex)]
         submesh.render(renderEncoder: renderEncoder, renderPass: renderPass, buffers: buffers)
     }
