@@ -38,6 +38,7 @@ struct MtlMaterial {
     var aoTexture: URL?
     var emissiveTexture: URL?
     var alphaTexture: URL?
+    var hasAlpha = false
 }
 
 struct ObjFace {

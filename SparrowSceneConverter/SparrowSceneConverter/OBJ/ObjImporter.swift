@@ -255,8 +255,8 @@ private extension ObjImporter {
                                albedo: albedo,
                                normals: normals,
                                roughnessMetalnessOcclusion: rma,
-                               emissive: emissive,
-                               alphaMode: .opaque,
+                               emission: emissive,
+                               alphaMode: mat.hasAlpha ? .mask : .opaque,
                                alphaCutoff: 0.5)
             return addMaterial(m)
         } else {

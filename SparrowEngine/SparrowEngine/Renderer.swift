@@ -204,8 +204,8 @@ class Renderer: NSObject {
         let sponza = Nexus.shared().createEntity()
         sponza.add(component: Transform())
         
-//        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
-        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
+        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
+//        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
         sponza.add(component: MeshSelector(mesh: sponzaMesh))
         sponza.add(component: MeshRenderer())
         

@@ -75,6 +75,7 @@ class MtlParser: StructuredTextParser {
             
         case "d":
             currentMaterial?.alpha = parseFloat1()
+            currentMaterial?.hasAlpha = true
         case "illum", "Ns", "Ni", "Tr", "Tf":
             // Unhandled
             skipLine()
@@ -95,6 +96,7 @@ class MtlParser: StructuredTextParser {
             currentMaterial?.emissiveTexture = texture()
         case "map_d":
             currentMaterial?.alphaTexture = texture()
+            currentMaterial?.hasAlpha = true
         case .none:
             print("[mtl] Could not read action at \(offsetToLocation(offset))")
         default:
