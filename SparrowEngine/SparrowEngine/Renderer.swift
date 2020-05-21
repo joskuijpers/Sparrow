@@ -202,9 +202,7 @@ class Renderer: NSObject {
 //        Nexus.shared().addChild(cube, to: helmet)
         
         let sponza = Nexus.shared().createEntity()
-        let sponzat = sponza.add(component: Transform())
-        sponzat.localScale = [1, 1, 1]
-//        sponzat.localScale = [0.01, 0.01, 0.01]
+        sponza.add(component: Transform())
         
 //        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
         let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")

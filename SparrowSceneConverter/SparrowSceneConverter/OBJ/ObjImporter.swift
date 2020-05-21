@@ -12,6 +12,7 @@ import simd
 class ObjImporter {
     private let url: URL
     private let generateTangents: Bool
+    private let positionScale: Float
     
     private var objFile: ObjFile?
     private var mtlFile: MtlFile?
@@ -27,6 +28,9 @@ class ObjImporter {
     enum Options {
         /// Generate tangents and bitangents
         case generateTangents
+        
+        /// Scale the vertex positions uniformally
+        case uniformScale(Float)
     }
     
     private init(url: URL, options: [Options] = []) throws {
@@ -37,14 +41,18 @@ class ObjImporter {
         self.url = url
         
         var generateTangents = false
+        var uniformScale: Float = 1
         for option in options {
             switch option {
             case .generateTangents:
                 generateTangents = true
+            case .uniformScale(let scale):
+                uniformScale = scale
             }
         }
         
         self.generateTangents = generateTangents
+        self.positionScale = uniformScale
     }
     
     /**
@@ -155,7 +163,7 @@ private extension ObjImporter {
                     let vertex = submesh.vertices[vertexIndex]
                     
                     // Add full vertex to vertex list
-                    let packedVertex = vertexType.init(obj: obj, vertex: vertex)
+                    let packedVertex = vertexType.init(obj: obj, vertex: vertex, uniformScale: positionScale)
                     
                     // Indexing: only use each vertex once
                     var index: Int = 0
@@ -171,7 +179,7 @@ private extension ObjImporter {
                     submeshIndexBuffer.append(UInt32(index))
                     
                     // Update bounds of submesh
-                    let position = obj.positions[vertex.position - 1]
+                    let position = obj.positions[vertex.position - 1] * positionScale
                     submeshBounds = submeshBounds.containing(position)
                 }
             }
@@ -303,13 +311,13 @@ private extension ObjImporter {
 }
 
 fileprivate protocol ObjTestVertex: Hashable {
-    init(obj: ObjFile, vertex: ObjVertex)
+    init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float)
 }
 
 /// A vertex with position,normals and texture coordinates
 fileprivate struct TexturedVertex: ObjTestVertex {
-    init(obj: ObjFile, vertex: ObjVertex) {
-        let position = obj.positions[vertex.position - 1]
+    init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float = 1) {
+        let position = obj.positions[vertex.position - 1] * uniformScale
         let normal = obj.normals[vertex.normal - 1]
         let uv = obj.texCoords[vertex.texCoord - 1]
         
@@ -339,8 +347,8 @@ fileprivate struct TexturedVertex: ObjTestVertex {
 
 /// A vertex with position,normals, tangents and texture coordinates
 fileprivate struct TexturedTangentVertex: ObjTestVertex {
-    init(obj: ObjFile, vertex: ObjVertex) {
-        let position = obj.positions[vertex.position - 1]
+    init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float = 1) {
+        let position = obj.positions[vertex.position - 1] * uniformScale
         let normal = obj.normals[vertex.normal - 1]
         let uv = obj.texCoords[vertex.texCoord - 1]
         
