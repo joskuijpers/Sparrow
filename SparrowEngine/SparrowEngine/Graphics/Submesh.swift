@@ -96,16 +96,16 @@ private extension Submesh {
     private func buildFunctionConstants() -> MTLFunctionConstantValues {
         let functionConstants = MTLFunctionConstantValues()
         
-        var property = false//textures.albedo != nil
+        var property = material.albedoTexture != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 0)
         
-        property = false//textures.normal != nil
+        property = material.normalTexture != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 1)
         
-        property = false//textures.roughnessMetalnessOcclusion != nil
+        property = material.roughnessMetalnessOcclusionTexture != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 2)
         
-        property = false//textures.emission != nil
+        property = material.emissionTexture != nil
         functionConstants.setConstantValue(&property, type: .bool, index: 3)
         
         return functionConstants

@@ -24,7 +24,7 @@ public struct SAMaterial: BinaryCodable {
     public let roughnessMetalnessOcclusion: SAMaterialProperty
     
     /// Emission property. All zeroes has no emission.
-    public let emissive: SAMaterialProperty
+    public let emission: SAMaterialProperty
 
 //    @property (nonatomic, assign) simd_float4 baseColorFactor;
 //    @property (nonatomic, assign) float metalnessFactor;
@@ -43,14 +43,14 @@ public struct SAMaterial: BinaryCodable {
                 albedo: SAMaterialProperty,
                 normals: SAMaterialProperty,
                 roughnessMetalnessOcclusion: SAMaterialProperty,
-                emissive: SAMaterialProperty,
+                emission: SAMaterialProperty,
                 alphaMode: SAAlphaMode,
                 alphaCutoff: Float) {
         self.name = name
         self.albedo = albedo
         self.normals = normals
         self.roughnessMetalnessOcclusion = roughnessMetalnessOcclusion
-        self.emissive = emissive
+        self.emission = emission
         self.alphaMode = alphaMode
         self.alphaCutoff = alphaCutoff
     }

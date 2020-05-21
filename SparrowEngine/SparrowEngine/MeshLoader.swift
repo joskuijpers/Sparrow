@@ -139,33 +139,76 @@ class MeshLoader {
     }
 
     private func createMaterial(saAsset: SAAsset, saMaterial: SAMaterial) throws -> Material {
+        func getTexture(_ property: SAMaterialProperty) -> MTLTexture? {
+            switch property {
+            case .texture(let textureIndex):
+                let saTexture = saAsset.textures[textureIndex]
 
-        // Colors
-        
-        // Textures (loaded into MTLTexture optional)
-        
-        // Shader name -> String (Enum with rawValue string)
-
-        // Alpha mode
-        var renderMode: RenderMode = .opaque
-        switch saMaterial.alphaMode {
-        case .mask:
-            renderMode = .cutOut
-        case .blend:
-            renderMode = .translucent
-        default:
-            renderMode = .opaque
+                guard let texture = Renderer.textureLoader.load(imageName: saTexture.relativePath) else {
+                    print("[meshLoader] Could not find texture \(saTexture.relativePath)")
+                    return nil
+                }
+                
+                return texture.mtlTexture
+            default:
+                return nil
+            }
         }
         
+        func getColor(_ property: SAMaterialProperty, default defaultColor: float4) -> float4 {
+            switch property {
+            case .color(let color):
+                return color
+            default:
+                return defaultColor
+            }
+        }
+        
+        // Load properties
+        let albedoTexture = getTexture(saMaterial.albedo)
+        let albedoColor = getColor(saMaterial.albedo, default: [0, 0, 0, 1])
+        
+        let normalTexture = getTexture(saMaterial.normals)
+        
+        let rmoTexture = getTexture(saMaterial.roughnessMetalnessOcclusion)
+        let rmoValues = getColor(saMaterial.roughnessMetalnessOcclusion, default: [1, 0, 0, 0])
+        
+        let emissionTexture = getTexture(saMaterial.emission)
+        
+        // Shader name -> String (Enum with rawValue string)
+        // TODO
+        
         return Material(name: saMaterial.name,
-                        renderMode: renderMode)
+                        renderMode: saMaterial.alphaMode.renderMode(),
+
+                        albedoTexture: albedoTexture,
+                        normalTexture: normalTexture,
+                        roughnessMetalnessOcclusionTexture: rmoTexture,
+                        emissionTexture: emissionTexture,
+
+                        albedo: albedoColor.xyz,
+                        roughness: rmoValues.x,
+                        metalness: rmoValues.y,
+                        emission: float3.zero,
+
+                        alphaCutoff: saMaterial.alphaCutoff,
+                        alpha: albedoColor.w)
     }
+}
+
+fileprivate extension SAAlphaMode {
     
-    // TODO: this has to be used when the submesh material changes too....
-    // So maybe put this in Submesh and call them from material{didSet{ constants = {}, build/build }}
-//    private func createFunctionConstants(material: Material) -> MTLFunctionConstantValues {}
-//    private func buildDepthPipelineState() {}
-//    private func buildPipelineState() {}
+    /// Render mode for this alpha mode.
+    func renderMode() -> RenderMode {
+        switch self {
+        case .mask:
+            return .cutOut
+        case .blend:
+            return .translucent
+        default:
+            return .opaque
+        }
+    }
 }
 
 /*
