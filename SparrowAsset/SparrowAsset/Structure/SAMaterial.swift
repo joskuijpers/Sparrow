@@ -11,27 +11,32 @@ import SparrowBinaryCoder
 
 /// A material.
 public struct SAMaterial: BinaryCodable {
+    /// Name of the material. Might not be unique.
     public let name: String
     
+    /// Albedo (base color) property.
     public let albedo: SAMaterialProperty
+    
+    /// Normals property. Normals are in tangent space.
     public let normals: SAMaterialProperty
+    
+    /// Roughness/metalness/occlusion property. The red channel is roughness, metalness is in green and occlusion in blue.
     public let roughnessMetalnessOcclusion: SAMaterialProperty
+    
+    /// Emission property. All zeroes has no emission.
     public let emissive: SAMaterialProperty
-//
+
 //    @property (nonatomic, assign) simd_float4 baseColorFactor;
 //    @property (nonatomic, assign) float metalnessFactor;
 //    @property (nonatomic, assign) float roughnessFactor;
 //    @property (nonatomic, assign) float normalTextureScale;
 //    @property (nonatomic, assign) float occlusionStrength;
 //    @property (nonatomic, assign) simd_float3 emissiveFactor;
-
-//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable baseColorTexture;
-//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable metallicRoughnessTexture;
-//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable normalTexture;
-//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable emissiveTexture;
-//    @property (nonatomic, strong) GLTFTextureInfo * _Nullable occlusionTexture;
     
+    /// Alpha mode, decides render mode and whether blending is active.
     public let alphaMode: SAAlphaMode
+    
+    /// Alpha cutoff value.
     public let alphaCutoff: Float
     
     public init(name: String,
@@ -58,12 +63,19 @@ public enum SAMaterialProperty {
     case texture(Int)
 }
 
+/// Alpha mode of the renderable.
 public enum SAAlphaMode: UInt8, BinaryCodable {
+    /// The mesh is opaque. Depth testing applies to the whole mesh.
     case opaque
+    
+    /// The albedo texture contains an alpha channel that masks whether a pixel is visible.
     case mask
+    
+    /// Alpha blending is applied
     case blend
 }
 
+// Due to associated values, the material property needs a custom encoder and decoder.
 extension SAMaterialProperty: BinaryCodable {
     enum CodingError: Error {
        case unknownValue

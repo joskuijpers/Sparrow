@@ -7,11 +7,29 @@
 //
 
 import SparrowBinaryCoder
+import Metal
 
 public struct SASubmesh: BinaryCodable {
     public enum IndexType: UInt8, BinaryCodable {
         case uint16 = 0
         case uint32 = 1
+        
+        /// Get the size of an index element
+        @inlinable
+        public func size() -> Int {
+            switch self {
+            case .uint16:
+                return MemoryLayout<UInt16>.size
+            case .uint32:
+                return MemoryLayout<UInt32>.size
+            }
+        }
+        
+        /// The MTLIndexType version
+        @inlinable
+        public func mtlType() -> MTLIndexType {
+            return MTLIndexType(rawValue: UInt(self.rawValue))!
+        }
     }
     
     public enum PrimitiveType: UInt8, BinaryCodable {

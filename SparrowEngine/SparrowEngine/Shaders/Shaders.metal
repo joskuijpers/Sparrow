@@ -126,7 +126,7 @@ float3 specularTerm(LightingParams params);
 fragment float4 fragment_main(
                               VertexOut in [[ stage_in ]],
                               constant CameraUniforms &cameraUniforms [[ buffer(BufferIndexCameraUniforms) ]],
-                              constant Material &material [[ buffer(BufferIndexMaterials) ]],
+                              constant ShaderMaterialData &material [[ buffer(BufferIndexMaterials) ]],
                               texture2d<float> albedoTexture [[ texture(TextureAlbedo), function_constant(hasAlbedoTexture) ]],
                               texture2d<float> normalTexture [[ texture(TextureNormal), function_constant(hasNormalTexture) ]],
                               texture2d<float> rmoTexture [[ texture(TextureRoughnessMetalnessOcclusion), function_constant(hasRoughnessMetalnessOcclusionTexture) ]],
@@ -134,7 +134,7 @@ fragment float4 fragment_main(
                               texturecube<float> irradianceMap [[ texture(TextureIrradiance) ]],
                               
                               constant uint &tileCount [[ buffer(15) ]],
-                              constant LightData *lights [[ buffer(16) ]],
+                              constant ShaderLightData *lights [[ buffer(16) ]],
                               constant uint16_t *culledLights [[ buffer(17) ]]
                               ) {
     constexpr sampler linearSampler(filter::linear, mip_filter::linear, address::repeat);
@@ -225,7 +225,7 @@ fragment float4 fragment_main(
     
     for (uint16_t i = 0; i < numLights; ++i) {
         uint16_t lightIndex = culledLights[i + 1]; // 0 = num lights
-        LightData light = lights[lightIndex];
+        ShaderLightData light = lights[lightIndex];
         
         float3 lightDirection = float3(1, 0, 0);
         float attenuation = 1.0;

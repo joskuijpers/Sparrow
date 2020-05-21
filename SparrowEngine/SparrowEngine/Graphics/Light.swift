@@ -14,8 +14,6 @@ enum LightType {
 }
 
 final class Light: Component {
-    private var data = LightData()
-    
     /// Type of the light
     let type: LightType
     

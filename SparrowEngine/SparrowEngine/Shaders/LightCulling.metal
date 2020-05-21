@@ -204,7 +204,7 @@ kernel void lightculling(
 
                          constant CameraUniforms &cameraUniforms [[ buffer(1) ]],
                          
-                         constant LightData *lights [[ buffer(2) ]],
+                         constant ShaderLightData *lights [[ buffer(2) ]],
                          constant uint &lightsCount [[ buffer(3) ]],
                          
                          device uint16_t *culledLightsOpaque [[ buffer(4) ]],
@@ -264,7 +264,7 @@ kernel void lightculling(
     // Culling is performed on multiple threads (not 1 per tile). So we split the number of lights
     // across the threads evenly by starting at the tread ID and skipping ThreadNum lights each time.
     for (uint i = threadId; i < lightsCount; i += blockDim.x * blockDim.y) {
-        LightData lightData = lights[i];
+        ShaderLightData lightData = lights[i];
         
         switch (lightData.type) {
             case LightTypePoint: {

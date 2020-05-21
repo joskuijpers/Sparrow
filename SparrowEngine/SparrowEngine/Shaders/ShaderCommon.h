@@ -67,7 +67,7 @@ enum Textures {
 };
 
 /// Material definition
-struct Material {
+struct ShaderMaterialData {
     vector_float3 albedo;
     vector_float3 emission;
     
@@ -85,7 +85,7 @@ enum LightType {
 };
 
 /// Data pertaining lights that is transferred from CPU to GPU
-struct LightData {
+struct ShaderLightData {
     vector_float3 position;
     vector_float3 color;
     float range;

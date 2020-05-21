@@ -24,72 +24,18 @@ class Mesh {
     /// List of submeshes
     let submeshes: [Submesh]
     
-    private let asset: SAAsset
-    private let buffers: [MTLBuffer]
+    /// Vertex and index buffers
+    let buffers: [MTLBuffer]
+    
+    /// Vertex format descriptor
     let vertexDescriptor: MTLVertexDescriptor
-    
-    enum Error: Swift.Error {
-        /// Asset could not be found.
-        case notFound
-        
-        /// Asset contents currently not supported
-        case unsupportedAsset(String)
-    }
-    
-    let ibo: Int
-    let ibn: Int
-    
-    init(name: String) throws {
-        guard let assetUrl = Bundle.main.url(forResource: name, withExtension: nil) else {
-            throw Error.notFound
-        }
-        let device = Renderer.device!
-        
-        print("[mesh] Loading from \(assetUrl)")
 
-        let saAsset = try SparrowAssetLoader.load(from: assetUrl)
-        asset = saAsset
-
-        // Assume a single mesh
-        guard asset.meshes.count == 1 else {
-            throw Error.unsupportedAsset("Asset contains more than one mesh")
-        }
-        
-        let saMesh = asset.meshes[0]
-        
-        self.name = saMesh.name
-        
-        // Create vertex descriptor
-        let vertexDescriptor = VertexDescriptor.build(from: saMesh.vertexAttributes)
+    init(name: String, bounds: Bounds, buffers: [MTLBuffer], vertexDescriptor: MTLVertexDescriptor, submeshes: [Submesh]) {
+        self.name = name
+        self.bounds = bounds
+        self.buffers = buffers
         self.vertexDescriptor = vertexDescriptor
-        
-        // Create MTL buffer(s)
-        buffers = asset.buffers.map { (buffer) -> MTLBuffer in
-            buffer.data.withUnsafeBytes { (ptr) -> MTLBuffer in
-                guard let mtlBuffer = device.makeBuffer(bytes: ptr.baseAddress!, length: buffer.size, options: .storageModeShared) else {
-                    fatalError("Unable to allocate MTLBuffer for mesh")
-                }
-                
-                print("Created MTL buffer \(mtlBuffer)")
-                
-                return mtlBuffer
-            }
-        }
-        
-        // Create submeshes
-        submeshes = saMesh.submeshes.map({ (saSubmesh) -> Submesh in
-            Submesh(saAsset: saAsset, saSubmesh: saSubmesh, vertexDescriptor: vertexDescriptor)
-        })
-        
-        ibo = saAsset.bufferViews[saMesh.submeshes[10].indices].offset
-        ibn = saAsset.bufferViews[saMesh.submeshes[10].indices].length / MemoryLayout<UInt32>.size
-        
-        
-        // Store bounds
-        bounds = Bounds(from: saMesh.bounds)
-        
-
-        print("Loaded mesh \(self.name) with bounds \(bounds)")
+        self.submeshes = submeshes
     }
     
     /**
@@ -102,25 +48,16 @@ class Mesh {
     func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4) {
         // What do we do with renderpass?
         // This function should be called only if the mesh survived culling!
-
-//        print("Add mesh to render set (needs culling of submeshes)")
         
         // Calculate approximate depth, used for render sorting
         let (_, _, _, translation) = worldTransform.columns
         let depth: Float = distance(viewPosition, translation.xyz)
-//
-        for (index, _) in submeshes.enumerated() {
-            // TODO: depending on submesh render mode, put in opaque or translucent
-            // SO store render mode inside the mesh...
-            // TODO: add submesh culling
-
-            if index == 10 {
-                set.add(.opaque) { item in
-                    item.depth = depth
-                    item.mesh = self
-                    item.submeshIndex = UInt16(index)
-                    item.worldTransform = worldTransform
-                }
+        for (index, submesh) in submeshes.enumerated() {
+            set.add(submesh.material.renderMode) { item in
+                item.depth = depth
+                item.mesh = self
+                item.submeshIndex = UInt16(index)
+                item.worldTransform = worldTransform
             }
         }
     }
@@ -136,21 +73,9 @@ extension Mesh {
         // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
         let submesh = submeshes[Int(submeshIndex)]
 
-        
-        
-        
-        
-//
-//        // TODO: apple does:
-//            // mesh
-//                // vertex buffers
-//            // submesg
-//                // textures
-//                // material uniform
-//        // but this does not work well when splitting the submesh rendering
-
-        if renderPass == .depthPrePass || renderPass == .shadows {
-            renderEncoder.setRenderPipelineState(submesh.depthPipelineState)
+        let useDepthOnly = (renderPass == .depthPrePass || renderPass == .shadows) && submesh.depthPipelineState != nil
+        if useDepthOnly {
+            renderEncoder.setRenderPipelineState(submesh.depthPipelineState!)
         } else {
             renderEncoder.setRenderPipelineState(submesh.pipelineState)
         }
@@ -171,33 +96,28 @@ extension Mesh {
         }
 
 
-        // TODO: MOVE TO SUBMESH
         // Set textures
-//        if (renderPass == .depthPrePass || renderPass != .shadows) && alphaTest {
+////        if (renderPass == .depthPrePass || renderPass != .shadows) && alphaTest {
+////            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+////        }
+//
+//        if renderPass != .depthPrePass && renderPass != .shadows {
 //            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.roughnessMetalnessOcclusion, index: Int(TextureRoughnessMetalnessOcclusion.rawValue))
+//            renderEncoder.setFragmentTexture(submesh.textures.emission, index: Int(TextureEmissive.rawValue))
 //        }
-
-        if renderPass != .depthPrePass && renderPass != .shadows {
-            renderEncoder.setFragmentTexture(submesh.textures.albedo, index: Int(TextureAlbedo.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.normal, index: Int(TextureNormal.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.roughnessMetalnessOcclusion, index: Int(TextureRoughnessMetalnessOcclusion.rawValue))
-            renderEncoder.setFragmentTexture(submesh.textures.emission, index: Int(TextureEmissive.rawValue))
-        }
-        
-
-        var materialPtr = submesh.material
+//        
+//
+        var materialPtr = submesh.shaderMaterialData
         renderEncoder.setFragmentBytes(&materialPtr,
-                                       length: MemoryLayout<Material>.size,
+                                       length: MemoryLayout<ShaderMaterialData>.size,
                                        index: Int(BufferIndexMaterials.rawValue))
 
-        // Move this to submesh. Store this info in submesh when loading (SA buffer index, index type, offset)
-        
         renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                            indexCount: ibn,
-                                            indexType: .uint32,
-                                            indexBuffer: buffers[0],
-                                            indexBufferOffset: ibo)
-
-        // END MOVE TO SUBMESH
+                                            indexCount: submesh.indexBufferInfo.numIndices,
+                                            indexType: submesh.indexBufferInfo.indexType,
+                                            indexBuffer: buffers[submesh.indexBufferInfo.bufferIndex],
+                                            indexBufferOffset: submesh.indexBufferInfo.offset)
     }
 }

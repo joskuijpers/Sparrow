@@ -32,6 +32,8 @@
 		8015C6CF23D647B100DFF109 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B423D647B100DFF109 /* Group.swift */; };
 		8015C6D123D647B100DFF109 /* Group5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B623D647B100DFF109 /* Group5.swift */; };
 		8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B723D647B100DFF109 /* Nexus+Entity.swift */; };
+		801EC82224769B3700D5AA1D /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC82124769B3700D5AA1D /* Material.swift */; };
+		801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC81F24768CF900D5AA1D /* Array+Tools.swift */; };
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
 		80438C20240B0A2700099034 /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1F240B0A2700099034 /* Frustum.swift */; };
 		80438C22240B2A6300099034 /* DebugRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C21240B2A6300099034 /* DebugRendering.swift */; };
@@ -210,6 +212,8 @@
 		8015C6B423D647B100DFF109 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		8015C6B623D647B100DFF109 /* Group5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group5.swift; sourceTree = "<group>"; };
 		8015C6B723D647B100DFF109 /* Nexus+Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Entity.swift"; sourceTree = "<group>"; };
+		801EC81F24768CF900D5AA1D /* Array+Tools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Tools.swift"; sourceTree = "<group>"; };
+		801EC82124769B3700D5AA1D /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		80438C1623FA0CF600099034 /* SceneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManager.swift; sourceTree = "<group>"; };
 		80438C1F240B0A2700099034 /* Frustum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		80438C21240B2A6300099034 /* DebugRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRendering.swift; sourceTree = "<group>"; };
@@ -396,6 +400,7 @@
 			children = (
 				8099AAF623CCF60100E03CE0 /* RenderQueue.swift */,
 				8099AAF423BF7AB700E03CE0 /* Light.swift */,
+				801EC82124769B3700D5AA1D /* Material.swift */,
 				80A462F5238F22C5009435EB /* Camera.swift */,
 				800604B423F9F6BB00B3FB7F /* Transform.swift */,
 				800604B623F9F85000B3FB7F /* MeshSelector.swift */,
@@ -579,6 +584,7 @@
 		80A462F0238F1E14009435EB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				801EC81F24768CF900D5AA1D /* Array+Tools.swift */,
 				80A462F1238F1E25009435EB /* MathLibrary.swift */,
 				8099AAEE23BE127E00E03CE0 /* Bounds.swift */,
 				80A0FB6324731C1B00783EFE /* Bounds+SparrowAsset.swift */,
@@ -912,6 +918,7 @@
 				800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */,
 				8015C6CC23D647B100DFF109 /* Nexus+GroupUpdate.swift in Sources */,
 				8015C6C723D647B100DFF109 /* ComponentAccess.swift in Sources */,
+				801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */,
 				8015C6C323D647B100DFF109 /* Nexus+Component.swift in Sources */,
 				8099AAF923CE747300E03CE0 /* SceneObject.swift in Sources */,
 				8015C6C523D647B100DFF109 /* Component.swift in Sources */,
@@ -952,6 +959,7 @@
 				8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */,
 				8015C6BC23D647B100DFF109 /* UnorderedSparseSet.swift in Sources */,
 				80A462F6238F22C5009435EB /* Camera.swift in Sources */,
+				801EC82224769B3700D5AA1D /* Material.swift in Sources */,
 				8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */,
 				8015C6CF23D647B100DFF109 /* Group.swift in Sources */,
 				800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */,

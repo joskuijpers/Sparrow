@@ -14,9 +14,7 @@ class VertexDescriptor {
     /// Build a vertex descriptor using a list of Sparrow Asset vertex attributes. Order of the attributes defines position within the interleaved buffer.
     class func build(from attributes: [SAVertexAttribute]) -> MTLVertexDescriptor {
         let descriptor = MTLVertexDescriptor()
-        
-        print("BUILD VD FROM \(attributes)")
-        
+
         var offset = 0
         
         for attribute in attributes {
@@ -35,7 +33,7 @@ class VertexDescriptor {
                 let index = Int(VertexAttributeNormal.rawValue)
                 
                 descriptor.attributes[index].format = .float3
-                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].bufferIndex = 0
                 descriptor.attributes[index].offset = offset
                 
                 // Do not use float3 stride! That is unpacked
@@ -45,7 +43,7 @@ class VertexDescriptor {
                 let index = Int(VertexAttributeTangent.rawValue)
                 
                 descriptor.attributes[index].format = .float3
-                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].bufferIndex = 0
                 descriptor.attributes[index].offset = offset
                 
                 // Do not use float3 stride! That is unpacked
@@ -55,7 +53,7 @@ class VertexDescriptor {
                 let index = Int(VertexAttributeBitangent.rawValue)
                 
                 descriptor.attributes[index].format = .float3
-                descriptor.attributes[index].bufferIndex = 0 // TODO: allow more?
+                descriptor.attributes[index].bufferIndex = 0
                 descriptor.attributes[index].offset = offset
                 
                 // Do not use float3 stride! That is unpacked
@@ -75,8 +73,6 @@ class VertexDescriptor {
                 print("Unsupported attribute \(attribute)")
             }
         }
-        
-        print("TOTAL VERTEX SIZE \(offset)")
         
         descriptor.layouts[0].stride = offset
         

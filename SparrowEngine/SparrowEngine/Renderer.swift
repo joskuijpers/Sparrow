@@ -203,11 +203,11 @@ class Renderer: NSObject {
         
         let sponza = Nexus.shared().createEntity()
         let sponzat = sponza.add(component: Transform())
-//        sponzat.localScale = [1, 1, 1]
-        sponzat.localScale = [0.01, 0.01, 0.01]
+        sponzat.localScale = [1, 1, 1]
+//        sponzat.localScale = [0.01, 0.01, 0.01]
         
-        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
-//        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
+//        let sponzaMesh = try! Renderer.meshLoader.load(name: "sponza.spa")
+        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere.spa")
         sponza.add(component: MeshSelector(mesh: sponzaMesh))
         sponza.add(component: MeshRenderer())
         
@@ -772,14 +772,14 @@ class LightSystem {
         
         // Reallocate if needed
         // TODO: proper sizing with spare-size (blocks), and down sizing. Maybe some ManagedMTLBuffer class?
-        let bufferSizeRequired = lights.count * MemoryLayout<LightData>.stride
+        let bufferSizeRequired = lights.count * MemoryLayout<ShaderLightData>.stride
         if buffer == nil || buffer!.allocatedSize < bufferSizeRequired {
             buffer = Renderer.device.makeBuffer(length: bufferSizeRequired, options: .storageModeShared)
         }
 
         for (index, (transform, light)) in lights.enumerated() {
-            let ptr = buffer!.contents().advanced(by: index * MemoryLayout<LightData>.stride)
-            let lightPtr = ptr.assumingMemoryBound(to: LightData.self)
+            let ptr = buffer!.contents().advanced(by: index * MemoryLayout<ShaderLightData>.stride)
+            let lightPtr = ptr.assumingMemoryBound(to: ShaderLightData.self)
 
             switch (light.type) {
             case .directional:
