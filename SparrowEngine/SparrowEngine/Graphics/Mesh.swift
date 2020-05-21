@@ -37,50 +37,31 @@ class Mesh {
         self.vertexDescriptor = vertexDescriptor
         self.submeshes = submeshes
     }
-    
-    /**
-     Add this mesh to the given render set for rendering from given viewPosition.
-     
-     This creates a render item with all submeshes.
-     
-     TODO: maybe pass the renderItem to update? so we don't need to allocate
-     */
-    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4) {
-        // What do we do with renderpass?
-        // This function should be called only if the mesh survived culling!
-        
-        // Calculate approximate depth, used for render sorting
-        let (_, _, _, translation) = worldTransform.columns
-        let depth: Float = distance(viewPosition, translation.xyz)
-        for (index, submesh) in submeshes.enumerated() {
-            set.add(submesh.material.renderMode) { item in
-                item.depth = depth
-                item.mesh = self
-                item.submeshIndex = UInt16(index)
-                item.worldTransform = worldTransform
-            }
-        }
-    }
 }
 
 // MARK: - Rendering
 
 extension Mesh {
-    /**
-     Render the submesh at given index.
-     */
-    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
-        // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
-        let submesh = submeshes[Int(submeshIndex)]
-
-        let useDepthOnly = (renderPass == .depthPrePass || renderPass == .shadows) && submesh.depthPipelineState != nil
-        if useDepthOnly {
-            renderEncoder.setRenderPipelineState(submesh.depthPipelineState!)
-        } else {
-            renderEncoder.setRenderPipelineState(submesh.pipelineState)
+    /// Ask the mesh to add to the render set if within frustum.
+    @inlinable
+    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
+        // What do we do with renderpass?
+        // This function should be called only if the mesh survived culling!
+        
+        let bounds = self.bounds * worldTransform
+        if frustum.intersects(bounds: bounds) == .outside {
+            // Mesh is not in frustum
+            return
         }
         
-        // Set vertex uniforms
+        for (index, submesh) in submeshes.enumerated() {
+            submesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: worldTransform, frustum: frustum, mesh: self, submeshIndex: index)
+        }
+    }
+    
+    /// Render the submesh at given index.
+    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
+        // Set model vertex uniforms
         var uniforms = uniforms
         uniforms.modelMatrix = worldTransform
         uniforms.normalMatrix = worldTransform.upperLeft
@@ -89,34 +70,13 @@ extension Mesh {
                                      length: MemoryLayout<Uniforms>.stride,
                                      index: Int(BufferIndexUniforms.rawValue))
 
-        // Set vertex buffers
+        // Set model vertex buffers
         for index in 0..<buffers.count {
             renderEncoder.setVertexBuffer(buffers[index], offset: 0, index: index)
         }
         
-        // Set textures
-        if useDepthOnly && submesh.material.renderMode == .cutOut {
-            renderEncoder.setFragmentTexture(submesh.material.albedoTexture, index: Int(TextureAlbedo.rawValue))
-        }
-
-        if !useDepthOnly {
-            renderEncoder.setFragmentTexture(submesh.material.albedoTexture, index: Int(TextureAlbedo.rawValue))
-            renderEncoder.setFragmentTexture(submesh.material.normalTexture, index: Int(TextureNormal.rawValue))
-            renderEncoder.setFragmentTexture(submesh.material.roughnessMetalnessOcclusionTexture, index: Int(TextureRoughnessMetalnessOcclusion.rawValue))
-            renderEncoder.setFragmentTexture(submesh.material.emissionTexture, index: Int(TextureEmissive.rawValue))
-        }
-
-        // Update material constants
-        var materialPtr = submesh.shaderMaterialData
-        renderEncoder.setFragmentBytes(&materialPtr,
-                                       length: MemoryLayout<ShaderMaterialData>.size,
-                                       index: Int(BufferIndexMaterials.rawValue))
-
-        // Render primitives
-        renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                            indexCount: submesh.indexBufferInfo.numIndices,
-                                            indexType: submesh.indexBufferInfo.indexType,
-                                            indexBuffer: buffers[submesh.indexBufferInfo.bufferIndex],
-                                            indexBufferOffset: submesh.indexBufferInfo.offset)
+        // TODO: This causes a bridge from ObjC to Swift which causes an allocation of an array
+        let submesh = submeshes[Int(submeshIndex)]
+        submesh.render(renderEncoder: renderEncoder, renderPass: renderPass, buffers: buffers)
     }
 }

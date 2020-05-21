@@ -817,15 +817,10 @@ class MeshRenderSystem {
                 continue
             }
             
-            let wt = transform.localToWorldMatrix
-            let bounds = mesh.bounds * wt
-            
-            if frustum.intersects(bounds: bounds) == .outside {
-                continue
-            }
-            
-            // if mesh.bounds inside frustum
-            mesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: wt)
+            mesh.addToRenderSet(set: set,
+                                viewPosition: viewPosition,
+                                worldTransform: transform.localToWorldMatrix,
+                                frustum: frustum)
         }
     }
 }

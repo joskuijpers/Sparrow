@@ -36,6 +36,11 @@ struct RenderQueue {
         
         return index
     }
+    
+    /// Number of (active) items in this queue.
+    var count: Int {
+        nextIndex
+    }
 }
 
 /// Special iterator that stops at empty items

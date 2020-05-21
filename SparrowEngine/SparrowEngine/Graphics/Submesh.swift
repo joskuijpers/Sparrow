@@ -67,7 +67,7 @@ class Submesh {
     }
 }
 
-
+// MARK: - GPU state
 private extension Submesh {
 
     /// Called when the material changed, either on init or during runtime.
@@ -140,8 +140,6 @@ private extension Submesh {
         let vertexFunction = library.makeFunction(name: "vertex_main")
         let fragmentFunction = try library.makeFunction(name: "fragment_main", constantValues: functionConstants)
         
-        
-        
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
@@ -159,4 +157,61 @@ private extension Submesh {
         
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
+}
+
+// MARK: - Rendering
+extension Submesh {
+    /// Ask the mesh to add to the render set if within frustum.
+    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum, mesh: Mesh, submeshIndex: Int) {
+        let bounds = self.bounds * worldTransform
+        if frustum.intersects(bounds: bounds) == .outside {
+            // Submesh is not in frustum
+            return
+        }
+        
+        // Calculate approximate depth, used for render sorting
+        let depth: Float = distance(viewPosition, bounds.center)
+        
+        set.add(material.renderMode) { item in
+            item.depth = depth
+            item.mesh = mesh
+            item.submeshIndex = UInt16(submeshIndex)
+            item.worldTransform = worldTransform
+        }
+    }
+    
+    /// Render the submesh. Mesh-wide state is already set.
+    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, buffers: [MTLBuffer]) {
+        let useDepthOnly = (renderPass == .depthPrePass || renderPass == .shadows) && depthPipelineState != nil
+        if useDepthOnly {
+            renderEncoder.setRenderPipelineState(depthPipelineState!)
+        } else {
+            renderEncoder.setRenderPipelineState(pipelineState)
+        }
+        
+        // Set textures
+        if useDepthOnly && material.renderMode == .cutOut {
+            renderEncoder.setFragmentTexture(material.albedoTexture, index: Int(TextureAlbedo.rawValue))
+        }
+
+        if !useDepthOnly {
+            renderEncoder.setFragmentTexture(material.albedoTexture, index: Int(TextureAlbedo.rawValue))
+            renderEncoder.setFragmentTexture(material.normalTexture, index: Int(TextureNormal.rawValue))
+            renderEncoder.setFragmentTexture(material.roughnessMetalnessOcclusionTexture, index: Int(TextureRoughnessMetalnessOcclusion.rawValue))
+            renderEncoder.setFragmentTexture(material.emissionTexture, index: Int(TextureEmissive.rawValue))
+        }
+
+        // Update material constants
+        renderEncoder.setFragmentBytes(&shaderMaterialData,
+                                       length: MemoryLayout<ShaderMaterialData>.size,
+                                       index: Int(BufferIndexMaterials.rawValue))
+
+        // Render primitives
+        renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                            indexCount: indexBufferInfo.numIndices,
+                                            indexType: indexBufferInfo.indexType,
+                                            indexBuffer: buffers[indexBufferInfo.bufferIndex],
+                                            indexBufferOffset: indexBufferInfo.offset)
+    }
+    
 }
