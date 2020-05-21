@@ -210,25 +210,3 @@ fileprivate extension SAAlphaMode {
         }
     }
 }
-
-/*
- 
- Render code stays in the mesh/submesh class:
- 
- - Mesh has addToQueue with frustum. Tests whether bounds are in frustum
-    then forwards to submesh
- - Submesh tests for frustum too (forward the mesh)
-    then adds to queue
-    uses bounds for depth to camera (find closest point in bounds to camera) / use center until better solution
-    uses alphaMode to decide on queue
- 
- - Mesh :render(submeshIndex, worldTransform, uniforms, renderEncoder, renderPass)
-    - Set vertex buffers
-    - Update and set uniform buffer
-    
-    - Submesh:render(renderEncoder, renderPass)
-        - Set textures
-        - Set pipeline state
-        - Draw triangles
- 
- */
