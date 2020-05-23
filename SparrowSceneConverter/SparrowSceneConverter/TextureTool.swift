@@ -11,12 +11,8 @@ import Foundation
 
 class TextureTool {
     let verbose: Bool
-    let imageSizeCache: [URL:MTLSize] = [:]
-    
-    var numSizeCalls = 0
-    var numFindCalls = 0
-    var numCombineCalls = 0
-    
+    var knownSizes: [URL:MTLSize] = [:]
+
     enum Error: Swift.Error {
         case commandFailed(String)
         
@@ -100,9 +96,6 @@ class TextureTool {
         }
         let size = requestedSize ?? bestSize
         
-        numCombineCalls += 1
-        return
-        
         var arguments: [String] = [
             "convert",
             
@@ -181,9 +174,10 @@ extension TextureTool {
     
     /// Get the size of an image in pixels and depth in bits
     func size(of input: URL) throws -> MTLSize {
-        numCombineCalls += 1
-        return MTLSizeMake(1024, 1024, 8)
-        
+        if let known = knownSizes[input] {
+            return known
+        }
+
         let arguments = [
             "identify",
             "-format",
@@ -195,20 +189,20 @@ extension TextureTool {
             throw Error.invalidCommandOutput
         }
 
-        let size = result.split(separator: "\n").compactMap { Int($0) }
-        
-        guard size.count == 3 else {
+        let values = result.split(separator: "\n").compactMap { Int($0) }
+        guard values.count == 3 else {
             throw Error.invalidCommandOutput
         }
 
-        return MTLSizeMake(size[0], size[1], size[2])
+        let size = MTLSizeMake(values[0], values[1], values[2])
+        knownSizes[input] = size
+        
+        return size
     }
     
     /// Find the best size for all images. Currently is the largest fitting.
     private func findBestSize(images: [URL]) throws -> MTLSize {
-        numFindCalls += 1
-        
-        return try images.map { try size(of: $0) }.reduce(MTLSizeMake(0, 0, 0)) { (memory, size) -> MTLSize in
+        try images.map { try size(of: $0) }.reduce(MTLSizeMake(0, 0, 0)) { (memory, size) -> MTLSize in
             MTLSize(width: max(memory.width, size.width),
                     height: max(memory.height, size.height),
                     depth: max(memory.depth, size.depth))

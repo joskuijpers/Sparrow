@@ -43,7 +43,7 @@ class ObjImporter {
         }
         
         self.url = url
-        self.textureTool = TextureTool(verbose: true)
+        self.textureTool = TextureTool(verbose: false)
         
         var generateTangents = false
         var uniformScale: Float = 1
@@ -85,8 +85,6 @@ private extension ObjImporter {
         
         try buildAsset()
         asset.updateChecksum()
-        
-        print("NUM FIND \(textureTool.numFindCalls), COMBINE \(textureTool.numCombineCalls), SIZE \(textureTool.numSizeCalls)")
         
         return asset
     }
