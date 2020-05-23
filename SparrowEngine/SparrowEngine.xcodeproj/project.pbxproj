@@ -43,6 +43,31 @@
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
 		8066692F247459EE00AA8412 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8066692E247459EE00AA8412 /* MeshLoader.swift */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
+		808C0F342479BAE000EE0659 /* sponza_Material__57_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F1B2479BADE00EE0659 /* sponza_Material__57_rmo.png */; };
+		808C0F352479BAE000EE0659 /* sponza_Material__47_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F1C2479BADE00EE0659 /* sponza_Material__47_rmo.png */; };
+		808C0F362479BAE000EE0659 /* sponza_column_a_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F1D2479BADE00EE0659 /* sponza_column_a_rmo.png */; };
+		808C0F372479BAE000EE0659 /* sponza_Material__298_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F1E2479BADE00EE0659 /* sponza_Material__298_rmo.png */; };
+		808C0F382479BAE000EE0659 /* sponza_flagpole_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F1F2479BADE00EE0659 /* sponza_flagpole_rmo.png */; };
+		808C0F392479BAE000EE0659 /* sponza_vase_round_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F202479BADE00EE0659 /* sponza_vase_round_rmo.png */; };
+		808C0F3A2479BAE000EE0659 /* sponza_chain_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F212479BADE00EE0659 /* sponza_chain_rmo.png */; };
+		808C0F3B2479BAE000EE0659 /* sponza_fabric_a_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F222479BADE00EE0659 /* sponza_fabric_a_rmo.png */; };
+		808C0F3C2479BAE000EE0659 /* sponza_leaf_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F232479BADE00EE0659 /* sponza_leaf_rmo.png */; };
+		808C0F3D2479BAE000EE0659 /* sponza_fabric_f_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F242479BADE00EE0659 /* sponza_fabric_f_rmo.png */; };
+		808C0F3E2479BAE000EE0659 /* sponza_vase_hanging_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F252479BADE00EE0659 /* sponza_vase_hanging_rmo.png */; };
+		808C0F3F2479BAE000EE0659 /* sponza_fabric_e_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F262479BADF00EE0659 /* sponza_fabric_e_rmo.png */; };
+		808C0F402479BAE000EE0659 /* sponza_arch_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F272479BADF00EE0659 /* sponza_arch_rmo.png */; };
+		808C0F412479BAE000EE0659 /* sponza_details_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F282479BADF00EE0659 /* sponza_details_rmo.png */; };
+		808C0F422479BAE000EE0659 /* sponza_roof_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F292479BADF00EE0659 /* sponza_roof_rmo.png */; };
+		808C0F432479BAE000EE0659 /* sponza_fabric_c_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F2A2479BADF00EE0659 /* sponza_fabric_c_rmo.png */; };
+		808C0F442479BAE000EE0659 /* sponza_bricks_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F2B2479BADF00EE0659 /* sponza_bricks_rmo.png */; };
+		808C0F452479BAE000EE0659 /* sponza_floor_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F2C2479BADF00EE0659 /* sponza_floor_rmo.png */; };
+		808C0F462479BAE000EE0659 /* sponza_column_b_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F2D2479BADF00EE0659 /* sponza_column_b_rmo.png */; };
+		808C0F472479BAE000EE0659 /* sponza_ceiling_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F2E2479BADF00EE0659 /* sponza_ceiling_rmo.png */; };
+		808C0F482479BAE000EE0659 /* sponza_column_c_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F2F2479BADF00EE0659 /* sponza_column_c_rmo.png */; };
+		808C0F492479BAE000EE0659 /* sponza_fabric_g_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F302479BADF00EE0659 /* sponza_fabric_g_rmo.png */; };
+		808C0F4A2479BAE000EE0659 /* sponza_fabric_d_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F312479BADF00EE0659 /* sponza_fabric_d_rmo.png */; };
+		808C0F4B2479BAE000EE0659 /* sponza_vase_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F322479BADF00EE0659 /* sponza_vase_rmo.png */; };
+		808C0F4C2479BAE000EE0659 /* sponza_Material__25_rmo.png in Resources */ = {isa = PBXBuildFile; fileRef = 808C0F332479BADF00EE0659 /* sponza_Material__25_rmo.png */; };
 		809258CF24464E5400D2025F /* Single.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809258CE24464E5400D2025F /* Single.swift */; };
 		8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAEE23BE127E00E03CE0 /* Bounds.swift */; };
 		8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF423BF7AB700E03CE0 /* Light.swift */; };
@@ -226,6 +251,31 @@
 		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086965B23B8DD150007E75D /* STF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = STF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086965D23B8DDA00007E75D /* box.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = box.gltf; sourceTree = SOURCE_ROOT; };
+		808C0F1B2479BADE00EE0659 /* sponza_Material__57_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_Material__57_rmo.png; path = SPONZA/sponza_Material__57_rmo.png; sourceTree = "<group>"; };
+		808C0F1C2479BADE00EE0659 /* sponza_Material__47_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_Material__47_rmo.png; path = SPONZA/sponza_Material__47_rmo.png; sourceTree = "<group>"; };
+		808C0F1D2479BADE00EE0659 /* sponza_column_a_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_column_a_rmo.png; path = SPONZA/sponza_column_a_rmo.png; sourceTree = "<group>"; };
+		808C0F1E2479BADE00EE0659 /* sponza_Material__298_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_Material__298_rmo.png; path = SPONZA/sponza_Material__298_rmo.png; sourceTree = "<group>"; };
+		808C0F1F2479BADE00EE0659 /* sponza_flagpole_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_flagpole_rmo.png; path = SPONZA/sponza_flagpole_rmo.png; sourceTree = "<group>"; };
+		808C0F202479BADE00EE0659 /* sponza_vase_round_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_vase_round_rmo.png; path = SPONZA/sponza_vase_round_rmo.png; sourceTree = "<group>"; };
+		808C0F212479BADE00EE0659 /* sponza_chain_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_chain_rmo.png; path = SPONZA/sponza_chain_rmo.png; sourceTree = "<group>"; };
+		808C0F222479BADE00EE0659 /* sponza_fabric_a_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_fabric_a_rmo.png; path = SPONZA/sponza_fabric_a_rmo.png; sourceTree = "<group>"; };
+		808C0F232479BADE00EE0659 /* sponza_leaf_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_leaf_rmo.png; path = SPONZA/sponza_leaf_rmo.png; sourceTree = "<group>"; };
+		808C0F242479BADE00EE0659 /* sponza_fabric_f_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_fabric_f_rmo.png; path = SPONZA/sponza_fabric_f_rmo.png; sourceTree = "<group>"; };
+		808C0F252479BADE00EE0659 /* sponza_vase_hanging_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_vase_hanging_rmo.png; path = SPONZA/sponza_vase_hanging_rmo.png; sourceTree = "<group>"; };
+		808C0F262479BADF00EE0659 /* sponza_fabric_e_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_fabric_e_rmo.png; path = SPONZA/sponza_fabric_e_rmo.png; sourceTree = "<group>"; };
+		808C0F272479BADF00EE0659 /* sponza_arch_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_arch_rmo.png; path = SPONZA/sponza_arch_rmo.png; sourceTree = "<group>"; };
+		808C0F282479BADF00EE0659 /* sponza_details_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_details_rmo.png; path = SPONZA/sponza_details_rmo.png; sourceTree = "<group>"; };
+		808C0F292479BADF00EE0659 /* sponza_roof_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_roof_rmo.png; path = SPONZA/sponza_roof_rmo.png; sourceTree = "<group>"; };
+		808C0F2A2479BADF00EE0659 /* sponza_fabric_c_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_fabric_c_rmo.png; path = SPONZA/sponza_fabric_c_rmo.png; sourceTree = "<group>"; };
+		808C0F2B2479BADF00EE0659 /* sponza_bricks_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_bricks_rmo.png; path = SPONZA/sponza_bricks_rmo.png; sourceTree = "<group>"; };
+		808C0F2C2479BADF00EE0659 /* sponza_floor_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_floor_rmo.png; path = SPONZA/sponza_floor_rmo.png; sourceTree = "<group>"; };
+		808C0F2D2479BADF00EE0659 /* sponza_column_b_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_column_b_rmo.png; path = SPONZA/sponza_column_b_rmo.png; sourceTree = "<group>"; };
+		808C0F2E2479BADF00EE0659 /* sponza_ceiling_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_ceiling_rmo.png; path = SPONZA/sponza_ceiling_rmo.png; sourceTree = "<group>"; };
+		808C0F2F2479BADF00EE0659 /* sponza_column_c_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_column_c_rmo.png; path = SPONZA/sponza_column_c_rmo.png; sourceTree = "<group>"; };
+		808C0F302479BADF00EE0659 /* sponza_fabric_g_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_fabric_g_rmo.png; path = SPONZA/sponza_fabric_g_rmo.png; sourceTree = "<group>"; };
+		808C0F312479BADF00EE0659 /* sponza_fabric_d_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_fabric_d_rmo.png; path = SPONZA/sponza_fabric_d_rmo.png; sourceTree = "<group>"; };
+		808C0F322479BADF00EE0659 /* sponza_vase_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_vase_rmo.png; path = SPONZA/sponza_vase_rmo.png; sourceTree = "<group>"; };
+		808C0F332479BADF00EE0659 /* sponza_Material__25_rmo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sponza_Material__25_rmo.png; path = SPONZA/sponza_Material__25_rmo.png; sourceTree = "<group>"; };
 		809258CE24464E5400D2025F /* Single.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Single.swift; sourceTree = "<group>"; };
 		8099AAEE23BE127E00E03CE0 /* Bounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bounds.swift; sourceTree = "<group>"; };
 		8099AAF423BF7AB700E03CE0 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
@@ -599,6 +649,31 @@
 				80A0FB612473122A00783EFE /* ironSphere.spa */,
 				80A6F8152455DF8E00FE8CCF /* Background_Albedo.tga */,
 				80A6F85C2455DF9A00FE8CCF /* Background_Normal.tga */,
+				808C0F272479BADF00EE0659 /* sponza_arch_rmo.png */,
+				808C0F2B2479BADF00EE0659 /* sponza_bricks_rmo.png */,
+				808C0F2E2479BADF00EE0659 /* sponza_ceiling_rmo.png */,
+				808C0F212479BADE00EE0659 /* sponza_chain_rmo.png */,
+				808C0F1D2479BADE00EE0659 /* sponza_column_a_rmo.png */,
+				808C0F2D2479BADF00EE0659 /* sponza_column_b_rmo.png */,
+				808C0F2F2479BADF00EE0659 /* sponza_column_c_rmo.png */,
+				808C0F282479BADF00EE0659 /* sponza_details_rmo.png */,
+				808C0F222479BADE00EE0659 /* sponza_fabric_a_rmo.png */,
+				808C0F2A2479BADF00EE0659 /* sponza_fabric_c_rmo.png */,
+				808C0F312479BADF00EE0659 /* sponza_fabric_d_rmo.png */,
+				808C0F262479BADF00EE0659 /* sponza_fabric_e_rmo.png */,
+				808C0F242479BADE00EE0659 /* sponza_fabric_f_rmo.png */,
+				808C0F302479BADF00EE0659 /* sponza_fabric_g_rmo.png */,
+				808C0F1F2479BADE00EE0659 /* sponza_flagpole_rmo.png */,
+				808C0F2C2479BADF00EE0659 /* sponza_floor_rmo.png */,
+				808C0F232479BADE00EE0659 /* sponza_leaf_rmo.png */,
+				808C0F332479BADF00EE0659 /* sponza_Material__25_rmo.png */,
+				808C0F1C2479BADE00EE0659 /* sponza_Material__47_rmo.png */,
+				808C0F1B2479BADE00EE0659 /* sponza_Material__57_rmo.png */,
+				808C0F1E2479BADE00EE0659 /* sponza_Material__298_rmo.png */,
+				808C0F292479BADF00EE0659 /* sponza_roof_rmo.png */,
+				808C0F252479BADE00EE0659 /* sponza_vase_hanging_rmo.png */,
+				808C0F322479BADF00EE0659 /* sponza_vase_rmo.png */,
+				808C0F202479BADE00EE0659 /* sponza_vase_round_rmo.png */,
 				80A6F85B2455DF9900FE8CCF /* Background_Roughness.tga */,
 				80A6F84C2455DF9700FE8CCF /* ChainTexture_Albedo.tga */,
 				80A6F8272455DF9200FE8CCF /* ChainTexture_Metallic.tga */,
@@ -781,6 +856,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				808C0F3B2479BAE000EE0659 /* sponza_fabric_a_rmo.png in Resources */,
 				80A4633A239EE6B4009435EB /* goldSphere.obj in Resources */,
 				80A4635823A2CC25009435EB /* grass_ao.png in Resources */,
 				80A4635A23A2CC25009435EB /* grass_normal.png in Resources */,
@@ -794,23 +870,31 @@
 				80A6F8632455DF9A00FE8CCF /* Sponza_Curtain_Green_normal.tga in Resources */,
 				80A6F8642455DF9A00FE8CCF /* Sponza_Curtain_Blue_normal.tga in Resources */,
 				80A6F8652455DF9A00FE8CCF /* Sponza_Floor_normal.tga in Resources */,
+				808C0F492479BAE000EE0659 /* sponza_fabric_g_rmo.png in Resources */,
 				80A6F8662455DF9A00FE8CCF /* Sponza_Roof_normal.tga in Resources */,
 				80A6F8672455DF9A00FE8CCF /* Sponza_Curtain_Red_normal.tga in Resources */,
 				80A6F8682455DF9A00FE8CCF /* Lion_Albedo.tga in Resources */,
 				80A6F8692455DF9A00FE8CCF /* Sponza_Roof_diffuse.tga in Resources */,
+				808C0F442479BAE000EE0659 /* sponza_bricks_rmo.png in Resources */,
 				80A6F86A2455DF9A00FE8CCF /* Sponza_Thorn_diffuse.tga in Resources */,
 				80A6F86B2455DF9A00FE8CCF /* sponza.mtl in Resources */,
 				80A6F86C2455DF9A00FE8CCF /* Sponza_Ceiling_diffuse.tga in Resources */,
 				80A6F86D2455DF9A00FE8CCF /* ChainTexture_Roughness.tga in Resources */,
+				808C0F472479BAE000EE0659 /* sponza_ceiling_rmo.png in Resources */,
 				80A6F86E2455DF9A00FE8CCF /* VasePlant_diffuse.tga in Resources */,
 				80A6F86F2455DF9A00FE8CCF /* Sponza_FlagPole_roughness.tga in Resources */,
 				80A6F8702455DF9A00FE8CCF /* Sponza_Curtain_Blue_diffuse.tga in Resources */,
 				80A6F8712455DF9A00FE8CCF /* Sponza_Details_normal.tga in Resources */,
+				808C0F482479BAE000EE0659 /* sponza_column_c_rmo.png in Resources */,
+				808C0F432479BAE000EE0659 /* sponza_fabric_c_rmo.png in Resources */,
 				80A6F8722455DF9A00FE8CCF /* Sponza_Curtain_Green_diffuse.tga in Resources */,
 				80A6F8732455DF9A00FE8CCF /* Sponza_Roof_roughness.tga in Resources */,
+				808C0F422479BAE000EE0659 /* sponza_roof_rmo.png in Resources */,
+				808C0F3C2479BAE000EE0659 /* sponza_leaf_rmo.png in Resources */,
 				80A6F8742455DF9A00FE8CCF /* ChainTexture_Metallic.tga in Resources */,
 				80A6F8752455DF9A00FE8CCF /* Sponza_Thorn_roughness.tga in Resources */,
 				80A6F8762455DF9A00FE8CCF /* Lion_Roughness.tga in Resources */,
+				808C0F362479BAE000EE0659 /* sponza_column_a_rmo.png in Resources */,
 				80A6F8772455DF9A00FE8CCF /* Sponza_Bricks_a_Roughness.tga in Resources */,
 				80A6F8782455DF9A00FE8CCF /* Vase_diffuse.tga in Resources */,
 				80A6F8792455DF9A00FE8CCF /* VasePlant_normal.tga in Resources */,
@@ -818,17 +902,20 @@
 				80A6F87B2455DF9A00FE8CCF /* Metallic_metallic.tga in Resources */,
 				80A6F87C2455DF9A00FE8CCF /* Vase_roughness.tga in Resources */,
 				80A6F87D2455DF9A00FE8CCF /* VaseRound_roughness.tga in Resources */,
+				808C0F372479BAE000EE0659 /* sponza_Material__298_rmo.png in Resources */,
 				80A6F87E2455DF9A00FE8CCF /* Sponza_Column_a_diffuse.tga in Resources */,
 				80A6F87F2455DF9A00FE8CCF /* Sponza_Bricks_a_Albedo.tga in Resources */,
 				80A6F8802455DF9A00FE8CCF /* Sponza_Fabric_Green_normal.tga in Resources */,
 				80A6F8812455DF9A00FE8CCF /* VaseRound_normal.tga in Resources */,
 				80A6F8822455DF9A00FE8CCF /* gi_flag.tga in Resources */,
+				808C0F412479BAE000EE0659 /* sponza_details_rmo.png in Resources */,
 				80A6F8832455DF9A00FE8CCF /* VaseHanging_diffuse.tga in Resources */,
 				80A6F8842455DF9A00FE8CCF /* Sponza_Column_c_normal.tga in Resources */,
 				80A6F8852455DF9A00FE8CCF /* Sponza_Fabric_metallic.tga in Resources */,
 				80A6F8862455DF9A00FE8CCF /* Sponza_Column_a_normal.tga in Resources */,
 				80A6F8872455DF9A00FE8CCF /* Sponza_Column_c_diffuse.tga in Resources */,
 				80A6F8882455DF9A00FE8CCF /* ChainTexture_Normal.tga in Resources */,
+				808C0F452479BAE000EE0659 /* sponza_floor_rmo.png in Resources */,
 				80A6F8892455DF9A00FE8CCF /* Sponza_Details_diffuse.tga in Resources */,
 				80A6F88A2455DF9A00FE8CCF /* Sponza_Thorn_normal.tga in Resources */,
 				80A6F88B2455DF9A00FE8CCF /* Sponza_Ceiling_roughness.tga in Resources */,
@@ -838,12 +925,15 @@
 				80A6F88F2455DF9A00FE8CCF /* Sponza_Arch_roughness.tga in Resources */,
 				80A6F8902455DF9A00FE8CCF /* Sponza_Column_c_roughness.tga in Resources */,
 				80A6F8912455DF9A00FE8CCF /* Sponza_Fabric_Blue_diffuse.tga in Resources */,
+				808C0F402479BAE000EE0659 /* sponza_arch_rmo.png in Resources */,
 				80A6F8922455DF9A00FE8CCF /* Sponza_Arch_normal.tga in Resources */,
 				80A6F8932455DF9A00FE8CCF /* Sponza_Details_roughness.tga in Resources */,
 				80A6F8942455DF9A00FE8CCF /* Sponza_FlagPole_diffuse.tga in Resources */,
+				808C0F342479BAE000EE0659 /* sponza_Material__57_rmo.png in Resources */,
 				80A6F8952455DF9A00FE8CCF /* Dielectric_metallic.tga in Resources */,
 				80A6F8962455DF9A00FE8CCF /* Sponza_Fabric_Red_diffuse.tga in Resources */,
 				80A6F8972455DF9B00FE8CCF /* Vase_normal.tga in Resources */,
+				808C0F3E2479BAE000EE0659 /* sponza_vase_hanging_rmo.png in Resources */,
 				80A6F8982455DF9B00FE8CCF /* Sponza_Curtain_Red_diffuse.tga in Resources */,
 				80A6F8992455DF9B00FE8CCF /* ChainTexture_Albedo.tga in Resources */,
 				80A6F89A2455DF9B00FE8CCF /* Sponza_Column_b_normal.tga in Resources */,
@@ -870,18 +960,24 @@
 				80A4631523906E1B009435EB /* chest.mtl in Resources */,
 				80A4635123A2C384009435EB /* loft_pmrem.ktx in Resources */,
 				80A4631323906E1B009435EB /* chest-normal.png in Resources */,
+				808C0F3A2479BAE000EE0659 /* sponza_chain_rmo.png in Resources */,
 				80A4636623A80DC0009435EB /* helmet.mtl in Resources */,
 				80A4632B23971380009435EB /* rusted_iron_metallic.png in Resources */,
 				80A4631C2396FE3B009435EB /* pbr in Resources */,
+				808C0F382479BAE000EE0659 /* sponza_flagpole_rmo.png in Resources */,
 				80A4636723A80DC0009435EB /* helmet.obj in Resources */,
 				80A4633C239EE6B9009435EB /* gold_ao.png in Resources */,
+				808C0F3D2479BAE000EE0659 /* sponza_fabric_f_rmo.png in Resources */,
 				80A4633D239EE6B9009435EB /* gold_metallic.png in Resources */,
+				808C0F4A2479BAE000EE0659 /* sponza_fabric_d_rmo.png in Resources */,
+				808C0F4B2479BAE000EE0659 /* sponza_vase_rmo.png in Resources */,
 				80A4632D23971380009435EB /* rusted_iron_roughness.png in Resources */,
 				80A46331239EC262009435EB /* ironSphere.obj in Resources */,
 				80A4631F239704C1009435EB /* ironSphere.mtl in Resources */,
 				80A4631223906E1B009435EB /* chest-color.png in Resources */,
 				80A4631623906E1B009435EB /* chest.obj in Resources */,
 				80A46339239EE6B1009435EB /* goldSphere.mtl in Resources */,
+				808C0F392479BAE000EE0659 /* sponza_vase_round_rmo.png in Resources */,
 				80A463252397136F009435EB /* rusted_iron_albedo.png in Resources */,
 				80A4633F239EE6B9009435EB /* gold_roughness.png in Resources */,
 				80A462D1238F0FB9009435EB /* Main.storyboard in Resources */,
@@ -896,11 +992,15 @@
 				80A0FB622473122A00783EFE /* ironSphere.spa in Resources */,
 				80A4630723906C71009435EB /* cube.obj in Resources */,
 				80A4634F23A2C367009435EB /* garage_pmrem.ktx in Resources */,
+				808C0F462479BAE000EE0659 /* sponza_column_b_rmo.png in Resources */,
 				80A0FB602473121400783EFE /* sponza.spa in Resources */,
+				808C0F3F2479BAE000EE0659 /* sponza_fabric_e_rmo.png in Resources */,
 				800E6DD223F2093D00412CCE /* design.md in Resources */,
 				80A4634823A02211009435EB /* plastic_metallic.png in Resources */,
 				80A4635B23A2CC25009435EB /* grass_roughness.png in Resources */,
+				808C0F4C2479BAE000EE0659 /* sponza_Material__25_rmo.png in Resources */,
 				80A4632C23971380009435EB /* rusted_iron_normal.png in Resources */,
+				808C0F352479BAE000EE0659 /* sponza_Material__47_rmo.png in Resources */,
 				80A4634B23A02215009435EB /* plasticSphere.mtl in Resources */,
 				80A4635F23A2CC95009435EB /* grassSphere.obj in Resources */,
 			);

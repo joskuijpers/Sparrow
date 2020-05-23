@@ -57,7 +57,7 @@ class MeshLoader {
             throw Error.unsupportedAsset("Asset contains not exactly one mesh. Only single-mesh assets are supported.")
         }
         let saMesh = asset.meshes[0]
-
+        
         let mesh = try createMesh(saAsset: asset, saMesh: saMesh)
 
         return mesh
@@ -92,12 +92,22 @@ class MeshLoader {
         // Create bounds -> Bounds
         let bounds = Bounds(from: saMesh.bounds)
         
+        // Create materials
+        var materials: [Int:Material] = [:]
+        for (materialIndex, saMaterial) in saAsset.materials.enumerated() {
+            let mat = try createMaterial(saAsset: saAsset,
+                                         saMaterial: saMaterial)
+            materials[materialIndex] = mat
+        }
+        
+        
         // Create submeshes
         let submeshes = try saMesh.submeshes.map {
             try createSubmesh(saAsset: saAsset,
                               saSubmesh: $0,
                               bufferIndexMapping: bufferIndexMapping,
-                              vertexDescriptor: vertexDescriptor)
+                              vertexDescriptor: vertexDescriptor,
+                              materials: materials)
         }
         
         return Mesh(name: saMesh.name,
@@ -110,7 +120,8 @@ class MeshLoader {
     private func createSubmesh(saAsset: SAAsset,
                                saSubmesh: SASubmesh,
                                bufferIndexMapping: [Int:Int],
-                               vertexDescriptor: MTLVertexDescriptor) throws -> Submesh {
+                               vertexDescriptor: MTLVertexDescriptor,
+                               materials: [Int:Material]) throws -> Submesh {
         let bounds = Bounds(from: saSubmesh.bounds)
     
         // Acquire the data needed for the index buffer
@@ -124,12 +135,10 @@ class MeshLoader {
                                                       numIndices: bufferView.length / saSubmesh.indexType.size(),
                                                       indexType: saSubmesh.indexType.mtlType())
 
-        guard saSubmesh.material >= 0 && saSubmesh.material < saAsset.materials.count else {
+        guard saSubmesh.material >= 0 && materials[saSubmesh.material] != nil else {
             throw Error.missingMaterial(saSubmesh.material)
         }
-        
-        let material = try createMaterial(saAsset: saAsset,
-                                          saMaterial: saAsset.materials[saSubmesh.material])
+        let material = materials[saSubmesh.material]!
         
         return Submesh(name: saSubmesh.name,
                        bounds: bounds,
@@ -144,12 +153,14 @@ class MeshLoader {
             case .texture(let textureIndex):
                 let saTexture = saAsset.textures[textureIndex]
 
-                guard let texture = Renderer.textureLoader.load(imageName: saTexture.relativePath) else {
-                    print("[meshLoader] Could not find texture \(saTexture.relativePath)")
+                do {
+                    let texture = try Renderer.textureLoader.load(imageName: saTexture.relativePath)
+                    
+                    return texture.mtlTexture
+                } catch {
+                    print("[meshLoader] Could not load texture \(saTexture.relativePath): \(error.localizedDescription)")
                     return nil
                 }
-                
-                return texture.mtlTexture
             default:
                 return nil
             }

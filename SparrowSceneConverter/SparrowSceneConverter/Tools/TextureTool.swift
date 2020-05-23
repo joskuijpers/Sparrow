@@ -154,6 +154,14 @@ class TextureTool {
             }
         }
         
+        if output.pathExtension == "png" {
+            arguments += [
+                // To prevent indexed files: https://www.imagemagick.org/Usage/formats/#png_write
+                "-define",
+                "png:color-type=2"
+            ]
+        }
+        
         arguments += [
             // Make sure we end up in RGB and not Grey
             "-colorspace",

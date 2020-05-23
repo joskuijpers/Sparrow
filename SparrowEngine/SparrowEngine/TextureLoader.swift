@@ -43,7 +43,7 @@ class TextureLoader {
     /**
      Load a texture with given image name. This can be a path or an asset name.
      */
-    func load(imageName: String) -> Texture? {
+    func load(imageName: String) throws -> Texture {
         // Get from cache
         if let texture = cache[imageName] {
             return texture
@@ -56,29 +56,27 @@ class TextureLoader {
             .generateMipmaps: true,
         ]
         
-        if let mtlTexture = try? loadMtlTexture(imageName: imageName, textureLoaderOptions: options) {
-            let texture = Texture(imageName: imageName, mtlTexture: mtlTexture)
-            cache[imageName] = texture
-            
-            print("[texture] Loaded \(texture.imageName) (\(Float(texture.mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
-
-            return texture
-        }
+        let mtlTexture = try loadMtlTexture(imageName: imageName, textureLoaderOptions: options)
+        let texture = Texture(imageName: imageName, mtlTexture: mtlTexture)
         
-        return nil
+        cache[imageName] = texture
+        
+        print("[texture] Loaded \(texture.imageName) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
+
+        return texture
     }
     
     /**
      Load the MTL internal texture
      */
-    private func loadMtlTexture(imageName: String, textureLoaderOptions: [MTKTextureLoader.Option: Any]) throws -> MTLTexture? {
+    private func loadMtlTexture(imageName: String, textureLoaderOptions: [MTKTextureLoader.Option: Any]) throws -> MTLTexture {
         let fileExtension = URL(fileURLWithPath: imageName).pathExtension.isEmpty ? "png" : nil
         guard let url = Bundle.main.url(forResource: imageName, withExtension: fileExtension) else {
 //            print("Loading \(imageName) from bundle")
             return try mtkTextureLoader.newTexture(name: imageName, scaleFactor: 1.0, bundle: Bundle.main, options: nil)
         }
 
-//        print("Loading \(imageName) from path")
+//        print("Loading \(imageName) from path \(url)")
         return try mtkTextureLoader.newTexture(URL: url, options: textureLoaderOptions)
     }
     
@@ -92,10 +90,10 @@ class TextureLoader {
     /**
      Reload the given texture, returning a new one. Also flushes cache for this item.
      */
-    func reload(_ texture: Texture) -> Texture? {
+    func reload(_ texture: Texture) throws -> Texture {
         cache.removeValue(forKey: texture.imageName)
         
-        return load(imageName: texture.imageName)
+        return try load(imageName: texture.imageName)
     }
 }
 

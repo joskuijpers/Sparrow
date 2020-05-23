@@ -271,6 +271,7 @@ private extension ObjImporter {
                                         green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
                                         blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
                                         into: outputUrl)
+                print("[obj] Generated RMO texture for \(mat.name)")
                 
                 rma = SAMaterialProperty.texture(addTexture(outputUrl))
             }
