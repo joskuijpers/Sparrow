@@ -23,27 +23,10 @@ do {
     let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/\(url.deletingPathExtension().lastPathComponent).spa")
     try SparrowAssetWriter.write(asset, to: outputUrl)
     
-    
     for texture in asset.textures {
-//        print(texture.relativePath)
-        
         let u = URL(fileURLWithPath: texture.relativePath, relativeTo: outputUrl)
-        
-        print(u.absoluteURL)
-//        print(try TextureUtil.size(of: u))
-        
-//        try TextureUtil.convert(u, toGrayscaleImage: u.appendingToFilename("_grey"))
-        
-
+        print("Using texture at \(u.path) with size \(try TextureUtil.size(of: u))")
     }
-    
-    let size = MTLSizeMake(2048, 2048, 8)
-    try TextureUtil.combine(red: .image(URL(string: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/rusted_iron_roughness.png")!),
-                            green: .image(URL(string: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/rusted_iron_metallic.png")!),
-                            blue: .image(URL(string: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/rusted_iron_ao.png")!),
-                            into: URL(string: "/Users/joskuijpers/Development/ISOGame/test_rmo.png")!,
-                            size: size)
-    
 } catch {
     print(error)
 }

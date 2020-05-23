@@ -25,11 +25,11 @@ struct MtlFile {
 struct MtlMaterial {
     let name: String
     
-    var albedoColor: float3 = float3(0, 0, 0)
-    var roughness: Float = 0
-    var metallic: Float = 0
-    var alpha: Float = 1
-    var emissiveColor: float3 = float3(0, 0, 0)
+    var albedoColor: float3 = float3(1, 0, 1) // Violet
+    var roughness: Float = 1 // Fully rought
+    var metallic: Float = 0 // Fully dielectric
+    var alpha: Float = 1 // No opacity
+    var emissiveColor: float3 = float3(0, 0, 0) // No emission
     
     var albedoTexture: URL?
     var normalTexture: URL?

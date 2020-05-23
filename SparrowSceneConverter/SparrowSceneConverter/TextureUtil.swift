@@ -7,6 +7,7 @@
 //
 
 import Metal
+import Foundation
 
 struct TextureUtil {
     
@@ -30,7 +31,9 @@ struct TextureUtil {
         task.standardOutput = outputPipe
         task.standardError = errorPipe
         
-        print("ARGS \(task.arguments)")
+        if CommandLine.arguments.contains("--verbose") || true {
+            print("[imagemagick] Execute with arguments: \((task.arguments ?? []))")
+        }
         
         try task.run()
 
@@ -88,7 +91,27 @@ struct TextureUtil {
     }
     
     /// Combine 3 images into a single RGB image.
-    static func combine(red: ChannelContent, green: ChannelContent, blue: ChannelContent, into output: URL, size: MTLSize) throws {
+    static func combine(red: ChannelContent, green: ChannelContent, blue: ChannelContent, into output: URL, size requestedSize: MTLSize? = nil) throws {
+        let channels = [red, green, blue]
+        
+        // Collect all urls we touch
+        let urls = channels.compactMap { (channel: ChannelContent) -> URL? in
+            switch channel {
+            case .image(let url):
+                return url
+            default:
+                return nil
+            }
+        }
+        
+        // Get the final image size
+        var bestSize = MTLSizeMake(0, 0, 0)
+        // Only try to find the size when it is not supplied as it is very slow
+        if requestedSize == nil {
+            bestSize = try findBestSize(images: urls)
+        }
+        let size = requestedSize ?? bestSize
+        
         var arguments: [String] = [
             "convert",
             
@@ -101,6 +124,7 @@ struct TextureUtil {
             size.resolutionString
         ]
         
+        // Configure each channel of the final image
         for channelContent in [red, green, blue] {
             switch channelContent {
             case .image(let url):
@@ -125,7 +149,8 @@ struct TextureUtil {
                     
                     ")"
                 ]
-            case .black:
+            case .color(let value): do {
+                let colorString = String(format: "%02X", Int(value * 255))
                 arguments += [
                     "(",
                     
@@ -134,29 +159,14 @@ struct TextureUtil {
                     size.resolutionString,
                     
                     // Fill
-                    "xc:black",
+                    "xc:#" + colorString + colorString + colorString,
                     
                     // Add as channel to next command
                     "+channel",
                     
                     ")"
                 ]
-            case .white:
-                arguments += [
-                    "(",
-                    
-                    // Make an image
-                    "-size",
-                    size.resolutionString,
-                    
-                    // Fill
-                    "xc:white",
-                    
-                    // Add as channel to next command
-                    "+channel",
-                    
-                    ")"
-                ]
+                }
             }
         }
         
@@ -171,12 +181,20 @@ struct TextureUtil {
         ]
 
         try runCommand(arguments: arguments)
-    }
+        }
     
+        /// Find the best size for all images. Currently is the largest fitting.
+        private static func findBestSize(images: [URL]) throws -> MTLSize {
+            try images.map { try size(of: $0) }.reduce(MTLSizeMake(0, 0, 0)) { (memory, size) -> MTLSize in
+                MTLSize(width: max(memory.width, size.width),
+                        height: max(memory.height, size.height),
+                        depth: max(memory.depth, size.depth))
+            }
+        }
+        
     enum ChannelContent {
         case image(URL)
-        case black
-        case white
+        case color(Float)
     }
 }
 
@@ -190,7 +208,3 @@ private extension MTLSize {
 }
 
 // Get red channel from RGB image:          convert -channel R -separate ./SparrowEngine/SparrowEngine/Models/grass_albedo.png ./r.png
-
-//convert  rose: -fx R channel_red.gif
-//convert  rose: -fx G channel_green.gif
-//convert  rose: -fx B channel_blue.gif

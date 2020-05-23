@@ -249,7 +249,34 @@ private extension ObjImporter {
                 }
             }
             
+            
+            
+            print("RO", mat.roughnessTexture)
+            print("ME", mat.metallicTexture)
+            print("AO", mat.aoTexture)
+            
+            print("R", mat.roughness)
+            print("M", mat.metallic)
+            
+            // If there are no textures used at all, supply colors. Otherwise, combine existing textures,
+            // possibly with colors, into a single texture.
             var rma = SAMaterialProperty.none
+            
+            if mat.roughnessTexture == nil && mat.metallicTexture == nil && mat.aoTexture == nil {
+                print("[obj] RMA: color, no AO")
+                rma = SAMaterialProperty.color([mat.roughness, mat.metallic, 1, 0])
+            } else {
+                let outputUrl = url.appendingToFilename("_\(mat.name)_rmo").deletingPathExtension().appendingPathExtension("png")
+                
+                print("[obj] Creating new RMA texture at \(outputUrl)...")
+                
+                try TextureUtil.combine(red: mat.roughnessTexture != nil ? .image(mat.roughnessTexture!) : .color(mat.roughness),
+                                        green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
+                                        blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
+                                        into: outputUrl)
+                
+                rma = SAMaterialProperty.texture(addTexture(outputUrl))
+            }
             
             let m = SAMaterial(name: mat.name,
                                albedo: albedo,
