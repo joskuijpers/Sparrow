@@ -35,7 +35,7 @@ class MtlParser: StructuredTextParser {
             lib.materials.append(mat)
         }
         
-        print("[mtl] Found \(lib.materials.count) materials")
+        print("[mtl] Found \(lib.materials.count) materials of which \(Set(lib.materials).count) unique")
         
         return lib
     }

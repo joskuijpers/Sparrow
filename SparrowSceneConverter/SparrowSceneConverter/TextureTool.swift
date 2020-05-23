@@ -9,7 +9,13 @@
 import Metal
 import Foundation
 
-struct TextureUtil {
+class TextureTool {
+    let verbose: Bool
+    let imageSizeCache: [URL:MTLSize] = [:]
+    
+    var numSizeCalls = 0
+    var numFindCalls = 0
+    var numCombineCalls = 0
     
     enum Error: Swift.Error {
         case commandFailed(String)
@@ -18,8 +24,12 @@ struct TextureUtil {
         case invalidCommandOutput
     }
     
+    init(verbose: Bool = false) {
+        self.verbose = verbose
+    }
+    
     @discardableResult
-    static func runCommand(arguments: [String]) throws -> String? {
+    private func runCommand(arguments: [String]) throws -> String? {
         let task = Process()
         
         task.executableURL = URL(fileURLWithPath: "/usr/local/bin/magick")
@@ -31,7 +41,7 @@ struct TextureUtil {
         task.standardOutput = outputPipe
         task.standardError = errorPipe
         
-        if CommandLine.arguments.contains("--verbose") || true {
+        if verbose {
             print("[imagemagick] Execute with arguments: \((task.arguments ?? []))")
         }
         
@@ -53,7 +63,7 @@ struct TextureUtil {
     }
     
     /// Convert an image to a greyscale variant
-    static func convert(_ input: URL, toGrayscaleImage output: URL) throws {
+    func convert(_ input: URL, toGrayscaleImage output: URL) throws {
         let arguments = [
             "convert",
             input.path,
@@ -65,33 +75,11 @@ struct TextureUtil {
             output.path
         ]
 
-        try Self.runCommand(arguments: arguments)
-    }
-    
-    /// Get the size of an image in pixels and depth in bits
-    static func size(of input: URL) throws -> MTLSize {
-        let arguments = [
-            "identify",
-            "-format",
-            "%[fx:w]\n%[fx:h]\n%z",
-            input.path
-        ]
-        
-        guard let result = try Self.runCommand(arguments: arguments) else {
-            throw Error.invalidCommandOutput
-        }
-
-        let size = result.split(separator: "\n").compactMap { Int($0) }
-        
-        guard size.count == 3 else {
-            throw Error.invalidCommandOutput
-        }
-
-        return MTLSizeMake(size[0], size[1], size[2])
+        try runCommand(arguments: arguments)
     }
     
     /// Combine 3 images into a single RGB image.
-    static func combine(red: ChannelContent, green: ChannelContent, blue: ChannelContent, into output: URL, size requestedSize: MTLSize? = nil) throws {
+    func combine(red: ChannelContent, green: ChannelContent, blue: ChannelContent, into output: URL, size requestedSize: MTLSize? = nil) throws {
         let channels = [red, green, blue]
         
         // Collect all urls we touch
@@ -111,6 +99,9 @@ struct TextureUtil {
             bestSize = try findBestSize(images: urls)
         }
         let size = requestedSize ?? bestSize
+        
+        numCombineCalls += 1
+        return
         
         var arguments: [String] = [
             "convert",
@@ -181,16 +172,48 @@ struct TextureUtil {
         ]
 
         try runCommand(arguments: arguments)
-        }
+    }
+}
+
+// MARK: - Sizes
+
+extension TextureTool {
     
-        /// Find the best size for all images. Currently is the largest fitting.
-        private static func findBestSize(images: [URL]) throws -> MTLSize {
-            try images.map { try size(of: $0) }.reduce(MTLSizeMake(0, 0, 0)) { (memory, size) -> MTLSize in
-                MTLSize(width: max(memory.width, size.width),
-                        height: max(memory.height, size.height),
-                        depth: max(memory.depth, size.depth))
-            }
+    /// Get the size of an image in pixels and depth in bits
+    func size(of input: URL) throws -> MTLSize {
+        numCombineCalls += 1
+        return MTLSizeMake(1024, 1024, 8)
+        
+        let arguments = [
+            "identify",
+            "-format",
+            "%[fx:w]\n%[fx:h]\n%z",
+            input.path
+        ]
+        
+        guard let result = try runCommand(arguments: arguments) else {
+            throw Error.invalidCommandOutput
         }
+
+        let size = result.split(separator: "\n").compactMap { Int($0) }
+        
+        guard size.count == 3 else {
+            throw Error.invalidCommandOutput
+        }
+
+        return MTLSizeMake(size[0], size[1], size[2])
+    }
+    
+    /// Find the best size for all images. Currently is the largest fitting.
+    private func findBestSize(images: [URL]) throws -> MTLSize {
+        numFindCalls += 1
+        
+        return try images.map { try size(of: $0) }.reduce(MTLSizeMake(0, 0, 0)) { (memory, size) -> MTLSize in
+            MTLSize(width: max(memory.width, size.width),
+                    height: max(memory.height, size.height),
+                    depth: max(memory.depth, size.depth))
+        }
+    }
         
     enum ChannelContent {
         case image(URL)

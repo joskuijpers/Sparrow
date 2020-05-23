@@ -16,7 +16,7 @@
 		801E845224682A310021CEAD /* ToolExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E845124682A310021CEAD /* ToolExtensions.swift */; };
 		804763F82468A7E40072DD04 /* SparrowAsset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 804763F72468A7E40072DD04 /* SparrowAsset.framework */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
-		808C0F1A2479624700EE0659 /* TextureUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808C0F192479624700EE0659 /* TextureUtil.swift */; };
+		808C0F1A2479624700EE0659 /* TextureTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808C0F192479624700EE0659 /* TextureTool.swift */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DB245DBA6F00269C56 /* GLTFImporter.swift */; };
 		80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporter.swift */; };
@@ -58,7 +58,7 @@
 		804763F72468A7E40072DD04 /* SparrowAsset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowAsset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		808C0F192479624700EE0659 /* TextureUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureUtil.swift; sourceTree = "<group>"; };
+		808C0F192479624700EE0659 /* TextureTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureTool.swift; sourceTree = "<group>"; };
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
 		80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPlusPlusLinkage.cpp; sourceTree = "<group>"; };
 		80E216DB245DBA6F00269C56 /* GLTFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLTFImporter.swift; sourceTree = "<group>"; };
@@ -127,7 +127,7 @@
 				801E845124682A310021CEAD /* ToolExtensions.swift */,
 				80E86F00246DB70200925150 /* SpatialFinder.swift */,
 				80E216E2245DD18600269C56 /* MathLib.swift */,
-				808C0F192479624700EE0659 /* TextureUtil.swift */,
+				808C0F192479624700EE0659 /* TextureTool.swift */,
 				80E216C8245DAF4500269C56 /* Support */,
 			);
 			path = SparrowSceneConverter;
@@ -220,7 +220,7 @@
 				80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */,
 				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
 				80E86F02246DEF8E00925150 /* SpatialFinder.swift in Sources */,
-				808C0F1A2479624700EE0659 /* TextureUtil.swift in Sources */,
+				808C0F1A2479624700EE0659 /* TextureTool.swift in Sources */,
 				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
 				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,

@@ -22,7 +22,7 @@ struct MtlFile {
     var materials: [MtlMaterial] = []
 }
 
-struct MtlMaterial {
+struct MtlMaterial: Equatable, Hashable {
     let name: String
     
     var albedoColor: float3 = float3(1, 0, 1) // Violet
@@ -39,6 +39,11 @@ struct MtlMaterial {
     var emissiveTexture: URL?
     var alphaTexture: URL?
     var hasAlpha = false
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        // Ignore name
+        return lhs.albedoColor == rhs.albedoColor && lhs.roughness == rhs.roughness && lhs.metallic == rhs.metallic && lhs.alpha == rhs.alpha && lhs.emissiveColor == rhs.emissiveColor && lhs.albedoTexture == rhs.albedoTexture && lhs.normalTexture == rhs.albedoTexture && lhs.roughnessTexture == rhs.roughnessTexture && lhs.metallicTexture == rhs.metallicTexture && lhs.aoTexture == rhs.aoTexture && lhs.emissiveColor == rhs.emissiveColor && lhs.alphaTexture == rhs.alphaTexture && lhs.hasAlpha == rhs.hasAlpha
+    }
 }
 
 struct ObjFace {

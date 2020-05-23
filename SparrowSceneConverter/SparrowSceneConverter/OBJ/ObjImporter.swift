@@ -14,9 +14,13 @@ class ObjImporter {
     private let generateTangents: Bool
     private let positionScale: Float
     
+    private let textureTool: TextureTool
+    
     private var objFile: ObjFile?
     private var mtlFile: MtlFile?
     private var asset: SAAsset!
+    
+    private var generatedMaterials: [String:Int] = [:]
     
     enum Error: Swift.Error {
         /// The ObjImporter only supports .obj files.
@@ -39,6 +43,7 @@ class ObjImporter {
         }
         
         self.url = url
+        self.textureTool = TextureTool(verbose: true)
         
         var generateTangents = false
         var uniformScale: Float = 1
@@ -80,6 +85,8 @@ private extension ObjImporter {
         
         try buildAsset()
         asset.updateChecksum()
+        
+        print("NUM FIND \(textureTool.numFindCalls), COMBINE \(textureTool.numCombineCalls), SIZE \(textureTool.numSizeCalls)")
         
         return asset
     }
@@ -225,6 +232,10 @@ private extension ObjImporter {
     /// Generate a material definition from data provided in the mesh and material file.
     private func generateMaterial(submesh: ObjSubmesh) throws -> Int {
         if let materialName = submesh.material, let mat = mtlFile!.materials.first(where: { $0.name == materialName }) {
+            if let index = generatedMaterials[materialName] {
+                return index
+            }
+            
             var albedo = SAMaterialProperty.none
             if let texture = mat.albedoTexture {
                 albedo = SAMaterialProperty.texture(addTexture(texture))
@@ -248,29 +259,17 @@ private extension ObjImporter {
                     emissive = SAMaterialProperty.color(float4(mat.emissiveColor, 1))
                 }
             }
-            
-            
-            
-            print("RO", mat.roughnessTexture)
-            print("ME", mat.metallicTexture)
-            print("AO", mat.aoTexture)
-            
-            print("R", mat.roughness)
-            print("M", mat.metallic)
-            
+
             // If there are no textures used at all, supply colors. Otherwise, combine existing textures,
             // possibly with colors, into a single texture.
             var rma = SAMaterialProperty.none
             
             if mat.roughnessTexture == nil && mat.metallicTexture == nil && mat.aoTexture == nil {
-                print("[obj] RMA: color, no AO")
                 rma = SAMaterialProperty.color([mat.roughness, mat.metallic, 1, 0])
             } else {
                 let outputUrl = url.appendingToFilename("_\(mat.name)_rmo").deletingPathExtension().appendingPathExtension("png")
-                
-                print("[obj] Creating new RMA texture at \(outputUrl)...")
-                
-                try TextureUtil.combine(red: mat.roughnessTexture != nil ? .image(mat.roughnessTexture!) : .color(mat.roughness),
+
+                try textureTool.combine(red: mat.roughnessTexture != nil ? .image(mat.roughnessTexture!) : .color(mat.roughness),
                                         green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
                                         blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
                                         into: outputUrl)
@@ -285,7 +284,11 @@ private extension ObjImporter {
                                emission: emissive,
                                alphaMode: mat.hasAlpha ? .mask : .opaque,
                                alphaCutoff: 0.5)
-            return addMaterial(m)
+
+            let matIndex = addMaterial(m)
+            generatedMaterials[mat.name] = matIndex
+            
+            return matIndex
         } else {
             throw Error.invalidMaterial(submesh.material)
         }
