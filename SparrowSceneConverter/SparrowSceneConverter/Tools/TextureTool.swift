@@ -120,7 +120,16 @@ class TextureTool {
                     // Force size to match output image size
                     "-resize",
                     size.resolutionString,
-                    
+                ]
+                
+                // TGA behaves oddly causing flipping
+                if url.pathExtension == "tga" && output.pathExtension != "tga" {
+                    arguments += [
+                        "-flip"
+                    ]
+                }
+                
+                arguments += [
                     // Turn to grey otherwise command fails. Images might have grey values but not be in grey format
                     "-set",
                     "colorspace",
@@ -166,6 +175,9 @@ class TextureTool {
             // Make sure we end up in RGB and not Grey
             "-colorspace",
             "sRGB",
+            
+            "-orient",
+            "bottom-left",
             
             // Combine channels
             "-combine",

@@ -113,8 +113,6 @@ class ObjParser: StructuredTextParser {
     }
     
     func startSubmesh(name: String) {
-        print("[obj] Starting group \(name)")
-        
         currentGroup = name
         faces = []
         vertices = []
@@ -137,7 +135,7 @@ class ObjParser: StructuredTextParser {
             try generateTangents()
         }
         
-        print("[obj] Building submesh with name \(name), faces \(faces.count), material \(String(describing: currentMaterial))")
+        print("[obj] Building submesh with name \(name), faces \(faces.count), material \(currentMaterial ?? "default")")
         obj.submeshes.append(ObjSubmesh(name: name, material: currentMaterial, faces: faces, vertices: vertices))
     }
     
