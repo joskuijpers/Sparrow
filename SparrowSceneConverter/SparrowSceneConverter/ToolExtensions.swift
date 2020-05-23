@@ -37,4 +37,14 @@ extension URL {
         
         return relComponents.joined(separator: "/")
     }
+
+    /// Add a string to the name of the file without changing extension
+    func appendingToFilename(_ str: String) -> URL {
+        let ext = self.pathExtension
+        let name = self.deletingPathExtension().lastPathComponent
+        
+        let newName = name + str
+        
+        return self.deletingLastPathComponent().appendingPathComponent(newName).appendingPathExtension(ext)
+    }
 }
