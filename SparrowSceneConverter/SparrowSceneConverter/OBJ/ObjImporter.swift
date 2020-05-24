@@ -58,7 +58,7 @@ class ObjImporter {
     /**
      Import an asset from given URL.
      */
-    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SAAsset {
+    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SAFileRef {
         var generateTangents = false
         var uniformScale: Float = 1
         for option in options {
@@ -71,8 +71,9 @@ class ObjImporter {
         }
         
         let importer = try ObjImporter(inputUrl: url, outputUrl: outputUrl, generateTangents: generateTangents, uniformScale: uniformScale)
+        let asset = try importer.generate()
         
-        return try importer.generate()
+        return SAFileRef(url: outputUrl, asset: asset)
     }
 }
 
@@ -220,8 +221,8 @@ private extension ObjImporter {
             meshBounds = meshBounds.containing(submeshBounds)
         }
         
-        print("Number of vertices before indexing: \(obj.submeshes.reduce(0, { $0 + $1.vertices.count })), after: \(vertexBuffer.count)")
-        print("Vertex size: \(MemoryLayout<V>.size)")
+        print("[obj] Number of vertices before indexing: \(obj.submeshes.reduce(0, { $0 + $1.vertices.count })), after: \(vertexBuffer.count)")
+        print("[obj] Vertex size: \(MemoryLayout<V>.size)")
         
         // Create a final mesh buffer for vertices + index buffers
         vertexDataSize = MemoryLayout<V>.stride * vertexBuffer.count
@@ -280,7 +281,7 @@ private extension ObjImporter {
                                         green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
                                         blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
                                         into: url)
-                print("[obj] Generated RMO texture for \(mat.name)")
+                print("[tex] Generated RMO texture for \(mat.name)")
                 
                 rma = SAMaterialProperty.texture(addTexture(url))
             }
@@ -309,10 +310,10 @@ private extension ObjImporter {
     func addTexture(_ url: URL) -> Int {
         // Create the shortest path possible: relative to the output asset url
         guard let relativePath = url.relativePath(from: outputUrl.deletingLastPathComponent()) else {
-            fatalError("Could not create relative path for texture")
+            fatalError("[tex] Could not create relative path for texture")
         }
         
-        print("Adding texture at \(relativePath)")
+        print("[tex] Adding texture '\(relativePath)'")
 
         asset.textures.append(SATexture(relativePath: relativePath))
         return asset.textures.count - 1
@@ -321,7 +322,7 @@ private extension ObjImporter {
     func addTexture(_ url: URL, copyingWithName name: String) -> Int {
         // Get relative path from .spa to texture
         guard let relativePath = url.deletingLastPathComponent().appendingPathComponent(name).relativePath(from: inputUrl.deletingLastPathComponent()) else {
-            fatalError("Could not create relative path for texture")
+            fatalError("[tex] Could not create relative path for texture")
         }
         
         // Add this to output to find out taget url
@@ -331,11 +332,10 @@ private extension ObjImporter {
         do {
             try textureTool.convert(url, to: targetUrl)
         } catch {
-            fatalError("[obj] Could not convert texture: \(error)")
+            fatalError("[tex] Could not convert texture: \(error)")
         }
         
-        print("Copying texture from \(url) to \(targetUrl)")
-        print("Adding texture at \(relativePath)")
+        print("[tex] Adding converted texture '\(relativePath)'")
 
         asset.textures.append(SATexture(relativePath: relativePath))
         return asset.textures.count - 1

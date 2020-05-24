@@ -46,6 +46,9 @@ class MtlParser: StructuredTextParser {
         while match("#") {
             skipLine()
         }
+        if index >= input.endIndex {
+            return
+        }
 
         // Whitespace can precede an identifier
         skipWhitespaceAndNewlines()

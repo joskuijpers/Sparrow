@@ -57,7 +57,6 @@ class TextureLoader {
         ]
         
         let imageName = AssetLoader.shortestName(for: url)
-        print("FROM \(url) to \(imageName)")
         
         let mtlTexture = try mtkTextureLoader.newTexture(URL: url, options: options)
         let texture = Texture(imageName: imageName, mtlTexture: mtlTexture)

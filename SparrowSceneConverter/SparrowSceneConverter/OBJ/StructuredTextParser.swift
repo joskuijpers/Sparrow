@@ -75,7 +75,10 @@ class StructuredTextParser {
     
     /// Match a character without consuming
     func match(_ char: Unicode.Scalar) -> Bool {
-        return input[index] == char
+        if index < input.endIndex {
+            return input[index] == char
+        }
+        return false
     }
     
     /// Match any text until the next space
