@@ -75,7 +75,7 @@ class TextureTool {
     }
     
     /// Write an image to another path, possibly changing format.
-    func convert(_ input: URL, to output: URL) throws {
+    func convert(_ input: URL, to output: URL, allowingAlpha: Bool = true) throws {
         let fileManager = FileManager.default
         
         // Create folders if needed
@@ -103,10 +103,11 @@ class TextureTool {
             }
             
             if output.pathExtension == "png" {
+                let alpha = try (allowingAlpha && hasAlpha(input))
                 arguments += [
                     // To prevent indexed files: https://www.imagemagick.org/Usage/formats/#png_write
                     "-define",
-                    "png:color-type=2"
+                    "png:color-type=" + (alpha ? "6" : "2")
                 ]
             }
             
@@ -232,9 +233,50 @@ class TextureTool {
     }
 }
 
-// MARK: - Sizes
+// MARK: - Identifying
 
 extension TextureTool {
+    
+    func hasAlpha(_ input: URL) throws -> Bool {
+        let arguments = [
+            "identify",
+            "-format",
+            "%A",
+            input.path
+        ]
+        
+        guard let result = try runCommand(arguments: arguments) else {
+            throw Error.invalidCommandOutput
+        }
+
+        // Without Blend there is no alpha channel
+        if result != "Blend" {
+            return false
+        }
+        
+        let identifyArguments: [String] = [
+            "convert",
+            input.path,
+            
+            // Extract alpha channel
+            "-alpha",
+            "extract",
+            
+            // Identify format: num unique colors
+            "-format",
+            "%k",
+            
+            // Identify
+            "-identify",
+            "null"
+        ]
+        
+        guard let numColors = try runCommand(arguments: identifyArguments) else {
+            throw Error.invalidCommandOutput
+        }
+        
+        return Int(numColors) != 1
+    }
     
     /// Get the size of an image in pixels and depth in bits
     func size(of input: URL) throws -> MTLSize {
