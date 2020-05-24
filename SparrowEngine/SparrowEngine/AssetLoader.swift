@@ -23,6 +23,11 @@ struct AssetLoader {
     }
     
     static func shortestName(for url: URL) -> String {
-        return URL(string: url.path, relativeTo: resourceUrl())!.relativePath
+        let rp = resourceUrl().path
+        if url.path.hasPrefix(rp) {
+            return String(url.path.dropFirst(rp.count + 1)) // +1 for the /
+        } else {
+            return url.path
+        }
     }
 }
