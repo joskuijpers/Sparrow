@@ -162,7 +162,7 @@ fragment float4 fragment_main(
     if (hasNormalTexture) {
         normalValue = normalTexture.sample(linearSampler, in.uv).rgb * 2.0 - 1.0;
     } else {
-        normalValue = in.worldNormal;
+        normalValue = float3(0, 0, 1);
     }
     float3x3 TBN = float3x3(in.worldTangent, in.worldBitangent, in.worldNormal);
     float3 normal = normalize(TBN * normalValue);
