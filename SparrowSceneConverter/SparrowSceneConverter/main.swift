@@ -9,11 +9,11 @@
 import SparrowAsset
 import Metal
 
-let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/ironSphere.obj") // 48% -> 35%
-let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/SPONZA/sponza.obj") // 45% -> 35%
-let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/RAW/Elemental/Elemental.obj") // 44% -> 33%
+let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/IronSphere/ironSphere.obj")
+let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Sponza/sponza.obj")
+let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Elemental/Elemental.obj")
 
-let url = url2
+let url = url1
 
 do {
     // Import asset from .obj file
@@ -23,7 +23,9 @@ do {
     
     
     // Output in binary
-    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/\(url.deletingPathExtension().lastPathComponent).spa")
+    let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Assets/\(url.deletingLastPathComponent().lastPathComponent)/\(url.deletingPathExtension().lastPathComponent).spa")
+    try FileManager.default.createDirectory(at: outputUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+    
     try SparrowAssetWriter.write(asset, to: outputUrl)
     
     let urls = asset.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: outputUrl) }
@@ -34,36 +36,17 @@ do {
 }
 
 /*
-Sponza.spabundle/
-    sponza.spa
-    Textures/
-        ....png
-        ....png
- 
 
  class SAFileRef
     asset: SAAsset
     url: URL
- 
- SABundle
-    fileRef: SAFileRef
- 
- SparrowAssetBundleWriter
-    write(fileRef, to: url)
-        // Make folders
-        // For each texture: copy texture, adjust relative texture path
-        // Write SAAsset
-        // Done
- 
- SparrowAssetBundleReader ??
-    read(from: url) -> Bundle
-        //
+
+ converter needs input (.obj) and output (.spa) path
+ then we need to copy needed assets with new names to the output path
+ name textures '<obj>_<mat>_<type>.png'
  
  
- // Turn TextureUtil into TextureTool instances. Keep file resolution cache. Add versbose
- // Make materials unique in ObjImporter so we don't handle textures multiple times
- // Fix origin of TGA files
- 
- 
+ We can make an editor for asset files to change all of this... we only store relative paths so we can easily re-point to a different texture
+ Normally you'd do this with a proper exporter I guess
  
  */

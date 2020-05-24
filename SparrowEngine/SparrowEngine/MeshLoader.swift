@@ -23,7 +23,7 @@ class MeshLoader {
     
     enum Error: Swift.Error {
         /// Asset could not be found.
-        case fileNotFound
+        case fileNotFound(URL)
         
         /// Asset contents currently not supported
         case unsupportedAsset(String)
@@ -42,28 +42,30 @@ class MeshLoader {
      Load a mesh with given name.
      */
     func load(name: String) throws -> Mesh {
-        // Get the asset -> SAAsset
-        guard let url = Bundle.main.url(forResource: name, withExtension: nil) else {
-            throw Error.fileNotFound
+        let url = AssetLoader.url(forAsset: name)
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            throw Error.fileNotFound(url)
         }
         
-        print("[meshloader] Loading from \(url)")
+        print("[meshloader] Loading from \(url.path)")
         
         // Load using the SparrowAsset loader which verifies the asset contents.
-        let asset = try SparrowAssetLoader.load(from: url)
+        let fileRef = try SparrowAssetLoader.load(from: url)
         
         // Get first mesh or throw -> SAMesh
-        guard asset.meshes.count == 1 else {
+        guard fileRef.asset.meshes.count == 1 else {
             throw Error.unsupportedAsset("Asset contains not exactly one mesh. Only single-mesh assets are supported.")
         }
-        let saMesh = asset.meshes[0]
+        let saMesh = fileRef.asset.meshes[0]
         
-        let mesh = try createMesh(saAsset: asset, saMesh: saMesh)
+        let mesh = try createMesh(saFileRef: fileRef,
+                                  saAsset: fileRef.asset,
+                                  saMesh: saMesh)
 
         return mesh
     }
     
-    private func createMesh(saAsset: SAAsset, saMesh: SAMesh) throws -> Mesh {
+    private func createMesh(saFileRef: SAFileRef, saAsset: SAAsset, saMesh: SAMesh) throws -> Mesh {
         // Not all buffers might be used by this mesh for this asset
         let usedBufferIndices = saMesh.submeshes
             .map { $0.indices }.appending(saMesh.vertexBuffer)
@@ -97,7 +99,8 @@ class MeshLoader {
         for (materialIndex, saMaterial) in saAsset.materials.enumerated() {
             // Only process materials used in this submesh
             if saMesh.submeshes.first(where: { $0.material == materialIndex }) != nil {
-                let mat = try createMaterial(saAsset: saAsset,
+                let mat = try createMaterial(saFileRef: saFileRef,
+                                             saAsset: saAsset,
                                              saMaterial: saMaterial)
                 materials[materialIndex] = mat
             }
@@ -150,14 +153,15 @@ class MeshLoader {
                        indexBufferInfo: indexBufferInfo)
     }
 
-    private func createMaterial(saAsset: SAAsset, saMaterial: SAMaterial) throws -> Material {
+    private func createMaterial(saFileRef: SAFileRef, saAsset: SAAsset, saMaterial: SAMaterial) throws -> Material {
         func getTexture(_ property: SAMaterialProperty) -> MTLTexture? {
             switch property {
             case .texture(let textureIndex):
                 let saTexture = saAsset.textures[textureIndex]
 
                 do {
-                    let texture = try Renderer.textureLoader.load(imageName: saTexture.relativePath)
+                    let url = URL(string: saTexture.relativePath, relativeTo: saFileRef.url)!
+                    let texture = try Renderer.textureLoader.load(from: url)
                     
                     return texture.mtlTexture
                 } catch {

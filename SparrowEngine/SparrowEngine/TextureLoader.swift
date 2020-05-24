@@ -43,9 +43,9 @@ class TextureLoader {
     /**
      Load a texture with given image name. This can be a path or an asset name.
      */
-    func load(imageName: String) throws -> Texture {
+    func load(from url: URL) throws -> Texture {
         // Get from cache
-        if let texture = cache[imageName] {
+        if let texture = cache[url.absoluteString] {
             return texture
         }
         
@@ -56,10 +56,13 @@ class TextureLoader {
             .generateMipmaps: true,
         ]
         
-        let mtlTexture = try loadMtlTexture(imageName: imageName, textureLoaderOptions: options)
+        let imageName = AssetLoader.shortestName(for: url)
+        print("FROM \(url) to \(imageName)")
+        
+        let mtlTexture = try mtkTextureLoader.newTexture(URL: url, options: options)
         let texture = Texture(imageName: imageName, mtlTexture: mtlTexture)
         
-        cache[imageName] = texture
+        cache[url.absoluteString] = texture
         
         print("[texture] Loaded \(texture.imageName) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
 
@@ -67,33 +70,10 @@ class TextureLoader {
     }
     
     /**
-     Load the MTL internal texture
-     */
-    private func loadMtlTexture(imageName: String, textureLoaderOptions: [MTKTextureLoader.Option: Any]) throws -> MTLTexture {
-        let fileExtension = URL(fileURLWithPath: imageName).pathExtension.isEmpty ? "png" : nil
-        guard let url = Bundle.main.url(forResource: imageName, withExtension: fileExtension) else {
-//            print("Loading \(imageName) from bundle")
-            return try mtkTextureLoader.newTexture(name: imageName, scaleFactor: 1.0, bundle: Bundle.main, options: nil)
-        }
-
-//        print("Loading \(imageName) from path \(url)")
-        return try mtkTextureLoader.newTexture(URL: url, options: textureLoaderOptions)
-    }
-    
-    /**
      Unload given texture from the cache. Data will only unload once the texture is released.
      */
     func unload(_ texture: Texture) {
         cache.removeValue(forKey: texture.imageName)
-    }
-    
-    /**
-     Reload the given texture, returning a new one. Also flushes cache for this item.
-     */
-    func reload(_ texture: Texture) throws -> Texture {
-        cache.removeValue(forKey: texture.imageName)
-        
-        return try load(imageName: texture.imageName)
     }
 }
 

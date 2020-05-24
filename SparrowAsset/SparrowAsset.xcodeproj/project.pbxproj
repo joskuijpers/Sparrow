@@ -26,6 +26,7 @@
 		804764132468A7F30072DD04 /* SASubmesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804763F92468A7F10072DD04 /* SASubmesh.swift */; };
 		804764142468A7F30072DD04 /* SAFileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804764032468A7F30072DD04 /* SAFileHeader.swift */; };
 		804764172468AE8D0072DD04 /* SABounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804764162468AE8D0072DD04 /* SABounds.swift */; };
+		80C17209247A90100097F2AE /* SAFileRef.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C17208247A90100097F2AE /* SAFileRef.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		804764052468A7F30072DD04 /* SATexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SATexture.swift; sourceTree = "<group>"; };
 		804764062468A7F30072DD04 /* SAScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAScene.swift; sourceTree = "<group>"; };
 		804764162468AE8D0072DD04 /* SABounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SABounds.swift; sourceTree = "<group>"; };
+		80C17208247A90100097F2AE /* SAFileRef.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAFileRef.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +149,7 @@
 				804763FD2468A7F20072DD04 /* SABuffer.swift */,
 				804764002468A7F20072DD04 /* SABufferView.swift */,
 				804764162468AE8D0072DD04 /* SABounds.swift */,
+				80C17208247A90100097F2AE /* SAFileRef.swift */,
 			);
 			path = Structure;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				8047640A2468A7F30072DD04 /* SABufferView.swift in Sources */,
 				8047640E2468A7F30072DD04 /* SAAsset.swift in Sources */,
 				804764122468A7F30072DD04 /* SABuffer.swift in Sources */,
+				80C17209247A90100097F2AE /* SAFileRef.swift in Sources */,
 				804764092468A7F30072DD04 /* SAScene.swift in Sources */,
 				804764112468A7F30072DD04 /* SAMaterial.swift in Sources */,
 				8047640C2468A7F30072DD04 /* SAMesh.swift in Sources */,

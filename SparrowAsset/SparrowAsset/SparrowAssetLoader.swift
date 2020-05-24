@@ -72,7 +72,7 @@ public class SparrowAssetLoader {
     }
     
     /// Load an asset from given URL.
-    public static func load(from url: URL) throws -> SAAsset {
+    public static func load(from url: URL) throws -> SAFileRef {
         if url.pathExtension != "spa" {
             throw Error.invalidExtension(url.pathExtension)
         }
@@ -80,7 +80,9 @@ public class SparrowAssetLoader {
         let data = try Data(contentsOf: url, options: .dataReadingMapped)
         let loader = SparrowAssetLoader(data: data)
 
-        return try loader.load()
+        let asset = try loader.load()
+        
+        return SAFileRef(url: url, asset: asset)
     }
     
     /// Load an asset from given Data.

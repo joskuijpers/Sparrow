@@ -63,8 +63,8 @@
 		80A462F2238F1E25009435EB /* MathLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F1238F1E25009435EB /* MathLibrary.swift */; };
 		80A462F6238F22C5009435EB /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462F5238F22C5009435EB /* Camera.swift */; };
 		80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A6F8AD2456174400FE8CCF /* Depth.metal */; };
-		80C171FF247A861D0097F2AE /* garage_pmrem.ktx in Resources */ = {isa = PBXBuildFile; fileRef = 80C171FD247A861D0097F2AE /* garage_pmrem.ktx */; };
-		80C17200247A861D0097F2AE /* loft_pmrem.ktx in Resources */ = {isa = PBXBuildFile; fileRef = 80C171FE247A861D0097F2AE /* loft_pmrem.ktx */; };
+		80C17205247A8B900097F2AE /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 80C17203247A8B780097F2AE /* Assets */; };
+		80C17207247A8C850097F2AE /* AssetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C17206247A8C850097F2AE /* AssetLoader.swift */; };
 		80E86F0424714A8F00925150 /* SparrowAsset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80E86F0324714A8F00925150 /* SparrowAsset.framework */; };
 /* End PBXBuildFile section */
 
@@ -132,8 +132,8 @@
 		80A462F5238F22C5009435EB /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
 		80A6F8AD2456174400FE8CCF /* Depth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Depth.metal; sourceTree = "<group>"; };
-		80C171FD247A861D0097F2AE /* garage_pmrem.ktx */ = {isa = PBXFileReference; lastKnownFileType = file; path = garage_pmrem.ktx; sourceTree = "<group>"; };
-		80C171FE247A861D0097F2AE /* loft_pmrem.ktx */ = {isa = PBXFileReference; lastKnownFileType = file; path = loft_pmrem.ktx; sourceTree = "<group>"; };
+		80C17203247A8B780097F2AE /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
+		80C17206247A8C850097F2AE /* AssetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLoader.swift; sourceTree = "<group>"; };
 		80E86F0324714A8F00925150 /* SparrowAsset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowAsset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -319,7 +319,6 @@
 				800604AE23F9EF2400B3FB7F /* Graphics */,
 				800604AD23F9EF1E00B3FB7F /* Scene */,
 				8015C69C23D6479F00DFF109 /* ECS */,
-				80A462F8238F25C6009435EB /* Models */,
 				80A462F0238F1E14009435EB /* Utility */,
 				80438C23240DC31B00099034 /* Input.swift */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
@@ -327,8 +326,10 @@
 				8064AF5D2427F63E0089FE11 /* Shaders */,
 				808695F623B8CA1E0007E75D /* TextureLoader.swift */,
 				8066692E247459EE00AA8412 /* MeshLoader.swift */,
+				80C17206247A8C850097F2AE /* AssetLoader.swift */,
 				80438C1E2405DEB800099034 /* AppInfo */,
 				800E6DD323F2096E00412CCE /* Docs */,
+				80C17203247A8B780097F2AE /* Assets */,
 			);
 			path = SparrowEngine;
 			sourceTree = "<group>";
@@ -354,15 +355,6 @@
 				80438C1F240B0A2700099034 /* Frustum.swift */,
 			);
 			path = Utility;
-			sourceTree = "<group>";
-		};
-		80A462F8238F25C6009435EB /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				80C171FD247A861D0097F2AE /* garage_pmrem.ktx */,
-				80C171FE247A861D0097F2AE /* loft_pmrem.ktx */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -425,10 +417,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80C17200247A861D0097F2AE /* loft_pmrem.ktx in Resources */,
-				80C171FF247A861D0097F2AE /* garage_pmrem.ktx in Resources */,
 				80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */,
 				80A462D1238F0FB9009435EB /* Main.storyboard in Resources */,
+				80C17205247A8B900097F2AE /* Assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,6 +458,7 @@
 				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
 				8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */,
 				80A462E7238F126A009435EB /* Mesh.swift in Sources */,
+				80C17207247A8C850097F2AE /* AssetLoader.swift in Sources */,
 				8015C6C023D647B100DFF109 /* GroupTraitSet.swift in Sources */,
 				8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */,
 				8015C6BB23D647B100DFF109 /* ManagedContiguousArray.swift in Sources */,
