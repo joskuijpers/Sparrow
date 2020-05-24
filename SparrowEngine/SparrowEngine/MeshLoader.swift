@@ -95,9 +95,12 @@ class MeshLoader {
         // Create materials
         var materials: [Int:Material] = [:]
         for (materialIndex, saMaterial) in saAsset.materials.enumerated() {
-            let mat = try createMaterial(saAsset: saAsset,
-                                         saMaterial: saMaterial)
-            materials[materialIndex] = mat
+            // Only process materials used in this submesh
+            if saMesh.submeshes.first(where: { $0.material == materialIndex }) != nil {
+                let mat = try createMaterial(saAsset: saAsset,
+                                             saMaterial: saMaterial)
+                materials[materialIndex] = mat
+            }
         }
         
         
