@@ -7,7 +7,6 @@
 //
 
 import SparrowAsset
-import Metal
 
 func main() {
     let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/IronSphere/ironSphere.obj")
@@ -22,13 +21,15 @@ func main() {
         // Import asset from .obj file
         let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(1)])
         
-        // All textures are relative to the import asset url, which is pretty useless if we write the output somewhere else...
-        
-        // Output in binary
+        // Create folders if needed
         try FileManager.default.createDirectory(at: outputUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         
-        try SparrowAssetWriter.write(fileRef.asset, to: outputUrl)
+        // Write in binary
+        try SparrowAssetWriter.write(fileRef)
         
+        
+        
+        // Some asset info
         let urls = fileRef.asset.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: outputUrl) }
         print("Number of textures: \(urls.count), of which unique: \(Set(urls).count)")
         print("Number of materials in asset: \(fileRef.asset.materials.count)")
