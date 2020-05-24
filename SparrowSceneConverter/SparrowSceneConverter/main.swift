@@ -9,7 +9,7 @@
 import SparrowAsset
 
 func main() {
-    let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/grassSphere/grassSphere.obj")
+    let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Chest/chest.obj")
     let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Sponza/sponza.obj")
     let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Elemental/Elemental.obj")
 
@@ -26,32 +26,21 @@ func main() {
         
         // Write in binary
         try SparrowAssetWriter.write(fileRef)
-        
-        
+
         
         // Some asset info
+        print()
+        print("Asset info:")
+        
         let urls = fileRef.asset.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: outputUrl) }
-        print("Number of textures: \(urls.count), of which unique: \(Set(urls).count)")
-        print("Number of materials in asset: \(fileRef.asset.materials.count)")
+        print("  Number of textures: \(urls.count), of which unique: \(Set(urls).count)")
+        print("  Number of materials in asset: \(fileRef.asset.materials.count)")
     } catch {
         print("Error: \(error)")
+        exit(1)
     }
+    
+    exit(0)
 }
 
 main()
-
-/*
-
- class SAFileRef
-    asset: SAAsset
-    url: URL
-
- converter needs input (.obj) and output (.spa) path
- then we need to copy needed assets with new names to the output path
- name textures '<obj>_<mat>_<type>.png'
- 
- 
- We can make an editor for asset files to change all of this... we only store relative paths so we can easily re-point to a different texture
- Normally you'd do this with a proper exporter I guess
- 
- */

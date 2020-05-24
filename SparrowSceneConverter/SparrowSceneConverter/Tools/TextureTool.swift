@@ -76,15 +76,39 @@ class TextureTool {
     
     /// Write an image to another path, possibly changing format.
     func convert(_ input: URL, to output: URL) throws {
-        let arguments: [String] = [
-            "convert",
-            
-            input.path,
-            
-            output.path
-        ]
+        let fileManager = FileManager.default
         
-        try runCommand(arguments: arguments)
+        // Create folders if needed
+        try fileManager.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+        
+        if fileManager.fileExists(atPath: output.path) {
+            try fileManager.removeItem(at: output)
+        }
+        
+        // Fast version assumes files are in the correct format from DCC
+        if input.pathExtension == output.pathExtension {
+            try fileManager.copyItem(at: input, to: output)
+        } else {
+            var arguments: [String] = [
+                "convert",
+                
+                input.path
+            ]
+            
+            if output.pathExtension == "png" {
+                arguments += [
+                    // To prevent indexed files: https://www.imagemagick.org/Usage/formats/#png_write
+                    "-define",
+                    "png:color-type=2"
+                ]
+            }
+            
+            arguments += [
+                output.path
+            ]
+            
+            try runCommand(arguments: arguments)
+        }
     }
     
     /// Combine 3 images into a single RGB image.

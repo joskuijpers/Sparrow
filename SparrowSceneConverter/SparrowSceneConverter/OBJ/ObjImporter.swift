@@ -327,9 +327,6 @@ private extension ObjImporter {
         
         // Add this to output to find out taget url
         let targetUrl = outputUrl.deletingLastPathComponent().appendingPathComponent(relativePath)
-
-        // Create folders if needed
-        try FileManager.default.createDirectory(at: targetUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         
         // Copy the image
         do {
