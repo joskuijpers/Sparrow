@@ -74,6 +74,19 @@ class TextureTool {
         try runCommand(arguments: arguments)
     }
     
+    /// Write an image to another path, possibly changing format.
+    func convert(_ input: URL, to output: URL) throws {
+        let arguments: [String] = [
+            "convert",
+            
+            input.path,
+            
+            output.path
+        ]
+        
+        try runCommand(arguments: arguments)
+    }
+    
     /// Combine 3 images into a single RGB image.
     func combine(red: ChannelContent, green: ChannelContent, blue: ChannelContent, into output: URL, size requestedSize: MTLSize? = nil) throws {
         let channels = [red, green, blue]

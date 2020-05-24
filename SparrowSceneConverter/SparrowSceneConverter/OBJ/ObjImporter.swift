@@ -10,11 +10,13 @@ import SparrowAsset
 import simd
 
 class ObjImporter {
-    private let url: URL
+    private let inputUrl: URL
+    private let outputUrl: URL
     private let generateTangents: Bool
     private let positionScale: Float
     
     private let textureTool: TextureTool
+    private let objectName: String
     
     private var objFile: ObjFile?
     private var mtlFile: MtlFile?
@@ -37,14 +39,26 @@ class ObjImporter {
         case uniformScale(Float)
     }
     
-    private init(url: URL, options: [Options] = []) throws {
-        guard url.pathExtension == "obj" else {
+    private init(inputUrl: URL, outputUrl: URL, generateTangents: Bool, uniformScale: Float) throws {
+        guard inputUrl.pathExtension == "obj" else {
             throw Error.fileFormatNotSupported
         }
         
-        self.url = url
-        self.textureTool = TextureTool(verbose: false)
+        self.inputUrl = inputUrl
+        self.outputUrl = outputUrl
         
+        self.objectName = inputUrl.deletingPathExtension().lastPathComponent
+
+        self.generateTangents = generateTangents
+        self.positionScale = uniformScale
+        
+        self.textureTool = TextureTool(verbose: false)
+    }
+    
+    /**
+     Import an asset from given URL.
+     */
+    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SAAsset {
         var generateTangents = false
         var uniformScale: Float = 1
         for option in options {
@@ -56,15 +70,7 @@ class ObjImporter {
             }
         }
         
-        self.generateTangents = generateTangents
-        self.positionScale = uniformScale
-    }
-    
-    /**
-     Import an asset from given URL.
-     */
-    static func `import`(from url: URL, options: [Options] = []) throws -> SAAsset {
-        let importer = try ObjImporter(url: url, options: options)
+        let importer = try ObjImporter(inputUrl: url, outputUrl: outputUrl, generateTangents: generateTangents, uniformScale: uniformScale)
         
         return try importer.generate()
     }
@@ -74,11 +80,11 @@ private extension ObjImporter {
     
     /// Generate the asset
     func generate() throws -> SAAsset {
-        let objParser = try ObjParser(url: url, generateTangents: generateTangents)
+        let objParser = try ObjParser(url: inputUrl, generateTangents: generateTangents)
         objFile = try objParser.parse()
         
         if let mtlPath = objFile?.mtllib,
-            let mtlUrl = URL(string: mtlPath, relativeTo: url) {
+            let mtlUrl = URL(string: mtlPath, relativeTo: inputUrl) {
             let mtlParser = try MtlParser(url: mtlUrl)
             mtlFile = try mtlParser.parse()
         }
@@ -99,7 +105,7 @@ private extension ObjImporter {
     func buildAsset() throws {
         let obj = objFile!
         
-        asset = SAAsset(generator: "SparrowSceneConverter", origin: url.path)
+        asset = SAAsset(generator: "SparrowSceneConverter", origin: inputUrl.path)
         
         // Build all submeshes and buffers depending on config
         var meshBounds = SABounds()
@@ -131,7 +137,7 @@ private extension ObjImporter {
         let vertexBufferView = addBufferView(SABufferView(buffer: buffer, offset: 0, length: vertexDataSize))
         
         // Then finally create the mesh
-        let mesh = SAMesh(name: url.lastPathComponent,
+        let mesh = SAMesh(name: objectName,
                           submeshes: submeshes,
                           vertexBuffer: vertexBufferView,
                           vertexAttributes: vertexAttributes,
@@ -236,19 +242,22 @@ private extension ObjImporter {
             
             var albedo = SAMaterialProperty.none
             if let texture = mat.albedoTexture {
-                albedo = SAMaterialProperty.texture(addTexture(texture))
+                let textureId = addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_albedo.png")
+                albedo = SAMaterialProperty.texture(textureId)
             } else {
                 albedo = SAMaterialProperty.color(float4(mat.albedoColor, mat.alpha))
             }
             
             var normals = SAMaterialProperty.none
             if let texture = mat.normalTexture {
-                normals = SAMaterialProperty.texture(addTexture(texture))
+                let textureId = addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_normal.png")
+                normals = SAMaterialProperty.texture(textureId)
             }
             
             var emissive = SAMaterialProperty.none
             if let texture = mat.emissiveTexture {
-                emissive = SAMaterialProperty.texture(addTexture(texture))
+                let textureId = addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_emission.png")
+                emissive = SAMaterialProperty.texture(textureId)
             } else {
                 if mat.emissiveColor == float3(0, 0, 0) {
                     // Save None so we spare 3 unused floats
@@ -265,15 +274,15 @@ private extension ObjImporter {
             if mat.roughnessTexture == nil && mat.metallicTexture == nil && mat.aoTexture == nil {
                 rma = SAMaterialProperty.color([mat.roughness, mat.metallic, 1, 0])
             } else {
-                let outputUrl = url.appendingToFilename("_\(mat.name)_rmo").deletingPathExtension().appendingPathExtension("png")
+                let url = outputUrl.deletingLastPathComponent().appendingPathComponent("\(objectName)_\(mat.name)_rmo.png")
 
                 try textureTool.combine(red: mat.roughnessTexture != nil ? .image(mat.roughnessTexture!) : .color(mat.roughness),
                                         green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
                                         blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
-                                        into: outputUrl)
+                                        into: url)
                 print("[obj] Generated RMO texture for \(mat.name)")
                 
-                rma = SAMaterialProperty.texture(addTexture(outputUrl))
+                rma = SAMaterialProperty.texture(addTexture(url))
             }
             
             let m = SAMaterial(name: mat.name,
@@ -298,11 +307,36 @@ private extension ObjImporter {
 
 private extension ObjImporter {
     func addTexture(_ url: URL) -> Int {
-        // Create the shortest path possible: relative to the asset
-        guard let relativePath = url.relativePath(from: self.url.deletingLastPathComponent()) else {
+        // Create the shortest path possible: relative to the output asset url
+        guard let relativePath = url.relativePath(from: outputUrl.deletingLastPathComponent()) else {
             fatalError("Could not create relative path for texture")
         }
         
+        print("Adding texture at \(relativePath)")
+
+        asset.textures.append(SATexture(relativePath: relativePath))
+        return asset.textures.count - 1
+    }
+    
+    func addTexture(_ url: URL, copyingWithName name: String) -> Int {
+        // Get relative path from .spa to texture
+        guard let relativePath = url.deletingLastPathComponent().appendingPathComponent(name).relativePath(from: inputUrl.deletingLastPathComponent()) else {
+            fatalError("Could not create relative path for texture")
+        }
+        
+        // Add this to output to find out taget url
+        let targetUrl = outputUrl.deletingLastPathComponent().appendingPathComponent(relativePath)
+
+        // Copy the image
+        do {
+            try textureTool.convert(url, to: targetUrl)
+        } catch {
+            fatalError("[obj] Could not convert texture: \(error)")
+        }
+        
+        print("Copying texture from \(url) to \(targetUrl)")
+        print("Adding texture at \(relativePath)")
+
         asset.textures.append(SATexture(relativePath: relativePath))
         return asset.textures.count - 1
     }
@@ -326,7 +360,7 @@ private extension ObjImporter {
         asset.meshes.append(mesh)
         let meshIndex = asset.meshes.count - 1
         
-        let node = SANode(name: url.deletingPathExtension().lastPathComponent,
+        let node = SANode(name: objectName,
                           matrix: matrix_identity_float4x4,
                           children: [],
                           mesh: meshIndex,
