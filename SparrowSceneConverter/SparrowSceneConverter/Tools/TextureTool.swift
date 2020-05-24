@@ -95,6 +95,13 @@ class TextureTool {
                 input.path
             ]
             
+            // TGA behaves oddly causing flipping
+            if input.pathExtension == "tga" && output.pathExtension != "tga" {
+                arguments += [
+                    "-flip"
+                ]
+            }
+            
             if output.pathExtension == "png" {
                 arguments += [
                     // To prevent indexed files: https://www.imagemagick.org/Usage/formats/#png_write
