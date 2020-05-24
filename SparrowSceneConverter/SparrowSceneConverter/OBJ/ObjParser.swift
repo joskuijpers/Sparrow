@@ -28,7 +28,7 @@ class ObjParser: StructuredTextParser {
         case invalidFace(Substring, SourceLocation)
         
         /// The face is not supported
-        case unsupportedFace(Int, SourceLocation)
+        case unsupportedFace(Int)
         
         /// The faces are not triangle and are unsupported for tangent generation
         case noTangentsForNonTriangle
@@ -128,7 +128,7 @@ class ObjParser: StructuredTextParser {
         let name = (currentObject ?? "") + (currentGroup ?? "default")
         
         // Triangulate all meshes
-        try triangulate()
+        faces = try triangulate(faces: faces)
         
         // Save time by not always generating
         if shouldGenerateTangents {
@@ -174,11 +174,11 @@ class ObjParser: StructuredTextParser {
 extension ObjParser {
     // https://github.com/assimp/assimp/blob/master/code/PostProcessing/TriangulateProcess.cpp#L227
     /// Triangulate the faces. Supports triangles (no conversion) and quads (fast conversion)
-    private func triangulate() throws {
+    private func triangulate(faces: [ObjFace]) throws -> [ObjFace] {
         // Do not run if there are no non-triangles
         let needed = faces.filter { $0.vertIndices.count != 3 }.count > 0
         if !needed {
-            return
+            return faces
         }
         
         var result: [ObjFace] = []
@@ -222,11 +222,11 @@ extension ObjParser {
                     temp[(startIndex + 3) % 4],
                 ]))
             } else {
-                throw Error.unsupportedFace(face.vertIndices.count, offsetToLocation(offset))
+                throw Error.unsupportedFace(face.vertIndices.count)
             }
         }
         
-        faces = result
+        return result
     }
     
     // https://github.com/assimp/assimp/blob/master/code/PostProcessing/CalcTangentsProcess.cpp

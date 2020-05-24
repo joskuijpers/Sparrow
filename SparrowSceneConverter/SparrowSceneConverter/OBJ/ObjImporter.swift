@@ -52,7 +52,7 @@ class ObjImporter {
         self.generateTangents = generateTangents
         self.positionScale = uniformScale
         
-        self.textureTool = TextureTool(verbose: false)
+        self.textureTool = TextureToolAsync(verbose: false)
     }
     
     /**
@@ -92,6 +92,8 @@ private extension ObjImporter {
         
         try buildAsset()
         asset.updateChecksum()
+        
+        textureTool.waitUntilFinished()
         
         return asset
     }
@@ -280,7 +282,8 @@ private extension ObjImporter {
                 try textureTool.combine(red: mat.roughnessTexture != nil ? .image(mat.roughnessTexture!) : .color(mat.roughness),
                                         green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
                                         blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
-                                        into: url)
+                                        into: url,
+                                        size: nil)
                 print("[tex] Generated RMO texture for \(mat.name)")
                 
                 rma = SAMaterialProperty.texture(addTexture(url))

@@ -1,17 +1,18 @@
 //
-//  TextureTools.swift
+//  TextureToolSync.swift
 //  SparrowSceneConverter
 //
-//  Created by Jos Kuijpers on 23/05/2020.
+//  Created by Jos Kuijpers on 24/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
 import Metal
-import Foundation
 
-class TextureTool {
+/// Synchronous texture tool.
+class TextureToolSync: TextureTool {
     let verbose: Bool
-    var knownSizes: [URL:MTLSize] = [:]
+    
+    private var knownSizes: [URL:MTLSize] = [:]
 
     enum Error: Swift.Error {
         case commandFailed(String)
@@ -20,9 +21,12 @@ class TextureTool {
         case invalidCommandOutput
     }
     
-    init(verbose: Bool = false) {
+    required init(verbose: Bool = false) {
         self.verbose = verbose
     }
+    
+    // No waiting needed
+    func waitUntilFinished() {}
     
     @discardableResult
     private func runCommand(arguments: [String]) throws -> String? {
@@ -231,13 +235,9 @@ class TextureTool {
 
         try runCommand(arguments: arguments)
     }
-}
 
-// MARK: - Identifying
-
-extension TextureTool {
-    
-    func hasAlpha(_ input: URL) throws -> Bool {
+    /// Identify whether the given image has an alpha channel and it is not blank
+    private func hasAlpha(_ input: URL) throws -> Bool {
         let arguments = [
             "identify",
             "-format",
@@ -279,7 +279,7 @@ extension TextureTool {
     }
     
     /// Get the size of an image in pixels and depth in bits
-    func size(of input: URL) throws -> MTLSize {
+    private func size(of input: URL) throws -> MTLSize {
         if let known = knownSizes[input] {
             return known
         }
@@ -314,11 +314,6 @@ extension TextureTool {
                     depth: max(memory.depth, size.depth))
         }
     }
-        
-    enum ChannelContent {
-        case image(URL)
-        case color(Float)
-    }
 }
 
 private extension MTLSize {
@@ -329,5 +324,3 @@ private extension MTLSize {
     }
     
 }
-
-// Get red channel from RGB image:          convert -channel R -separate ./SparrowEngine/SparrowEngine/Models/grass_albedo.png ./r.png
