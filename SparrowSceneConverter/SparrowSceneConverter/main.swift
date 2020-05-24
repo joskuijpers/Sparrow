@@ -26,18 +26,11 @@ do {
     let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Models/\(url.deletingPathExtension().lastPathComponent).spa")
     try SparrowAssetWriter.write(asset, to: outputUrl)
     
-    let textureTool = TextureTool()
-    for texture in asset.textures {
-        let u = URL(fileURLWithPath: texture.relativePath, relativeTo: outputUrl)
-//        print("Using texture at \(u.path) with size \(try textureTool.size(of: u))")
-    }
-    
     let urls = asset.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: outputUrl) }
-    print("NUM UNIQUE TEXTURES \(Set(urls).count)")
-    print("NUM MATERIALS IN ASSET \(asset.materials.count)")
-    
+    print("Number of textures: \(urls.count), of which unique: \(Set(urls).count)")
+    print("Number of materials in asset: \(asset.materials.count)")
 } catch {
-    print(error)
+    print("Error: \(error)")
 }
 
 /*

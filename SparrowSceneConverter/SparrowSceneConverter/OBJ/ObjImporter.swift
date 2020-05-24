@@ -214,7 +214,7 @@ private extension ObjImporter {
             meshBounds = meshBounds.containing(submeshBounds)
         }
         
-        print("Before indexing: \(obj.submeshes.reduce(0, { $0 + $1.vertices.count })), after: \(vertexBuffer.count)")
+        print("Number of vertices before indexing: \(obj.submeshes.reduce(0, { $0 + $1.vertices.count })), after: \(vertexBuffer.count)")
         print("Vertex size: \(MemoryLayout<V>.size)")
         
         // Create a final mesh buffer for vertices + index buffers
