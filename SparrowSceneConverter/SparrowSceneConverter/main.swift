@@ -9,7 +9,7 @@
 import SparrowAsset
 
 func main() {
-    let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/IronSphere/ironSphere.obj")
+    let url1 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/grassSphere/grassSphere.obj")
     let url2 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Sponza/sponza.obj")
     let url3 = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Elemental/Elemental.obj")
 

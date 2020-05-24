@@ -243,7 +243,7 @@ private extension ObjImporter {
             
             var albedo = SAMaterialProperty.none
             if let texture = mat.albedoTexture {
-                let textureId = addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_albedo.png")
+                let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_albedo.png")
                 albedo = SAMaterialProperty.texture(textureId)
             } else {
                 albedo = SAMaterialProperty.color(float4(mat.albedoColor, mat.alpha))
@@ -251,13 +251,13 @@ private extension ObjImporter {
             
             var normals = SAMaterialProperty.none
             if let texture = mat.normalTexture {
-                let textureId = addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_normal.png")
+                let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_normal.png")
                 normals = SAMaterialProperty.texture(textureId)
             }
             
             var emissive = SAMaterialProperty.none
             if let texture = mat.emissiveTexture {
-                let textureId = addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_emission.png")
+                let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_emission.png")
                 emissive = SAMaterialProperty.texture(textureId)
             } else {
                 if mat.emissiveColor == float3(0, 0, 0) {
@@ -319,7 +319,7 @@ private extension ObjImporter {
         return asset.textures.count - 1
     }
     
-    func addTexture(_ url: URL, copyingWithName name: String) -> Int {
+    func addTexture(_ url: URL, copyingWithName name: String) throws -> Int {
         // Get relative path from .spa to texture
         guard let relativePath = url.deletingLastPathComponent().appendingPathComponent(name).relativePath(from: inputUrl.deletingLastPathComponent()) else {
             fatalError("[tex] Could not create relative path for texture")
@@ -328,6 +328,9 @@ private extension ObjImporter {
         // Add this to output to find out taget url
         let targetUrl = outputUrl.deletingLastPathComponent().appendingPathComponent(relativePath)
 
+        // Create folders if needed
+        try FileManager.default.createDirectory(at: targetUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+        
         // Copy the image
         do {
             try textureTool.convert(url, to: targetUrl)
