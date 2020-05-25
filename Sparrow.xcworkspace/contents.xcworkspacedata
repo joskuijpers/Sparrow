@@ -8,9 +8,6 @@
       location = "group:SparrowSceneConverter/SparrowSceneConverter.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:SparrowECS/SparrowECS.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:SparrowAsset">
    </FileRef>
    <FileRef
