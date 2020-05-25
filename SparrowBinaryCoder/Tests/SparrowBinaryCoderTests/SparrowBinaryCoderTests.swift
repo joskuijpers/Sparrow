@@ -208,9 +208,6 @@ class SparrowBinaryCoderTests: XCTestCase {
         AssertRoundtrip(company)
     }
     
-    
-    
-    
     //MARK:- Optionals
     
 
@@ -324,6 +321,35 @@ class SparrowBinaryCoderTests: XCTestCase {
         // 4x4 matrix of floats (4 bytes)
         XCTAssertEqual(data.count, 4 * 4 * 4)
     }
+    
+    static var allTests = [
+        ("testPrimitiveEncoding", testPrimitiveEncoding),
+        ("testPrimitiveDecoding", testPrimitiveDecoding),
+        ("testPrimitiveRoundtrip", testPrimitiveRoundtrip),
+        ("testString", testString),
+        ("testInvalidUTFString", testInvalidUTFString),
+        ("testBool", testBool),
+        ("testArrayRoundtrip", testArrayRoundtrip),
+        ("testInt", testInt),
+        ("testUInt", testUInt),
+        ("testInt8", testInt8),
+        ("testInt16", testInt16),
+        ("testInt32", testInt32),
+        ("testInt64", testInt64),
+        ("testIntConversionFailure", testIntConversionFailure),
+        ("testStructWithString", testStructWithString),
+        ("testIntArraySize", testIntArraySize),
+        ("testArray", testArray),
+        ("testComplexStruct", testComplexStruct),
+        ("testStructWithPrimitiveOptional", testStructWithPrimitiveOptional),
+        ("testStructWithStringOptional", testStructWithStringOptional),
+        ("testStructWithComplexOptional", testStructWithComplexOptional),
+        ("testArrayWithOptional", testArrayWithOptional),
+        ("testData", testData),
+        ("testVector3f", testVector3f),
+        ("testVector4f", testVector4f),
+        ("testMatrix4x4f", testMatrix4x4f)
+    ]
 }
 
 /// Assert equal without Equal protocol

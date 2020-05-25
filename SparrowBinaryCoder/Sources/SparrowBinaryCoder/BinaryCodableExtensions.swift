@@ -6,7 +6,7 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import CoreFoundation
+import Foundation
 import simd
 
 //MARK:- Integers

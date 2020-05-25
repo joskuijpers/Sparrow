@@ -3,6 +3,11 @@ Documents/
 
 
 
+.DS_Store
+.build
+/Packages
+#/*.xcodeproj
+xcuserdata/
 
 
 # Xcode
