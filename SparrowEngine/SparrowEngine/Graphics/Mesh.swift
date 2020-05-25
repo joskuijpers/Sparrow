@@ -16,13 +16,13 @@ import SparrowAsset
  */
 class Mesh {
     /// Name of the mesh. Usefull for debugging
-    let name: String
+    public let name: String
     
     /// Bounds of the mesh
-    let bounds: Bounds
+    public let bounds: Bounds
     
     /// List of submeshes
-    let submeshes: [Submesh]
+    public let submeshes: [Submesh]
     
     /// Vertex and index buffers
     let buffers: [MTLBuffer]
@@ -30,6 +30,7 @@ class Mesh {
     /// Vertex format descriptor
     let vertexDescriptor: MTLVertexDescriptor
 
+    /// Initialize a new mesh. This is called from Meshloader only.
     init(name: String, bounds: Bounds, buffers: [MTLBuffer], vertexDescriptor: MTLVertexDescriptor, submeshes: [Submesh]) {
         self.name = name
         self.bounds = bounds

@@ -14,13 +14,13 @@ import SparrowAsset
  */
 struct Submesh {
     /// Name of the submesh for debugging
-    let name: String
+    public let name: String
     
     /// Submesh bounds. Used for culling.
-    let bounds: Bounds
+    public let bounds: Bounds
     
     /// Material of the mesh. Passed to the shader as uniform.
-    var material: Material {
+    public var material: Material {
         didSet {
             onMaterialChanged()
         }
@@ -48,13 +48,13 @@ struct Submesh {
     private let vertexDescriptor: MTLVertexDescriptor
     
     
-    /*private*/ var shaderMaterialData: ShaderMaterialData!
-    /*private*/ var pipelineState: MTLRenderPipelineState!
+    private var shaderMaterialData: ShaderMaterialData!
+    private var pipelineState: MTLRenderPipelineState!
     
     /// Pipeline state for the depth prepass. Not available for translucent materials.
-    /*private*/ var depthPipelineState: MTLRenderPipelineState?
-    
+    private var depthPipelineState: MTLRenderPipelineState?
 
+    /// Initialize a new submesh. This is called from Meshloader only.
     init(name: String, bounds: Bounds, material: Material, vertexDescriptor: MTLVertexDescriptor, indexBufferInfo: IndexBufferInfo) {
         self.name = name
         self.bounds = bounds
