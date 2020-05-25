@@ -8,11 +8,16 @@
 
 import Metal
 
-/// Synchronous texture tool.
+/**
+ Synchronous texture tool.
+ 
+ This class is threadsafe.
+ */
 class TextureToolSync: TextureTool {
     let verbose: Bool
     
     private var knownSizes: [URL:MTLSize] = [:]
+    private var knownSizesLock: NSLock // Need lock for async usage
 
     enum Error: Swift.Error {
         case commandFailed(String)
@@ -23,6 +28,7 @@ class TextureToolSync: TextureTool {
     
     required init(verbose: Bool = false) {
         self.verbose = verbose
+        self.knownSizesLock = NSLock()
     }
     
     // No waiting needed
@@ -280,9 +286,12 @@ class TextureToolSync: TextureTool {
     
     /// Get the size of an image in pixels and depth in bits
     private func size(of input: URL) throws -> MTLSize {
+        knownSizesLock.lock()
         if let known = knownSizes[input] {
+            knownSizesLock.unlock()
             return known
         }
+        knownSizesLock.unlock()
 
         let arguments = [
             "identify",
@@ -301,7 +310,10 @@ class TextureToolSync: TextureTool {
         }
 
         let size = MTLSizeMake(values[0], values[1], values[2])
+        
+        knownSizesLock.lock()
         knownSizes[input] = size
+        knownSizesLock.unlock()
         
         return size
     }

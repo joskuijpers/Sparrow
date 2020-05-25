@@ -15,24 +15,31 @@ class TextureToolAsync: TextureTool {
     required init(verbose: Bool) {
         let jobRunner = TextureJobRunner()
         jobQueue = JobQueue<TextureJobInput, Error>(runner: jobRunner)
+        
+        try! jobQueue.start()
     }
     
     func waitUntilFinished() {
-        let errors = jobQueue.waitUntilFinished().compactMap { $0 }
+        let errors = try! jobQueue.waitUntilFinished().compactMap { $0 }
         
-        print("FINISHED WITH ERRORS \(errors)")
+        if errors.count > 0 {
+            print("Texture tool has generated errors:")
+            for error in errors {
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func convert(_ input: URL, toGrayscaleImage output: URL) throws {
-        jobQueue.enqueue(input: TextureJobInput(action: .convertGrayscale(input, output)))
+        try jobQueue.enqueue(input: TextureJobInput(action: .convertGrayscale(input, output)))
     }
     
     func convert(_ input: URL, to output: URL, allowingAlpha: Bool = true) throws {
-        jobQueue.enqueue(input: TextureJobInput(action: .convert(input, output, allowingAlpha)))
+        try jobQueue.enqueue(input: TextureJobInput(action: .convert(input, output, allowingAlpha)))
     }
     
     func combine(red: ChannelContent, green: ChannelContent, blue: ChannelContent, into output: URL, size requestedSize: MTLSize? = nil) throws {
-        jobQueue.enqueue(input: TextureJobInput(action: .combineChannels(red, green, blue, output, requestedSize)))
+        try jobQueue.enqueue(input: TextureJobInput(action: .combineChannels(red, green, blue, output, requestedSize)))
     }
 }
 
@@ -57,14 +64,10 @@ private class TextureJobRunner: JobRunner<TextureJobInput, Error> {
     
     /// Clone this runner into a new thread
     override func clone(thread: Thread) -> Self? {
-        print("CLONE RUNNER")
-        
         return self
     }
     
     override func run(_ job: Job<TextureJobInput>) -> Error? {
-        print("RUN JOB \(job.input)")
-        
         do {
             switch job.input.action {
                 case .convertGrayscale(let input, let output):

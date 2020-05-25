@@ -19,49 +19,99 @@ class JobQueue<Input, Result> {
     var nextJobId = 0
     var numRunningJobs = 0
     
+    private let dispatchQueue: DispatchQueue
+    private let dispatchGroup: DispatchGroup
+    private let lock: NSLock
+    
+    private var running = false
+    
+    var isRunning: Bool {
+        running
+    }
+    
+    enum Error: Swift.Error {
+        case queueNotRunning
+    }
     
     /// Create a new job queue
     init(runner: JobRunner<Input, Result>) {
         self.runner = runner
+        self.dispatchQueue = DispatchQueue(label: "jobs",
+                                           qos: .background,
+                                           attributes: .concurrent,
+                                           autoreleaseFrequency: .inherit,
+                                           target: nil)
+        self.dispatchGroup = DispatchGroup()
+        self.lock = NSLock()
     }
     
     /// Start running the queue in the background
-    func start() {
-        
+    func start() throws {
+        running = true
     }
     
     /// Enqueue a new task. Returns the index in the result array.
     @discardableResult
-    func enqueue(input: Input) -> Int {
-        print("ENQUEUING NEW JOB \(input)")
+    func enqueue(input: Input) throws -> Int {
+        guard running else {
+            throw Error.queueNotRunning
+        }
         
-        // ATOMIC
+        lock.lock()
+        
         let jobId = nextJobId
         nextJobId += 1
         
         let job = Job(id: jobId, input: input)
+        numRunningJobs += 1
         
-        // Run task
-            let result = runner.run(job)
+        lock.unlock()
         
-            // Atomic
-            results[job.id] = result
-        
-            // Atomic
-            numRunningJobs -= 1
-        
+        dispatchQueue.async(group: dispatchGroup,
+                            qos: .background,
+                            flags: .assignCurrentContext)
+        {
+            // Long running process
+            let result = self.runner.run(job)
+            
+            // Handling result
+            self.lock.lock()
+            
+            self.results[job.id] = result
+            self.numRunningJobs -= 1
+            
+            self.lock.unlock()
+        }
+
         return jobId
     }
     
     /// Wait until all jobs have finished processing. This is blocking.
-    func waitUntilFinished() -> [Result?] {
-        print("WAIT UNTIL FINISHED")
-        
-        while numRunningJobs > 0 {
-            print("Waiting for jobs to finish...")
-            Thread.sleep(forTimeInterval: 0.5)
+    func waitUntilFinished() throws -> [Result?] {
+        guard running else {
+            throw Error.queueNotRunning
         }
-
+        
+        print("[queue] Waiting for jobs to finish...")
+        
+        while running {
+            // No atomic check here because it is slow
+            while numRunningJobs > 0 {
+                Thread.sleep(forTimeInterval: 1)
+            }
+            
+            // Need atomic check
+            lock.lock()
+            if numRunningJobs == 0 {
+                lock.unlock()
+                break
+            }
+            lock.unlock()
+        }
+        
+        // Prevent any further work
+        running = false
+        
         // Build list
         let resultList = (0..<nextJobId).map {
             results[$0]!
