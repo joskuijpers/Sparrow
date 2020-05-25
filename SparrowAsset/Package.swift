@@ -4,22 +4,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "SparrowBinaryCoder",
+    name: "SparrowAsset",
     platforms: [
         .macOS(.v10_15)
     ],
     products: [
-        .library(
-            name: "SparrowBinaryCoder",
-            targets: ["SparrowBinaryCoder"]),
+        .library(name: "SparrowAsset",
+                 targets: ["SparrowAsset"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(path: "../SparrowBinaryCoder"),
+    ],
     targets: [
         .target(
-            name: "SparrowBinaryCoder",
-            dependencies: []),
-        .testTarget(
-            name: "SparrowBinaryCoderTests",
+            name: "SparrowAsset",
             dependencies: ["SparrowBinaryCoder"]),
+        .testTarget(
+            name: "SparrowAssetTests",
+            dependencies: ["SparrowAsset"]),
     ]
 )

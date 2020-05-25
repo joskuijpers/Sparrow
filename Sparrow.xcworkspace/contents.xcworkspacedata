@@ -11,7 +11,7 @@
       location = "group:SparrowECS/SparrowECS.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:SparrowAsset/SparrowAsset.xcodeproj">
+      location = "group:SparrowAsset">
    </FileRef>
    <FileRef
       location = "group:SparrowBinaryCoder">

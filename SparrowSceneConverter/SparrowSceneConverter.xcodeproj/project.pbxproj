@@ -8,14 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		801E840C246464370021CEAD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E840B246464370021CEAD /* Metal.framework */; };
-		801E843D24670F940021CEAD /* SparrowBinaryCoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */; };
 		801E844A246829510021CEAD /* ObjParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E8449246829510021CEAD /* ObjParser.swift */; };
 		801E844C246829570021CEAD /* MtlParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844B246829570021CEAD /* MtlParser.swift */; };
 		801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844D246829770021CEAD /* StructuredTextParser.swift */; };
 		801E8450246829F40021CEAD /* ObjTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844F246829F40021CEAD /* ObjTypes.swift */; };
 		801E845224682A310021CEAD /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E845124682A310021CEAD /* Extensions.swift */; };
-		804763F82468A7E40072DD04 /* SparrowAsset.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 804763F72468A7E40072DD04 /* SparrowAsset.framework */; };
 		8059D6B32479D902003BC83A /* SpatialFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8059D6B22479D902003BC83A /* SpatialFinder.swift */; };
+		806CA48E247C183100EAD6AC /* SparrowAsset in Frameworks */ = {isa = PBXBuildFile; productRef = 806CA48D247C183100EAD6AC /* SparrowAsset */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
 		808C0F1A2479624700EE0659 /* TextureTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808C0F192479624700EE0659 /* TextureTool.swift */; };
 		80C1720B247ABBD30097F2AE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720A247ABBD30097F2AE /* JobQueue.swift */; };
@@ -54,13 +53,11 @@
 /* Begin PBXFileReference section */
 		801E840B246464370021CEAD /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		801E840D246469E90021CEAD /* SparrowSceneConverter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SparrowSceneConverter.entitlements; sourceTree = "<group>"; };
-		801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowBinaryCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		801E8449246829510021CEAD /* ObjParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjParser.swift; sourceTree = "<group>"; };
 		801E844B246829570021CEAD /* MtlParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MtlParser.swift; sourceTree = "<group>"; };
 		801E844D246829770021CEAD /* StructuredTextParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructuredTextParser.swift; sourceTree = "<group>"; };
 		801E844F246829F40021CEAD /* ObjTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjTypes.swift; sourceTree = "<group>"; };
 		801E845124682A310021CEAD /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		804763F72468A7E40072DD04 /* SparrowAsset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowAsset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8059D6B22479D902003BC83A /* SpatialFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpatialFinder.swift; sourceTree = "<group>"; };
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -81,9 +78,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				804763F82468A7E40072DD04 /* SparrowAsset.framework in Frameworks */,
-				801E843D24670F940021CEAD /* SparrowBinaryCoder.framework in Frameworks */,
 				80C17237247C09010097F2AE /* ArgumentParser in Frameworks */,
+				806CA48E247C183100EAD6AC /* SparrowAsset in Frameworks */,
 				801E840C246464370021CEAD /* Metal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -156,8 +152,6 @@
 		8086960B23B8D2CD0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				804763F72468A7E40072DD04 /* SparrowAsset.framework */,
-				801E843C24670F940021CEAD /* SparrowBinaryCoder.framework */,
 				801E840B246464370021CEAD /* Metal.framework */,
 			);
 			name = Frameworks;
@@ -202,6 +196,7 @@
 			name = SparrowSceneConverter;
 			packageProductDependencies = (
 				80C17236247C09010097F2AE /* ArgumentParser */,
+				806CA48D247C183100EAD6AC /* SparrowAsset */,
 			);
 			productName = SparrowSceneConverter;
 			productReference = 8086960123B8D2B20007E75D /* SparrowSceneConverter */;
@@ -478,6 +473,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		806CA48D247C183100EAD6AC /* SparrowAsset */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SparrowAsset;
+		};
 		80C17236247C09010097F2AE /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 80C17235247C09010097F2AE /* XCRemoteSwiftPackageReference "swift-argument-parser" */;

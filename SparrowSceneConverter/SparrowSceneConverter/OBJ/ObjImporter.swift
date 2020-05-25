@@ -6,6 +6,7 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
+import Foundation
 import SparrowAsset
 import simd
 

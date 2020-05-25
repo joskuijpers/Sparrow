@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import SparrowBinaryCoder
+import SparrowBinaryCoder
 import simd
 
 class SparrowBinaryCoderTests: XCTestCase {
