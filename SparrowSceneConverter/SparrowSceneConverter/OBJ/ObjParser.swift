@@ -9,7 +9,7 @@
 import Foundation
 import simd
 
-class ObjParser: StructuredTextParser {
+final class ObjParser: StructuredTextParser {
     let url: URL
     let shouldGenerateTangents: Bool
     

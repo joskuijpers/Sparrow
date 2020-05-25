@@ -10,7 +10,7 @@ import Foundation
 import SparrowAsset
 import simd
 
-class ObjImporter {
+final class ObjImporter {
     private let inputUrl: URL
     private let outputUrl: URL
     private let generateTangents: Bool

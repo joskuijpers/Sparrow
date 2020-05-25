@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MtlParser: StructuredTextParser {
+final class MtlParser: StructuredTextParser {
     let url: URL
     var lib = MtlFile()
     

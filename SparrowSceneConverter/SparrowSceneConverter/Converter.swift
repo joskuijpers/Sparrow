@@ -43,7 +43,7 @@ extension Converter {
         
         // Import asset from .obj file
         let start = DispatchTime.now()
-        let fileRef = try GltfImporter.import(from: url, to: outputUrl, options: [])
+        let fileRef = try GLTFImporter.import(from: url, to: outputUrl, options: [])
 //        let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(0.01)])
         let end = DispatchTime.now()
 

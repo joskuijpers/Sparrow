@@ -10,7 +10,7 @@ import Foundation
 import GLTF
 import SparrowAsset
 
-class GltfImporter {
+final class GLTFImporter {
     private let inputUrl: URL
     private let outputUrl: URL
     private let generateTangents: Bool
@@ -63,19 +63,74 @@ class GltfImporter {
             }
         }
         
-        let importer = try GltfImporter(inputUrl: url, outputUrl: outputUrl, generateTangents: generateTangents, uniformScale: uniformScale)
+        let importer = try GLTFImporter(inputUrl: url, outputUrl: outputUrl, generateTangents: generateTangents, uniformScale: uniformScale)
         let asset = try importer.generate()
         
         return SAFileRef(url: outputUrl, asset: asset)
     }
 }
 
-private extension GltfImporter {
+private extension GLTFImporter {
     
     /// Generate the asset
     func generate() throws -> SAAsset {
     
+        let allocator = GLTFSAAllocator()
+        let inAsset = GLTFAsset(url: inputUrl, bufferAllocator: allocator)
+        
+        print(inAsset)
+        
         
         return SAAsset(generator: "SparrowSceneConverter", origin: inputUrl.path)
+    }
+}
+
+final class GLTFSAAllocator: GLTFBufferAllocator {
+    static func liveAllocationSize() -> UInt64 {
+        print("Get live allocation size")
+        return 0
+    }
+    
+    func newBuffer(withLength length: Int) -> GLTFBuffer {
+        print("Create new buffer of size \(length)")
+        
+        let buffer = SABuffer(data: Data(capacity: length))
+        return GLTFSABuffer(underlying: buffer)
+    }
+    
+    func newBuffer(with data: Data) -> GLTFBuffer {
+        print("Create new buffer of data \(data)")
+        
+        let buffer = SABuffer(data: data)
+        return GLTFSABuffer(underlying: buffer)
+    }
+}
+
+final class GLTFSABuffer: GLTFBuffer {
+    let underlying: SABuffer
+    
+    var name: String? = nil
+    var extensions: [AnyHashable : Any] = [:]
+    var extras: [AnyHashable : Any] = [:]
+    
+    var length: Int {
+        return underlying.data.count
+    }
+    
+    var contents: UnsafeMutableRawPointer {
+        var data = underlying.data
+        
+        return data.withUnsafeMutableBytes { (ptr: UnsafeMutablePointer<UInt8>) -> UnsafeMutableRawPointer in
+            print("GET MUTABLE BYTES")
+            return UnsafeMutableRawPointer(ptr)
+        }
+    }
+    
+    init(underlying: SABuffer) {
+        self.underlying = underlying
+    }
+    
+    deinit {
+        print("Dealloc buffer")
     }
 }
