@@ -14,21 +14,21 @@ func main() {
 //    let url = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Elemental/Elemental.obj")
 
     do {
-        let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Assets/\(url.deletingLastPathComponent().lastPathComponent)/\(url.deletingPathExtension().lastPathComponent).spa")
+        let name = url.deletingLastPathComponent().lastPathComponent
+        let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Assets/\(name)/\(name).spa")
         
         // Import asset from .obj file
         let start = DispatchTime.now()
         let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(0.01)])
         let end = DispatchTime.now()
 
-        print("Import duration: \(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000)")
+        print("Import duration: \(ceil(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000)) seconds")
         
         // Create folders if needed
         try FileManager.default.createDirectory(at: outputUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         
         // Write in binary
         try SparrowAssetWriter.write(fileRef)
-
         
         // Some asset info
         print()
@@ -36,7 +36,11 @@ func main() {
         
         let urls = fileRef.asset.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: outputUrl) }
         print("  Number of textures: \(urls.count), of which unique: \(Set(urls).count)")
-        print("  Number of materials in asset: \(fileRef.asset.materials.count)")
+        print("  Number of materials: \(fileRef.asset.materials.count)")
+        print("  Number of meshes: \(fileRef.asset.meshes.count)")
+        print("  Number of submeshes: \(fileRef.asset.meshes.reduce(0,{ $0 + $1.submeshes.count }))")
+        print("  Number of buffers: \(fileRef.asset.buffers.count)")
+        print("  Number of bufferviews: \(fileRef.asset.bufferViews.count)")
     } catch {
         print("Error: \(error)")
         exit(1)
