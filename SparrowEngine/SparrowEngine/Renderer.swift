@@ -429,7 +429,6 @@ extension Renderer {
         renderEncoder.label = "DepthPrepass"
         
         renderEncoder.setDepthStencilState(depthStencilStateWrite)
-        renderEncoder.setCullMode(.back)
         renderEncoder.setFrontFacing(.clockwise)
         
         renderScene(onEncoder: renderEncoder, renderPass: .depthPrePass)
@@ -480,7 +479,6 @@ extension Renderer {
         
         // Do not write to depth: we already have it
         renderEncoder.setDepthStencilState(depthStencilStateNoWrite)
-        renderEncoder.setCullMode(.back)
         renderEncoder.setFrontFacing(.clockwise)
         
         // Light data: all lights, culled light indices, and horizontal tile count for finding the tile per pixel.

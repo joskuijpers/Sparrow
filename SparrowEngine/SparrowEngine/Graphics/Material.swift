@@ -31,6 +31,8 @@ struct Material {
     let alphaCutoff: Float
     let alpha: Float
     
+    let doubleSided: Bool
+    
     // TODO: shader! -> 2 shader function name strings
     
     func buildShaderData() -> ShaderMaterialData {
@@ -44,6 +46,7 @@ struct Material {
         Material(name: "default", renderMode: .opaque,
                  albedoTexture: nil, normalTexture: nil, roughnessMetalnessOcclusionTexture: nil, emissionTexture: nil,
                  albedo: [0.5,0.5,0.5], roughness: 1, metalness: 0, emission: float3.zero,
-                 alphaCutoff: 0.2, alpha: 1)
+                 alphaCutoff: 0.2, alpha: 1,
+                 doubleSided: false)
     }()
 }

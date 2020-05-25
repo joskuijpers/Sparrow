@@ -200,6 +200,12 @@ extension Submesh {
             renderEncoder.setFragmentTexture(material.roughnessMetalnessOcclusionTexture, index: Int(TextureRoughnessMetalnessOcclusion.rawValue))
             renderEncoder.setFragmentTexture(material.emissionTexture, index: Int(TextureEmissive.rawValue))
         }
+        
+        if material.doubleSided {
+            renderEncoder.setCullMode(.none)
+        } else {
+            renderEncoder.setCullMode(.back)
+        }
 
         // Update material constants
         var materialData = shaderMaterialData

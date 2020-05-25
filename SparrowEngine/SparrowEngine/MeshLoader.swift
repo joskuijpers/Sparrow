@@ -210,7 +210,9 @@ class MeshLoader {
                         emission: float3.zero,
 
                         alphaCutoff: saMaterial.alphaCutoff,
-                        alpha: albedoColor.w)
+                        alpha: albedoColor.w,
+        
+                        doubleSided: saMaterial.doubleSided)
     }
 }
 
