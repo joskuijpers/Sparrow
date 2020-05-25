@@ -81,7 +81,7 @@ final class ObjImporter {
 private extension ObjImporter {
     
     /// Generate the asset
-    func generate() throws -> SAAsset {
+    private func generate() throws -> SAAsset {
         let objParser = try ObjParser(url: inputUrl, generateTangents: generateTangents)
         objFile = try objParser.parse()
         
@@ -247,27 +247,27 @@ private extension ObjImporter {
             var albedo = SAMaterialProperty.none
             if let texture = mat.albedoTexture {
                 let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_albedo.png", allowingAlpha: true)
-                albedo = SAMaterialProperty.texture(textureId)
+                albedo = .texture(textureId)
             } else {
-                albedo = SAMaterialProperty.color(float4(mat.albedoColor, mat.alpha))
+                albedo = .color(float4(mat.albedoColor, mat.alpha))
             }
             
             var normals = SAMaterialProperty.none
             if let texture = mat.normalTexture {
                 let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_normal.png", allowingAlpha: false)
-                normals = SAMaterialProperty.texture(textureId)
+                normals = .texture(textureId)
             }
             
             var emissive = SAMaterialProperty.none
             if let texture = mat.emissiveTexture {
                 let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_emission.png", allowingAlpha: false)
-                emissive = SAMaterialProperty.texture(textureId)
+                emissive = .texture(textureId)
             } else {
                 if mat.emissiveColor == float3(0, 0, 0) {
                     // Save None so we spare 3 unused floats
-                    emissive = SAMaterialProperty.none
+                    emissive = .none
                 } else {
-                    emissive = SAMaterialProperty.color(float4(mat.emissiveColor, 1))
+                    emissive = .color(float4(mat.emissiveColor, 1))
                 }
             }
 
@@ -276,7 +276,7 @@ private extension ObjImporter {
             var rma = SAMaterialProperty.none
             
             if mat.roughnessTexture == nil && mat.metallicTexture == nil && mat.aoTexture == nil {
-                rma = SAMaterialProperty.color([mat.roughness, mat.metallic, 1, 0])
+                rma = .color([mat.roughness, mat.metallic, 1, 0])
             } else {
                 let url = outputUrl.deletingLastPathComponent().appendingPathComponent("\(objectName)_\(mat.name)_rmo.png")
 
@@ -287,7 +287,7 @@ private extension ObjImporter {
                                         size: nil)
                 print("[tex] Generated RMO texture for \(mat.name)")
                 
-                rma = SAMaterialProperty.texture(addTexture(url))
+                rma = .texture(addTexture(url))
             }
             
             let m = SAMaterial(name: mat.name,
@@ -296,7 +296,8 @@ private extension ObjImporter {
                                roughnessMetalnessOcclusion: rma,
                                emission: emissive,
                                alphaMode: mat.hasAlpha ? .mask : .opaque,
-                               alphaCutoff: 0.5)
+                               alphaCutoff: 0.5,
+                               doubleSided: false)
 
             let matIndex = addMaterial(m)
             generatedMaterials[mat.name] = matIndex

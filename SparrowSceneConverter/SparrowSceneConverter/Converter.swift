@@ -46,6 +46,8 @@ extension Converter {
         let fileRef = try GLTFImporter.import(from: url, to: outputUrl, options: [])
 //        let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(0.01)])
         let end = DispatchTime.now()
+        
+        print(fileRef.asset)
 
         print("Import duration: \(Int(ceil(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000))) seconds")
         

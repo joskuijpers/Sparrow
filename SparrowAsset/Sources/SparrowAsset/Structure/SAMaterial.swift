@@ -39,13 +39,17 @@ public struct SAMaterial: BinaryCodable {
     /// Alpha cutoff value.
     public let alphaCutoff: Float
     
+    /// Whether the material should be rendered from front and backside.
+    public let doubleSided: Bool
+    
     public init(name: String,
                 albedo: SAMaterialProperty,
                 normals: SAMaterialProperty,
                 roughnessMetalnessOcclusion: SAMaterialProperty,
                 emission: SAMaterialProperty,
                 alphaMode: SAAlphaMode,
-                alphaCutoff: Float) {
+                alphaCutoff: Float,
+                doubleSided: Bool) {
         self.name = name
         self.albedo = albedo
         self.normals = normals
@@ -53,6 +57,7 @@ public struct SAMaterial: BinaryCodable {
         self.emission = emission
         self.alphaMode = alphaMode
         self.alphaCutoff = alphaCutoff
+        self.doubleSided = doubleSided
     }
 }
 
