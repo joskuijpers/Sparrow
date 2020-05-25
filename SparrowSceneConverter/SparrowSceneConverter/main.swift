@@ -22,7 +22,7 @@ func main() {
         let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(0.01)])
         let end = DispatchTime.now()
 
-        print("Import duration: \(ceil(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000)) seconds")
+        print("Import duration: \(Int(ceil(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000))) seconds")
         
         // Create folders if needed
         try FileManager.default.createDirectory(at: outputUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
