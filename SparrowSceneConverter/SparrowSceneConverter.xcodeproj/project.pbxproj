@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,6 +21,8 @@
 		80C1720B247ABBD30097F2AE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720A247ABBD30097F2AE /* JobQueue.swift */; };
 		80C1720D247AF32A0097F2AE /* TextureToolSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720C247AF32A0097F2AE /* TextureToolSync.swift */; };
 		80C1720F247AF3310097F2AE /* TextureToolAsync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720E247AF3310097F2AE /* TextureToolAsync.swift */; };
+		80C17237247C09010097F2AE /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 80C17236247C09010097F2AE /* ArgumentParser */; };
+		80C17239247C09510097F2AE /* Converter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C17238247C09510097F2AE /* Converter.swift */; };
 		80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */; };
 		80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DB245DBA6F00269C56 /* GLTFImporter.swift */; };
 		80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E216DD245DBA7600269C56 /* ObjImporter.swift */; };
@@ -66,6 +68,7 @@
 		80C1720A247ABBD30097F2AE /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		80C1720C247AF32A0097F2AE /* TextureToolSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureToolSync.swift; sourceTree = "<group>"; };
 		80C1720E247AF3310097F2AE /* TextureToolAsync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureToolAsync.swift; sourceTree = "<group>"; };
+		80C17238247C09510097F2AE /* Converter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Converter.swift; sourceTree = "<group>"; };
 		80E2163B245C1E7700269C56 /* SparrowSceneConverter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SparrowSceneConverter-Bridging-Header.h"; sourceTree = "<group>"; };
 		80E216C2245C205100269C56 /* CPlusPlusLinkage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPlusPlusLinkage.cpp; sourceTree = "<group>"; };
 		80E216DB245DBA6F00269C56 /* GLTFImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GLTFImporter.swift; sourceTree = "<group>"; };
@@ -80,6 +83,7 @@
 			files = (
 				804763F82468A7E40072DD04 /* SparrowAsset.framework in Frameworks */,
 				801E843D24670F940021CEAD /* SparrowBinaryCoder.framework in Frameworks */,
+				80C17237247C09010097F2AE /* ArgumentParser in Frameworks */,
 				801E840C246464370021CEAD /* Metal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,6 +146,7 @@
 				801E8448246828A60021CEAD /* OBJ */,
 				8059D6B12479D8E0003BC83A /* Tools */,
 				8086960423B8D2B20007E75D /* main.swift */,
+				80C17238247C09510097F2AE /* Converter.swift */,
 				801E845124682A310021CEAD /* Extensions.swift */,
 				80E216C8245DAF4500269C56 /* Support */,
 			);
@@ -196,6 +201,7 @@
 			);
 			name = SparrowSceneConverter;
 			packageProductDependencies = (
+				80C17236247C09010097F2AE /* ArgumentParser */,
 			);
 			productName = SparrowSceneConverter;
 			productReference = 8086960123B8D2B20007E75D /* SparrowSceneConverter */;
@@ -227,6 +233,7 @@
 			);
 			mainGroup = 808695F823B8D2B20007E75D;
 			packageReferences = (
+				80C17235247C09010097F2AE /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			productRefGroup = 8086960223B8D2B20007E75D /* Products */;
 			projectDirPath = "";
@@ -244,6 +251,7 @@
 			files = (
 				8059D6B32479D902003BC83A /* SpatialFinder.swift in Sources */,
 				80C1720B247ABBD30097F2AE /* JobQueue.swift in Sources */,
+				80C17239247C09510097F2AE /* Converter.swift in Sources */,
 				80E216DC245DBA6F00269C56 /* GLTFImporter.swift in Sources */,
 				801E844E246829770021CEAD /* StructuredTextParser.swift in Sources */,
 				80C1720D247AF32A0097F2AE /* TextureToolSync.swift in Sources */,
@@ -457,6 +465,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		80C17235247C09010097F2AE /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.0.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		80C17236247C09010097F2AE /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80C17235247C09010097F2AE /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 808695F923B8D2B20007E75D /* Project object */;
 }
