@@ -24,7 +24,8 @@ struct Converter: ParsableCommand {
     )
 
     func run() throws {
-        let url = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/IronSphere/ironSphere.obj")
+//        let url = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/IronSphere/ironSphere.obj")
+        let url = URL(fileURLWithPath: "/Users/joskuijpers/Development/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf")
 //        let url = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Sponza/sponza.obj")
 //        let url = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/Scenes/Elemental/Elemental.obj")
 
@@ -37,12 +38,13 @@ struct Converter: ParsableCommand {
 extension Converter {
     
     func convert(url: URL) throws -> SAFileRef {
-        let name = url.deletingLastPathComponent().lastPathComponent
+        let name = url.deletingPathExtension().lastPathComponent + "_gltf"
         let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Assets/\(name)/\(name).spa")
         
         // Import asset from .obj file
         let start = DispatchTime.now()
-        let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(0.01)])
+        let fileRef = try GltfImporter.import(from: url, to: outputUrl, options: [])
+//        let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(0.01)])
         let end = DispatchTime.now()
 
         print("Import duration: \(Int(ceil(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000))) seconds")
