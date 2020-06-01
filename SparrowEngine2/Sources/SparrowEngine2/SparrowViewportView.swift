@@ -1,8 +1,9 @@
 //
 //  SparrowViewportView.swift
-//  
+//  SparrowEngine
 //
 //  Created by Jos Kuijpers on 01/06/2020.
+//  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
 import AppKit
