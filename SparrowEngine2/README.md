@@ -20,3 +20,6 @@ TextureLoader
 
 SceneLoader
     loads .sps
+
+Input
+    - refactor to be proper ECS, Single<InputState>

@@ -34,4 +34,3 @@ class ViewController: NSViewController {
         renderer = Renderer(metalView: metalView, device: device)
     }
 }
-

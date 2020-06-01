@@ -9,17 +9,19 @@
 import Foundation
 import AppKit
 
-// https://docs.unity3d.com/ScriptReference/Input.html
-class Input {
-    static let shared = Input()
+/// TODO: Refactor candidate for proper ECS. `Single<InputState>`
+public class Input {
+    public static let shared = Input()
     
+    /// Current state of all keys
     private var keyState = [UInt16:Bool]()
     
+    /// Singleton so only initialized once
     private init() {
     }
     
-    /// Handle OS events.
-    internal func handle(event: NSEvent) {
+    /// Handle OS events. TODO: change to internal after adding helpers for integrating into an app
+    public func handle(event: NSEvent) {
         switch event.type {
         case .keyDown:
             keyState[event.keyCode] = true
@@ -31,22 +33,22 @@ class Input {
     }
     
     /// Get whether given key is currently pressed
-    func getKey(_ keyCode: Keycode) -> Bool {
+    public func getKey(_ keyCode: Keycode) -> Bool {
         return keyState[keyCode.rawValue] ?? false
     }
     
     /// Return key state for input binding name
-    func getKey(name: String) -> Bool {
+    public func getKey(name: String) -> Bool {
         return false;
     }
     
     /// Return axis value for binding name
-    func getAxis(name: String) -> Float {
+    public func getAxis(name: String) -> Float {
         return 0.0
     }
 }
 
-enum Keycode: UInt16 {
+public enum Keycode: UInt16 {
     // Layout-independent Keys
     // eg.These key codes are always the same key on all layouts.
     case returnKey                 = 0x24

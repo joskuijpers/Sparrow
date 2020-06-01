@@ -15,7 +15,6 @@
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
 		80438C20240B0A2700099034 /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1F240B0A2700099034 /* Frustum.swift */; };
 		80438C22240B2A6300099034 /* DebugRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C21240B2A6300099034 /* DebugRendering.swift */; };
-		80438C24240DC31B00099034 /* Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C23240DC31B00099034 /* Input.swift */; };
 		804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */ = {isa = PBXBuildFile; productRef = 804EE35A2485917F00ADD319 /* SparrowEngine2 */; };
 		804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804EE35C2485927300ADD319 /* MeshLoader.swift */; };
 		8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5B2427A9610089FE11 /* LightCulling.metal */; };
@@ -32,7 +31,6 @@
 		80A462CC238F0FB6009435EB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462CB238F0FB6009435EB /* ViewController.swift */; };
 		80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CD238F0FB9009435EB /* Assets.xcassets */; };
 		80A462D1238F0FB9009435EB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CF238F0FB9009435EB /* Main.storyboard */; };
-		80A462DA238F100B009435EB /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462D9238F100B009435EB /* GameView.swift */; };
 		80A462DC238F106B009435EB /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462DB238F106B009435EB /* Renderer.swift */; };
 		80A462E1238F1254009435EB /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E0238F1254009435EB /* Scene.swift */; };
 		80A462E7238F126A009435EB /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E6238F126A009435EB /* Mesh.swift */; };
@@ -56,7 +54,6 @@
 		80438C1623FA0CF600099034 /* SceneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManager.swift; sourceTree = "<group>"; };
 		80438C1F240B0A2700099034 /* Frustum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		80438C21240B2A6300099034 /* DebugRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRendering.swift; sourceTree = "<group>"; };
-		80438C23240DC31B00099034 /* Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Input.swift; path = Graphics/Input.swift; sourceTree = "<group>"; };
 		804EE35C2485927300ADD319 /* MeshLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
 		8064AF5B2427A9610089FE11 /* LightCulling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LightCulling.metal; sourceTree = "<group>"; };
 		8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = DebugShaders.metal; sourceTree = "<group>"; };
@@ -73,7 +70,6 @@
 		80A462D0238F0FB9009435EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		80A462D2238F0FB9009435EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80A462D3238F0FB9009435EB /* ISOGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ISOGame.entitlements; sourceTree = "<group>"; };
-		80A462D9238F100B009435EB /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		80A462DB238F106B009435EB /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		80A462E0238F1254009435EB /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		80A462E6238F126A009435EB /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
@@ -136,13 +132,6 @@
 			path = Rendering;
 			sourceTree = "<group>";
 		};
-		800604B123F9F54A00B3FB7F /* Gameplay */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Gameplay;
-			sourceTree = "<group>";
-		};
 		800E6DD323F2096E00412CCE /* Docs */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,12 +192,10 @@
 			isa = PBXGroup;
 			children = (
 				80A462DD238F10D7009435EB /* App */,
-				800604B123F9F54A00B3FB7F /* Gameplay */,
 				800604AF23F9EF2C00B3FB7F /* Rendering */,
 				800604AE23F9EF2400B3FB7F /* Graphics */,
 				800604AD23F9EF1E00B3FB7F /* Scene */,
 				80A462F0238F1E14009435EB /* Utility */,
-				80438C23240DC31B00099034 /* Input.swift */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80438C21240B2A6300099034 /* DebugRendering.swift */,
 				804EE35C2485927300ADD319 /* MeshLoader.swift */,
@@ -226,7 +213,6 @@
 				80A462C9238F0FB6009435EB /* AppDelegate.swift */,
 				80A462CB238F0FB6009435EB /* ViewController.swift */,
 				80A462CF238F0FB9009435EB /* Main.storyboard */,
-				80A462D9238F100B009435EB /* GameView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -324,14 +310,12 @@
 				800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */,
 				801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */,
 				8099AAF923CE747300E03CE0 /* SceneObject.swift in Sources */,
-				80438C24240DC31B00099034 /* Input.swift in Sources */,
 				800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */,
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				80438C20240B0A2700099034 /* Frustum.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
-				80A462DA238F100B009435EB /* GameView.swift in Sources */,
 				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
 				804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */,
 				80A462E7238F126A009435EB /* Mesh.swift in Sources */,
