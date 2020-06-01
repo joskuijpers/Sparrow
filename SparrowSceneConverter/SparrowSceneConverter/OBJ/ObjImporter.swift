@@ -160,7 +160,7 @@ private extension ObjImporter {
     }
     
     /// Generate the list of submeshes with indexed buffers
-    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SASubmesh], Data) where V: ObjTestVertex {
+    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SASubmesh], Data) where V: ObjTransferVertex {
         var vertexBuffer: [V] = []
         var vertexMap: [V:Int] = [:]
 
@@ -378,12 +378,11 @@ private extension ObjImporter {
     }
 }
 
-fileprivate protocol ObjTestVertex: Hashable {
+fileprivate protocol ObjTransferVertex: Hashable {
     init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float)
 }
 
-/// A vertex with position,normals and texture coordinates
-fileprivate struct TexturedVertex: ObjTestVertex {
+extension TexturedVertex: ObjTransferVertex {
     init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float = 1) {
         let position = obj.positions[vertex.position - 1] * uniformScale
         let normal = obj.normals[vertex.normal - 1]
@@ -400,21 +399,9 @@ fileprivate struct TexturedVertex: ObjTestVertex {
         u = uv.x
         v = uv.y
     }
-    
-    let x: Float
-    let y: Float
-    let z: Float
-    
-    let nx: Float
-    let ny: Float
-    let nz: Float
-    
-    let u: Float
-    let v: Float
 }
 
-/// A vertex with position,normals, tangents and texture coordinates
-fileprivate struct TexturedTangentVertex: ObjTestVertex {
+extension TexturedTangentVertex: ObjTransferVertex {
     init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float = 1) {
         let position = obj.positions[vertex.position - 1] * uniformScale
         let normal = obj.normals[vertex.normal - 1]
@@ -439,23 +426,4 @@ fileprivate struct TexturedTangentVertex: ObjTestVertex {
         u = uv.x
         v = uv.y
     }
-    
-    let x: Float
-    let y: Float
-    let z: Float
-    
-    let nx: Float
-    let ny: Float
-    let nz: Float
-    
-    let tx: Float
-    let ty: Float
-    let tz: Float
-
-    let btx: Float
-    let bty: Float
-    let btz: Float
-    
-    let u: Float
-    let v: Float
 }

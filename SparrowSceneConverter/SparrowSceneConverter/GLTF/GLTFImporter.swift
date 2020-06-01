@@ -104,7 +104,7 @@ private extension GLTFImporter {
         var meshBounds = SABounds()
         var vertexDataSize = 0
                 
-        let (submeshes, data) = try generateSubmeshesAndBuffers(gltfMesh: gltfMesh, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize)
+        let (submeshes, data) = try generateSubmeshesAndBuffers(gltfMesh: gltfMesh, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedTangentVertex.self)
         
         // Create vertex attributes
         let vertexAttributes: [SAVertexAttribute] = [
@@ -146,7 +146,7 @@ private extension GLTFImporter {
     }
     
     /// Generate the submeshes and the mesh buffer with vertices and indices
-    private func generateSubmeshesAndBuffers(gltfMesh: GLTFMesh, meshBounds: inout SABounds, vertexDataSize: inout Int) throws -> ([SASubmesh], Data) {
+    private func generateSubmeshesAndBuffers<V>(gltfMesh: GLTFMesh, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SASubmesh], Data) where V: GLTFTransferVertex {
         var submeshes: [SASubmesh] = []
         var indexBuffers = Data()
         
@@ -160,12 +160,16 @@ private extension GLTFImporter {
             // keep all indices intact!
 
         
+        
         // Acquire material and index buffer
         for gltfSubmesh in gltfMesh.submeshes {
             // Find index buffer data
             guard let indexAccessor = gltfSubmesh.indexAccessor, let gltfIndexBufferView = indexAccessor.bufferView else {
                 throw Error.noIndexAccessor
             }
+            
+            
+            print("VD", gltfSubmesh.vertexDescriptor)
             
             // Grab the portion of the data
             let buffer = gltfIndexBufferView.buffer!
@@ -184,7 +188,7 @@ private extension GLTFImporter {
             // Get material
             let material = try generateMaterial(from: gltfSubmesh.material, withIndex: asset.materials.count + 1)
             
-            // Add bufferview for indices
+            // Add bufferview for indices. TODO: need to reference the buffer somehow
             let indexBufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffers.count, length: ibSize))
             
             // Add index data to index buffer
@@ -262,9 +266,23 @@ private extension GLTFImporter {
             }
         } else {
             print("CREATE OR GET DEFAULT MATERIAL")
+            
+            let material = createDefaultMaterial()
+            materialId = addMaterial(material)
         }
         
         return materialId
+    }
+    
+    private func createDefaultMaterial() -> SAMaterial {
+        return SAMaterial(name: "default",
+                          albedo: .color([1, 1, 1, 1]),
+                          normals: .none,
+                          roughnessMetalnessOcclusion: .color([1, 1, 0, 0]),
+                          emission: .none,
+                          alphaMode: .opaque,
+                          alphaCutoff: 0.5,
+                          doubleSided: false)
     }
     
     /// Turn a GLTF material into an SA material with texture assets
@@ -481,4 +499,53 @@ private extension GLTFTextureFormat {
             return false
         }
     }
+}
+
+fileprivate protocol GLTFTransferVertex {
+}
+
+extension TexturedVertex: GLTFTransferVertex {
+//    init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float = 1) {
+//        let position = obj.positions[vertex.position - 1] * uniformScale
+//        let normal = obj.normals[vertex.normal - 1]
+//        let uv = obj.texCoords[vertex.texCoord - 1]
+//
+//        x = position.x
+//        y = position.y
+//        z = position.z
+//
+//        nx = normal.x
+//        ny = normal.y
+//        nz = normal.z
+//
+//        u = uv.x
+//        v = uv.y
+//    }
+}
+
+extension TexturedTangentVertex: GLTFTransferVertex {
+//    init(obj: ObjFile, vertex: ObjVertex, uniformScale: Float = 1) {
+//        let position = obj.positions[vertex.position - 1] * uniformScale
+//        let normal = obj.normals[vertex.normal - 1]
+//        let uv = obj.texCoords[vertex.texCoord - 1]
+//        
+//        x = position.x
+//        y = position.y
+//        z = position.z
+//        
+//        nx = normal.x
+//        ny = normal.y
+//        nz = normal.z
+//        
+//        tx = vertex.tangent.x
+//        ty = vertex.tangent.y
+//        tz = vertex.tangent.z
+//        
+//        btx = vertex.bitangent.x
+//        bty = vertex.bitangent.y
+//        btz = vertex.bitangent.z
+//        
+//        u = uv.x
+//        v = uv.y
+//    }
 }
