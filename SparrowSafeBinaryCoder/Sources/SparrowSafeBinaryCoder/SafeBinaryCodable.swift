@@ -25,7 +25,7 @@ fileprivate extension Decodable {
     
 }
 
-class SafeBinaryEncoder {
+public class SafeBinaryEncoder {
     
     public static func encode(_ v: Encodable) throws -> [UInt8] {
         return try v.safeBinaryEncoded()
@@ -33,7 +33,7 @@ class SafeBinaryEncoder {
     
 }
 
-class SafeBinaryDecoder {
+public class SafeBinaryDecoder {
 
     public static func decode<T: Decodable>(_ type: T.Type, data: [UInt8]) throws -> T? {
         return try type.safeBinaryDecoded(from: data)
