@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Metal
+import SparrowECS
 
 /// The mesh render mode.
 enum RenderMode {

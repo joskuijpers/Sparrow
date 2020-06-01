@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SparrowECS
 
 /**
  Selects a mesh

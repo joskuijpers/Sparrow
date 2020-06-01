@@ -20,7 +20,7 @@ public struct GroupTraitSet {
 
         self.requiresAll = requiresAll
         self.excludesAll = excludesAll
-        self.setHash = SparrowEngine.hash(combine: [requiresAll, excludesAll])
+        self.setHash = SparrowECS.hash(combine: [requiresAll, excludesAll])
     }
 
     // MARK: - match

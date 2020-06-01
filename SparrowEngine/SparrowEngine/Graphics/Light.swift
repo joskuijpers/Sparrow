@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SparrowECS
 
 enum LightType {
     case directional

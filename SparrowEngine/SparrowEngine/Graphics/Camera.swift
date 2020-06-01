@@ -7,6 +7,7 @@
 //
 
 import MetalKit
+import SparrowECS
 
 /**
  Camera

@@ -10,27 +10,6 @@
 		800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B423F9F6BB00B3FB7F /* Transform.swift */; };
 		800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B623F9F85000B3FB7F /* MeshSelector.swift */; };
 		800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B823F9F87D00B3FB7F /* MeshRenderer.swift */; };
-		8015C6B823D647B100DFF109 /* GroupRequirementsManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C69D23D647AF00DFF109 /* GroupRequirementsManaging.swift */; };
-		8015C6BB23D647B100DFF109 /* ManagedContiguousArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */; };
-		8015C6BC23D647B100DFF109 /* UnorderedSparseSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */; };
-		8015C6BD23D647B100DFF109 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A223D647AF00DFF109 /* Entity.swift */; };
-		8015C6BE23D647B100DFF109 /* Group1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A323D647AF00DFF109 /* Group1.swift */; };
-		8015C6BF23D647B100DFF109 /* Group2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A423D647B000DFF109 /* Group2.swift */; };
-		8015C6C023D647B100DFF109 /* GroupTraitSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A523D647B000DFF109 /* GroupTraitSet.swift */; };
-		8015C6C123D647B100DFF109 /* Nexus+Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A623D647B000DFF109 /* Nexus+Group.swift */; };
-		8015C6C223D647B100DFF109 /* Nexus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A723D647B000DFF109 /* Nexus.swift */; };
-		8015C6C323D647B100DFF109 /* Nexus+Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A823D647B000DFF109 /* Nexus+Component.swift */; };
-		8015C6C423D647B100DFF109 /* ComponentIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */; };
-		8015C6C523D647B100DFF109 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AA23D647B000DFF109 /* Component.swift */; };
-		8015C6C623D647B100DFF109 /* Group4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AB23D647B000DFF109 /* Group4.swift */; };
-		8015C6C723D647B100DFF109 /* ComponentAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6AC23D647B000DFF109 /* ComponentAccess.swift */; };
-		8015C6CB23D647B100DFF109 /* EntityIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B023D647B000DFF109 /* EntityIdentifier.swift */; };
-		8015C6CC23D647B100DFF109 /* Nexus+GroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B123D647B000DFF109 /* Nexus+GroupUpdate.swift */; };
-		8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B223D647B000DFF109 /* Hashing.swift */; };
-		8015C6CE23D647B100DFF109 /* Group3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B323D647B100DFF109 /* Group3.swift */; };
-		8015C6CF23D647B100DFF109 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B423D647B100DFF109 /* Group.swift */; };
-		8015C6D123D647B100DFF109 /* Group5.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B623D647B100DFF109 /* Group5.swift */; };
-		8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8015C6B723D647B100DFF109 /* Nexus+Entity.swift */; };
 		801EC82224769B3700D5AA1D /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC82124769B3700D5AA1D /* Material.swift */; };
 		801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC81F24768CF900D5AA1D /* Array+Tools.swift */; };
 		80438C1723FA0CF600099034 /* SceneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1623FA0CF600099034 /* SceneManager.swift */; };
@@ -42,8 +21,8 @@
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
 		8066692F247459EE00AA8412 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8066692E247459EE00AA8412 /* MeshLoader.swift */; };
 		806CA493247C897000EAD6AC /* SparrowAsset in Frameworks */ = {isa = PBXBuildFile; productRef = 806CA492247C897000EAD6AC /* SparrowAsset */; };
+		80821D3B24858A340047B192 /* SparrowECS in Frameworks */ = {isa = PBXBuildFile; productRef = 80821D3A24858A340047B192 /* SparrowECS */; };
 		808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808695F623B8CA1E0007E75D /* TextureLoader.swift */; };
-		809258CF24464E5400D2025F /* Single.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809258CE24464E5400D2025F /* Single.swift */; };
 		8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAEE23BE127E00E03CE0 /* Bounds.swift */; };
 		8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF423BF7AB700E03CE0 /* Light.swift */; };
 		8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF623CCF60100E03CE0 /* RenderQueue.swift */; };
@@ -73,27 +52,6 @@
 		800604B623F9F85000B3FB7F /* MeshSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSelector.swift; sourceTree = "<group>"; };
 		800604B823F9F87D00B3FB7F /* MeshRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRenderer.swift; sourceTree = "<group>"; };
 		800E6DD123F2093D00412CCE /* design.md */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; path = design.md; sourceTree = "<group>"; };
-		8015C69D23D647AF00DFF109 /* GroupRequirementsManaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupRequirementsManaging.swift; sourceTree = "<group>"; };
-		8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedContiguousArray.swift; sourceTree = "<group>"; };
-		8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnorderedSparseSet.swift; sourceTree = "<group>"; };
-		8015C6A223D647AF00DFF109 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
-		8015C6A323D647AF00DFF109 /* Group1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group1.swift; sourceTree = "<group>"; };
-		8015C6A423D647B000DFF109 /* Group2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group2.swift; sourceTree = "<group>"; };
-		8015C6A523D647B000DFF109 /* GroupTraitSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupTraitSet.swift; sourceTree = "<group>"; };
-		8015C6A623D647B000DFF109 /* Nexus+Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Group.swift"; sourceTree = "<group>"; };
-		8015C6A723D647B000DFF109 /* Nexus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Nexus.swift; sourceTree = "<group>"; };
-		8015C6A823D647B000DFF109 /* Nexus+Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Component.swift"; sourceTree = "<group>"; };
-		8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentIdentifier.swift; sourceTree = "<group>"; };
-		8015C6AA23D647B000DFF109 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
-		8015C6AB23D647B000DFF109 /* Group4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group4.swift; sourceTree = "<group>"; };
-		8015C6AC23D647B000DFF109 /* ComponentAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComponentAccess.swift; sourceTree = "<group>"; };
-		8015C6B023D647B000DFF109 /* EntityIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityIdentifier.swift; sourceTree = "<group>"; };
-		8015C6B123D647B000DFF109 /* Nexus+GroupUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+GroupUpdate.swift"; sourceTree = "<group>"; };
-		8015C6B223D647B000DFF109 /* Hashing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hashing.swift; sourceTree = "<group>"; };
-		8015C6B323D647B100DFF109 /* Group3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group3.swift; sourceTree = "<group>"; };
-		8015C6B423D647B100DFF109 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
-		8015C6B623D647B100DFF109 /* Group5.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group5.swift; sourceTree = "<group>"; };
-		8015C6B723D647B100DFF109 /* Nexus+Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Nexus+Entity.swift"; sourceTree = "<group>"; };
 		801EC81F24768CF900D5AA1D /* Array+Tools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Tools.swift"; sourceTree = "<group>"; };
 		801EC82124769B3700D5AA1D /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		80438C1623FA0CF600099034 /* SceneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneManager.swift; sourceTree = "<group>"; };
@@ -106,8 +64,6 @@
 		8066692E247459EE00AA8412 /* MeshLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
 		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
 		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8086965B23B8DD150007E75D /* STF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = STF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		809258CE24464E5400D2025F /* Single.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Single.swift; sourceTree = "<group>"; };
 		8099AAEE23BE127E00E03CE0 /* Bounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bounds.swift; sourceTree = "<group>"; };
 		8099AAF423BF7AB700E03CE0 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
 		8099AAF623CCF60100E03CE0 /* RenderQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderQueue.swift; sourceTree = "<group>"; };
@@ -134,7 +90,6 @@
 		80A6F8AD2456174400FE8CCF /* Depth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Depth.metal; sourceTree = "<group>"; };
 		80C17203247A8B780097F2AE /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
 		80C17206247A8C850097F2AE /* AssetLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLoader.swift; sourceTree = "<group>"; };
-		80E86F0324714A8F00925150 /* SparrowAsset.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SparrowAsset.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +98,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				806CA493247C897000EAD6AC /* SparrowAsset in Frameworks */,
+				80821D3B24858A340047B192 /* SparrowECS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,67 +155,6 @@
 			path = Docs;
 			sourceTree = "<group>";
 		};
-		8015C69C23D6479F00DFF109 /* ECS */ = {
-			isa = PBXGroup;
-			children = (
-				80438C1B2405C3C100099034 /* Entity */,
-				80438C1C2405C3C800099034 /* Component */,
-				8015C6D323D64CDE00DFF109 /* Group */,
-				8015C6D423D64D1200DFF109 /* Nexus */,
-				8015C6A023D647AF00DFF109 /* ManagedContiguousArray.swift */,
-				8015C6A123D647AF00DFF109 /* UnorderedSparseSet.swift */,
-				8015C6B223D647B000DFF109 /* Hashing.swift */,
-			);
-			path = ECS;
-			sourceTree = "<group>";
-		};
-		8015C6D323D64CDE00DFF109 /* Group */ = {
-			isa = PBXGroup;
-			children = (
-				809258CE24464E5400D2025F /* Single.swift */,
-				8015C6B423D647B100DFF109 /* Group.swift */,
-				8015C6A323D647AF00DFF109 /* Group1.swift */,
-				8015C6A423D647B000DFF109 /* Group2.swift */,
-				8015C6B323D647B100DFF109 /* Group3.swift */,
-				8015C6AB23D647B000DFF109 /* Group4.swift */,
-				8015C6B623D647B100DFF109 /* Group5.swift */,
-				8015C69D23D647AF00DFF109 /* GroupRequirementsManaging.swift */,
-				8015C6A523D647B000DFF109 /* GroupTraitSet.swift */,
-				8015C6A623D647B000DFF109 /* Nexus+Group.swift */,
-				8015C6B123D647B000DFF109 /* Nexus+GroupUpdate.swift */,
-			);
-			name = Group;
-			sourceTree = "<group>";
-		};
-		8015C6D423D64D1200DFF109 /* Nexus */ = {
-			isa = PBXGroup;
-			children = (
-				8015C6A723D647B000DFF109 /* Nexus.swift */,
-			);
-			name = Nexus;
-			sourceTree = "<group>";
-		};
-		80438C1B2405C3C100099034 /* Entity */ = {
-			isa = PBXGroup;
-			children = (
-				8015C6A223D647AF00DFF109 /* Entity.swift */,
-				8015C6B023D647B000DFF109 /* EntityIdentifier.swift */,
-				8015C6B723D647B100DFF109 /* Nexus+Entity.swift */,
-			);
-			name = Entity;
-			sourceTree = "<group>";
-		};
-		80438C1C2405C3C800099034 /* Component */ = {
-			isa = PBXGroup;
-			children = (
-				8015C6AA23D647B000DFF109 /* Component.swift */,
-				8015C6AC23D647B000DFF109 /* ComponentAccess.swift */,
-				8015C6A923D647B000DFF109 /* ComponentIdentifier.swift */,
-				8015C6A823D647B000DFF109 /* Nexus+Component.swift */,
-			);
-			name = Component;
-			sourceTree = "<group>";
-		};
 		80438C1E2405DEB800099034 /* AppInfo */ = {
 			isa = PBXGroup;
 			children = (
@@ -286,8 +181,6 @@
 		8086963423B8D8BC0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				80E86F0324714A8F00925150 /* SparrowAsset.framework */,
-				8086965B23B8DD150007E75D /* STF.framework */,
 				8086963523B8D8BC0007E75D /* GLTF.framework */,
 			);
 			name = Frameworks;
@@ -318,7 +211,6 @@
 				800604AF23F9EF2C00B3FB7F /* Rendering */,
 				800604AE23F9EF2400B3FB7F /* Graphics */,
 				800604AD23F9EF1E00B3FB7F /* Scene */,
-				8015C69C23D6479F00DFF109 /* ECS */,
 				80A462F0238F1E14009435EB /* Utility */,
 				80438C23240DC31B00099034 /* Input.swift */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
@@ -375,6 +267,7 @@
 			name = SparrowEngine;
 			packageProductDependencies = (
 				806CA492247C897000EAD6AC /* SparrowAsset */,
+				80821D3A24858A340047B192 /* SparrowECS */,
 			);
 			productName = ISOGame;
 			productReference = 80A462C6238F0FB6009435EB /* SparrowEngine.app */;
@@ -434,56 +327,34 @@
 				80A0FB6424731C1B00783EFE /* Bounds+SparrowAsset.swift in Sources */,
 				8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */,
 				800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */,
-				8015C6CC23D647B100DFF109 /* Nexus+GroupUpdate.swift in Sources */,
-				8015C6C723D647B100DFF109 /* ComponentAccess.swift in Sources */,
 				801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */,
-				8015C6C323D647B100DFF109 /* Nexus+Component.swift in Sources */,
 				8099AAF923CE747300E03CE0 /* SceneObject.swift in Sources */,
-				8015C6C523D647B100DFF109 /* Component.swift in Sources */,
-				8015C6BE23D647B100DFF109 /* Group1.swift in Sources */,
-				8015C6C623D647B100DFF109 /* Group4.swift in Sources */,
 				80438C24240DC31B00099034 /* Input.swift in Sources */,
 				800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */,
-				8015C6BF23D647B100DFF109 /* Group2.swift in Sources */,
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
-				8015C6C223D647B100DFF109 /* Nexus.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
-				8015C6CE23D647B100DFF109 /* Group3.swift in Sources */,
 				80438C20240B0A2700099034 /* Frustum.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
 				80A462DA238F100B009435EB /* GameView.swift in Sources */,
 				808695F723B8CA1E0007E75D /* TextureLoader.swift in Sources */,
-				8015C6B823D647B100DFF109 /* GroupRequirementsManaging.swift in Sources */,
-				8015C6BD23D647B100DFF109 /* Entity.swift in Sources */,
 				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
-				8015C6CD23D647B100DFF109 /* Hashing.swift in Sources */,
 				80A462E7238F126A009435EB /* Mesh.swift in Sources */,
 				80C17207247A8C850097F2AE /* AssetLoader.swift in Sources */,
-				8015C6C023D647B100DFF109 /* GroupTraitSet.swift in Sources */,
-				8015C6D223D647B100DFF109 /* Nexus+Entity.swift in Sources */,
-				8015C6BB23D647B100DFF109 /* ManagedContiguousArray.swift in Sources */,
 				80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */,
 				80A462E9238F126F009435EB /* Submesh.swift in Sources */,
-				8015C6D123D647B100DFF109 /* Group5.swift in Sources */,
-				809258CF24464E5400D2025F /* Single.swift in Sources */,
-				8015C6CB23D647B100DFF109 /* EntityIdentifier.swift in Sources */,
 				8066692F247459EE00AA8412 /* MeshLoader.swift in Sources */,
-				8015C6C423D647B100DFF109 /* ComponentIdentifier.swift in Sources */,
 				80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */,
 				80A462ED238F14AC009435EB /* Shaders.metal in Sources */,
 				8064AF61242960CC0089FE11 /* Resolve.metal in Sources */,
 				8099AAEF23BE127E00E03CE0 /* Bounds.swift in Sources */,
 				80438C1723FA0CF600099034 /* SceneManager.swift in Sources */,
 				8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */,
-				8015C6BC23D647B100DFF109 /* UnorderedSparseSet.swift in Sources */,
 				80A462F6238F22C5009435EB /* Camera.swift in Sources */,
 				801EC82224769B3700D5AA1D /* Material.swift in Sources */,
 				8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */,
-				8015C6CF23D647B100DFF109 /* Group.swift in Sources */,
 				800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */,
 				80438C22240B2A6300099034 /* DebugRendering.swift in Sources */,
-				8015C6C123D647B100DFF109 /* Nexus+Group.swift in Sources */,
 				80A462F2238F1E25009435EB /* MathLibrary.swift in Sources */,
 				80A462EB238F1287009435EB /* Primitive.swift in Sources */,
 			);
@@ -690,6 +561,10 @@
 		806CA492247C897000EAD6AC /* SparrowAsset */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SparrowAsset;
+		};
+		80821D3A24858A340047B192 /* SparrowECS */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SparrowECS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

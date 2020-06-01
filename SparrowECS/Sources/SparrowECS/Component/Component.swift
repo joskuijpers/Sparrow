@@ -5,11 +5,12 @@
 //  Created by Christian Treffs on 08.10.17.
 //
 
-/// **Component**
+/// Component
 ///
 /// A component represents the raw data for one aspect of the object,
 /// and how it interacts with the world.
-public class Component {
+open class Component {
+    public init() {}
 }
 
 extension Component {
