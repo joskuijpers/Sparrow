@@ -1,4 +1,5 @@
 import XCTest
+import simd
 @testable import SparrowSafeBinaryCoder
 
 final class SparrowSafeBinaryCoderTests: XCTestCase {
@@ -28,7 +29,7 @@ final class SparrowSafeBinaryCoderTests: XCTestCase {
     struct Safeness3: Codable, Equatable {
         let a: Int8
         let b: UInt16
-        var c: Int32?
+        let c: Int32? // needs to be an optional so it can be nil.
     }
     
     func testPrimitiveRoundtrip() throws {
@@ -58,17 +59,23 @@ final class SparrowSafeBinaryCoderTests: XCTestCase {
         XCTAssertEqual(part3, s3)
     }
     
-    func testBool() {
+    func testBool() throws {
         AssertRoundtrip(true)
         AssertRoundtrip(false)
     }
     
-    func testFloat() {
+    func testFloat() throws {
         AssertRoundtrip(Float(10))
     }
     
-    func testDouble() {
+    func testDouble() throws {
         AssertRoundtrip(Double(20))
+    }
+    
+    func testVector() throws {
+        AssertRoundtrip(SIMD3<Float>(1,2,3))
+        
+        print(try SafeBinaryEncoder.encode(SIMD3<Float>(1,2,3)))
     }
 
     static var allTests = [
