@@ -63,7 +63,6 @@
 		8064AF60242960CC0089FE11 /* Resolve.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Resolve.metal; sourceTree = "<group>"; };
 		8066692E247459EE00AA8412 /* MeshLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
 		808695F623B8CA1E0007E75D /* TextureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureLoader.swift; sourceTree = "<group>"; };
-		8086963523B8D8BC0007E75D /* GLTF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GLTF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8099AAEE23BE127E00E03CE0 /* Bounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bounds.swift; sourceTree = "<group>"; };
 		8099AAF423BF7AB700E03CE0 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
 		8099AAF623CCF60100E03CE0 /* RenderQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderQueue.swift; sourceTree = "<group>"; };
@@ -181,7 +180,6 @@
 		8086963423B8D8BC0007E75D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8086963523B8D8BC0007E75D /* GLTF.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

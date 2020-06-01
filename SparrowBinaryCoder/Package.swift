@@ -5,9 +5,6 @@ import PackageDescription
 
 let package = Package(
     name: "SparrowBinaryCoder",
-    platforms: [
-        .macOS(.v10_15)
-    ],
     products: [
         .library(
             name: "SparrowBinaryCoder",

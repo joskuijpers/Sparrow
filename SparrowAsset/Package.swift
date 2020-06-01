@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SparrowAsset",
     platforms: [
-        .macOS(.v10_15)
+        .macOS(.v10_11)
     ],
     products: [
         .library(name: "SparrowAsset",
