@@ -8,6 +8,7 @@
 
 import MetalKit
 import SparrowECS
+import SparrowEngine2
 
 extension Nexus {
     static func shared() -> Nexus {
@@ -99,7 +100,7 @@ class Renderer: NSObject {
         
         Renderer.device = device
         Renderer.library = device.makeDefaultLibrary()
-        Renderer.textureLoader = TextureLoader()
+        Renderer.textureLoader = TextureLoader(device: device)
         Renderer.meshLoader = MeshLoader(device: device)
         
         // Configure view

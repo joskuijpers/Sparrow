@@ -8,16 +8,17 @@
 
 import Metal
 import SparrowAsset
+import SparrowEngine2
 
 /**
  Loader of meshes.
  
  Gives fully built meshes. Might re-use resources when possible.
  */
-class MeshLoader {
+public class MeshLoader {
     private let device: MTLDevice
     
-    init(device: MTLDevice) {
+    public init(device: MTLDevice) {
         self.device = device
     }
     

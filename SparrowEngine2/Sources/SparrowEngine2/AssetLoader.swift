@@ -8,21 +8,22 @@
 
 import Foundation
 
-struct AssetLoader {
+/// TODO: REMOVE/REFACTOR INTO SOMETHING TO HANDLE res:// PATHS.
+public struct AssetLoader {
     
     private init() {}
     
-    static func resourceUrl() -> URL {
+    public static func resourceUrl() -> URL {
         return Bundle.main.resourceURL!
             .appendingPathComponent("Assets")
     }
     
     /// Path for given asset. If asset does not exist, returns nil
-    static func url(forAsset name: String) -> URL {
+    public static func url(forAsset name: String) -> URL {
         return resourceUrl().appendingPathComponent(name).absoluteURL
     }
     
-    static func shortestName(for url: URL) -> String {
+    public static func shortestName(for url: URL) -> String {
         let rp = resourceUrl().path
         if url.path.hasPrefix(rp) {
             return String(url.path.dropFirst(rp.count + 1)) // +1 for the /

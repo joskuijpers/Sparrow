@@ -8,42 +8,30 @@
 
 import MetalKit
 
-/**
- Texture loader that ensures any texture is only loaded once
- 
- Note that this uses MTKTextureLoader internally, which also caches but seems to be much slower as
- it does not assume the same options for all.
- */
-class TextureLoader {
+/// Texture loader that ensures any texture is only loaded once
+///
+/// Note that this uses MTKTextureLoader internally, which also caches but seems to be much slower as
+/// it does not assume the same options for all.
+public class TextureLoader {
     private var cache: [String : Texture] = [:]
     private let mtkTextureLoader: MTKTextureLoader
     
     var allocatedSize: Int {
-        var total = 0
-        
-        for (_, texture) in cache {
-            total += texture.mtlTexture.allocatedSize
-        }
-        
-        return total
+        return cache.reduce(0) { $0 + $1.value.mtlTexture.allocatedSize }
     }
     
     /// Initialize a new texture loader.
-    init() {
-        mtkTextureLoader = MTKTextureLoader(device: Renderer.device)
+    public init(device: MTLDevice) {
+        mtkTextureLoader = MTKTextureLoader(device: device)
     }
     
-    /**
-     Flush the cache by removing all cached textures. Textures keep alive
-     */
+    /// Flush the cache by removing all cached textures. Textures keep alive
     func flush() {
         cache.removeAll(keepingCapacity: true)
     }
     
-    /**
-     Load a texture with given image name. This can be a path or an asset name.
-     */
-    func load(from url: URL) throws -> Texture {
+    /// Load a texture with given image name. This can be a path or an asset name.
+    public func load(from url: URL) throws -> Texture {
         // Get from cache
         if let texture = cache[url.absoluteString] {
             return texture
@@ -68,16 +56,14 @@ class TextureLoader {
         return texture
     }
     
-    /**
-     Unload given texture from the cache. Data will only unload once the texture is released.
-     */
+    /// Unload given texture from the cache. Data will only unload once the texture is released.
     func unload(_ texture: Texture) {
         cache.removeValue(forKey: texture.imageName)
     }
 }
 
 /// A texture.
-struct Texture {
-    let imageName: String
-    let mtlTexture: MTLTexture
+public struct Texture {
+    public let imageName: String
+    public let mtlTexture: MTLTexture
 }

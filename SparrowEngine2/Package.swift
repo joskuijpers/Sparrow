@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "SparrowEngine2",
     platforms: [
-        .macOS(.v10_11)
+        .macOS(.v10_13) // 13 for metal
     ],
     products: [
         .library(
