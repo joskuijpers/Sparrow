@@ -6,5 +6,37 @@
 //
 
 import Foundation
+import CBORCoding
 
-public typealias SafeBinaryCodable = SafeBinaryEncodable & SafeBinaryDecodable
+fileprivate extension Encodable {
+    
+    func safeBinaryEncoded() throws -> [UInt8] {
+        let data = try CBOREncoder().encode(self)
+        return [UInt8](data)
+    }
+    
+}
+
+fileprivate extension Decodable {
+    
+    static func safeBinaryDecoded(from: [UInt8]) throws -> Self {
+        return try CBORDecoder().decode(self, from: Data(from))
+    }
+    
+}
+
+class SafeBinaryEncoder {
+    
+    public static func encode(_ v: Encodable) throws -> [UInt8] {
+        return try v.safeBinaryEncoded()
+    }
+    
+}
+
+class SafeBinaryDecoder {
+
+    public static func decode<T: Decodable>(_ type: T.Type, data: [UInt8]) throws -> T? {
+        return try type.safeBinaryDecoded(from: data)
+    }
+    
+}
