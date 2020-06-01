@@ -13,4 +13,7 @@
    <FileRef
       location = "group:SparrowBinaryCoder">
    </FileRef>
+   <FileRef
+      location = "group:SparrowSafeBinaryCoder">
+   </FileRef>
 </Workspace>
