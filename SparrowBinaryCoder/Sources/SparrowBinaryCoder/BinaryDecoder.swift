@@ -27,6 +27,7 @@ extension BinaryDecodable {
     }
 }
 
+/// An object that decodes data into instance of a data type.
 public class BinaryDecoder {
     fileprivate let data: [UInt8]
     fileprivate var cursor = 0
@@ -37,7 +38,7 @@ public class BinaryDecoder {
     
     /// Returns a value of the type you specify, decoded from binary data.
     ///
-    /// - Parameter value: The type to decode.
+    /// - Parameter type: The type to decode.
     /// - Parameter data: The data to decode.
     ///
     /// If the value is not a valid binary representation of given type, it throws one of the errors.
