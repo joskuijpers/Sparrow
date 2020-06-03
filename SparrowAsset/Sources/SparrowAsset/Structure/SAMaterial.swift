@@ -1,6 +1,6 @@
 //
 //  SAMaterial.swift
-//  SparrowSceneConverter
+//  SparrowAsset
 //
 //  Created by Jos Kuijpers on 01/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -42,6 +42,7 @@ public struct SAMaterial: BinaryCodable {
     /// Whether the material should be rendered from front and backside.
     public let doubleSided: Bool
     
+    /// Create a material.
     public init(name: String,
                 albedo: SAMaterialProperty,
                 normals: SAMaterialProperty,
@@ -63,8 +64,11 @@ public struct SAMaterial: BinaryCodable {
 
 /// A material property
 public enum SAMaterialProperty {
+    /// There is no value.
     case none
+    /// A vector value, often interpreted as a color.
     case color(SIMD4<Float>)
+    /// A texture should be used.
     case texture(Int)
 }
 
@@ -83,7 +87,8 @@ public enum SAAlphaMode: UInt8, BinaryCodable {
 // Due to associated values, the material property needs a custom encoder and decoder.
 extension SAMaterialProperty: BinaryCodable {
     enum CodingError: Error {
-       case unknownValue
+        /// The value is not known.
+        case unknownValue
     }
     
     public init(from decoder: Decoder) throws {

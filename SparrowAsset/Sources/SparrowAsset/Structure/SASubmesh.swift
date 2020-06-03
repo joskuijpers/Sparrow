@@ -1,6 +1,6 @@
 //
 //  SASubmesh.swift
-//  SparrowSceneConverter
+//  SparrowAsset
 //
 //  Created by Jos Kuijpers on 02/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -9,9 +9,16 @@
 import SparrowBinaryCoder
 import Metal
 
+/// A submesh of a mesh.
+///
+/// Contains a material and a reference to an index buffer, together with some utilities.
 public struct SASubmesh: BinaryCodable {
+    
+    /// Index type and size.
     public enum IndexType: UInt8, BinaryCodable {
+        /// Two-byte unsigned int index
         case uint16 = 0
+        /// Four-byte unsigned int index
         case uint32 = 1
         
         /// Get the size of an index element
@@ -32,7 +39,9 @@ public struct SASubmesh: BinaryCodable {
         }
     }
     
+    /// Type of the primitive the submesh consists of.
     public enum PrimitiveType: UInt8, BinaryCodable {
+        /// Index buffer contains a list of triangles.
         case triangle
     }
     
@@ -54,6 +63,7 @@ public struct SASubmesh: BinaryCodable {
     /// The type of primitive that is to be rendered.
     public let primitiveType: PrimitiveType
     
+    /// Create a new submesh.
     public init(name: String, indices: Int, material: Int, bounds: SABounds, indexType: IndexType, primitiveType: PrimitiveType) {
         self.name = name
         self.indices = indices

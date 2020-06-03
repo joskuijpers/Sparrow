@@ -32,6 +32,7 @@ public class SparrowAssetWriter {
         print("Written SparrowAsset of \(data.count / 1024) KiB to \(url.path)")
     }
     
+    /// Write the asset in the reference to the url in the reference.
     public static func write(_ fileRef: SAFileRef) throws {
         try write(fileRef.asset, to: fileRef.url)
     }

@@ -1,6 +1,6 @@
 //
 //  SAFileHeader.swift
-//  SparrowSceneConverter
+//  SparrowAsset
 //
 //  Created by Jos Kuijpers on 10/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -27,6 +27,7 @@ struct SAFileHeader: BinaryCodable {
         case version1 = 1
     }
     
+    /// Create a header.
     init(generator: String, origin: String?) {
         self.generator = generator
         self.origin = origin ?? ""

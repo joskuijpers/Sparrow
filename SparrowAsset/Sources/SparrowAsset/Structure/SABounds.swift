@@ -9,8 +9,12 @@
 import SparrowBinaryCoder
 import simd
 
+/// Axis-aligned bounds.
 public struct SABounds: BinaryCodable {
+    /// Minimum-point.
     public let min: SIMD3<Float>
+    
+    /// Maximum-point.
     public let max: SIMD3<Float>
     
     /// A bounds containing all points.
