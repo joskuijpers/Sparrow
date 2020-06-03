@@ -1,6 +1,6 @@
 //
 //  BoundingBox.swift
-//  ISOGame
+//  SparrowEngine
 //
 //  Created by Jos Kuijpers on 02/01/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
