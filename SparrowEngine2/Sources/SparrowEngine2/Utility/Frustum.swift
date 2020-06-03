@@ -6,11 +6,10 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
-import SparrowEngine2
+import simd
 
-/// Frustum culling result
-enum FrustumCullResult {
+/// Frustum culling resulto
+public enum FrustumCullResult {
     /// Object is outside the frustum.
     case outside
     /// Object is fully inside the frustum.
@@ -33,13 +32,13 @@ enum FrustumCullResult {
     https://www.gamedev.net/forums/topic/657702-creating-camera-bounding-frustum-from-view-and-projection-matrix/
     ~~~
  */
-struct Frustum {
-    let planes: [float4] // xyz=normal, w=distance
+public struct Frustum {
+    public let planes: [float4] // xyz=normal, w=distance
     
     /// Create a new Frustum using the camera view projection matrix
     ///
     /// - Parameter viewProjectionMatrix: The matrix from the camera.
-    init(viewProjectionMatrix: float4x4) {
+    public init(viewProjectionMatrix: float4x4) {
         var planes = [SIMD4<Float>](repeating: .zero, count: 6)
 
         let (x, y, z, w) = viewProjectionMatrix.transpose.columns
@@ -58,7 +57,7 @@ struct Frustum {
     /// - Parameter bounds: The bounds of the AABB to intersect with.
     /// - Returns: outside/inside/intersect, useful with quadtrees (outside -> no further scanning, inside -> draw all, intersect -> go deeper)
     @inlinable
-    func intersects(bounds: Bounds) -> FrustumCullResult {
+    public func intersects(bounds: Bounds) -> FrustumCullResult {
 //        let radius = length(bounds.extents)
 //        return intersects(sphereAt: bounds.center, radius: radius)
         let center = bounds.center
@@ -88,7 +87,7 @@ struct Frustum {
     /// - Parameter radius: Sphere radius.
     /// - Returns: Whether the sphere is outside or inside
     @inlinable
-    func intersects(sphereAt position: float3, radius: Float) -> FrustumCullResult {
+    public func intersects(sphereAt position: float3, radius: Float) -> FrustumCullResult {
         for i in 0..<6 {
             let plane = planes[i]
             if dot(position, plane.xyz) + plane.w <= -radius {

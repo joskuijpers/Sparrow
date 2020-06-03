@@ -12,7 +12,6 @@
 		800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B823F9F87D00B3FB7F /* MeshRenderer.swift */; };
 		801EC82224769B3700D5AA1D /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC82124769B3700D5AA1D /* Material.swift */; };
 		801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC81F24768CF900D5AA1D /* Array+Tools.swift */; };
-		80438C20240B0A2700099034 /* Frustum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C1F240B0A2700099034 /* Frustum.swift */; };
 		80438C22240B2A6300099034 /* DebugRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C21240B2A6300099034 /* DebugRendering.swift */; };
 		804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */ = {isa = PBXBuildFile; productRef = 804EE35A2485917F00ADD319 /* SparrowEngine2 */; };
 		804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804EE35C2485927300ADD319 /* MeshLoader.swift */; };
@@ -45,7 +44,6 @@
 		800604B823F9F87D00B3FB7F /* MeshRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRenderer.swift; sourceTree = "<group>"; };
 		801EC81F24768CF900D5AA1D /* Array+Tools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Tools.swift"; sourceTree = "<group>"; };
 		801EC82124769B3700D5AA1D /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
-		80438C1F240B0A2700099034 /* Frustum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frustum.swift; sourceTree = "<group>"; };
 		80438C21240B2A6300099034 /* DebugRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRendering.swift; sourceTree = "<group>"; };
 		804EE35C2485927300ADD319 /* MeshLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
 		8064AF5B2427A9610089FE11 /* LightCulling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LightCulling.metal; sourceTree = "<group>"; };
@@ -191,7 +189,6 @@
 			isa = PBXGroup;
 			children = (
 				801EC81F24768CF900D5AA1D /* Array+Tools.swift */,
-				80438C1F240B0A2700099034 /* Frustum.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -279,7 +276,6 @@
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
-				80438C20240B0A2700099034 /* Frustum.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
 				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
 				804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */,
