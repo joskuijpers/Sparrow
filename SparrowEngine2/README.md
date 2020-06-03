@@ -96,7 +96,21 @@ Nexus.services.set<T>(_ service: T) where T : Service
       - support ZIP
    - set write directory -> all new files / written files
 
+# From TheMachinery
 
+- SceneTree component holds a node tree like for skeletons (no need for an entity )
+- Tag: to add hashed tag for finding entities in World (1 or more)
+
+- Link system and child entity system is different? (Need to try in the editor)
+
+### Physics
+- Physics Body
+- Physics Joint
+- Physics Mover (CCT)
+- Physics Shape: if has body, dynamic, else, static
+- 'Render' or 'RenderMesh': will cause rendering
+
+Assets: Physics Material (friction, restitution), Physics Collision (class to determine what collides with what)
 
 # ImGUI
 https://github.com/Green-Sky/imgui_entt_entity_editor
