@@ -12,10 +12,10 @@ import simd
 Axis aligned bounding box for wrapping bounds of objects, in worldspace.
  */
 struct Bounds {
-    // The minimal point of the bounding box.
+    /// The minimal point of the bounding box.
     let minBounds: float3
     
-    // The maximal point of the bounding box.
+    /// The maximal point of the bounding box.
     let maxBounds: float3
     
     /// The extents of the bounding box. This is half the size.
@@ -24,12 +24,13 @@ struct Bounds {
     /// The center of the bounding box.
     let center: float3
     
-    
+    /// A new infinite-spanning bounding box
     public init() {
-        minBounds = float3.zero
-        maxBounds = float3.zero
+        let inf = float3.init(x: Float.infinity, y: Float.infinity, z: Float.infinity)
+        minBounds = -inf
+        maxBounds = inf
         
-        extents = ((maxBounds - minBounds) * 0.5) + minBounds
+        extents = inf
         center = float3.zero
     }
     
@@ -125,22 +126,9 @@ extension Bounds {
     }
     
     /// Multiply given AABB with a matrix, staying axis aligned. This is done by transforming every corner of the AABB and then creating a new AABB.
-    static func * (left: Bounds, right: float4x4) -> Bounds {
-        let center = right * float4(left.center, 1)
-        return Bounds(center: center.xyz, extents: left.extents)
-//        let ltf = (right * float4(left.minBounds.x, left.maxBounds.y, left.maxBounds.z, 1)).xyz
-//        let rtf = (right * float4(left.maxBounds.x, left.maxBounds.y, left.maxBounds.z, 1)).xyz
-//        let lbf = (right * float4(left.minBounds.x, left.minBounds.y, left.maxBounds.z, 1)).xyz
-//        let rbf = (right * float4(left.maxBounds.x, left.minBounds.y, left.maxBounds.z, 1)).xyz
-//        let ltb = (right * float4(left.minBounds.x, left.maxBounds.y, left.minBounds.z, 1)).xyz
-//        let rtb = (right * float4(left.maxBounds.x, left.maxBounds.y, left.minBounds.z, 1)).xyz
-//        let lbb = (right * float4(left.minBounds.x, left.minBounds.y, left.minBounds.z, 1)).xyz
-//        let rbb = (right * float4(left.maxBounds.x, left.minBounds.y, left.minBounds.z, 1)).xyz
-//
-//        let minBounds = min(min(min(min(min(min(min(ltf, rtf), lbf), rbf), ltb), rtb), lbb), rbb)
-//        let maxBounds = max(max(max(max(max(max(max(ltf, rtf), lbf), rbf), ltb), rtb), lbb), rbb)
-//
-//        return Bounds(minBounds: minBounds, maxBounds: maxBounds)
+    static func * (lhs: Bounds, rhs: float4x4) -> Bounds {
+        let center = rhs * float4(lhs.center, 1)
+        return Bounds(center: center.xyz, extents: lhs.extents)
     }
     
     /// Get the union of two bounds.
