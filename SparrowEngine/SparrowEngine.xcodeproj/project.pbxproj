@@ -162,7 +162,6 @@
 				80A462DD238F10D7009435EB /* App */,
 				800604AE23F9EF2400B3FB7F /* Graphics */,
 				800604AD23F9EF1E00B3FB7F /* Scene */,
-				80A462F0238F1E14009435EB /* Utility */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80438C21240B2A6300099034 /* DebugRendering.swift */,
 				804EE35C2485927300ADD319 /* MeshLoader.swift */,
@@ -181,13 +180,6 @@
 				80A462CF238F0FB9009435EB /* Main.storyboard */,
 			);
 			path = App;
-			sourceTree = "<group>";
-		};
-		80A462F0238F1E14009435EB /* Utility */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Utility;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

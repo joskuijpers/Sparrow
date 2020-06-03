@@ -3,6 +3,71 @@
 The Sparrow Game Engine
 
 
+# Folders
+
+```
+- Audio/ Sound/??
+    - Systems/
+    - Components/
+        - AudioSource.swift // E.g. on a car 
+        - AudioListener.swift // E.g. on the player
+        - (AudioState.swift) // Singleton
+        
+- Graphics/
+    - Systems/
+        - MeshRenderSystem.swift
+        - CameraSystem.swift
+        - LightRenderSystem.swift
+        // - TextRenderSystem.swift
+        // - OverlayRenderSystem.swift
+    - Components/
+        - Camera.swift
+        - RenderMesh.swift
+        - Light.swift
+        - Transform.swift
+        
+    - Mesh.swift
+    - Submesh.swift
+    - Material.swift
+    - Texture.swift
+    - Shader.swift
+    
+    - MeshLoader.swift
+    - TextureLoader.swift
+    
+    - RenderQueue.swift
+    - VertexDescriptor.swift
+    - Primitive.swift
+    
+- Physics/
+    - Systems/
+        - PhysicsUpdateStateSystem.swift
+    - Components/
+        - PhysicsBody.swift
+        - PhysicsMover.swift
+        - PhysicsJoint.swift
+        - PhysicsShape.swift
+        
+- Math/
+    - MathLibrary.swift
+    - Frustum.swift
+    - Bounds.swift
+    
+- Scene/
+    - SceneManager.swift
+    - SceneLoader.swift
+    - Scene.swift
+
+- Input/
+    - Systems/
+        - // system for updating the input state with the OS
+    - Components/
+        - InputState.swift
+
+- Debug/
+        - DebugRendering.swift
+```
+
 
 
 
