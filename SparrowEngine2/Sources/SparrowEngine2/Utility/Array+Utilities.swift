@@ -12,7 +12,7 @@ extension Array where Element : Hashable {
     
     /// Get only unique elements. Order is not defined.
     @inlinable
-    var unique: [Element] {
+    public var unique: [Element] {
         return Array(Set(self))
     }
 }
@@ -21,7 +21,7 @@ extension Array where Element : Equatable {
     
     /// Get only unique elements. Order is kept but implementation is slower than `unique`.
     @inlinable
-    var uniqueKeepingOrder: [Element] {
+    public var uniqueKeepingOrder: [Element] {
         var uniqueValues: [Element] = []
         forEach { item in
             if !uniqueValues.contains(item) {
@@ -35,7 +35,7 @@ extension Array where Element : Equatable {
 extension Array {
     /// Get an array with given element appended
     @inlinable
-    func appending(_ element: Element) -> [Element] {
+    public func appending(_ element: Element) -> [Element] {
         return self + [element]
     }
 }

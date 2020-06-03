@@ -11,7 +11,6 @@
 		800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B623F9F85000B3FB7F /* MeshSelector.swift */; };
 		800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B823F9F87D00B3FB7F /* MeshRenderer.swift */; };
 		801EC82224769B3700D5AA1D /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC82124769B3700D5AA1D /* Material.swift */; };
-		801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC81F24768CF900D5AA1D /* Array+Tools.swift */; };
 		80438C22240B2A6300099034 /* DebugRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80438C21240B2A6300099034 /* DebugRendering.swift */; };
 		804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */ = {isa = PBXBuildFile; productRef = 804EE35A2485917F00ADD319 /* SparrowEngine2 */; };
 		804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804EE35C2485927300ADD319 /* MeshLoader.swift */; };
@@ -42,7 +41,6 @@
 		800604B423F9F6BB00B3FB7F /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		800604B623F9F85000B3FB7F /* MeshSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSelector.swift; sourceTree = "<group>"; };
 		800604B823F9F87D00B3FB7F /* MeshRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRenderer.swift; sourceTree = "<group>"; };
-		801EC81F24768CF900D5AA1D /* Array+Tools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Tools.swift"; sourceTree = "<group>"; };
 		801EC82124769B3700D5AA1D /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		80438C21240B2A6300099034 /* DebugRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRendering.swift; sourceTree = "<group>"; };
 		804EE35C2485927300ADD319 /* MeshLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
@@ -188,7 +186,6 @@
 		80A462F0238F1E14009435EB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				801EC81F24768CF900D5AA1D /* Array+Tools.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -271,7 +268,6 @@
 			files = (
 				8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */,
 				800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */,
-				801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */,
 				800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */,
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
