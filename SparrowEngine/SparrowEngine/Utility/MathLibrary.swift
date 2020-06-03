@@ -8,16 +8,31 @@
 
 import simd
 
+/// A vector of two floating point scalars.
 public typealias float2 = SIMD2<Float>
+
+/// A vector of three floating point scalars.
 public typealias float3 = SIMD3<Float>
+
+/// A vector of four floating point scalars.
 public typealias float4 = SIMD4<Float>
 
+/// A vector of two 32-bit signed integer scalars.
+public typealias int2 = SIMD2<Int32>
+
+/// A vector of two 32-bit unsigned integer scalars.
+public typealias uint2 = SIMD2<UInt32>
+
+/// The mathematical constant pi.
 public let π = Float.pi
 
 extension Float {
+    /// Get the degrees of a value assumed to be a radian angle.
     var radiansToDegrees: Float {
         (self / π) * 180
     }
+    
+    /// Get the radians of a value assumed to be a degree angle.
     var degreesToRadians: Float {
         (self / 180) * π
     }
@@ -26,7 +41,7 @@ extension Float {
 
 // MARK:- float4
 extension float4x4 {
-    // MARK:- Translate
+    /// An affine matrix that translates vectors.
     @inlinable
     init(translation: float3) {
         self = float4x4(
@@ -37,7 +52,7 @@ extension float4x4 {
         )
     }
     
-    // MARK:- Scale
+    /// An affine transform matrix that scales vectors.
     @inlinable
     init(scaling: float3) {
         self = float4x4(
@@ -48,13 +63,14 @@ extension float4x4 {
         )
     }
     
+    /// An affine matrix that scales vectors uniformly.
     @inlinable
     init(scaling: Float) {
         self = matrix_identity_float4x4
         columns.3.w = 1 / scaling
     }
     
-    // MARK:- Rotate
+    /// A matrix that rotates a vector over the X axis a given amount of radians.
     @inlinable
     init(rotationX angle: Float) {
         self = float4x4(
@@ -65,6 +81,7 @@ extension float4x4 {
         )
     }
     
+    /// A matrix that rotates a vector over the Y axis a given amount of radians.
     @inlinable
     init(rotationY angle: Float) {
         self = float4x4(
@@ -75,6 +92,7 @@ extension float4x4 {
         )
     }
     
+    /// A matrix that rotates a vector over the Z axis a given amount of radians.
     @inlinable
     init(rotationZ angle: Float) {
         self = float4x4(
@@ -85,6 +103,7 @@ extension float4x4 {
         )
     }
     
+    /// A matrix that rotates a vector over each axis with given radians for each.
     @inlinable
     init(rotation angle: float3) {
         let x = angle.x
@@ -107,13 +126,13 @@ extension float4x4 {
         self = rotationY * rotationX * rotationZ
     }
     
-    // MARK:- Identity
+    /// The identitiy matrix
     @inlinable
     static func identity() -> float4x4 {
         matrix_identity_float4x4
     }
     
-    // MARK:- Upper left 3x3
+    /// The upper left 3x3 matrix (ignoring w in all directions)
     @inlinable
     var upperLeft: float3x3 {
         let x = columns.0.xyz
@@ -122,7 +141,7 @@ extension float4x4 {
         return float3x3(columns: (x, y, z))
     }
     
-    // left-handed LookAt
+    /// Left-handed LookAt matrix
     init(eye: float3, center: float3, up: float3) {
         let z = normalize(center-eye)
         let x = normalize(cross(up, z))
@@ -137,6 +156,7 @@ extension float4x4 {
         columns = (X, Y, Z, W)
     }
     
+    /// Left handed perspective matrix.
     init(perspectiveAspect aspect: Float, fovy: Float, near: Float, far: Float) {
         // https://docs.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixperspectivelh?redirectedfrom=MSDN
         
@@ -153,7 +173,7 @@ extension float4x4 {
                         float4(0, 0, wzScale, 0))
     }
     
-    // MARK:- Orthographic matrix
+    /// Left handed orthographic matrix.
     init(orthoLeft left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float) {
         let X = float4(2 / (right - left), 0, 0, 0)
         let Y = float4(0, 2 / (top - bottom), 0, 0)
@@ -166,7 +186,7 @@ extension float4x4 {
         columns = (X, Y, Z, W)
     }
     
-    // convert double4x4 to float4x4
+    /// Create a matrix from a double4x4 matrix.
     init(_ m: matrix_double4x4) {
         self.init()
         let matrix: float4x4 = float4x4(float4(m.columns.0),
@@ -177,26 +197,21 @@ extension float4x4 {
     }
 }
 
-// MARK:- float3x3
-extension float3x3 {
-    init(normalFrom4x4 matrix: float4x4) {
-        self.init()
-        columns = matrix.upperLeft.inverse.transpose.columns
-    }
-}
-
 // MARK:- float3 Utilities
 extension float3 {
+    /// Forward vector: positive Z
     @inlinable
     var forward: float3 {
         return float3(0, 0, 1)
     }
     
+    /// Up vector: positive Y.
     @inlinable
     var up: float3 {
         return float3(0, 1, 0)
     }
     
+    /// Right vector: positive X.
     @inlinable
     var right: float3 {
         return float3(1, 0, 0)
@@ -205,6 +220,7 @@ extension float3 {
 
 // MARK:- float4
 extension float4 {
+    /// XYZ components as a float3.
     @inlinable
     var xyz: float3 {
         get {
@@ -217,18 +233,11 @@ extension float4 {
         }
     }
     
-    // convert from double4
+    /// Convert a vector with double scalars to float scalars.
+    ///
+    /// Might cause loss of precision.
     init(_ d: SIMD4<Double>) {
         self.init()
         self = [Float(d.x), Float(d.y), Float(d.z), Float(d.w)]
     }
 }
-
-// MARK:- Quaternion
-//extension simd_quatf {
-//    /// Creates a rotation with the specified forward and upwards directions.
-//    https://docs.unity3d.com/ScriptReference/Quaternion.LookRotation.html
-//    init(lookRotation forward: float3) {
-//        
-//    }
-//}
