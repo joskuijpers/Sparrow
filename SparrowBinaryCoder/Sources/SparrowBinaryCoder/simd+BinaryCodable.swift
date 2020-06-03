@@ -9,6 +9,9 @@ import simd
 
 //MARK:- Vectors
 
+/// Adds binary encoding support.
+///
+/// No containers needed.
 extension SIMD3: BinaryCodable where Scalar == Float {
     
     public func binaryEncode(to encoder: BinaryEncoder) throws {
@@ -25,6 +28,9 @@ extension SIMD3: BinaryCodable where Scalar == Float {
     
 }
 
+/// Adds binary encoding support.
+///
+/// No containers needed.
 extension SIMD4: BinaryCodable where Scalar == Float {
     
     public func binaryEncode(to encoder: BinaryEncoder) throws {
@@ -45,6 +51,9 @@ extension SIMD4: BinaryCodable where Scalar == Float {
 
 //MARK:- Matrices
 
+/// Adds binary encoding support.
+///
+/// No containers needed.
 extension simd_float4x4: BinaryCodable {
     
     enum Error: Swift.Error {

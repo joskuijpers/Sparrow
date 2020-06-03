@@ -7,12 +7,14 @@
 
 import Foundation
 
+/// Adds binary encoding support.
 extension FixedWidthInteger where Self: BinaryEncodable {
     public func binaryEncode(to encoder: BinaryEncoder) {
         encoder.appendBytes(of: self.bigEndian)
     }
 }
 
+/// Adds binary decoding support.
 extension FixedWidthInteger where Self: BinaryDecodable {
     public init(fromBinary binaryDecoder: BinaryDecoder) throws {
         var v = Self.init()

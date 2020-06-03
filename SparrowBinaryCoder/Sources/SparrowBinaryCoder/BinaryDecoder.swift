@@ -8,12 +8,20 @@
 
 import Foundation
 
+/// A type that can decode itself from a binary representation.
 public protocol BinaryDecodable: Decodable {
+    
+    /// Creates a new instance by decoding from the given binary decoder.
+    ///
+    /// This initializer throws an error if reading from the decoder fails, or
+    /// if the data read is corrupted or otherwise invalid.
+    ///
+    /// - Parameter decoder: The binary decoder to read data from.
     init(fromBinary decoder: BinaryDecoder) throws
 }
 
 extension BinaryDecodable {
-    /// Convenience implementation
+    
     public init(fromBinary decoder: BinaryDecoder) throws {
         try self.init(from: decoder)
     }
@@ -23,10 +31,16 @@ public class BinaryDecoder {
     fileprivate let data: [UInt8]
     fileprivate var cursor = 0
     
-    public init(data: [UInt8]) {
+    private init(data: [UInt8]) {
         self.data = data
     }
     
+    /// Returns a value of the type you specify, decoded from binary data.
+    ///
+    /// - Parameter value: The type to decode.
+    /// - Parameter data: The data to decode.
+    ///
+    /// If the value is not a valid binary representation of given type, it throws one of the errors.
     public static func decode<T: BinaryDecodable>(_ type: T.Type, data: [UInt8]) throws -> T {
         let decoder = BinaryDecoder(data: data)
         let value = try decoder.decode(T.self)
@@ -38,13 +52,20 @@ public class BinaryDecoder {
         return value
     }
     
-    enum Error: Swift.Error {
+    /// Errors that can be thrown by the decoder.
+    public enum Error: Swift.Error {
+        /// More data was expected.
+        ///
+        /// Types mismatched causing a read beyond the end of the data.
         case prematureEndOfData
         
+        /// Type to decode does not conform to binary decodable and can thus not be used.
         case typeNotConformingToBinaryDecodable(Decodable.Type)
         
         /// Value was out of range for an integer, or a reasonable integer was expected but not received. Always indicates structure mismatch.
         case intOutOfRange(Int64)
+        
+        /// Unsigned integer value was out of range.
         case uintOutOfRange(UInt64)
         
         /// The encoded boolean value is not in a valid range (0-1)

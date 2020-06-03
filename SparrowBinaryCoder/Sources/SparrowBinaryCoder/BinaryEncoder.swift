@@ -8,7 +8,18 @@
 
 import Foundation
 
+/// A type that can encode itself to a binary representation.
 public protocol BinaryEncodable: Encodable {
+    
+    /// Encodes this value into the given encoder.
+    ///
+    /// If the value fails to encode anything, `encoder` will encode an empty
+    /// keyed container in its place.
+    ///
+    /// This function throws an error if any values are invalid for the given
+    /// encoder's format.
+    ///
+    /// - Parameter encoder: The binary encoder to write data to.
     func binaryEncode(to encoder: BinaryEncoder) throws
 }
 
@@ -18,19 +29,24 @@ extension BinaryEncodable {
     }
 }
 
+/// An object that encodes instances of a data type as binary.
 public class BinaryEncoder {
     fileprivate var data: [UInt8] = []
     
-    /// Encoder a value with a binary encoder
+    /// Returns a binary representation of the object specified.
+    ///
+    /// - Parameter value: The object to encode into binary.
     public static func encode(_ value: BinaryEncodable) throws -> [UInt8] {
         let encoder = BinaryEncoder()
         try value.binaryEncode(to: encoder)
         return encoder.data
     }
     
-    enum Error: Swift.Error {
+    /// Errors that can be thrown by the encoder.
+    public enum Error: Swift.Error {
         /// Type does not conform to binary encodable
         case typeNotConformingToBinaryEncodable(Encodable.Type)
+        
         /// Type does not conform to encodable.
         case typeNotConformingToEncodable(Any.Type)
     }
@@ -79,7 +95,7 @@ extension BinaryEncoder {
         }
     }
     
-    func encodeIfPresent(_ encodable: Encodable?) throws {
+    fileprivate func encodeIfPresent(_ encodable: Encodable?) throws {
         try encode(encodable != nil)
         if let value = encodable {
             try encode(value)

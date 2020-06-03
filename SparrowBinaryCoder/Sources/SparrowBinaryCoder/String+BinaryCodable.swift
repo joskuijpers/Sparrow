@@ -7,6 +7,9 @@
 
 import Foundation
 
+/// Adds binary encoding support.
+///
+/// Converts to an array of UTF8 literals.
 extension String: BinaryCodable {
     
     public func binaryEncode(to encoder: BinaryEncoder) throws {

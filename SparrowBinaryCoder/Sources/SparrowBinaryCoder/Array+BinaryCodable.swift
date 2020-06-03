@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Adds binary encoding support.
 extension Array: BinaryCodable where Element: Codable {
 
     public func binaryEncode(to encoder: BinaryEncoder) throws {

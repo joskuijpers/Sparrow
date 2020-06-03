@@ -7,7 +7,9 @@
 
 import Foundation
 
-// Optimized implementation of Data (array of UInt8) by copying all data at once instead of byte-by-byte
+/// Adds binary encoding support.
+///
+/// Optimizes by writing all data directly to the output instead of as array of UInt8.
 extension Data: BinaryCodable {
     public func binaryEncode(to encoder: BinaryEncoder) throws {
         try encoder.encode(self.count)

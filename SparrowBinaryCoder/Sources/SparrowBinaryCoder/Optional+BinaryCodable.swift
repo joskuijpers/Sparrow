@@ -7,6 +7,11 @@
 
 import Foundation
 
+/// Adds binary coding support.
+///
+/// This is a special case where, unlike with the supplied Codable support, we want to
+/// write a value if the optional is `some` as well. That way, we always have one byte
+/// to indicate whether there is a value or not.
 extension Optional: BinaryEncodable where Wrapped: Encodable {
     
     // Special version
