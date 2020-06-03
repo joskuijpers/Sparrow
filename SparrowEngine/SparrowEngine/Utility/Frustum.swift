@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SparrowEngine2
 
 /// Frustum culling result
 enum FrustumCullResult {
@@ -39,7 +40,7 @@ struct Frustum {
     ///
     /// - Parameter viewProjectionMatrix: The matrix from the camera.
     init(viewProjectionMatrix: float4x4) {
-        var planes = [float4](repeating: .zero, count: 6)
+        var planes = [SIMD4<Float>](repeating: .zero, count: 6)
 
         let (x, y, z, w) = viewProjectionMatrix.transpose.columns
         planes[0] = Frustum.planeNormalize(w + x) // left

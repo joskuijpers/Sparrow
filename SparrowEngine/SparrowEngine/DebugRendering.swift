@@ -7,6 +7,7 @@
 //
 
 import MetalKit
+import SparrowEngine2
 
 fileprivate struct DebugRenderVertex {
     let position: float3

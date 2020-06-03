@@ -9,7 +9,7 @@
 import SparrowAsset
 
 // MARK: - Conversion from SparrowAsset bounds
-extension Bounds {
+public extension Bounds {
     
     /// Initialize from Sparrow Asset bounds
     init(from saBounds: SABounds) {

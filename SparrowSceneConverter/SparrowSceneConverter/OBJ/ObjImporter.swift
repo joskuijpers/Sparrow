@@ -146,7 +146,7 @@ private extension ObjImporter {
                           vertexBuffer: vertexBufferView,
                           vertexAttributes: vertexAttributes,
                           bounds: meshBounds)
-        addNodeAndMesh(mesh)
+        addMesh(mesh)
         
         // Update all buffer views with the buffer index, as originally the view pointed to the offset
         // from first index buffer, and did not point to the buffer at all
@@ -361,20 +361,8 @@ private extension ObjImporter {
         return asset.buffers.count - 1
     }
     
-    func addNodeAndMesh(_ mesh: SAMesh) {
+    func addMesh(_ mesh: SAMesh) {
         asset.meshes.append(mesh)
-        let meshIndex = asset.meshes.count - 1
-        
-        let node = SANode(name: objectName,
-                          matrix: matrix_identity_float4x4,
-                          children: [],
-                          mesh: meshIndex,
-                          camera: nil,
-                          light: nil)
-        asset.nodes.append(node)
-        
-        let scene = SAScene(nodes: [asset.nodes.count - 1])
-        asset.scenes.append(scene)
     }
 }
 

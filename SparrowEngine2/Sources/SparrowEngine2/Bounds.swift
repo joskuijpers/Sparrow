@@ -11,18 +11,18 @@ import simd
 /**
 Axis aligned bounding box for wrapping bounds of objects, in worldspace.
  */
-struct Bounds {
+public struct Bounds {
     /// The minimal point of the bounding box.
-    let minBounds: float3
+    public let minBounds: float3
     
     /// The maximal point of the bounding box.
-    let maxBounds: float3
+    public let maxBounds: float3
     
     /// The extents of the bounding box. This is half the size.
-    let extents: float3
+    public let extents: float3
     
     /// The center of the bounding box.
-    let center: float3
+    public let center: float3
     
     /// A new infinite-spanning bounding box
     public init() {
@@ -53,25 +53,25 @@ struct Bounds {
     }
     
     /// Get whether the bounding box has a size of zero
-    var isEmpty: Bool {
+    public var isEmpty: Bool {
         return minBounds == float3.zero && maxBounds == float3.zero
     }
     
     /// The size of the bounding box.
-    var size: float3 {
+    public var size: float3 {
         return extents * 2.0
     }
     
     /// Get whether given world space point is contained within these bounds.
     // todo: test
-    func contains(point: float3) -> Bool {
+    public func contains(point: float3) -> Bool {
         // https://gdbooks.gitbooks.io/3dcollisions/content/Chapter1/point_in_aabb.html
         return reduce_max(sign(point - minBounds)) <= 0 && reduce_max(sign(point - maxBounds)) >= 0
     }
     
     /// Get the closest point to given point, that lies on the bounding box.
     // todo: test
-    func closest(point: float3) -> float3 {
+    public func closest(point: float3) -> float3 {
         // https://gdbooks.gitbooks.io/3dcollisions/content/Chapter1/closest_point_aabb.html
         // For each component: if p < min, closest is min. If p > max, closest is max. Otherwise, closest is p.
         // Do this for every axis and we're done. This is a clamp operation.
@@ -85,7 +85,7 @@ struct Bounds {
 //    }
     
     /// Get whether this bounding box intersects another bounding box.
-     func intersects(bounds: Bounds) -> Bool {
+     public func intersects(bounds: Bounds) -> Bool {
         // https://gdbooks.gitbooks.io/3dcollisions/content/Chapter2/static_aabb_aabb.html
         
         // a.min <= b.max && a.max >= b.min
@@ -95,13 +95,13 @@ struct Bounds {
     }
 
     /// Smallest square distance between point and bounds.
-    func squareDistance(point: float3) -> Float {
+    public func squareDistance(point: float3) -> Float {
         return length_squared(max(max(minBounds - point, 0), point - maxBounds))
     }
 }
 
 extension Bounds: CustomDebugStringConvertible {
-    var debugDescription: String {
+    public var debugDescription: String {
         "Bounds(\(minBounds),\(maxBounds))"
     }
 }
@@ -110,7 +110,7 @@ extension Bounds: CustomDebugStringConvertible {
 
 extension Bounds {
     /// Grow the box to encapsulate the other bounding box.
-    func encapsulate(_ other: Bounds) -> Bounds {
+    public func encapsulate(_ other: Bounds) -> Bounds {
         let minimum = min(self.minBounds, other.minBounds)
         let maximum = max(self.maxBounds, other.maxBounds)
         
@@ -118,7 +118,7 @@ extension Bounds {
     }
     
     /// Grow the box to encapsulate the point
-    func encapsulate(_ point: float3) -> Bounds {
+    public func encapsulate(_ point: float3) -> Bounds {
         let minimum = min(self.minBounds, point)
         let maximum = max(self.maxBounds, point)
         
@@ -126,13 +126,13 @@ extension Bounds {
     }
     
     /// Multiply given AABB with a matrix, staying axis aligned. This is done by transforming every corner of the AABB and then creating a new AABB.
-    static func * (lhs: Bounds, rhs: float4x4) -> Bounds {
+    public static func * (lhs: Bounds, rhs: float4x4) -> Bounds {
         let center = rhs * float4(lhs.center, 1)
         return Bounds(center: center.xyz, extents: lhs.extents)
     }
     
     /// Get the union of two bounds.
-    static func + (left: Bounds, right: Bounds) -> Bounds {
+    public static func + (left: Bounds, right: Bounds) -> Bounds {
         return left.encapsulate(right)
     }
 }

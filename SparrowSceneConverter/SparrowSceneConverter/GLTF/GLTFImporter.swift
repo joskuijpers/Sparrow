@@ -119,11 +119,11 @@ private extension GLTFImporter {
                                                           offset: 0,
                                                           length: vertexDataSize))
         
-        addNodeAndMesh(SAMesh(name: gltfMesh.name ?? "mesh",
-                              submeshes: submeshes,
-                              vertexBuffer: vertexBufferView,
-                              vertexAttributes: vertexAttributes,
-                              bounds: meshBounds))
+        addMesh(SAMesh(name: gltfMesh.name ?? "mesh",
+                       submeshes: submeshes,
+                       vertexBuffer: vertexBufferView,
+                       vertexAttributes: vertexAttributes,
+                       bounds: meshBounds))
     }
     
     /// FInd the mesh to parse in the asset
@@ -410,20 +410,8 @@ private extension GLTFImporter {
         return asset.buffers.count - 1
     }
     
-    func addNodeAndMesh(_ mesh: SAMesh) {
+    func addMesh(_ mesh: SAMesh) {
         asset.meshes.append(mesh)
-        let meshIndex = asset.meshes.count - 1
-        
-        let node = SANode(name: objectName,
-                          matrix: matrix_identity_float4x4,
-                          children: [],
-                          mesh: meshIndex,
-                          camera: nil,
-                          light: nil)
-        asset.nodes.append(node)
-        
-        let scene = SAScene(nodes: [asset.nodes.count - 1])
-        asset.scenes.append(scene)
     }
 }
 

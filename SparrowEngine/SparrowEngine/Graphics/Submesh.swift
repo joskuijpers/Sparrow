@@ -8,6 +8,7 @@
 
 import MetalKit
 import SparrowAsset
+import SparrowEngine2
 
 /**
  A submesh uses the vertex buffer from a mesh with its own index buffer. It has a single material.

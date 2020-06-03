@@ -8,6 +8,7 @@
 
 import Metal
 import SparrowAsset
+import SparrowEngine2
 
 /**
  A mesh.

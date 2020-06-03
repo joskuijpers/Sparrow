@@ -23,7 +23,6 @@
 		80821D3B24858A340047B192 /* SparrowECS in Frameworks */ = {isa = PBXBuildFile; productRef = 80821D3A24858A340047B192 /* SparrowECS */; };
 		8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF423BF7AB700E03CE0 /* Light.swift */; };
 		8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF623CCF60100E03CE0 /* RenderQueue.swift */; };
-		80A0FB6424731C1B00783EFE /* Bounds+SparrowAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0FB6324731C1B00783EFE /* Bounds+SparrowAsset.swift */; };
 		80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462C9238F0FB6009435EB /* AppDelegate.swift */; };
 		80A462CC238F0FB6009435EB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462CB238F0FB6009435EB /* ViewController.swift */; };
 		80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CD238F0FB9009435EB /* Assets.xcassets */; };
@@ -54,7 +53,6 @@
 		8064AF60242960CC0089FE11 /* Resolve.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Resolve.metal; sourceTree = "<group>"; };
 		8099AAF423BF7AB700E03CE0 /* Light.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
 		8099AAF623CCF60100E03CE0 /* RenderQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderQueue.swift; sourceTree = "<group>"; };
-		80A0FB6324731C1B00783EFE /* Bounds+SparrowAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bounds+SparrowAsset.swift"; sourceTree = "<group>"; };
 		80A462C6238F0FB6009435EB /* SparrowEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SparrowEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A462C9238F0FB6009435EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80A462CB238F0FB6009435EB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -193,7 +191,6 @@
 			isa = PBXGroup;
 			children = (
 				801EC81F24768CF900D5AA1D /* Array+Tools.swift */,
-				80A0FB6324731C1B00783EFE /* Bounds+SparrowAsset.swift */,
 				80438C1F240B0A2700099034 /* Frustum.swift */,
 			);
 			path = Utility;
@@ -275,7 +272,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80A0FB6424731C1B00783EFE /* Bounds+SparrowAsset.swift in Sources */,
 				8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */,
 				800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */,
 				801EC82324769BD300D5AA1D /* Array+Tools.swift in Sources */,
