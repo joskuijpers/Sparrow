@@ -17,9 +17,11 @@ import SparrowEngine2
  */
 public class MeshLoader {
     private let device: MTLDevice
+    private let textureLoader: TextureLoader
     
-    public init(device: MTLDevice) {
+    public init(device: MTLDevice, textureLoader: TextureLoader) {
         self.device = device
+        self.textureLoader = textureLoader
     }
     
     enum Error: Swift.Error {
@@ -162,7 +164,7 @@ public class MeshLoader {
 
                 do {
                     let url = URL(string: saTexture.relativePath, relativeTo: saFileRef.url)!
-                    let texture = try Renderer.textureLoader.load(from: url)
+                    let texture = try textureLoader.load(from: url)
                     
                     return texture.mtlTexture
                 } catch {

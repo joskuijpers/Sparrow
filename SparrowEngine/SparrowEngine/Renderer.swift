@@ -101,7 +101,7 @@ class Renderer: NSObject {
         Renderer.device = device
         Renderer.library = device.makeDefaultLibrary()
         Renderer.textureLoader = TextureLoader(device: device)
-        Renderer.meshLoader = MeshLoader(device: device)
+        Renderer.meshLoader = MeshLoader(device: device, textureLoader: Renderer.textureLoader)
         
         // Configure view
         metalView.device = device
