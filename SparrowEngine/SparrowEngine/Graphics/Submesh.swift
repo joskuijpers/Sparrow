@@ -7,7 +7,6 @@
 //
 
 import MetalKit
-import SparrowAsset
 import SparrowEngine2
 
 /**

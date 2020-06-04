@@ -7,7 +7,7 @@
 //
 
 import Metal
-import SparrowAsset
+import SparrowMesh
 import SparrowEngine2
 
 /**
@@ -53,22 +53,21 @@ public class MeshLoader {
         print("[meshloader] Loading from \(url.path)")
         
         // Load using the SparrowAsset loader which verifies the asset contents.
-        let fileRef = try SparrowAssetLoader.load(from: url)
+        let fileRef = try SPMFileLoader.load(from: url)
         
         // Get first mesh or throw -> SAMesh
-        guard fileRef.asset.meshes.count == 1 else {
-            throw Error.unsupportedAsset("Asset contains not exactly one mesh. Only single-mesh assets are supported.")
+        guard let saMesh = fileRef.file.mesh else {
+            throw Error.unsupportedAsset("Asset contains no mesh.")
         }
-        let saMesh = fileRef.asset.meshes[0]
         
         let mesh = try createMesh(saFileRef: fileRef,
-                                  saAsset: fileRef.asset,
+                                  saAsset: fileRef.file,
                                   saMesh: saMesh)
 
         return mesh
     }
     
-    private func createMesh(saFileRef: SAFileRef, saAsset: SAAsset, saMesh: SAMesh) throws -> Mesh {
+    private func createMesh(saFileRef: SPMFileRef, saAsset: SPMFile, saMesh: SPMMesh) throws -> Mesh {
         // Not all buffers might be used by this mesh for this asset
         let usedBufferIndices = saMesh.submeshes
             .map { $0.indices }.appending(saMesh.vertexBuffer)
@@ -126,8 +125,8 @@ public class MeshLoader {
                     submeshes: submeshes)
     }
     
-    private func createSubmesh(saAsset: SAAsset,
-                               saSubmesh: SASubmesh,
+    private func createSubmesh(saAsset: SPMFile,
+                               saSubmesh: SPMSubmesh,
                                bufferIndexMapping: [Int:Int],
                                vertexDescriptor: MTLVertexDescriptor,
                                materials: [Int:Material]) throws -> Submesh {
@@ -156,8 +155,8 @@ public class MeshLoader {
                        indexBufferInfo: indexBufferInfo)
     }
 
-    private func createMaterial(saFileRef: SAFileRef, saAsset: SAAsset, saMaterial: SAMaterial) throws -> Material {
-        func getTexture(_ property: SAMaterialProperty) -> MTLTexture? {
+    private func createMaterial(saFileRef: SPMFileRef, saAsset: SPMFile, saMaterial: SPMMaterial) throws -> Material {
+        func getTexture(_ property: SPMMaterialProperty) -> MTLTexture? {
             switch property {
             case .texture(let textureIndex):
                 let saTexture = saAsset.textures[textureIndex]
@@ -183,7 +182,7 @@ public class MeshLoader {
             }
         }
         
-        func getColor(_ property: SAMaterialProperty, default defaultColor: float4) -> float4 {
+        func getColor(_ property: SPMMaterialProperty, default defaultColor: float4) -> float4 {
             switch property {
             case .color(let color):
                 return color
@@ -226,7 +225,7 @@ public class MeshLoader {
     }
 }
 
-fileprivate extension SAAlphaMode {
+fileprivate extension SPMAlphaMode {
     
     /// Render mode for this alpha mode.
     func renderMode() -> RenderMode {

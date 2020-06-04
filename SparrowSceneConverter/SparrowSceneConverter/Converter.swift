@@ -39,7 +39,7 @@ extension Converter {
     
     func convert(url: URL) throws -> SPMFileRef {
         let name = url.deletingPathExtension().lastPathComponent // + "_gltf"
-        let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Assets/\(name)/\(name).spa")
+        let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Assets/\(name)/\(name).spm")
         
         // Import asset from .obj file
         let start = DispatchTime.now()

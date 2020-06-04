@@ -7,12 +7,12 @@
 //
 
 import Metal
-import SparrowAsset
+import SparrowMesh
 
 class VertexDescriptor {
 
     /// Build a vertex descriptor using a list of Sparrow Asset vertex attributes. Order of the attributes defines position within the interleaved buffer.
-    class func build(from attributes: [SAVertexAttribute]) -> MTLVertexDescriptor {
+    class func build(from attributes: [SPMVertexAttribute]) -> MTLVertexDescriptor {
         let descriptor = MTLVertexDescriptor()
 
         var offset = 0

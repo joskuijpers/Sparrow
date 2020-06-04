@@ -6,14 +6,14 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import SparrowAsset
+import SparrowMesh
 
 // MARK: - Conversion from SparrowAsset bounds
 public extension Bounds {
     
     /// Initialize from Sparrow Asset bounds
-    init(from saBounds: SABounds) {
-        self.init(minBounds: saBounds.min, maxBounds: saBounds.max)
+    init(from spmBounds: SPMBounds) {
+        self.init(minBounds: spmBounds.min, maxBounds: spmBounds.max)
     }
     
 }
