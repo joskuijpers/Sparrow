@@ -8,7 +8,7 @@
 
 import Foundation
 import GLTF
-import SparrowAsset
+import SparrowMesh
 
 final class GLTFImporter {
     private let inputUrl: URL
@@ -19,7 +19,7 @@ final class GLTFImporter {
     private let textureTool: TextureTool
     private let objectName: String
     
-    private var asset: SAAsset!
+    private var asset: SPMFile!
     private var materialCache: [GLTFMaterial:Int] = [:]
     private var textureCache: [GLTFTexture:Int] = [:]
     
@@ -62,7 +62,7 @@ final class GLTFImporter {
     /**
      Import an asset from given URL.
      */
-    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SAFileRef {
+    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SPMFileRef {
         var generateTangents = false
         var uniformScale: Float = 1
         for option in options {
@@ -75,22 +75,22 @@ final class GLTFImporter {
         }
         
         let importer = try GLTFImporter(inputUrl: url, outputUrl: outputUrl, generateTangents: generateTangents, uniformScale: uniformScale)
-        let asset = try importer.generate()
+        let mesh = try importer.generate()
         
-        return SAFileRef(url: outputUrl, asset: asset)
+        return SPMFileRef(url: outputUrl, file: mesh)
     }
 }
 
 private extension GLTFImporter {
     
     /// Generate the asset
-    private func generate() throws -> SAAsset {
-    let allocator = GLTFDefaultBufferAllocator()
-        asset = SAAsset(generator: "SparrowSceneConverter", origin: inputUrl.path)
+    private func generate() throws -> SPMFile {
+        let allocator = GLTFDefaultBufferAllocator()
+        asset = SPMFile(generator: "SparrowSceneConverter", origin: inputUrl.path)
         
         let inAsset = GLTFAsset(url: inputUrl, bufferAllocator: allocator)
         try buildAsset(inAsset)
-
+        
         asset.updateChecksum()
         
         textureTool.waitUntilFinished()
@@ -101,29 +101,29 @@ private extension GLTFImporter {
     private func buildAsset(_ inAsset: GLTFAsset) throws {
         let gltfMesh = try findFirstMesh(inAsset: inAsset)
         
-        var meshBounds = SABounds()
+        var meshBounds = SPMBounds()
         var vertexDataSize = 0
-                
+        
         let (submeshes, data) = try generateSubmeshesAndBuffers(gltfMesh: gltfMesh, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedTangentVertex.self)
         
         // Create vertex attributes
-        let vertexAttributes: [SAVertexAttribute] = [
+        let vertexAttributes: [SPMVertexAttribute] = [
             .position
         ]
         
         // Add the buffer
-        let buffer = addBuffer(SABuffer(data: data))
+        let buffer = addBuffer(SPMBuffer(data: data))
         
         // Create buffer view for vertex data
-        let vertexBufferView = addBufferView(SABufferView(buffer: buffer,
-                                                          offset: 0,
-                                                          length: vertexDataSize))
+        let vertexBufferView = addBufferView(SPMBufferView(buffer: buffer,
+                                                           offset: 0,
+                                                           length: vertexDataSize))
         
-        addMesh(SAMesh(name: gltfMesh.name ?? "mesh",
-                       submeshes: submeshes,
-                       vertexBuffer: vertexBufferView,
-                       vertexAttributes: vertexAttributes,
-                       bounds: meshBounds))
+        setMesh(SPMMesh(name: gltfMesh.name ?? "mesh",
+                        submeshes: submeshes,
+                        vertexBuffer: vertexBufferView,
+                        vertexAttributes: vertexAttributes,
+                        bounds: meshBounds))
     }
     
     /// FInd the mesh to parse in the asset
@@ -146,19 +146,19 @@ private extension GLTFImporter {
     }
     
     /// Generate the submeshes and the mesh buffer with vertices and indices
-    private func generateSubmeshesAndBuffers<V>(gltfMesh: GLTFMesh, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SASubmesh], Data) where V: GLTFTransferVertex {
-        var submeshes: [SASubmesh] = []
+    private func generateSubmeshesAndBuffers<V>(gltfMesh: GLTFMesh, meshBounds: inout SPMBounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SPMSubmesh], Data) where V: GLTFTransferVertex {
+        var submeshes: [SPMSubmesh] = []
         var indexBuffers = Data()
         
         // TODO: MOVE VERTEX FORMAT OUTSIDE OBJ SO WE CAN RE-USE
         
         
         // Find vertex data using a nice iterator that gives us direct access to each attribute using the Accessors
-            // for each vertex, get position for updated bounds
-            // build a vertex
-            // add vertex to vertex buffer
-            // keep all indices intact!
-
+        // for each vertex, get position for updated bounds
+        // build a vertex
+        // add vertex to vertex buffer
+        // keep all indices intact!
+        
         
         
         // Acquire material and index buffer
@@ -176,31 +176,31 @@ private extension GLTFImporter {
             let indexOffset = gltfIndexBufferView.offset + indexAccessor.offset
             let ibSize = indexAccessor.count * indexAccessor.componentType.size
             let bufferData = Data(bytes: buffer.contents.advanced(by: indexOffset), count: ibSize)
-
+            
             print("INDICES DATA \(bufferData)")
             
             // Acquire bounds of the submesh
             let range = gltfSubmesh.accessorsForAttributes[GLTFAttributeSemanticPosition]!.valueRange
             let minBound = float3(range.minValue.0, range.minValue.1, range.minValue.2)
             let maxBound = float3(range.maxValue.0, range.maxValue.1, range.maxValue.2)
-            let submeshBounds = SABounds(min: minBound, max: maxBound)
-
+            let submeshBounds = SPMBounds(min: minBound, max: maxBound)
+            
             // Get material
             let material = try generateMaterial(from: gltfSubmesh.material, withIndex: asset.materials.count + 1)
             
             // Add bufferview for indices. TODO: need to reference the buffer somehow
-            let indexBufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffers.count, length: ibSize))
+            let indexBufferView = addBufferView(SPMBufferView(buffer: -1, offset: indexBuffers.count, length: ibSize))
             
             // Add index data to index buffer
             indexBuffers.append(bufferData)
             
             // Create submesh
-            let saSubmesh = SASubmesh(name: gltfSubmesh.name ?? "submesh",
-                                      indices: indexBufferView,
-                                      material: material,
-                                      bounds: submeshBounds,
-                                      indexType: indexAccessor.componentType.toIndexType()!,
-                                      primitiveType: .triangle)
+            let saSubmesh = SPMSubmesh(name: gltfSubmesh.name ?? "submesh",
+                                       indices: indexBufferView,
+                                       material: material,
+                                       bounds: submeshBounds,
+                                       indexType: indexAccessor.componentType.toIndexType()!,
+                                       primitiveType: .triangle)
             submeshes.append(saSubmesh)
             
             meshBounds = meshBounds.containing(submeshBounds)
@@ -214,44 +214,44 @@ private extension GLTFImporter {
         
         return (submeshes, Data())
     }
-
+    
     /// Convert a submesh: grab all properties and build the structure
-//    private func convertSubmesh(mesh gltfMesh: GLTFMesh, submesh gltfSubmesh: GLTFSubmesh) throws -> SASubmesh {
-//        var materialId = -1
-//        if let gltfMaterial = gltfSubmesh.material {
-//            if let id = materialCache[gltfMaterial] {
-//                materialId = id
-//            } else {
-//                let material = try convertMaterial(from: gltfMaterial, materialIndex: asset.materials.count + 1)
-//                materialId = addMaterial(material)
-//                materialCache[gltfMaterial] = materialId
-//            }
-//        } else {
-//            print("CREATE OR GET DEFAULT MATERIAL")
-//        }
-//
-//        guard let primitiveType = gltfSubmesh.primitiveType.toPrimitiveType() else {
-//            throw Error.unsupportedPrimitiveType
-//        }
-//
-//        guard let indexType = gltfSubmesh.indexAccessor?.componentType.toIndexType() else {
-//            throw Error.unsupportedIndexType
-//        }
-//
-//        // BOUNDS
-//
-//        // INDEX BUFFER VIEW
-//
-//        print(gltfSubmesh.vertexDescriptor.attributes)
-//        print(gltfSubmesh.vertexDescriptor.bufferLayouts)
-//
-//        return SASubmesh(name: gltfSubmesh.name ?? "submesh",
-//                         indices: 0,
-//                         material: materialId,
-//                         bounds: SABounds(),
-//                         indexType: indexType,
-//                         primitiveType: primitiveType)
-//    }
+    //    private func convertSubmesh(mesh gltfMesh: GLTFMesh, submesh gltfSubmesh: GLTFSubmesh) throws -> SASubmesh {
+    //        var materialId = -1
+    //        if let gltfMaterial = gltfSubmesh.material {
+    //            if let id = materialCache[gltfMaterial] {
+    //                materialId = id
+    //            } else {
+    //                let material = try convertMaterial(from: gltfMaterial, materialIndex: asset.materials.count + 1)
+    //                materialId = addMaterial(material)
+    //                materialCache[gltfMaterial] = materialId
+    //            }
+    //        } else {
+    //            print("CREATE OR GET DEFAULT MATERIAL")
+    //        }
+    //
+    //        guard let primitiveType = gltfSubmesh.primitiveType.toPrimitiveType() else {
+    //            throw Error.unsupportedPrimitiveType
+    //        }
+    //
+    //        guard let indexType = gltfSubmesh.indexAccessor?.componentType.toIndexType() else {
+    //            throw Error.unsupportedIndexType
+    //        }
+    //
+    //        // BOUNDS
+    //
+    //        // INDEX BUFFER VIEW
+    //
+    //        print(gltfSubmesh.vertexDescriptor.attributes)
+    //        print(gltfSubmesh.vertexDescriptor.bufferLayouts)
+    //
+    //        return SASubmesh(name: gltfSubmesh.name ?? "submesh",
+    //                         indices: 0,
+    //                         material: materialId,
+    //                         bounds: SABounds(),
+    //                         indexType: indexType,
+    //                         primitiveType: primitiveType)
+    //    }
     
     /// Generate a material from given info. Might return a default material.
     private func generateMaterial(from gtlfMaterial: GLTFMaterial?, withIndex index: Int) throws -> Int {
@@ -274,24 +274,24 @@ private extension GLTFImporter {
         return materialId
     }
     
-    private func createDefaultMaterial() -> SAMaterial {
-        return SAMaterial(name: "default",
-                          albedo: .color([1, 1, 1, 1]),
-                          normals: .none,
-                          roughnessMetalnessOcclusion: .color([1, 1, 0, 0]),
-                          emission: .none,
-                          alphaMode: .opaque,
-                          alphaCutoff: 0.5,
-                          doubleSided: false)
+    private func createDefaultMaterial() -> SPMMaterial {
+        return SPMMaterial(name: "default",
+                           albedo: .color([1, 1, 1, 1]),
+                           normals: .none,
+                           roughnessMetalnessOcclusion: .color([1, 1, 0, 0]),
+                           emission: .none,
+                           alphaMode: .opaque,
+                           alphaCutoff: 0.5,
+                           doubleSided: false)
     }
     
     /// Turn a GLTF material into an SA material with texture assets
-    private func convertMaterial(from gltfMaterial: GLTFMaterial, materialIndex: Int) throws -> SAMaterial {
-//        gltfMaterial.isUnlit
+    private func convertMaterial(from gltfMaterial: GLTFMaterial, materialIndex: Int) throws -> SPMMaterial {
+        //        gltfMaterial.isUnlit
         
         let name = gltfMaterial.name ?? "material_\(materialIndex)"
         
-        var albedo = SAMaterialProperty.none
+        var albedo = SPMMaterialProperty.none
         if let texture = gltfMaterial.baseColorTexture {
             let textureId = try generateTexture(texture.texture, supportsAlpha: true, name: "\(objectName)_\(name)_albedo.png")
             albedo = .texture(textureId)
@@ -299,13 +299,13 @@ private extension GLTFImporter {
             albedo = .color(gltfMaterial.baseColorFactor)
         }
         
-        var normal = SAMaterialProperty.none
+        var normal = SPMMaterialProperty.none
         if let texture = gltfMaterial.normalTexture {
             let textureId = try generateTexture(texture.texture, supportsAlpha: false, name: "\(objectName)_\(name)_normal.png")
             normal = .texture(textureId)
         }
         
-        var emission = SAMaterialProperty.none
+        var emission = SPMMaterialProperty.none
         if let texture = gltfMaterial.emissiveTexture {
             let textureId = try generateTexture(texture.texture, supportsAlpha: false, name: "\(objectName)_\(name)_emission.png")
             emission = .texture(textureId)
@@ -313,7 +313,7 @@ private extension GLTFImporter {
             emission = .color(float4(gltfMaterial.emissiveFactor, 0))
         }
         
-        var rmo = SAMaterialProperty.none
+        var rmo = SPMMaterialProperty.none
         if gltfMaterial.metallicRoughnessTexture == nil && gltfMaterial.occlusionTexture == nil {
             rmo = .color([gltfMaterial.roughnessFactor, gltfMaterial.metalnessFactor, 1, 0])
         } else {
@@ -322,15 +322,15 @@ private extension GLTFImporter {
                                                         name: "\(objectName)_\(name)_rmo.png")
             rmo = .texture(textureId)
         }
-
-        return SAMaterial(name: name,
-                          albedo: albedo,
-                          normals: normal,
-                          roughnessMetalnessOcclusion: rmo,
-                          emission: emission,
-                          alphaMode: gltfMaterial.alphaMode.toAlphaMode(),
-                          alphaCutoff: gltfMaterial.alphaCutoff,
-                          doubleSided: gltfMaterial.isDoubleSided)
+        
+        return SPMMaterial(name: name,
+                           albedo: albedo,
+                           normals: normal,
+                           roughnessMetalnessOcclusion: rmo,
+                           emission: emission,
+                           alphaMode: gltfMaterial.alphaMode.toAlphaMode(),
+                           alphaCutoff: gltfMaterial.alphaCutoff,
+                           doubleSided: gltfMaterial.isDoubleSided)
     }
     
     /// Turn a texture into a format known to SparrowAsset
@@ -343,13 +343,13 @@ private extension GLTFImporter {
             throw Error.unsupportedTextureFormat
         }
         
-//        print("TEXT INFO", gltfTexture.format.hasRGB, gltfTexture.format.hasAlpha)
+        //        print("TEXT INFO", gltfTexture.format.hasRGB, gltfTexture.format.hasAlpha)
         
         // Create output URL
         let targetUrl = outputUrl.deletingLastPathComponent().appendingPathComponent(name)
         
         if let bv = gltfTexture.image?.bufferView {
-//            print("TEXTURE IN BUFFERVIEW \(bv.length)")
+            //            print("TEXTURE IN BUFFERVIEW \(bv.length)")
             
             // Extract data from BV
             // Using mime type, determine extension
@@ -357,26 +357,26 @@ private extension GLTFImporter {
             // Do convert
         } else if gltfTexture.image?.imageData.count ?? 0 > 0,
             let data = gltfTexture.image?.imageData {
-//            print("TEXTURE IN DATA \(data)")
+            //            print("TEXTURE IN DATA \(data)")
             
             // Write to /tmp
             // Do convert
         } else if let url = gltfTexture.image?.url {
-//            print("TEXTURE ON DISK AT \(url) INTO \(targetUrl)")
+            //            print("TEXTURE ON DISK AT \(url) INTO \(targetUrl)")
             
             // Do convert
         } else {
             throw Error.noTextureImage
         }
-
+        
         // Create relative path for outputURL and asset output url
         guard let relativePath = targetUrl.relativePath(from: outputUrl) else {
             fatalError("[tex] Could not create relative path for texture")
         }
         
-//        print("CREATED IMAGE \(relativePath)")
+        //        print("CREATED IMAGE \(relativePath)")
         
-        asset.textures.append(SATexture(relativePath: relativePath))
+        asset.textures.append(SPMTexture(relativePath: relativePath))
         
         let id = asset.textures.count - 1
         textureCache[gltfTexture] = id
@@ -386,37 +386,37 @@ private extension GLTFImporter {
     
     /// Turn a texture into a format known to SparrowAsset while also combining and re-ordering possible channels
     private func generateCombinedTexture(metallicRoughness: GLTFTexture?, occlusion: GLTFTexture?, name: String) throws -> Int {
-//        print("GENERATE COMBINATION \(metallicRoughness) \(occlusion) INTO \(name)")
+        //        print("GENERATE COMBINATION \(metallicRoughness) \(occlusion) INTO \(name)")
         return -1
     }
 }
 
 private extension GLTFImporter {
-
+    
     // THIS CODE REPEATS EVERY IMPORTER.... PROTOCOL?
     
-    func addMaterial(_ material: SAMaterial) -> Int {
+    func addMaterial(_ material: SPMMaterial) -> Int {
         asset.materials.append(material)
         return asset.materials.count - 1
     }
     
-    func addBufferView(_ bufferView: SABufferView) -> Int {
+    func addBufferView(_ bufferView: SPMBufferView) -> Int {
         asset.bufferViews.append(bufferView)
         return asset.bufferViews.count - 1
     }
     
-    func addBuffer(_ buffer: SABuffer) -> Int {
+    func addBuffer(_ buffer: SPMBuffer) -> Int {
         asset.buffers.append(buffer)
         return asset.buffers.count - 1
     }
     
-    func addMesh(_ mesh: SAMesh) {
-        asset.meshes.append(mesh)
+    func setMesh(_ mesh: SPMMesh) {
+        asset.mesh = mesh
     }
 }
 
 private extension GLTFPrimitiveType {
-    func toPrimitiveType() -> SASubmesh.PrimitiveType? {
+    func toPrimitiveType() -> SPMSubmesh.PrimitiveType? {
         switch self {
         case .triangles:
             return .triangle
@@ -427,7 +427,7 @@ private extension GLTFPrimitiveType {
 }
 
 private extension GLTFDataType {
-    func toIndexType() -> SASubmesh.IndexType? {
+    func toIndexType() -> SPMSubmesh.IndexType? {
         switch self {
         case .dataTypeUShort:
             return .uint16
@@ -451,7 +451,7 @@ private extension GLTFDataType {
 }
 
 private extension GLTFAlphaMode {
-    func toAlphaMode() -> SAAlphaMode {
+    func toAlphaMode() -> SPMAlphaMode {
         switch self {
         case .mask:
             return .mask

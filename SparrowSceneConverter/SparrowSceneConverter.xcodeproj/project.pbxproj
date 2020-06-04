@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		80170B3024898B0100A63903 /* SparrowMesh in Frameworks */ = {isa = PBXBuildFile; productRef = 80170B2F24898B0100A63903 /* SparrowMesh */; };
 		801E840C246464370021CEAD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 801E840B246464370021CEAD /* Metal.framework */; };
 		801E844A246829510021CEAD /* ObjParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E8449246829510021CEAD /* ObjParser.swift */; };
 		801E844C246829570021CEAD /* MtlParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844B246829570021CEAD /* MtlParser.swift */; };
@@ -14,7 +15,6 @@
 		801E8450246829F40021CEAD /* ObjTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E844F246829F40021CEAD /* ObjTypes.swift */; };
 		801E845224682A310021CEAD /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801E845124682A310021CEAD /* Extensions.swift */; };
 		8059D6B32479D902003BC83A /* SpatialFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8059D6B22479D902003BC83A /* SpatialFinder.swift */; };
-		806CA48E247C183100EAD6AC /* SparrowAsset in Frameworks */ = {isa = PBXBuildFile; productRef = 806CA48D247C183100EAD6AC /* SparrowAsset */; };
 		806CA490247C21E300EAD6AC /* GLTF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806CA48F247C21E300EAD6AC /* GLTF.framework */; };
 		806CA491247C232500EAD6AC /* GLTF.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806CA48F247C21E300EAD6AC /* GLTF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806CA4952480526800EAD6AC /* VertexFormats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806CA4942480526800EAD6AC /* VertexFormats.swift */; };
@@ -85,8 +85,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				80C17237247C09010097F2AE /* ArgumentParser in Frameworks */,
-				806CA48E247C183100EAD6AC /* SparrowAsset in Frameworks */,
 				801E840C246464370021CEAD /* Metal.framework in Frameworks */,
+				80170B3024898B0100A63903 /* SparrowMesh in Frameworks */,
 				806CA490247C21E300EAD6AC /* GLTF.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -205,7 +205,7 @@
 			name = SparrowSceneConverter;
 			packageProductDependencies = (
 				80C17236247C09010097F2AE /* ArgumentParser */,
-				806CA48D247C183100EAD6AC /* SparrowAsset */,
+				80170B2F24898B0100A63903 /* SparrowMesh */,
 			);
 			productName = SparrowSceneConverter;
 			productReference = 8086960123B8D2B20007E75D /* SparrowSceneConverter */;
@@ -483,9 +483,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		806CA48D247C183100EAD6AC /* SparrowAsset */ = {
+		80170B2F24898B0100A63903 /* SparrowMesh */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = SparrowAsset;
+			productName = SparrowMesh;
 		};
 		80C17236247C09010097F2AE /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;

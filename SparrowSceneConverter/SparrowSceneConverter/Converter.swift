@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SparrowAsset
+import SparrowMesh
 import ArgumentParser
 
 struct Converter: ParsableCommand {
@@ -37,7 +37,7 @@ struct Converter: ParsableCommand {
 
 extension Converter {
     
-    func convert(url: URL) throws -> SAFileRef {
+    func convert(url: URL) throws -> SPMFileRef {
         let name = url.deletingPathExtension().lastPathComponent // + "_gltf"
         let outputUrl = URL(fileURLWithPath: "/Users/joskuijpers/Development/ISOGame/SparrowEngine/SparrowEngine/Assets/\(name)/\(name).spa")
         
@@ -47,7 +47,7 @@ extension Converter {
         let fileRef = try ObjImporter.import(from: url, to: outputUrl, options: [.generateTangents, .uniformScale(1)])
         let end = DispatchTime.now()
         
-        print(fileRef.asset)
+        print(fileRef.file)
 
         print("Import duration: \(Int(ceil(Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000_000))) seconds")
         
@@ -55,22 +55,22 @@ extension Converter {
         try FileManager.default.createDirectory(at: outputUrl.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         
         // Write in binary
-        try SparrowAssetWriter.write(fileRef)
+        try SPMFileWriter.write(fileRef)
         
         return fileRef
     }
     
-    func printAssetSummary(_ fileRef: SAFileRef) {
+    func printAssetSummary(_ fileRef: SPMFileRef) {
         print()
         print("Asset info:")
         
-        let urls = fileRef.asset.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: fileRef.url).absoluteURL }
+        let urls = fileRef.file.textures.map { URL(fileURLWithPath: $0.relativePath, relativeTo: fileRef.url).absoluteURL }
         print("  Number of textures: \(urls.count), of which unique: \(Set(urls).count)")
-        print("  Number of materials: \(fileRef.asset.materials.count)")
-        print("  Number of meshes: \(fileRef.asset.meshes.count)")
-        print("  Number of submeshes: \(fileRef.asset.meshes.reduce(0,{ $0 + $1.submeshes.count }))")
-        print("  Number of buffers: \(fileRef.asset.buffers.count)")
-        print("  Number of bufferviews: \(fileRef.asset.bufferViews.count)")
+        print("  Number of materials: \(fileRef.file.materials.count)")
+        print("  Number of meshes: \(fileRef.file.mesh == nil ? 0 : 1)")
+        print("  Number of submeshes: \(fileRef.file.mesh?.submeshes.count ?? 0))")
+        print("  Number of buffers: \(fileRef.file.buffers.count)")
+        print("  Number of bufferviews: \(fileRef.file.bufferViews.count)")
     }
 
 }

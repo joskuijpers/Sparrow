@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SparrowAsset
+import SparrowMesh
 import simd
 
 final class ObjImporter {
@@ -21,7 +21,7 @@ final class ObjImporter {
     
     private var objFile: ObjFile?
     private var mtlFile: MtlFile?
-    private var asset: SAAsset!
+    private var asset: SPMFile!
     
     private var generatedMaterials: [String:Int] = [:]
     
@@ -49,7 +49,7 @@ final class ObjImporter {
         self.outputUrl = outputUrl
         
         self.objectName = inputUrl.deletingPathExtension().lastPathComponent
-
+        
         self.generateTangents = generateTangents
         self.positionScale = uniformScale
         
@@ -59,7 +59,7 @@ final class ObjImporter {
     /**
      Import an asset from given URL.
      */
-    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SAFileRef {
+    static func `import`(from url: URL, to outputUrl: URL, options: [Options] = []) throws -> SPMFileRef {
         var generateTangents = false
         var uniformScale: Float = 1
         for option in options {
@@ -72,16 +72,16 @@ final class ObjImporter {
         }
         
         let importer = try ObjImporter(inputUrl: url, outputUrl: outputUrl, generateTangents: generateTangents, uniformScale: uniformScale)
-        let asset = try importer.generate()
+        let mesh = try importer.generate()
         
-        return SAFileRef(url: outputUrl, asset: asset)
+        return SPMFileRef(url: outputUrl, file: mesh)
     }
 }
 
 private extension ObjImporter {
     
     /// Generate the asset
-    private func generate() throws -> SAAsset {
+    private func generate() throws -> SPMFile {
         let objParser = try ObjParser(url: inputUrl, generateTangents: generateTangents)
         objFile = try objParser.parse()
         
@@ -105,16 +105,16 @@ private extension ObjImporter {
      We first build a vertex list and index list for all submeshes. The submeshes put all indices behind each other,
      creating the index buffer. In front of that we put the final vertex buffer. Each submes has a buffer view pointing somewhere
      in the buffer. We try to optimize the indices by using an index as small as possible. On top of that, we only keep unique vertices.
-    */
+     */
     func buildAsset() throws {
         let obj = objFile!
         
-        asset = SAAsset(generator: "SparrowSceneConverter", origin: inputUrl.path)
+        asset = SPMFile(generator: "SparrowSceneConverter", origin: inputUrl.path)
         
         // Build all submeshes and buffers depending on config
-        var meshBounds = SABounds()
+        var meshBounds = SPMBounds()
         var vertexDataSize: Int = 0
-        var submeshes: [SASubmesh]
+        var submeshes: [SPMSubmesh]
         var data: Data
         
         if generateTangents {
@@ -122,11 +122,11 @@ private extension ObjImporter {
         } else {
             (submeshes, data) = try generateSubmeshesAndBuffers(obj: obj, meshBounds: &meshBounds, vertexDataSize: &vertexDataSize, vertexType: TexturedVertex.self)
         }
-    
-        // Add to file
-        let buffer = addBuffer(SABuffer(data: data))
         
-        var vertexAttributes: [SAVertexAttribute] = [
+        // Add to file
+        let buffer = addBuffer(SPMBuffer(data: data))
+        
+        var vertexAttributes: [SPMVertexAttribute] = [
             .position,
             .normal
         ]
@@ -135,44 +135,43 @@ private extension ObjImporter {
             vertexAttributes.append(.bitangent)
         }
         vertexAttributes.append(.uv0)
-
+        
         
         // Add buffer view for the vertices
-        let vertexBufferView = addBufferView(SABufferView(buffer: buffer, offset: 0, length: vertexDataSize))
+        let vertexBufferView = addBufferView(SPMBufferView(buffer: buffer, offset: 0, length: vertexDataSize))
         
         // Then finally create the mesh
-        let mesh = SAMesh(name: objectName,
-                          submeshes: submeshes,
-                          vertexBuffer: vertexBufferView,
-                          vertexAttributes: vertexAttributes,
-                          bounds: meshBounds)
-        addMesh(mesh)
+        setMesh(SPMMesh(name: objectName,
+                        submeshes: submeshes,
+                        vertexBuffer: vertexBufferView,
+                        vertexAttributes: vertexAttributes,
+                        bounds: meshBounds))
         
         // Update all buffer views with the buffer index, as originally the view pointed to the offset
         // from first index buffer, and did not point to the buffer at all
         for submesh in submeshes {
             let bv = asset.bufferViews[submesh.indices]
             
-            let newView = SABufferView(buffer: buffer, offset: bv.offset + vertexDataSize, length: bv.length)
+            let newView = SPMBufferView(buffer: buffer, offset: bv.offset + vertexDataSize, length: bv.length)
             
             asset.bufferViews[submesh.indices] = newView
         }
     }
     
     /// Generate the list of submeshes with indexed buffers
-    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SABounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SASubmesh], Data) where V: ObjTransferVertex {
+    private func generateSubmeshesAndBuffers<V>(obj: ObjFile, meshBounds: inout SPMBounds, vertexDataSize: inout Int, vertexType: V.Type) throws -> ([SPMSubmesh], Data) where V: ObjTransferVertex {
         var vertexBuffer: [V] = []
         var vertexMap: [V:Int] = [:]
-
-        var submeshes: [SASubmesh] = []
+        
+        var submeshes: [SPMSubmesh] = []
         
         var indexBuffer = Data()
         
         // Add indices and vertices for each submesh
         for (_, submesh) in obj.submeshes.enumerated() {
-            var submeshBounds = SABounds()
+            var submeshBounds = SPMBounds()
             var submeshIndexBuffer: [UInt32] = []
-
+            
             for face in submesh.faces {
                 for vertexIndex in face.vertIndices {
                     let vertex = submesh.vertices[vertexIndex]
@@ -198,26 +197,26 @@ private extension ObjImporter {
                     submeshBounds = submeshBounds.containing(position)
                 }
             }
-
+            
             // Create material
             let material = try generateMaterial(submesh: submesh)
             
             // Put index buffer with submesh + name + material + bounds.
             let ibSize = MemoryLayout<UInt32>.stride * submeshIndexBuffer.count
             let ibData = Data(bytes: submeshIndexBuffer, count: ibSize)
-
+            
             // View into the final index buffer
-            let bufferView = addBufferView(SABufferView(buffer: -1, offset: indexBuffer.count, length: ibSize))
+            let bufferView = addBufferView(SPMBufferView(buffer: -1, offset: indexBuffer.count, length: ibSize))
             
             // Add to final index buffer
             indexBuffer.append(ibData)
             
-            let submesh = SASubmesh(name: submesh.name,
-                                    indices: bufferView,
-                                    material: material,
-                                    bounds: submeshBounds,
-                                    indexType: .uint32,
-                                    primitiveType: .triangle)
+            let submesh = SPMSubmesh(name: submesh.name,
+                                     indices: bufferView,
+                                     material: material,
+                                     bounds: submeshBounds,
+                                     indexType: .uint32,
+                                     primitiveType: .triangle)
             submeshes.append(submesh)
             
             // Update bounds of mesh using bounds of submesh
@@ -233,7 +232,7 @@ private extension ObjImporter {
         // Create a data buffer of vertex+index buffer
         var data = Data(bytes: &vertexBuffer, count: vertexDataSize)
         data.append(indexBuffer)
-
+        
         return (submeshes, data)
     }
     
@@ -244,7 +243,7 @@ private extension ObjImporter {
                 return index
             }
             
-            var albedo = SAMaterialProperty.none
+            var albedo = SPMMaterialProperty.none
             if let texture = mat.albedoTexture {
                 let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_albedo.png", allowingAlpha: true)
                 albedo = .texture(textureId)
@@ -252,13 +251,13 @@ private extension ObjImporter {
                 albedo = .color(float4(mat.albedoColor, mat.alpha))
             }
             
-            var normals = SAMaterialProperty.none
+            var normals = SPMMaterialProperty.none
             if let texture = mat.normalTexture {
                 let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_normal.png", allowingAlpha: false)
                 normals = .texture(textureId)
             }
             
-            var emissive = SAMaterialProperty.none
+            var emissive = SPMMaterialProperty.none
             if let texture = mat.emissiveTexture {
                 let textureId = try addTexture(texture, copyingWithName: "\(objectName)_\(mat.name)_emission.png", allowingAlpha: false)
                 emissive = .texture(textureId)
@@ -270,16 +269,16 @@ private extension ObjImporter {
                     emissive = .color(float4(mat.emissiveColor, 1))
                 }
             }
-
+            
             // If there are no textures used at all, supply colors. Otherwise, combine existing textures,
             // possibly with colors, into a single texture.
-            var rma = SAMaterialProperty.none
+            var rma = SPMMaterialProperty.none
             
             if mat.roughnessTexture == nil && mat.metallicTexture == nil && mat.aoTexture == nil {
                 rma = .color([mat.roughness, mat.metallic, 1, 0])
             } else {
                 let url = outputUrl.deletingLastPathComponent().appendingPathComponent("\(objectName)_\(mat.name)_rmo.png")
-
+                
                 try textureTool.combine(red: mat.roughnessTexture != nil ? .image(mat.roughnessTexture!) : .color(mat.roughness),
                                         green: mat.metallicTexture != nil ? .image(mat.metallicTexture!) : .color(mat.metallic),
                                         blue: mat.aoTexture != nil ? .image(mat.aoTexture!) : .color(1),
@@ -290,15 +289,15 @@ private extension ObjImporter {
                 rma = .texture(addTexture(url))
             }
             
-            let m = SAMaterial(name: mat.name,
-                               albedo: albedo,
-                               normals: normals,
-                               roughnessMetalnessOcclusion: rma,
-                               emission: emissive,
-                               alphaMode: mat.hasAlpha ? .mask : .opaque,
-                               alphaCutoff: 0.5,
-                               doubleSided: false)
-
+            let m = SPMMaterial(name: mat.name,
+                                albedo: albedo,
+                                normals: normals,
+                                roughnessMetalnessOcclusion: rma,
+                                emission: emissive,
+                                alphaMode: mat.hasAlpha ? .mask : .opaque,
+                                alphaCutoff: 0.5,
+                                doubleSided: false)
+            
             let matIndex = addMaterial(m)
             generatedMaterials[mat.name] = matIndex
             
@@ -319,8 +318,8 @@ private extension ObjImporter {
         }
         
         print("[tex] Adding texture '\(relativePath)'")
-
-        asset.textures.append(SATexture(relativePath: relativePath))
+        
+        asset.textures.append(SPMTexture(relativePath: relativePath))
         return asset.textures.count - 1
     }
     
@@ -341,28 +340,28 @@ private extension ObjImporter {
         }
         
         print("[tex] Adding converted texture '\(relativePath)'")
-
-        asset.textures.append(SATexture(relativePath: relativePath))
+        
+        asset.textures.append(SPMTexture(relativePath: relativePath))
         return asset.textures.count - 1
     }
     
-    func addMaterial(_ material: SAMaterial) -> Int {
+    func addMaterial(_ material: SPMMaterial) -> Int {
         asset.materials.append(material)
         return asset.materials.count - 1
     }
     
-    func addBufferView(_ bufferView: SABufferView) -> Int {
+    func addBufferView(_ bufferView: SPMBufferView) -> Int {
         asset.bufferViews.append(bufferView)
         return asset.bufferViews.count - 1
     }
     
-    func addBuffer(_ buffer: SABuffer) -> Int {
+    func addBuffer(_ buffer: SPMBuffer) -> Int {
         asset.buffers.append(buffer)
         return asset.buffers.count - 1
     }
     
-    func addMesh(_ mesh: SAMesh) {
-        asset.meshes.append(mesh)
+    func setMesh(_ mesh: SPMMesh) {
+        asset.mesh = mesh
     }
 }
 
