@@ -13,13 +13,13 @@ let package = Package(
             targets: ["SparrowEngine2"]),
     ],
     dependencies: [
-        .package(path: "../SparrowAsset"),
+        .package(path: "../SparrowMesh"),
         .package(path: "../SparrowECS"),
     ],
     targets: [
         .target(
             name: "SparrowEngine2",
-            dependencies: ["SparrowAsset", "SparrowECS"]),
+            dependencies: ["SparrowMesh", "SparrowECS"]),
         .testTarget(
             name: "SparrowEngine2Tests",
             dependencies: ["SparrowEngine2"]),

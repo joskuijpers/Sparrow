@@ -17,7 +17,6 @@
 		8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5B2427A9610089FE11 /* LightCulling.metal */; };
 		8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */; };
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
-		806CA493247C897000EAD6AC /* SparrowAsset in Frameworks */ = {isa = PBXBuildFile; productRef = 806CA492247C897000EAD6AC /* SparrowAsset */; };
 		80821D3B24858A340047B192 /* SparrowECS in Frameworks */ = {isa = PBXBuildFile; productRef = 80821D3A24858A340047B192 /* SparrowECS */; };
 		8099AAF523BF7AB700E03CE0 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF423BF7AB700E03CE0 /* Light.swift */; };
 		8099AAF723CCF60100E03CE0 /* RenderQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8099AAF623CCF60100E03CE0 /* RenderQueue.swift */; };
@@ -74,7 +73,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				806CA493247C897000EAD6AC /* SparrowAsset in Frameworks */,
 				80821D3B24858A340047B192 /* SparrowECS in Frameworks */,
 				804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */,
 			);
@@ -199,7 +197,6 @@
 			);
 			name = SparrowEngine;
 			packageProductDependencies = (
-				806CA492247C897000EAD6AC /* SparrowAsset */,
 				80821D3A24858A340047B192 /* SparrowECS */,
 				804EE35A2485917F00ADD319 /* SparrowEngine2 */,
 			);
@@ -484,10 +481,6 @@
 		804EE35A2485917F00ADD319 /* SparrowEngine2 */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SparrowEngine2;
-		};
-		806CA492247C897000EAD6AC /* SparrowAsset */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SparrowAsset;
 		};
 		80821D3A24858A340047B192 /* SparrowECS */ = {
 			isa = XCSwiftPackageProductDependency;

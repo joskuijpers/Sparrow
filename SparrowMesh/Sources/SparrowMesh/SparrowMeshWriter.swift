@@ -24,7 +24,7 @@ public class SparrowMeshWriter {
     
     /// Write the asset to given URL
     public static func write(_ asset: SAAsset, to url: URL) throws {
-        let writer = SparrowAssetWriter(asset: asset)
+        let writer = SparrowMeshWriter(asset: asset)
         
         let data = Data(try writer.toBytes())
         try data.write(to: url)
@@ -39,7 +39,7 @@ public class SparrowMeshWriter {
     
     /// Write the asset to a Data instance.
     public static func write(_ asset: SAAsset, to data: inout Data) throws {
-        let writer = SparrowAssetWriter(asset: asset)
+        let writer = SparrowMeshWriter(asset: asset)
 
         try data.append(contentsOf: writer.toBytes())
     }

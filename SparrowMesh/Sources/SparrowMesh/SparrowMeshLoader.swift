@@ -40,18 +40,18 @@ public class SparrowMeshLoader {
         let bytes = [UInt8](data)
         
         // Check if data > header size
-        if bytes.count <= MemoryLayout<SAFileHeader>.size {
+        if bytes.count <= MemoryLayout<SPMFileHeader>.size {
             throw Error.invalidAssetFormat
         }
         
         // Verify header indication
-        let validHeader = try BinaryEncoder.encode(SAFileHeaderIndicator())
+        let validHeader = try BinaryEncoder.encode(SPMFileHeaderIndicator())
         if Array(bytes[0..<validHeader.count]) != validHeader {
             throw Error.invalidAssetFormat
         }
         
         // Read header. Check version. Do not assume the rest of the file is decodable
-        let version = try BinaryDecoder.decode(SAFileHeader.SAFileVersion.self, data: [bytes[3]])
+        let version = try BinaryDecoder.decode(SPMFileHeader.SPMFileVersion.self, data: [bytes[3]])
         if version != .version1 { // TODO: PUT HIS 1 SOMEWHERE
             throw Error.invalidAssetVersion
         }
@@ -79,7 +79,7 @@ public class SparrowMeshLoader {
         }
         
         let data = try Data(contentsOf: url, options: .dataReadingMapped)
-        let loader = SparrowAssetLoader(data: data)
+        let loader = SparrowMeshLoader(data: data)
 
         let asset = try loader.load()
         
@@ -88,7 +88,7 @@ public class SparrowMeshLoader {
     
     /// Load an asset from given Data.
     public static func load(from data: Data) throws -> SAAsset {
-        let loader = SparrowAssetLoader(data: data)
+        let loader = SparrowMeshLoader(data: data)
 
         return try loader.load()
     }

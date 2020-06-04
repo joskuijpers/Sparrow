@@ -11,18 +11,18 @@ import SparrowBinaryCoder
 /// Sparrow Asset file format.
 public struct SAAsset: BinaryCodable {
     /// File header with indicator, version, generator, and origin.
-    let header: SAFileHeader
+    let header: SPMFileHeader
     
     /// File checksum.
     ///
     /// Composed of the sizes of the content lists.
     private var checksum: UInt = 0
     
+    /// Mesh.
+    public var mesh: SAMesh? = nil
+    
     /// List of materials.
     public var materials: [SAMaterial] = []
-    
-    /// List of meshes.
-    public var meshes: [SAMesh] = []
     
     /// List of textures.
     public var textures: [SATexture] = []
@@ -35,7 +35,7 @@ public struct SAAsset: BinaryCodable {
     
     /// Create an empty asset with a filled header.
     public init(generator: String, origin: String?) {
-        self.header = SAFileHeader(generator: generator, origin: origin)
+        self.header = SPMFileHeader(generator: generator, origin: origin)
     }
 }
 
@@ -50,7 +50,7 @@ extension SAAsset {
         var checksum: UInt = 0
         
         checksum = checksum * 11 + UInt(materials.count)
-        checksum = checksum * 11 + UInt(meshes.count)
+        checksum = checksum * 11 + UInt(mesh == nil ? 0 : 1)
         checksum = checksum * 11 + UInt(textures.count)
         checksum = checksum * 11 + UInt(buffers.count)
         checksum = checksum * 11 + UInt(bufferViews.count)

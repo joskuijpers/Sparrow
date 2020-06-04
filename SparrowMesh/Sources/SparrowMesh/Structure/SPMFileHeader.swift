@@ -1,6 +1,6 @@
 //
-//  SAFileHeader.swift
-//  SparrowAsset
+//  SPMFileHeader.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 10/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -9,12 +9,12 @@
 import SparrowBinaryCoder
 
 /// Sparrow Asset file header.
-struct SAFileHeader: BinaryCodable {
+struct SPMFileHeader: BinaryCodable {
     /// Indicator of the SparrowAsset file: a prefix.
-    private(set) var indicator = SAFileHeaderIndicator() // Must be a var so codable can override it
+    private(set) var indicator = SPMFileHeaderIndicator() // Must be a var so codable can override it
     
     /// Version of the file format
-    private(set) var version: SAFileVersion = .version1
+    private(set) var version: SPMFileVersion = .version1
     
     /// The generator used to generate the file.
     let generator: String
@@ -23,7 +23,7 @@ struct SAFileHeader: BinaryCodable {
     let origin: String
     
     /// The version of the asset file format
-    enum SAFileVersion: UInt8, BinaryCodable {
+    enum SPMFileVersion: UInt8, BinaryCodable {
         case version1 = 1
     }
     
@@ -34,10 +34,10 @@ struct SAFileHeader: BinaryCodable {
     }
 }
 
-/// File header indicator: 3 bytes 'SA '
-struct SAFileHeaderIndicator: BinaryCodable {
+/// File header indicator: 3 bytes 'SPM '
+struct SPMFileHeaderIndicator: BinaryCodable {
     // A string has a size encoded which we want to ignore for this special case.
     private var p1 = UInt8("S".utf8.first!)
     private var p2 = UInt8("P".utf8.first!)
-    private var p3 = UInt8("A".utf8.first!)
+    private var p3 = UInt8("M".utf8.first!)
 }
