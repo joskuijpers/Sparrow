@@ -163,6 +163,13 @@ public class MeshLoader {
                 let saTexture = saAsset.textures[textureIndex]
 
                 do {
+//                    if saTexture.relativePath == "ironSphere_phong2SG_albedo.png" {
+//                        let url = URL(string: "ironSphere_phong2SG_albedo.astc", relativeTo: saFileRef.url)!
+//                        let texture = try textureLoader.load(from: url)
+//                        
+//                        return texture.mtlTexture
+//                    }
+                    
                     let url = URL(string: saTexture.relativePath, relativeTo: saFileRef.url)!
                     let texture = try textureLoader.load(from: url)
                     

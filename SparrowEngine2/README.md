@@ -167,6 +167,13 @@ Nexus.services.set<T>(_ service: T) where T : Service
 - Tag: to add hashed tag for finding entities in World (1 or more)
 
 - Link system and child entity system is different? (Need to try in the editor)
+- Owner component allows an entity to be owned by another -> separate from sscenegraph. We can use this for assets/prefabs. When parent is destructed, so are children
+    - component has list of chidlren IDs
+    - function to get children [entities]
+    - function to add children
+    - function to remove children
+    - function to remove all children
+    - 
 
 ### Physics
 - Physics Body
