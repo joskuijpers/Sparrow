@@ -1,6 +1,6 @@
 //
-//  SparrowAssetLoader.swift
-//  SparrowSceneConverter
+//  SparrowMeshLoader.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 10/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -10,9 +10,9 @@ import Foundation
 import SparrowBinaryCoder
 
 /**
- Asset load for SparrowAsset (.sa) files.
+ Asset load for SparrowMesh (.spm) files.
  */
-public class SparrowAssetLoader {
+public class SparrowMeshLoader {
     private let data: Data
     
     enum Error: Swift.Error {
@@ -28,7 +28,7 @@ public class SparrowAssetLoader {
         /// The checksum was not valid.
         case invalidChecksum
         
-        /// The extension was not `sa`.
+        /// The extension was not `spm`.
         case invalidExtension(String)
     }
     
@@ -74,7 +74,7 @@ public class SparrowAssetLoader {
     
     /// Load an asset from given URL.
     public static func load(from url: URL) throws -> SAFileRef {
-        if url.pathExtension != "spa" {
+        if url.pathExtension != "spm" {
             throw Error.invalidExtension(url.pathExtension)
         }
         

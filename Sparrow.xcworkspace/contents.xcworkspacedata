@@ -11,10 +11,10 @@
       location = "group:SparrowEngine2">
    </FileRef>
    <FileRef
-      location = "group:SparrowECS">
+      location = "group:SparrowMesh">
    </FileRef>
    <FileRef
-      location = "group:SparrowAsset">
+      location = "group:SparrowECS">
    </FileRef>
    <FileRef
       location = "group:SparrowBinaryCoder">

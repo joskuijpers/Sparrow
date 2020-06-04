@@ -1,6 +1,6 @@
 //
-//  SparrowAssetWriter.swift
-//  SparrowSceneConverter
+//  SparrowMeshWriter.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 10/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -9,8 +9,8 @@
 import Foundation
 import SparrowBinaryCoder
 
-/// A writer for asset to the file system.
-public class SparrowAssetWriter {
+/// A writer for mesh to the file system.
+public class SparrowMeshWriter {
     private let asset: SAAsset
     
     private init(asset: SAAsset) {
@@ -29,7 +29,7 @@ public class SparrowAssetWriter {
         let data = Data(try writer.toBytes())
         try data.write(to: url)
         
-        print("Written SparrowAsset of \(data.count / 1024) KiB to \(url.path)")
+        print("Written SparrowMesh of \(data.count / 1024) KiB to \(url.path)")
     }
     
     /// Write the asset in the reference to the url in the reference.

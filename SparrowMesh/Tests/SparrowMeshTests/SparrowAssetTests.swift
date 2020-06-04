@@ -1,7 +1,7 @@
 import XCTest
-@testable import SparrowAsset
+@testable import SparrowMesh
 
-final class SparrowAssetTests: XCTestCase {
+final class SparrowMeshTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
