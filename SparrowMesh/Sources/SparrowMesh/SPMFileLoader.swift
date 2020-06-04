@@ -1,5 +1,5 @@
 //
-//  SparrowMeshLoader.swift
+//  SPMFileLoader.swift
 //  SparrowMesh
 //
 //  Created by Jos Kuijpers on 10/05/2020.
@@ -12,7 +12,7 @@ import SparrowBinaryCoder
 /**
  Asset load for SparrowMesh (.spm) files.
  */
-public class SparrowMeshLoader {
+public class SPMFileLoader {
     private let data: Data
     
     enum Error: Swift.Error {
@@ -36,7 +36,7 @@ public class SparrowMeshLoader {
         self.data = data
     }
     
-    private func load() throws -> SAAsset {
+    private func load() throws -> SPMFile {
         let bytes = [UInt8](data)
         
         // Check if data > header size
@@ -56,10 +56,10 @@ public class SparrowMeshLoader {
             throw Error.invalidAssetVersion
         }
 
-        var asset: SAAsset!
+        var asset: SPMFile!
         do {
             // Read the whole file
-            asset = try BinaryDecoder.decode(SAAsset.self, data: bytes)
+            asset = try BinaryDecoder.decode(SPMFile.self, data: bytes)
         } catch {
             throw Error.brokenFile(error)
         }
@@ -73,22 +73,22 @@ public class SparrowMeshLoader {
     }
     
     /// Load an asset from given URL.
-    public static func load(from url: URL) throws -> SAFileRef {
+    public static func load(from url: URL) throws -> SPMFileRef {
         if url.pathExtension != "spm" {
             throw Error.invalidExtension(url.pathExtension)
         }
         
         let data = try Data(contentsOf: url, options: .dataReadingMapped)
-        let loader = SparrowMeshLoader(data: data)
+        let loader = SPMFileLoader(data: data)
 
-        let asset = try loader.load()
+        let file = try loader.load()
         
-        return SAFileRef(url: url, asset: asset)
+        return SPMFileRef(url: url, file: file)
     }
     
     /// Load an asset from given Data.
-    public static func load(from data: Data) throws -> SAAsset {
-        let loader = SparrowMeshLoader(data: data)
+    public static func load(from data: Data) throws -> SPMFile {
+        let loader = SPMFileLoader(data: data)
 
         return try loader.load()
     }

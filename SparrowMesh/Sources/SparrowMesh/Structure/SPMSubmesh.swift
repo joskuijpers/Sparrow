@@ -1,6 +1,6 @@
 //
-//  SASubmesh.swift
-//  SparrowAsset
+//  SPMSubmesh.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 02/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -12,7 +12,7 @@ import Metal
 /// A submesh of a mesh.
 ///
 /// Contains a material and a reference to an index buffer, together with some utilities.
-public struct SASubmesh: BinaryCodable {
+public struct SPMSubmesh: BinaryCodable {
     
     /// Index type and size.
     public enum IndexType: UInt8, BinaryCodable {
@@ -55,7 +55,7 @@ public struct SASubmesh: BinaryCodable {
     public let material: Int
     
     /// Bounds in model space.
-    public let bounds: SABounds
+    public let bounds: SPMBounds
     
     /// Index type: size of an index in the index buffer
     public let indexType: IndexType
@@ -64,7 +64,7 @@ public struct SASubmesh: BinaryCodable {
     public let primitiveType: PrimitiveType
     
     /// Create a new submesh.
-    public init(name: String, indices: Int, material: Int, bounds: SABounds, indexType: IndexType, primitiveType: PrimitiveType) {
+    public init(name: String, indices: Int, material: Int, bounds: SPMBounds, indexType: IndexType, primitiveType: PrimitiveType) {
         self.name = name
         self.indices = indices
         self.material = material

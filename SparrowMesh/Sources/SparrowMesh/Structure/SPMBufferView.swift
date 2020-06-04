@@ -1,6 +1,6 @@
 //
-//  SABufferView.swift
-//  SparrowAsset
+//  SPMBufferView.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 03/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -9,7 +9,7 @@
 import SparrowBinaryCoder
 
 /// A view into a buffer.
-public struct SABufferView: BinaryCodable {
+public struct SPMBufferView: BinaryCodable {
     /// Index of the buffer.
     public let buffer: Int
     

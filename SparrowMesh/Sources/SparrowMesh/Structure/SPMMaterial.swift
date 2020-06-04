@@ -1,6 +1,6 @@
 //
-//  SAMaterial.swift
-//  SparrowAsset
+//  SPMMaterial.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 01/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -10,21 +10,21 @@ import simd
 import SparrowBinaryCoder
 
 /// A material.
-public struct SAMaterial: BinaryCodable {
+public struct SPMMaterial: BinaryCodable {
     /// Name of the material. Might not be unique.
     public let name: String
     
     /// Albedo (base color) property.
-    public let albedo: SAMaterialProperty
+    public let albedo: SPMMaterialProperty
     
     /// Normals property. Normals are in tangent space.
-    public let normals: SAMaterialProperty
+    public let normals: SPMMaterialProperty
     
     /// Roughness/metalness/occlusion property. The red channel is roughness, metalness is in green and occlusion in blue.
-    public let roughnessMetalnessOcclusion: SAMaterialProperty
+    public let roughnessMetalnessOcclusion: SPMMaterialProperty
     
     /// Emission property. All zeroes has no emission.
-    public let emission: SAMaterialProperty
+    public let emission: SPMMaterialProperty
 
 //    @property (nonatomic, assign) simd_float4 baseColorFactor;
 //    @property (nonatomic, assign) float metalnessFactor;
@@ -34,7 +34,7 @@ public struct SAMaterial: BinaryCodable {
 //    @property (nonatomic, assign) simd_float3 emissiveFactor;
     
     /// Alpha mode, decides render mode and whether blending is active.
-    public let alphaMode: SAAlphaMode
+    public let alphaMode: SPMAlphaMode
     
     /// Alpha cutoff value.
     public let alphaCutoff: Float
@@ -44,11 +44,11 @@ public struct SAMaterial: BinaryCodable {
     
     /// Create a material.
     public init(name: String,
-                albedo: SAMaterialProperty,
-                normals: SAMaterialProperty,
-                roughnessMetalnessOcclusion: SAMaterialProperty,
-                emission: SAMaterialProperty,
-                alphaMode: SAAlphaMode,
+                albedo: SPMMaterialProperty,
+                normals: SPMMaterialProperty,
+                roughnessMetalnessOcclusion: SPMMaterialProperty,
+                emission: SPMMaterialProperty,
+                alphaMode: SPMAlphaMode,
                 alphaCutoff: Float,
                 doubleSided: Bool) {
         self.name = name
@@ -63,7 +63,7 @@ public struct SAMaterial: BinaryCodable {
 }
 
 /// A material property
-public enum SAMaterialProperty {
+public enum SPMMaterialProperty {
     /// There is no value.
     case none
     /// A vector value, often interpreted as a color.
@@ -73,7 +73,7 @@ public enum SAMaterialProperty {
 }
 
 /// Alpha mode of the renderable.
-public enum SAAlphaMode: UInt8, BinaryCodable {
+public enum SPMAlphaMode: UInt8, BinaryCodable {
     /// The mesh is opaque. Depth testing applies to the whole mesh.
     case opaque
     
@@ -85,7 +85,7 @@ public enum SAAlphaMode: UInt8, BinaryCodable {
 }
 
 // Due to associated values, the material property needs a custom encoder and decoder.
-extension SAMaterialProperty: BinaryCodable {
+extension SPMMaterialProperty: BinaryCodable {
     enum CodingError: Error {
         /// The value is not known.
         case unknownValue
@@ -97,13 +97,13 @@ extension SAMaterialProperty: BinaryCodable {
         
         switch type {
         case 0:
-            self = SAMaterialProperty.none
+            self = SPMMaterialProperty.none
         case 1:
             let color = try container.decode(SIMD4<Float>.self)
-            self = SAMaterialProperty.color(color)
+            self = SPMMaterialProperty.color(color)
         case 2:
             let texture = try container.decode(Int.self)
-            self = SAMaterialProperty.texture(texture)
+            self = SPMMaterialProperty.texture(texture)
         default:
             throw CodingError.unknownValue
         }

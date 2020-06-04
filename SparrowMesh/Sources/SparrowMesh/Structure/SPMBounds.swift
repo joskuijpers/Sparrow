@@ -1,6 +1,6 @@
 //
-//  SABounds.swift
-//  SparrowAsset
+//  SPMBounds.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 10/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -10,7 +10,7 @@ import SparrowBinaryCoder
 import simd
 
 /// Axis-aligned bounds.
-public struct SABounds: BinaryCodable {
+public struct SPMBounds: BinaryCodable {
     /// Minimum-point.
     public let min: SIMD3<Float>
     
@@ -30,12 +30,12 @@ public struct SABounds: BinaryCodable {
     }
     
     /// Create a new bounds containing this and the given bounds.
-    public func containing(_ other: SABounds) -> SABounds {
-        return SABounds(min: simd.min(min, other.min), max: simd.max(max, other.max))
+    public func containing(_ other: SPMBounds) -> SPMBounds {
+        return SPMBounds(min: simd.min(min, other.min), max: simd.max(max, other.max))
     }
     
     /// Create a new bounds containing this and the the given point
-    public func containing(_ other: SIMD3<Float>) -> SABounds {
-        return SABounds(min: simd.min(min, other), max: simd.max(max, other))
+    public func containing(_ other: SIMD3<Float>) -> SPMBounds {
+        return SPMBounds(min: simd.min(min, other), max: simd.max(max, other))
     }
 }

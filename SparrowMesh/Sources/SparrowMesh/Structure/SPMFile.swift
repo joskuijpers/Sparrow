@@ -1,6 +1,6 @@
 //
-//  SAAsset.swift
-//  SparrowAsset
+//  SPMFile.swift
+//  SparrowMesh
 //
 //  Created by Jos Kuijpers on 02/05/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -9,7 +9,7 @@
 import SparrowBinaryCoder
 
 /// Sparrow Asset file format.
-public struct SAAsset: BinaryCodable {
+public struct SPMFile: BinaryCodable {
     /// File header with indicator, version, generator, and origin.
     let header: SPMFileHeader
     
@@ -19,19 +19,19 @@ public struct SAAsset: BinaryCodable {
     private var checksum: UInt = 0
     
     /// Mesh.
-    public var mesh: SAMesh? = nil
+    public var mesh: SPMMesh? = nil
     
     /// List of materials.
-    public var materials: [SAMaterial] = []
+    public var materials: [SPMMaterial] = []
     
     /// List of textures.
-    public var textures: [SATexture] = []
+    public var textures: [SPMTexture] = []
     
     /// List of buffers.
-    public var buffers: [SABuffer] = []
+    public var buffers: [SPMBuffer] = []
     
     /// List of buffer views.
-    public var bufferViews: [SABufferView] = []
+    public var bufferViews: [SPMBufferView] = []
     
     /// Create an empty asset with a filled header.
     public init(generator: String, origin: String?) {
@@ -39,7 +39,7 @@ public struct SAAsset: BinaryCodable {
     }
 }
 
-extension SAAsset {
+extension SPMFile {
     /// Update the checksum to match the content.
     public mutating func updateChecksum() {
         checksum = generateChecksum()
