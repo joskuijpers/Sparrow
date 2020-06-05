@@ -12,7 +12,7 @@ import SparrowEngine2
 /**
  A submesh uses the vertex buffer from a mesh with its own index buffer. It has a single material.
  */
-struct Submesh {
+public struct Submesh {
     /// Name of the submesh for debugging
     public let name: String
     

@@ -66,7 +66,7 @@ extension RenderQueue {
  
  For example, the player camera, or a light (for shadow mapping)
  */
-class RenderSet {
+public class RenderSet {
     /// Render queue of renderabels that have no translucency, but can have cutouts
     var opaque = RenderQueue()
     
@@ -95,7 +95,7 @@ class RenderSet {
 /**
  An item to render
  */
-struct RenderQueueItem {
+public struct RenderQueueItem {
     var depth: Float = 0
     unowned var mesh: Mesh!
     var submeshIndex: uint16 = 0

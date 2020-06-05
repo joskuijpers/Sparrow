@@ -7,14 +7,14 @@
 //
 
 import Metal
-import SparrowEngine2
+import simd
 
 /**
  A mesh.
  
  Contains submeshes and other info needed for rendering.
  */
-class Mesh {
+public class Mesh {
     /// Name of the mesh. Usefull for debugging
     public let name: String
     
@@ -31,7 +31,7 @@ class Mesh {
     let vertexDescriptor: MTLVertexDescriptor
 
     /// Initialize a new mesh. This is called from Meshloader only.
-    init(name: String, bounds: Bounds, buffers: [MTLBuffer], vertexDescriptor: MTLVertexDescriptor, submeshes: [Submesh]) {
+    public init(name: String, bounds: Bounds, buffers: [MTLBuffer], vertexDescriptor: MTLVertexDescriptor, submeshes: [Submesh]) {
         self.name = name
         self.bounds = bounds
         self.buffers = buffers
@@ -44,7 +44,6 @@ class Mesh {
 
 extension Mesh {
     /// Ask the mesh to add to the render set if within frustum.
-    @inlinable
     func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
         let bounds = self.bounds * worldTransform
         if frustum.intersects(bounds: bounds) == .outside {

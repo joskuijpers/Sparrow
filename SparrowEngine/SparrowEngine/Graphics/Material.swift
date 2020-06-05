@@ -7,43 +7,42 @@
 //
 
 import Metal
-import SparrowEngine2
 
 /**
  A graphical material.
  */
-struct Material {
+public struct Material {
     /// Name of the material for debugging.
-    let name: String
+    public let name: String
     
     /// Render mode decides whether to use alpha texture.
-    let renderMode: RenderMode
+    public let renderMode: RenderMode
     
-    let albedoTexture: MTLTexture?
-    let normalTexture: MTLTexture?
-    let roughnessMetalnessOcclusionTexture: MTLTexture?
-    let emissionTexture: MTLTexture?
+    public let albedoTexture: MTLTexture?
+    public let normalTexture: MTLTexture?
+    public let roughnessMetalnessOcclusionTexture: MTLTexture?
+    public let emissionTexture: MTLTexture?
 
-    let albedo: float3
-    let roughness: Float
-    let metalness: Float
-    let emission: float3
+    public let albedo: float3
+    public let roughness: Float
+    public let metalness: Float
+    public let emission: float3
     
-    let alphaCutoff: Float
-    let alpha: Float
+    public let alphaCutoff: Float
+    public let alpha: Float
     
-    let doubleSided: Bool
+    public let doubleSided: Bool
     
     // TODO: shader! -> 2 shader function name strings
     
-    func buildShaderData() -> ShaderMaterialData {
-        ShaderMaterialData(albedo: albedo,
-                           emission: emission,
-                           metallic: metalness,
-                           roughness: roughness)
-    }
+//    func buildShaderData() -> ShaderMaterialData {
+//        ShaderMaterialData(albedo: albedo,
+//                           emission: emission,
+//                           metallic: metalness,
+//                           roughness: roughness)
+//    }
     
-    static var `default`: Material = {
+    public static var `default`: Material = {
         Material(name: "default", renderMode: .opaque,
                  albedoTexture: nil, normalTexture: nil, roughnessMetalnessOcclusionTexture: nil, emissionTexture: nil,
                  albedo: [0.5,0.5,0.5], roughness: 1, metalness: 0, emission: float3.zero,

@@ -6,11 +6,10 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowECS
 
 /// The mesh render mode.
-enum RenderMode {
+public enum RenderMode {
     /// Opaque. Pixels always show.
     case opaque
     /// Alpha testing. Pixels either show or do not show.
@@ -22,7 +21,7 @@ enum RenderMode {
 /**
  Renders meshes inserted by MeshSelector.
  */
-final class RenderMesh: Component {
+public final class RenderMesh: Component {
     public var mesh: Mesh?
 
     public let castShadows: Bool = false
