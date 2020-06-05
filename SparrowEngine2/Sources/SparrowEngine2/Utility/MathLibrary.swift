@@ -200,19 +200,19 @@ extension float4x4 {
 // MARK:- float3 Utilities
 extension float3 {
     /// Forward vector: positive Z
-    @inlinable
+    @inline(__always)
     public var forward: float3 {
         return float3(0, 0, 1)
     }
     
     /// Up vector: positive Y.
-    @inlinable
+    @inline(__always)
     public var up: float3 {
         return float3(0, 1, 0)
     }
     
     /// Right vector: positive X.
-    @inlinable
+    @inline(__always)
     public var right: float3 {
         return float3(1, 0, 0)
     }

@@ -30,10 +30,7 @@ public final class Light: Component {
     ///
     /// The actual color is determined by multiplying the `temperature` color with `color`.
     public var color = float3.one
-    
-    /// Light direction (for spot and directional lights). // TODO; replace with rotation of transform?
-    public var direction = float3(0, -1, 0)
-    
+
     /// The temperature of the light in Kelvin.
     ///
     /// The actual color is determined by multiplying the `temperature` color with `color`.

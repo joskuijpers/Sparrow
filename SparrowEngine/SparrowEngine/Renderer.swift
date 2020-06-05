@@ -180,9 +180,9 @@ class Renderer: NSObject {
         
         
         let skyLight = Nexus.shared().createEntity()
-        skyLight.add(component: Transform())
+        let tlight = skyLight.add(component: Transform())
+        tlight.rotation = simd_quatf(angle: Float(70).degreesToRadians, axis: [1, 0, 0])
         let light = skyLight.add(component: Light(type: .directional))
-        light.direction = float3(0, -5, 10)
         light.color = float3(1, 1, 1)
         
         
@@ -783,7 +783,7 @@ class LightSystem {
             case .directional:
                 lightPtr.pointee.type = LightTypeDirectional
                 lightPtr.pointee.color = light.color
-                lightPtr.pointee.position = light.direction // TODO: replace direction with transform rotation
+                lightPtr.pointee.position = transform.forward
                 lightPtr.pointee.range = Float.infinity
             case .point:
                 lightPtr.pointee.type = LightTypePoint
