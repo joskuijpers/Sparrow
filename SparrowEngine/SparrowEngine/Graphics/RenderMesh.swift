@@ -1,6 +1,6 @@
 //
-//  MeshRenderer.swift
-//  ISOGame
+//  RenderMesh.swift
+//  SparrowEngine
 //
 //  Created by Jos Kuijpers on 16/02/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
@@ -22,13 +22,16 @@ enum RenderMode {
 /**
  Renders meshes inserted by MeshSelector.
  */
-final class MeshRenderer: Component {
+final class RenderMesh: Component {
+    public var mesh: Mesh?
+
+    public let castShadows: Bool = false
+    public let receiveShadows: Bool = false
     
-    let castShadows: Bool = false
-    let receiveShadows: Bool = false
-    
-//    localToWorldMatrix (ro) (Renderer)
-//    worldToLocalMatrix (ro) (Renderer)
-    // bounds
     // enabled (Renderer)
+    
+    /// Init with a mesh
+    init(mesh: Mesh) {
+        self.mesh = mesh
+    }
 }

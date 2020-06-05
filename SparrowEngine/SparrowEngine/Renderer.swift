@@ -60,9 +60,6 @@ class Renderer: NSObject {
     
     
     
-    
-    let lights: Group<Requires1<Light>>
-    let meshes: Group<Requires2<MeshSelector, MeshRenderer>>
     var uniforms: Uniforms
     
     let cameraRenderSet = RenderSet()
@@ -139,10 +136,6 @@ class Renderer: NSObject {
         
         Renderer.nexus = Nexus() // MOVE
 
-        // Populate from nexus
-        lights = Nexus.shared().group(requires: Light.self)
-        meshes = Nexus.shared().group(requiresAll: MeshSelector.self, MeshRenderer.self)
-        
         rotatingBallSystem = RotatingBallSystem(nexus: Nexus.shared())
         cameraSystem = CameraSystem(nexus: Nexus.shared())
         meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
@@ -208,8 +201,7 @@ class Renderer: NSObject {
         
 //        let sponzaMesh = try! Renderer.meshLoader.load(name: "Sponza/sponza.spa")
         let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
-        sponza.add(component: MeshSelector(mesh: sponzaMesh))
-        sponza.add(component: MeshRenderer())
+        sponza.add(component: RenderMesh(mesh: sponzaMesh))
         
         
 //        let boxGroup = Nexus.shared().createEntity()
@@ -739,7 +731,7 @@ class CameraSystem {
         uniforms.invViewProjectionMatrix = simd_inverse(uniforms.viewProjectionMatrix)
         uniforms.invViewMatrix = simd_inverse(uniforms.viewMatrix)
         
-        uniforms.physicalSize = [Float(camera.screenSize.width), Float(camera.screenSize.height)]
+        uniforms.physicalSize = [Float(camera.screenSize.0), Float(camera.screenSize.1)]
         
         // Inverse column
         uniforms.invProjectionZ = [ uniforms.invProjectionMatrix.columns.2.z, uniforms.invProjectionMatrix.columns.2.w,
@@ -798,18 +790,18 @@ class LightSystem {
 }
 
 class MeshRenderSystem {
-    let meshes: Group<Requires3<Transform, MeshSelector, MeshRenderer>>
+    let meshes: Group<Requires2<Transform, RenderMesh>>
     
     init(nexus: Nexus) {
-        meshes =  nexus.group(requiresAll: Transform.self, MeshSelector.self, MeshRenderer.self)
+        meshes =  nexus.group(requiresAll: Transform.self, RenderMesh.self)
     }
     
     /**
      Build the render queue by filling it with the appropriate meshes
      */
     func buildQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
-        for (transform, selector, renderer) in meshes {
-            guard let mesh = selector.mesh else {
+        for (transform, renderer) in meshes {
+            guard let mesh = renderer.mesh else {
                 continue
             }
             

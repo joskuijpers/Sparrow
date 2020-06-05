@@ -22,7 +22,7 @@ class Scene {
      Scene projection size changed. Update all dependent objects (mostly cameras)
      */
     func screenSizeWillChange(to size: CGSize) {
-        camera?.onScreenSizeWillChange(to: size)
+        camera?.onScreenSizeWillChange(to: (Int(size.width), Int(size.height)))
 
         screenSize = size
     }
