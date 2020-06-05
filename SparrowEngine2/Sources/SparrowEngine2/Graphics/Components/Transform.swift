@@ -175,7 +175,8 @@ public final class Transform: Component {
     /// Set the parent of the transform.
     ///
     /// - Parameter transform: The Transform to parent onto. If nil, the transform will move to root level without a parent.
-    /// - Parameter worldPositionStays: If true, the parent-relative position, scale and rotation are modified such that the object keeps the same world space position, rotation and scale as before.
+    /// - Parameter worldPositionStays: If true, the parent-relative position, scale and rotation are modified
+    ///     such that the object keeps the same world space position, rotation and scale as before.
     public func setParent(_ transform: Transform?, worldPositionStays: Bool = true) {
         // Remove from current parent
         if let parent = parent, let index = parent.children.firstIndex(where: { $0 === self }) {
@@ -191,6 +192,7 @@ public final class Transform: Component {
     
     /// List of child transforms. Unordered.
     internal var children: [Transform] = []
+    
     /// Parent of this transform, if any.
     @usableFromInline
     internal weak var parent: Transform?
