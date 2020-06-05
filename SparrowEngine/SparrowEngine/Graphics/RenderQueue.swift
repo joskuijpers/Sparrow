@@ -7,6 +7,7 @@
 //
 
 import MetalKit
+import SparrowEngine2
 
 /**
  A render queue with optimized render item storage.

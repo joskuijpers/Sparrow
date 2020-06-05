@@ -7,6 +7,7 @@
 //
 
 import Metal
+import SparrowEngine2
 
 /**
  A graphical material.
@@ -33,14 +34,14 @@ public struct Material {
     
     public let doubleSided: Bool
     
-    // TODO: shader! -> 2 shader function name strings
+    // TODO: shader! -> 2 shader function name strings -> Shader struct
     
-//    func buildShaderData() -> ShaderMaterialData {
-//        ShaderMaterialData(albedo: albedo,
-//                           emission: emission,
-//                           metallic: metalness,
-//                           roughness: roughness)
-//    }
+    func buildShaderData() -> ShaderMaterialData {
+        ShaderMaterialData(albedo: albedo,
+                           emission: emission,
+                           metallic: metalness,
+                           roughness: roughness)
+    }
     
     public static var `default`: Material = {
         Material(name: "default", renderMode: .opaque,

@@ -8,23 +8,15 @@
 
 import SparrowECS
 
-/// The mesh render mode.
-public enum RenderMode {
-    /// Opaque. Pixels always show.
-    case opaque
-    /// Alpha testing. Pixels either show or do not show.
-    case cutOut
-    /// Translucency, also named alpha blending. Pixels can have partial alpha.
-    case translucent
-}
-
-/**
- Renders meshes inserted by MeshSelector.
- */
+/// Renders meshes inserted by MeshSelector.
 public final class RenderMesh: Component {
+    /// The mesh to render
     public var mesh: Mesh?
 
+    /// Whether the mesh casts shadows
     public let castShadows: Bool = false
+    
+    /// Whether the mesh received shadows
     public let receiveShadows: Bool = false
     
     // enabled (Renderer)
