@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B423F9F6BB00B3FB7F /* Transform.swift */; };
 		800604B723F9F85000B3FB7F /* MeshSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B623F9F85000B3FB7F /* MeshSelector.swift */; };
 		800604B923F9F87D00B3FB7F /* MeshRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800604B823F9F87D00B3FB7F /* MeshRenderer.swift */; };
 		801EC82224769B3700D5AA1D /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801EC82124769B3700D5AA1D /* Material.swift */; };
@@ -36,7 +35,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		800604B423F9F6BB00B3FB7F /* Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transform.swift; sourceTree = "<group>"; };
 		800604B623F9F85000B3FB7F /* MeshSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshSelector.swift; sourceTree = "<group>"; };
 		800604B823F9F87D00B3FB7F /* MeshRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshRenderer.swift; sourceTree = "<group>"; };
 		801EC82124769B3700D5AA1D /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
@@ -93,7 +91,6 @@
 				8099AAF623CCF60100E03CE0 /* RenderQueue.swift */,
 				801EC82124769B3700D5AA1D /* Material.swift */,
 				80A462F5238F22C5009435EB /* Camera.swift */,
-				800604B423F9F6BB00B3FB7F /* Transform.swift */,
 				800604B623F9F85000B3FB7F /* MeshSelector.swift */,
 				800604B823F9F87D00B3FB7F /* MeshRenderer.swift */,
 				80A462E6238F126A009435EB /* Mesh.swift */,
@@ -270,7 +267,6 @@
 				80A462F6238F22C5009435EB /* Camera.swift in Sources */,
 				801EC82224769B3700D5AA1D /* Material.swift in Sources */,
 				8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */,
-				800604B523F9F6BB00B3FB7F /* Transform.swift in Sources */,
 				80438C22240B2A6300099034 /* DebugRendering.swift in Sources */,
 				80A462EB238F1287009435EB /* Primitive.swift in Sources */,
 			);

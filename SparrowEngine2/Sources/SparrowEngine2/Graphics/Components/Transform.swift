@@ -6,19 +6,16 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import Foundation
 import SparrowECS
-import SparrowEngine2
+import simd
 
-/**
- Component holding transform data.
- 
- Holds position, rotation and scale. Has access to forward and right vectors, and transformation matrices
- generated from the properties.
- */
-final class Transform: Component {
+/// Component holding transform data.
+///
+/// Holds position, rotation and scale. Has access to forward and right vectors, and transformation matrices
+/// generated from the properties.
+public final class Transform: Component {
     /// Local node position
-    var localPosition: float3 = .zero {
+    public var localPosition: float3 = .zero {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
@@ -26,7 +23,7 @@ final class Transform: Component {
     }
     
     /// Local rotation quaternion
-    var localRotation = simd_quatf(ix: 0, iy: 0, iz: 0, r: 1) {
+    public var localRotation = simd_quatf(ix: 0, iy: 0, iz: 0, r: 1) {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
@@ -34,19 +31,18 @@ final class Transform: Component {
     }
     
     /// Local scale
-    var localScale: float3 = .one {
+    public var localScale: float3 = .one {
         didSet {
             modelMatrixDirty = true
             worldMatrixDirty = true
         }
     }
 
-    /**
-     Local Euler rotation. Setting this overwrites the rotation quaternion.
-     
-     It is not possible to get euler angles.
-     */
-    var eulerAngles: float3 {
+    
+    /// Local Euler rotation. Setting this overwrites the rotation quaternion.
+    ///
+    /// It is not possible to get euler angles.
+    public var eulerAngles: float3 {
         set {
             let rot = float4x4(rotation: newValue)
             localRotation = simd_quatf(rot)
@@ -59,7 +55,7 @@ final class Transform: Component {
     // MARK:- Transformation matrices
     
     /// The model matrix containing current local position, rotation and scaling transformations
-    var modelMatrix: float4x4 {
+    public var modelMatrix: float4x4 {
         if modelMatrixDirty {
             let translateMatrix = float4x4(translation: localPosition)
             let rotateMatrix = float4x4(localRotation)
@@ -77,7 +73,7 @@ final class Transform: Component {
     private var modelMatrixDirty = true
     
     /// Matrix that transforms a point from local space to world space.
-    var localToWorldMatrix: float4x4 {
+    public var localToWorldMatrix: float4x4 {
 //        if worldMatrixDirty {
         if let parent = self.parent {
             _worldTransform = parent.localToWorldMatrix * modelMatrix
@@ -92,45 +88,39 @@ final class Transform: Component {
     private var worldMatrixDirty = true
     
     /// Matrix that transforms a point from world space to local space.
-    var worldToLocalMatrix: float4x4 {
+    public var worldToLocalMatrix: float4x4 {
         return localToWorldMatrix.inverse
     }
     
     // MARK: - Directional vectors with rotations applied.
     
-    /**
-     A normalized vector representing the red (right side) axis of the transform in world space.
-     
-     This vector has rotations applied. To get the right vector without rotations, use float3.right.
-     */
+    /// A normalized vector representing the red (right side) axis of the transform in world space.
+    ///
+    /// This vector has rotations applied. To get the right vector without rotations, use float3.right.
     @inlinable
-    var right: float3 {
+    public var right: float3 {
         return rotation.act([1, 0, 0])
     }
     
-    /**
-    A normalized vector representing the blue (forward) axis of the transform in world space.
-    
-    This vector has rotations applied. To get the forward vector without rotations, use float3.forward.
-    */
+    /// A normalized vector representing the blue (forward) axis of the transform in world space.
+    ///
+    /// This vector has rotations applied. To get the forward vector without rotations, use float3.forward.
     @inlinable
-    var forward: float3 {
+    public var forward: float3 {
         return rotation.act([0, 0, 1])
     }
     
-    /**
-    A normalized vector representing the green (upwards) axis of the transform in world space.
-    
-    This vector has rotations applied. To get the up vector without rotations, use float3.up.
-    */
+    /// A normalized vector representing the green (upwards) axis of the transform in world space.
+    ///
+    /// This vector has rotations applied. To get the up vector without rotations, use float3.up.
     @inlinable
-    var up: float3 {
+    public var up: float3 {
         return rotation.act([0, 1, 0])
     }
     
     /// The world space position of the Transform.
     @inlinable
-    var position: float3 {
+    public var position: float3 {
         get {
             localToWorldMatrix.columns.3.xyz
         }
@@ -146,7 +136,7 @@ final class Transform: Component {
     
     /// A Quaternion that stores the rotation of the Transform in world space.
     @inlinable
-    var rotation: simd_quatf {
+    public var rotation: simd_quatf {
         get {
             if let parent = parent {
                 return localRotation * parent.rotation
@@ -169,7 +159,7 @@ final class Transform: Component {
      
      - Parameter translation: Offset
      */
-    func translate(_ translation: float3) {
+    public func translate(_ translation: float3) {
         localPosition = localPosition + translation
     }
     
@@ -182,13 +172,11 @@ final class Transform: Component {
     
     // MARK: - Scene transform hierarchy
     
-    /**
-    Set the parent of the transform.
-     - Parameters:
-        - transform: The Transform to parent onto. If nil, the transform will move to root level without a parent.
-        - worldPositionStays: If true, the parent-relative position, scale and rotation are modified such that the object keeps the same world space position, rotation and scale as before.
-     */
-    func setParent(_ transform: Transform?, worldPositionStays: Bool = true) {
+    /// Set the parent of the transform.
+    ///
+    /// - Parameter transform: The Transform to parent onto. If nil, the transform will move to root level without a parent.
+    /// - Parameter worldPositionStays: If true, the parent-relative position, scale and rotation are modified such that the object keeps the same world space position, rotation and scale as before.
+    public func setParent(_ transform: Transform?, worldPositionStays: Bool = true) {
         // Remove from current parent
         if let parent = parent, let index = parent.children.firstIndex(where: { $0 === self }) {
             parent.children.remove(at: index)
@@ -204,5 +192,6 @@ final class Transform: Component {
     /// List of child transforms. Unordered.
     internal var children: [Transform] = []
     /// Parent of this transform, if any.
+    @usableFromInline
     internal weak var parent: Transform?
 }

@@ -778,7 +778,7 @@ class LightSystem {
         for (index, (transform, light)) in lights.enumerated() {
             let ptr = buffer!.contents().advanced(by: index * MemoryLayout<ShaderLightData>.stride)
             let lightPtr = ptr.assumingMemoryBound(to: ShaderLightData.self)
-
+            
             switch (light.type) {
             case .directional:
                 lightPtr.pointee.type = LightTypeDirectional
