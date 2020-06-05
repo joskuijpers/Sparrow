@@ -6,57 +6,67 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
 import SparrowECS
+import simd
 import SparrowEngine2
 
-/**
- Camera
- 
- TODO: did set any of the fov/near/far/aspect properties -> set uniforms dirty
- */
-final class Camera: Component {
+// TODO: did set any of the fov/near/far/aspect properties -> set uniforms dirty
+/// Camera
+public final class Camera: Component {
     
     /// Field of view in degrees
-    var fovDegrees: Float = 70
+    public var fovDegrees: Float = 70 {
+        didSet {
+            uniformsDirty = true
+        }
+    }
     
     /// Field of view in radians
-    var fovRadians: Float {
+    public var fovRadians: Float {
         return fovDegrees.degreesToRadians
     }
     
     /// Aspect ratio.
-    var aspect: Float = 1
+    public var aspect: Float = 1 {
+           didSet {
+               uniformsDirty = true
+           }
+       }
     
     /// Near plane distance from camera.
-    var near: Float = 0.1
+    public var near: Float = 0.1 {
+           didSet {
+               uniformsDirty = true
+           }
+       }
     
     /// Far plane distance from camera.
-    var far: Float = 10000
-    
-    internal var screenSize = CGSize.zero
+    public var far: Float = 10000 {
+           didSet {
+               uniformsDirty = true
+           }
+       }
     
     /// The view matrix maps view space to homogenous coords
-    var projectionMatrix: float4x4 {
+    public var projectionMatrix: float4x4 {
         return matrix_float4x4(perspectiveAspect: aspect, fovy: fovRadians, near: near, far: far)
     }
     
     /// The projection matrix maps world space to view space.
-    var viewMatrix: float4x4 = matrix_float4x4.identity()
+    public var viewMatrix: float4x4 = matrix_float4x4.identity()
     
     /// Frustum of the camera.
-    var frustum: Frustum?
+    public var frustum: Frustum?
     
-    var uniforms = CameraUniforms()
-    var uniformsDirty = true
+    public var uniforms = CameraUniforms()
+    public var uniformsDirty = true
+    
+    internal var screenSize = (0,0)
     
     /// Screen size changed. Updates the aspect ratio
-    func onScreenSizeWillChange(to size: CGSize) {
-        aspect = Float(size.width / size.height)
+    public func onScreenSizeWillChange(to size: (Int, Int)) {
+        aspect = Float(size.0) / Float(size.1)
         screenSize = size
         uniformsDirty = true
     }
-    
-    // TODO, maybe: static Camera.main -> Camera { SceneManager.current.camera }
-
 }
