@@ -52,6 +52,18 @@ final class BoundsTests: XCTestCase {
         XCTAssert(bounds.intersects(bounds: Bounds(center: [0, 2, 0], extents: [1, 1, 1]))) // next to each other
         XCTAssert(!bounds.intersects(bounds: Bounds(center: [0, 2.001, 0], extents: [1, 1, 1]))) // next to each other with spacing
     }
+    
+    func testEncapsulate() {
+        let b1 = Bounds(center: .zero, extents: .one)
+        let b2 = Bounds(center: .one, extents: .one)
+        let b3 = Bounds(center: [0.5, 0.5, 0.5], extents: [1.5, 1.5, 1.5])
+        
+        let e = b1.encapsulate(b2)
+        XCTAssertEqual(e.center, b3.center)
+        XCTAssertEqual(e.extents, b3.extents)
+        
+        XCTAssertEqual(b3, e)
+    }
 
     static var allTests = [
     ("testContains", testContains),

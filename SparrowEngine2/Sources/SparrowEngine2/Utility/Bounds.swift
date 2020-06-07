@@ -106,6 +106,8 @@ extension Bounds: CustomDebugStringConvertible {
     }
 }
 
+extension Bounds: Equatable {}
+
 // MARK: - Math
 
 extension Bounds {
