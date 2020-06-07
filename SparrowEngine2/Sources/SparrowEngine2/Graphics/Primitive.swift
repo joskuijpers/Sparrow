@@ -18,6 +18,14 @@ public struct Primitive {
     
     /// A box with given edge sizes.
     public static func box(device: MTLDevice, size: float3) { // -> Mesh
+        // Create vertices in a buffer
+            // vertex: pos, normal, rest is 0?
+            // or shader with less attributes....
+        // Create indices in a buffer
+        // Make submesh
+        // Make vertex attributes
+        // Make a mesh with those
+        // Return
     }
     
     /// A sphere mesh with a radius.
