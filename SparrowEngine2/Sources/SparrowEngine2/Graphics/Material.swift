@@ -8,6 +8,19 @@
 
 import Metal
 
+
+/*
+ This whole struct needs a lot of work.
+ Do we want to allow changes? We should keep the number of materials to a minimum
+ so using a class and shared/unshared materials might be a good idea.
+ 
+ Then using a var everywhere and marking as dirty might be a good idea as well
+ as it allows changing the material at runtime.
+ If dirty it would need a new pipeline.
+ 
+ 
+ */
+
 /**
  A graphical material.
  */
