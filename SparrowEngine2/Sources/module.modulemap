@@ -1,0 +1,23 @@
+//
+// module.modulemap
+// SparrowEngine
+//
+// Created by Jos Kuijpers on 6/7/20.
+// Copyright © 2020 Jos Kuijpers. All rights reserved.
+//
+
+framework module SparrowEngine {
+    header "SparrowEngine.h"
+
+    module CSparrowEngine {
+        header "CSparrowEngine.h"
+        export *
+
+        explicit module Shims {
+            header "ShaderShared.h"
+            export *
+        }
+    }
+
+    export *
+}

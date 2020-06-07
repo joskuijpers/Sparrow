@@ -3,6 +3,13 @@
 The Sparrow Game Engine
 
 
+
+# for PhysX
+https://github.com/bscothern/SwiftyPOSIX/blob/master/Package.swift
+http://ankit.im/swift/2016/05/21/creating-objc-cpp-packages-with-swift-package-manager/
+https://www.hackingwithswift.com/articles/87/how-to-wrap-a-c-library-in-swift
+https://gameworksdocs.nvidia.com/simulation.html
+
 # Folders
 
 ```

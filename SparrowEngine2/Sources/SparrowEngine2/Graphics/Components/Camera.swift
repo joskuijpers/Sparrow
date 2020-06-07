@@ -6,9 +6,9 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
+import CSparrowEngine
 import SparrowECS
 import simd
-import SparrowEngine2
 
 // TODO: did set any of the fov/near/far/aspect properties -> set uniforms dirty
 /// Camera
@@ -61,7 +61,8 @@ public final class Camera: Component {
     public var uniforms = CameraUniforms()
     public var uniformsDirty = true
     
-    internal var screenSize = (0,0)
+    // TODO get rid of this stuff? ViewportSize?
+    public var screenSize = (0,0)
     
     /// Screen size changed. Updates the aspect ratio
     public func onScreenSizeWillChange(to size: (Int, Int)) {

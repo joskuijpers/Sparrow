@@ -7,6 +7,7 @@
 //
 
 import MetalKit
+import SparrowEngine2
 
 class Scene {
     var screenSize: CGSize

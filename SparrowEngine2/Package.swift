@@ -10,7 +10,8 @@ let package = Package(
     products: [
         .library(
             name: "SparrowEngine2",
-            targets: ["SparrowEngine2"]),
+            targets: ["CSparrowEngine", "SparrowEngine2"]
+        )
     ],
     dependencies: [
         .package(path: "../SparrowMesh"),
@@ -19,9 +20,16 @@ let package = Package(
     targets: [
         .target(
             name: "SparrowEngine2",
-            dependencies: ["SparrowMesh", "SparrowECS"]),
+            dependencies: ["SparrowMesh", "SparrowECS", "CSparrowEngine"],
+            path: "Sources/SparrowEngine2"
+        ),
+        .target(
+            name: "CSparrowEngine",
+            path: "Sources/CSparrowEngine"
+        ),
         .testTarget(
             name: "SparrowEngine2Tests",
-            dependencies: ["SparrowEngine2"]),
+            dependencies: ["SparrowEngine2"]
+        ),
     ]
 )

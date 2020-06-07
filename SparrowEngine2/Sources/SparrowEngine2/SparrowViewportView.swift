@@ -8,6 +8,7 @@
 
 import AppKit
 import MetalKit
+import CSparrowEngine
 
 /// A view the Sparrow renderer can render into.
 open class SparrowViewportView: MTKView {
@@ -21,5 +22,13 @@ open class SparrowViewportView: MTKView {
     
     override open var acceptsFirstResponder: Bool {
         return true
+    }
+}
+
+@objc public class TestClass: NSObject {
+    @objc public func hello() -> CameraUniforms {
+        print("HELLO")
+        
+        return CameraUniforms()
     }
 }
