@@ -27,7 +27,7 @@ public class DebugRendering {
     }
 
     /// Draw a box
-    func box(min: float3, max: float3, color: float3) {
+    public func box(min: float3, max: float3, color: float3) {
         // 12 lines = 24 items
         vertices.append(DebugRenderVertex(position: float3(min.x, min.y, min.z), color: color))
         vertices.append(DebugRenderVertex(position: float3(max.x, min.y, min.z), color: color))
@@ -66,12 +66,12 @@ public class DebugRendering {
         vertices.append(DebugRenderVertex(position: float3(max.x, max.y, max.z), color: color))
     }
     
-    func sphere(center: float3, radius: Float, color: float3) {
+    public func sphere(center: float3, radius: Float, color: float3) {
         // TODO
     }
     
     /// Draw a gizmo with x, y and z axis indicators
-    func gizmo(position: float3) {
+    public func gizmo(position: float3) {
         // 3 lines = 6 items
         vertices.append(DebugRenderVertex(position: position, color: float3(1, 0, 0)))
         vertices.append(DebugRenderVertex(position: position + float3(1, 0, 0), color: float3(1, 0, 0)))
@@ -84,14 +84,14 @@ public class DebugRendering {
     }
     
     /// Draw a straight line between two points
-    func line(start: float3, end: float3, color: float3) {
+    public func line(start: float3, end: float3, color: float3) {
         // 1 line = 2 items
         vertices.append(DebugRenderVertex(position: start, color: color))
         vertices.append(DebugRenderVertex(position: end, color: color))
     }
     
     /// Render all debug lines that were generated this frame
-    internal func render(renderEncoder: MTLRenderCommandEncoder) {
+    public func render(renderEncoder: MTLRenderCommandEncoder) {
         if vertices.count == 0 {
             return
         }
