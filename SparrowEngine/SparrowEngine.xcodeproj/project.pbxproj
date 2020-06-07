@@ -25,7 +25,6 @@
 		80A462DC238F106B009435EB /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462DB238F106B009435EB /* Renderer.swift */; };
 		80A462E1238F1254009435EB /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E0238F1254009435EB /* Scene.swift */; };
 		80A462ED238F14AC009435EB /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EC238F14AC009435EB /* Shaders.metal */; };
-		80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EE238F1D58009435EB /* VertexDescriptor.swift */; };
 		80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A6F8AD2456174400FE8CCF /* Depth.metal */; };
 		80C17205247A8B900097F2AE /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 80C17203247A8B780097F2AE /* Assets */; };
 /* End PBXBuildFile section */
@@ -50,7 +49,6 @@
 		80A462DB238F106B009435EB /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		80A462E0238F1254009435EB /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		80A462EC238F14AC009435EB /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
-		80A462EE238F1D58009435EB /* VertexDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VertexDescriptor.swift; sourceTree = "<group>"; };
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
 		80A6F8AD2456174400FE8CCF /* Depth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Depth.metal; sourceTree = "<group>"; };
 		80C17203247A8B780097F2AE /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
@@ -80,7 +78,6 @@
 		800604AE23F9EF2400B3FB7F /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
-				80A462EE238F1D58009435EB /* VertexDescriptor.swift */,
 				809C90EB248AFA980034CCFA /* RenderMesh.swift */,
 				809C90E9248AFA980034CCFA /* Mesh.swift */,
 				809C90E8248AFA980034CCFA /* RenderQueue.swift */,
@@ -245,7 +242,6 @@
 				804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */,
 				809C90EF248AFA980034CCFA /* Mesh.swift in Sources */,
 				809C90EC248AFA980034CCFA /* RenderQueue.swift in Sources */,
-				80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */,
 				809C90ED248AFA980034CCFA /* RenderMesh.swift in Sources */,
 				80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */,
 				809C90EE248AFA980034CCFA /* Submesh.swift in Sources */,

@@ -1,6 +1,6 @@
 //
 //  VertexDescriptor.swift
-//  ISOGame
+//  SparrowEngine
 //
 //  Created by Jos Kuijpers on 27/11/2019.
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
@@ -9,10 +9,10 @@
 import Metal
 import SparrowMesh
 
-class VertexDescriptor {
+public struct VertexDescriptor {
 
     /// Build a vertex descriptor using a list of Sparrow Asset vertex attributes. Order of the attributes defines position within the interleaved buffer.
-    class func build(from attributes: [SPMVertexAttribute]) -> MTLVertexDescriptor {
+    public static func build(from attributes: [SPMVertexAttribute]) -> MTLVertexDescriptor {
         let descriptor = MTLVertexDescriptor()
 
         var offset = 0
