@@ -29,7 +29,6 @@
 		80A462EF238F1D58009435EB /* VertexDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EE238F1D58009435EB /* VertexDescriptor.swift */; };
 		80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A6F8AD2456174400FE8CCF /* Depth.metal */; };
 		80C17205247A8B900097F2AE /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 80C17203247A8B780097F2AE /* Assets */; };
-		80D0B644248D494900D23EA8 /* ImportTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 80D0B643248D494900D23EA8 /* ImportTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,7 +56,6 @@
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
 		80A6F8AD2456174400FE8CCF /* Depth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Depth.metal; sourceTree = "<group>"; };
 		80C17203247A8B780097F2AE /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
-		80D0B643248D494900D23EA8 /* ImportTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImportTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,7 +111,6 @@
 				80A6F8AD2456174400FE8CCF /* Depth.metal */,
 				8064AF60242960CC0089FE11 /* Resolve.metal */,
 				8064AF5B2427A9610089FE11 /* LightCulling.metal */,
-				80D0B643248D494900D23EA8 /* ImportTest.m */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -245,7 +242,6 @@
 			files = (
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				809C90F0248AFA980034CCFA /* Material.swift in Sources */,
-				80D0B644248D494900D23EA8 /* ImportTest.m in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
