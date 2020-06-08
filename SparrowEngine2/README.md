@@ -119,6 +119,39 @@ RenderSystem
         use frustum from context projection matric
         cull on any entity with a CullInfo/CullSphere/CullBox
 
+
+PlayerCameraSystem (game)
+    get entity with the player tag (optional)
+    get input singleton
+    update each (camera, transform)
+
+PlayerInputSystem.update
+    get input keys, translate to actions (moveX, moveY)
+
+```
+TAG SYSTEM
+enum Tag {}
+enum Tag: SparrowECS.Tag { case player }
+
+final class Tags: Component {
+    var tags: [Tag]
+}
+
+Entity.add(tag: Tag)
+Entity.remove(tag: Tag)
+Entity.has(tag: Tag) -> Bool
+```   
+
+#### ECS changes
+We can add marking-components-changed to the ECS system and make it filter?
+Add parallel loop with GCD
+```
+DispatchQueue.concurrentPerform(iterations: 1000) { (index) in
+     print("current: \(index)")
+}
+```
+We can use this for the renderQueue as well, as long as we lock on the actual getting of a renderitem (test with 5000 spheres)
+
 # THEN
 - Move DebugRendering (Needs Device and Library)
 - Move Submesh (Needs Device and Library)
