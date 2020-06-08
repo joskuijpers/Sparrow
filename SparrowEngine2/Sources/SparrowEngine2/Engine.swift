@@ -21,7 +21,7 @@ public class Context {
 
 
 public class GraphicsContext {
-    let device: MTLDevice
+    /**/public let device: MTLDevice
     
     enum Error: Swift.Error {
         /// Could not create a Metal device

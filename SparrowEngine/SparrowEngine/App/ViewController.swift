@@ -30,20 +30,27 @@ class ViewController: NSViewController {
             print("Created app... calling it to test")
             
             app.initialize()
+            
+            renderer = Renderer(metalView: metalView, device: app.context.graphics.device, world: app.world, context: app.context)
         } catch {
             fatalError("Could not start engine: \(error)")
         }
         
-        renderer = Renderer(metalView: metalView, device: MTLCreateSystemDefaultDevice()!)
+        
     }
 }
 
 class MyGame: EngineApp {
+    /**/let world: World
+    /**/let context: Context
+    
     let fooSystem: MyFooSystem
     
     required init(world: World, context: Context) throws {
         print("INIT MYGAME")
         
+        self.world = world
+        self.context = context
         
         // What do I want to do...
         

@@ -47,7 +47,8 @@ class Renderer: NSObject {
     fileprivate static var nexus: Nexus!
     
     let rotatingBallSystem: RotatingBallSystem
-    let cameraSystem: CameraSystem
+    let cameraUpdateSystem: CameraUpdateSystem
+    let playerCameraSystem: PlayerCameraSystem
     let meshRenderSystem: MeshRenderSystem
     let lightSystem: LightSystem
     
@@ -90,7 +91,7 @@ class Renderer: NSObject {
     var threadgroupCount = MTLSize()
     
     
-    init(metalView: MTKView, device: MTLDevice) {
+    init(metalView: MTKView, device: MTLDevice, world: World, context: Context) {
         guard let commandQueue = device.makeCommandQueue() else {
             fatalError("Metal GPU not available")
         }
@@ -134,10 +135,11 @@ class Renderer: NSObject {
         
         /// SCENE AS LONG AS SCENE MANAGER DOES NOT EXIST
         
-        Renderer.nexus = Nexus() // MOVE
+        Renderer.nexus = world.n
 
-        rotatingBallSystem = RotatingBallSystem(nexus: Nexus.shared())
-        cameraSystem = CameraSystem(nexus: Nexus.shared())
+        rotatingBallSystem = RotatingBallSystem(world: world, context: context)
+        cameraUpdateSystem = CameraUpdateSystem(world: world, context: context)
+        playerCameraSystem = PlayerCameraSystem(world: world, context: context)
         meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
         lightSystem = LightSystem(nexus: Nexus.shared(), device: device)
         
@@ -202,6 +204,7 @@ class Renderer: NSObject {
 //        let sponzaMesh = try! Renderer.meshLoader.load(name: "Sponza/sponza.spa")
         let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
         sponza.add(component: RenderMesh(mesh: sponzaMesh))
+        sponza.add(component: RotationSpeed(seed: 1))
         
         
 //        let boxGroup = Nexus.shared().createEntity()
@@ -535,9 +538,9 @@ extension Renderer: MTKViewDelegate {
         lastFrameTime = currentTime
         
         
-        cameraSystem.onUpdate(deltaTime: deltaTime)
-        rotatingBallSystem.onUpdate(deltaTime: deltaTime)
-        cameraSystem.updateCameras()
+        playerCameraSystem.update(deltaTime: deltaTime)
+        rotatingBallSystem.update(deltaTime: deltaTime)
+        cameraUpdateSystem.updateCameras()
         lightsBuffer = lightSystem.updateLightBuffer(buffer: lightsBuffer, lightsCount: &lightsBufferCount)
 
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
@@ -611,142 +614,6 @@ extension Renderer: MTKViewDelegate {
     }
 }
 
-class RotationSpeed: Component {
-    let speed: Float
-    
-    init(seed: Int = 0) {
-        speed = (Float(seed) * 35972.326365396643).truncatingRemainder(dividingBy: 180)
-    }
-}
-
-/// Behavior test
-class RotatingBallSystem {
-    let entities: Group<Requires2<Transform, RotationSpeed>>
-    
-    init(nexus: Nexus) {
-        entities =  nexus.group(requiresAll: Transform.self, RotationSpeed.self)
-    }
-    
-    func onUpdate(deltaTime: Float) {
-        for (transform, rotationSpeed) in entities {
-            let q = simd_quatf(angle: rotationSpeed.speed.degreesToRadians * deltaTime * 0.5, axis: [0, 1, 0])
-            transform.localRotation = transform.localRotation * q
-        }
-    }
-}
-
-// Simple camera behavior
-class CameraSystem {
-    let cameras: Group<Requires2<Transform, Camera>>
-    
-    init(nexus: Nexus) {
-        cameras =  nexus.group(requiresAll: Transform.self, Camera.self)
-    }
-    
-    func onUpdate(deltaTime: Float) {
-        for (transform, _) in cameras {
-            var diff = float3.zero
-            let speed: Float = 10.0
-            let rotSpeed: Float = 70.0
-
-            if Input.shared.getKey(.w) {
-                diff = diff + transform.forward * deltaTime * speed
-            } else if Input.shared.getKey(.s) {
-                diff = diff - transform.forward * deltaTime * speed
-            }
-            
-            if Input.shared.getKey(.a) {
-                diff = diff - transform.right * deltaTime * speed
-            } else if Input.shared.getKey(.d) {
-                diff = diff + transform.right * deltaTime * speed
-            }
-            
-            if Input.shared.getKey(.q) {
-                diff = diff + float3(0, 1, 0) * deltaTime * speed
-            } else if Input.shared.getKey(.e) {
-                diff = diff - float3(0, 1, 0) * deltaTime * speed
-            }
-            
-            transform.translate(diff)
-            
-            var rot: Float = 0
-            if Input.shared.getKey(.leftArrow) {
-                rot = rot + deltaTime * -rotSpeed.degreesToRadians
-            }
-            if Input.shared.getKey(.rightArrow) {
-                rot = rot + deltaTime * rotSpeed.degreesToRadians
-            }
-            
-            var rotX: Float = 0
-            if Input.shared.getKey(.upArrow) {
-                rotX = rotX + deltaTime * -rotSpeed.degreesToRadians
-            }
-            if Input.shared.getKey(.downArrow) {
-                rotX = rotX + deltaTime * rotSpeed.degreesToRadians
-            }
-
-            let qy = simd_quatf(angle: rot, axis: [0, 1, 0])
-            let qx = simd_quatf(angle: rotX, axis: [1, 0, 0])
-            
-            transform.localRotation = qy * transform.localRotation * qx
-        }
-    }
-    
-    /// Update camera with new data
-    func updateCameras() {
-        for (transform, camera) in cameras {
-            // View matrix changes whenever position or orientation of the camera changes
-//            let translateMatrix = float4x4(translation: transform.position)
-//            let rotateMatrix = float4x4(transform.quaternion)
-            
-            // TODO if has parent, take parent WorldMatrix and multiply
-//            let newViewMatrix = rotateMatrix * translateMatrix
-            let newViewMatrix = transform.worldToLocalMatrix
-            
-            if newViewMatrix != camera.viewMatrix {
-                camera.viewMatrix = newViewMatrix
-                camera.uniformsDirty = true
-            }
-
-            if camera.uniformsDirty {
-                camera.frustum = Frustum(viewProjectionMatrix: camera.projectionMatrix * camera.viewMatrix)
-                
-                updateCameraUniforms(camera: camera, transform: transform, uniforms: &camera.uniforms)
-                
-                camera.uniformsDirty = false
-            }
-        }
-    }
-    
-    /// Update uniform structure with camera data
-    func updateCameraUniforms(camera: Camera, transform: Transform, uniforms: inout CameraUniforms) {
-        uniforms.viewMatrix = camera.viewMatrix
-        uniforms.projectionMatrix = camera.projectionMatrix
-        uniforms.cameraWorldPosition = transform.position
-        
-        // Derived
-        uniforms.viewProjectionMatrix = uniforms.projectionMatrix * uniforms.viewMatrix
-        
-        uniforms.invProjectionMatrix = simd_inverse(uniforms.projectionMatrix)
-        uniforms.invViewProjectionMatrix = simd_inverse(uniforms.viewProjectionMatrix)
-        uniforms.invViewMatrix = simd_inverse(uniforms.viewMatrix)
-        
-        uniforms.physicalSize = [Float(camera.screenSize.0), Float(camera.screenSize.1)]
-        
-        // Inverse column
-        uniforms.invProjectionZ = [ uniforms.invProjectionMatrix.columns.2.z, uniforms.invProjectionMatrix.columns.2.w,
-                                    uniforms.invProjectionMatrix.columns.3.z, uniforms.invProjectionMatrix.columns.3.w ]
-        
-        let bias = -camera.near
-        let invScale = camera.far - camera.near
-        uniforms.invProjectionZNormalized = [uniforms.invProjectionZ.x + (uniforms.invProjectionZ.y * bias),
-                                             uniforms.invProjectionZ.y * invScale,
-                                             uniforms.invProjectionZ.z + (uniforms.invProjectionZ.w * bias),
-                                             uniforms.invProjectionZ.w * invScale]
-        
-    }
-
-}
 
 class MeshRenderSystem {
     let meshes: Group<Requires2<Transform, RenderMesh>>
