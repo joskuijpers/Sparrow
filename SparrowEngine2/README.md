@@ -10,6 +10,106 @@ http://ankit.im/swift/2016/05/21/creating-objc-cpp-packages-with-swift-package-m
 https://www.hackingwithswift.com/articles/87/how-to-wrap-a-c-library-in-swift
 https://gameworksdocs.nvidia.com/simulation.html
 
+# FIRST
+- Find a way to store the device, shader lib, texture loader, mesh loader
+- Engine class? With graphicsState struct -> Engine.graphics.library
+- Create on startup by AppDelegate, stored in shared?
+
+```
+init(...) {
+    self.graphics = GraphicsState(device: currentDevice)
+    Engine.shared = self
+}
+```
+
+- Implement Primitive.box()
+- See what overlap there is with Meshloader
+- Extract that into the graphics module.
+- Context.graphics
+
+- World = Nexus, pass around (test by making a World class that is not global and on func call returns Nexus)
+
+
+```
+
+class Engine {
+
+    // someday we can try to extract the view thing...... to allow for 0+ views
+    static func create<T>(RootClass: T, view: SparrowViewportView) throws where T: Engine?? -> T {
+        let device = createMTLDevice()
+        
+        let context = Context(
+            GraphicsContext(device)
+        )
+        
+        let world = Nexus()
+        
+        let app = RootClass.init(context, world)
+        
+        return app
+    }
+}
+
+protocol EngineApp {
+    init(context, world)
+}
+
+
+ViewController
+    // Store so not dealloc'd and so we can reach it externally for macOS UI
+    let game = try Engine.create(MyGame.self)
+
+
+class MyGame: EngineApp {
+    
+    init(context, world) {
+    
+        playerSystem = PlayerSystem(world: world)
+    }
+    
+    update(dt){
+    
+        playerSystem.update(dt)
+    }
+}
+
+class GraphicsContext {
+    let device: MTLDevice
+    
+    let textureLoader
+    let meshLoader
+}
+
+class Context {
+    let graphics: GraphicsContext
+    let audio
+}
+
+protocol System {
+    init(world: World, context: Context) {}
+}
+
+// (meshloader currently uses makeBuffer and textureLoader. buffer creation can go in the context...)
+
+let descriptor = Primitive.box(float3(1,2,3))
+let descriptor = MeshLoader.load("res://sponza.spm")
+context.graphics.create(mesh: MeshDescriptor) throws -> Mesh
+    // Would also be loading the textures I guess?
+context.graphics.create(texture: TextureDescriptor) throws -> Texture
+... how about custom buffers? it is not like i want to abstract away MTL...?
+```
+
+# THEN
+- Move DebugRendering (Needs Device and Library)
+- Move Submesh (Needs Device and Library)
+- Move Mesh
+- Move RenderMesh
+- Move RenderQueue
+- Move MeshLoader
+
+Then
+- Rebuild TextureLoader
+
 # Folders
 
 ```
