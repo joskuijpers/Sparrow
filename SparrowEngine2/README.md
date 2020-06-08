@@ -99,6 +99,26 @@ context.graphics.create(texture: TextureDescriptor) throws -> Texture
 ... how about custom buffers? it is not like i want to abstract away MTL...?
 ```
 
+State singleton components;
+https://github.com/vblanco20-1/AquilaEngine/blob/master/AquilaEngine/src/GameWorld.cpp
+- EngineTimeComponent (delta time, frame number)
+- ApplicationInfo
+
+
+
+TransformSystem https://github.com/vblanco20-1/AquilaEngine/blob/master/AquilaEngine/src/Systems/TransformSystems.cpp
+    update hierarchy on <RenderMatrixComponent, TransformComponent, TransformParentComponent>
+
+
+RenderSystem
+    update camera
+        grab all cameras+ transform
+        update cameraUniforms
+        set uniform to context
+    update render queues
+        use frustum from context projection matric
+        cull on any entity with a CullInfo/CullSphere/CullBox
+
 # THEN
 - Move DebugRendering (Needs Device and Library)
 - Move Submesh (Needs Device and Library)

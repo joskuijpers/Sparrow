@@ -139,7 +139,7 @@ class Renderer: NSObject {
         rotatingBallSystem = RotatingBallSystem(nexus: Nexus.shared())
         cameraSystem = CameraSystem(nexus: Nexus.shared())
         meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
-        lightSystem = LightSystem(nexus: Nexus.shared())
+        lightSystem = LightSystem(nexus: Nexus.shared(), device: device)
         
         scene = Scene(screenSize: metalView.drawableSize)
         
@@ -746,47 +746,6 @@ class CameraSystem {
         
     }
 
-}
-
-class LightSystem {
-    let lights: Group<Requires2<Transform, Light>>
-    
-    init(nexus: Nexus) {
-        lights =  nexus.group(requiresAll: Transform.self, Light.self)
-    }
-    
-    func updateLightBuffer(buffer: MTLBuffer!, lightsCount: inout UInt) -> MTLBuffer? {
-        var buffer = buffer
-        
-        lightsCount = UInt(lights.count)
-        
-        // Reallocate if needed
-        // TODO: proper sizing with spare-size (blocks), and down sizing. Maybe some ManagedMTLBuffer class?
-        let bufferSizeRequired = lights.count * MemoryLayout<ShaderLightData>.stride
-        if buffer == nil || buffer!.allocatedSize < bufferSizeRequired {
-            buffer = Renderer.device.makeBuffer(length: bufferSizeRequired, options: .storageModeShared)
-        }
-
-        for (index, (transform, light)) in lights.enumerated() {
-            let ptr = buffer!.contents().advanced(by: index * MemoryLayout<ShaderLightData>.stride)
-            let lightPtr = ptr.assumingMemoryBound(to: ShaderLightData.self)
-            
-            switch (light.type) {
-            case .directional:
-                lightPtr.pointee.type = LightTypeDirectional
-                lightPtr.pointee.color = light.color
-                lightPtr.pointee.position = transform.forward
-                lightPtr.pointee.range = Float.infinity
-            case .point:
-                lightPtr.pointee.type = LightTypePoint
-                lightPtr.pointee.color = light.color
-                lightPtr.pointee.position = transform.position
-                lightPtr.pointee.range = 5
-            }
-        }
-        
-        return buffer
-    }
 }
 
 class MeshRenderSystem {

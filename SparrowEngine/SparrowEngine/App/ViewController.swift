@@ -29,7 +29,7 @@ class ViewController: NSViewController {
             let app = try Engine.create(MyGame.self, options: [])
             print("Created app... calling it to test")
             
-            app.foo()
+            app.initialize()
         } catch {
             fatalError("Could not start engine: \(error)")
         }
@@ -79,6 +79,10 @@ class MyGame: EngineApp {
 //        cameraSystem = CameraSystem()
     }
     
+    func initialize() {
+        print("CALLED initialize IN MYGAME")
+    }
+    
     func tick(timeInterval: TimeInterval) {
 //        renderSystem.update(timeInterval)
         
@@ -86,9 +90,7 @@ class MyGame: EngineApp {
         
     }
     
-    func foo() {
-        print("CALLED FOO IN MYGAME")
-    }
+
 }
 
 class MyFooSystem: System {
