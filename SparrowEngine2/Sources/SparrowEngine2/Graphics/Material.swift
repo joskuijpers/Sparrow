@@ -21,10 +21,8 @@ import Metal
  
  */
 
-/**
- A graphical material.
- */
-public struct Material {
+/// A graphical material.
+public final class Material {
     /// Name of the material for debugging.
     public let name: String
     

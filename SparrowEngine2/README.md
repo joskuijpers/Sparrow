@@ -29,6 +29,7 @@ init(...) {
 
 - World = Nexus, pass around (test by making a World class that is not global and on func call returns Nexus)
 
+Texture loading is fine:.... https://github.com/vblanco20-1/VkEngine/blob/master/src/vulkan_render.cpp#L448
 
 ```
 
@@ -141,6 +142,22 @@ Entity.add(tag: Tag)
 Entity.remove(tag: Tag)
 Entity.has(tag: Tag) -> Bool
 ```   
+
+
+```
+MetalRenderer
+
+    buildPrepassPipeline
+    buildLightcullingPipeline
+    buildFinalResolvePipeline
+    etc
+    
+    func drawFrame()
+        renderQueue building
+        renderSystems -> render(RenderCommandEncoder)
+
+```
+
 
 #### ECS changes
 We can add marking-components-changed to the ECS system and make it filter?

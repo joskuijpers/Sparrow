@@ -167,12 +167,10 @@ class Renderer: NSObject {
     private func buildScene() {
         let camera = Nexus.shared().createEntity()
         let t = camera.add(component: Transform())
-//        t.localPosition = [0, 0, -2]
         t.localPosition = [-12.5, 1.4, -0.5]
         t.eulerAngles = [0, Float(90.0).degreesToRadians, 0]
         let cameraComp = camera.add(component: Camera())
         scene.camera = cameraComp
-        
         
         let skyLight = Nexus.shared().createEntity()
         let tlight = skyLight.add(component: Transform())
@@ -181,23 +179,6 @@ class Renderer: NSObject {
         light.color = float3(1, 1, 1)
         
         
-//        let helmet = Nexus.shared().createEntity()
-//        let transform = helmet.add(component: Transform())
-//        transform.position = float3(0, 0, 0)
-//
-//        helmet.add(component: MeshSelector(mesh: Mesh(name: "helmet.obj")))
-//        helmet.add(component: MeshRenderer())
-//        helmet.add(behavior: HelloWorldComponent())
-//
-//
-//        let cube = Nexus.shared().createEntity()
-//        cube.add(component: Transform())
-//        cube.transform?.position = float3(0, 0, 3)
-//        cube.add(component: MeshSelector(mesh: Mesh(name: "cube.obj")))
-//        cube.add(component: MeshRenderer())
-//        // cube.add(behavior: HelloWorldComponent())
-//        Nexus.shared().addChild(cube, to: helmet)
-        
         let sponza = Nexus.shared().createEntity()
         sponza.add(component: Transform())
         
@@ -205,53 +186,6 @@ class Renderer: NSObject {
         let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
         sponza.add(component: RenderMesh(mesh: sponzaMesh))
         sponza.add(component: RotationSpeed(seed: 1))
-        
-        
-//        let boxGroup = Nexus.shared().createEntity()
-//        let boxTransform = boxGroup.add(component: Transform())
-//        boxGroup.add(component: RotationSpeed(seed: 100))
-//
-//        let sphereMesh = Mesh(name: "ironSphere.obj")
-//        let sphereMesh2 = Mesh(name: "grassSphere.obj")
-////        let c = 1000
-//        let c = 10
-//        let q = Int(sqrtf(Float(c)))
-//        for i in 0...c {
-//            let sphere = Nexus.shared().createEntity()
-//            let transform = sphere.add(component: Transform())
-//            transform.position = [Float(i / q - q/2) * 3, 0, Float(i % q - q/2) * 3]
-//
-//            if i % 2 == 0 {
-//                sphere.add(component: MeshSelector(mesh: sphereMesh))
-//            } else {
-//                sphere.add(component: MeshSelector(mesh: sphereMesh2))
-//            }
-//            sphere.add(component: MeshRenderer())
-////            sphere.add(component: RotationSpeed(seed: i))
-//
-//
-//            if i > 510 && i < 520 {
-//                transform.setParent(boxTransform)
-//
-//                transform.position = [Float(i / q - q/2) * 3, 2, Float(i % q - q/2) * 3]
-//            }
-//        }
-
-
-//        for x in -5...5 {
-//            for z in -5...5 {
-//                for y in 0...1 {
-//                    let light = Nexus.shared().createEntity()
-//                    let transform = light.add(component: Transform())
-//
-//                    transform.position = [Float(x) * 2, Float(y) * 3 - 1.5, Float(z) * 2]
-//
-//                    let lightInfo = light.add(component: Light(type: .point))
-//                    lightInfo.color = float3(min(0.01 * Float(x), 1), Float(0.1), 1 - min(0.01 * Float(z), 1))
-//                    lightInfo.intensity = 1
-//                }
-//            }
-//        }
     }
     
 }
@@ -529,6 +463,8 @@ extension Renderer: MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
+        // START BUILTIN PRE-LOOP
+        
         // Calculate the frame duration for normalizing animations and gameplay.
         if lastFrameTime == nil {
             lastFrameTime = CFAbsoluteTimeGetCurrent() - 1.0 / Double(view.preferredFramesPerSecond)
@@ -537,12 +473,18 @@ extension Renderer: MTKViewDelegate {
         let deltaTime = Float(currentTime - lastFrameTime!)
         lastFrameTime = currentTime
         
+        // END BUILTIN PRE-LOOP
+        
+        // START UPDATE
         
         playerCameraSystem.update(deltaTime: deltaTime)
         rotatingBallSystem.update(deltaTime: deltaTime)
         cameraUpdateSystem.updateCameras()
         lightsBuffer = lightSystem.updateLightBuffer(buffer: lightsBuffer, lightsCount: &lightsBufferCount)
 
+        // END UPDATE
+        
+        // START RENDER
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
                 return
         }
@@ -562,18 +504,17 @@ extension Renderer: MTKViewDelegate {
         // Resolve HDR buffer with tone mapping and gamma correction and draw to screen
         doResolvePass(commandBuffer: commandBuffer, view: view)
         
+        // END RENDER
+        
+        // START BUILTIN POST-LOOP
         guard let drawable = view.currentDrawable else {
             return
         }
         commandBuffer.present(drawable)
         commandBuffer.commit()
+        // END BUILTIN POST-LOOP
     }
-    
-    /**
-     1: only once do a render queue filling
-     2: look into the light list building
-     */
-    
+  
     /// Fill the render sets with meshes.
     func fillRenderSets() {
         cameraRenderSet.clear()

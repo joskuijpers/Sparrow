@@ -8,7 +8,7 @@
 
 import Metal
 
-public struct Primitive {
+public final struct Primitive {
     
     /// Cube with given edge size.
     @inlinable

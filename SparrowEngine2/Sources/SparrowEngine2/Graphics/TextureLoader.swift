@@ -138,7 +138,7 @@ public class TextureLoader {
 }
 
 /// A texture.
-public struct Texture {
+public class Texture {
     public let imageName: String
     public let mtlTexture: MTLTexture
 }
