@@ -18,6 +18,8 @@ import Metal
  as it allows changing the material at runtime.
  If dirty it would need a new pipeline.
  
+ We should store a list of generated materials somewhere and keep an ID so we
+ can easily sort. Or we sort on pointer which would work without extra steps.
  
  */
 
