@@ -8,7 +8,7 @@
 
 import Metal
 
-public final struct Primitive {
+public struct Primitive {
     
     /// Cube with given edge size.
     @inlinable
@@ -26,6 +26,13 @@ public final struct Primitive {
         // Make vertex attributes
         // Make a mesh with those
         // Return
+        
+        
+        // Name
+        // Bounds
+        // Vertex descriptor
+        // Data buffers
+        // [Submesh]
     }
     
     /// A sphere mesh with a radius.

@@ -47,18 +47,18 @@ public class TextureLoader {
         let imageName = AssetLoader.shortestName(for: url)
         
         let mtlTexture = try mtkTextureLoader.newTexture(URL: url, options: options)
-        let texture = Texture(imageName: imageName, mtlTexture: mtlTexture)
+        let texture = Texture(name: imageName, mtlTexture: mtlTexture)
         
         cache[url.absoluteString] = texture
         
-        print("[texture] Loaded \(texture.imageName) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
+        print("[texture] Loaded \(texture.name) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
 
         return texture
     }
     
     /// Unload given texture from the cache. Data will only unload once the texture is released.
     func unload(_ texture: Texture) {
-        cache.removeValue(forKey: texture.imageName)
+        cache.removeValue(forKey: texture.name)
     }
     
     
@@ -139,8 +139,13 @@ public class TextureLoader {
 
 /// A texture.
 public class Texture {
-    public let imageName: String
+    public let name: String
     public let mtlTexture: MTLTexture
+    
+    init(name: String, mtlTexture: MTLTexture) {
+        self.name = name
+        self.mtlTexture = mtlTexture
+    }
 }
 
 

@@ -1,29 +1,33 @@
 //
 //  DebugRendering.swift
-//  ISOGame
+//  SparrowEngine
 //
 //  Created by Jos Kuijpers on 01/03/2020.
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
-import SparrowEngine2
+import Metal
 
 fileprivate struct DebugRenderVertex {
     let position: float3
     let color: float3
 }
 
+/// Debug rendering interface.
+///
+/// Keeps a buffer of colored line segments each frame. This buffer can be filled
+/// using convenience function.
 public class DebugRendering {
-    static let shared = DebugRendering()
+    public static let shared = DebugRendering()
     
     private var pipelineState: MTLRenderPipelineState?
     private var vertices = [DebugRenderVertex]()
     private var buffer: MTLBuffer!
     
+    /// Creates a new debug rendering interface
     private init() {
         let count = max(vertices.count, 64)
-        buffer = Renderer.device.makeBuffer(bytes: &vertices, length: count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
+        buffer = Context.shared.graphics.device.makeBuffer(bytes: &vertices, length: count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
     }
 
     /// Draw a box
@@ -116,7 +120,7 @@ public class DebugRendering {
     private func updateBuffer() {
         let size = vertices.count * MemoryLayout<DebugRenderVertex>.stride
         if buffer.allocatedSize < size {
-            buffer = Renderer.device.makeBuffer(bytes: &vertices, length: vertices.count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
+            buffer = Context.shared.graphics.device.makeBuffer(bytes: &vertices, length: vertices.count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
         } else if max(size, 64) < buffer.allocatedSize / 2 {
 //            print("TODO: SHRINK DEBUG VERTEX BUFFER")
             buffer.contents().copyMemory(from: &vertices, byteCount: size)
@@ -128,7 +132,7 @@ public class DebugRendering {
     /// Create a pipeline state with the debug shaders that simply draw colored vertices.
     private func makePipelineState() {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        let library = Renderer.library!
+        let library = Context.shared.graphics.library
         
         pipelineDescriptor.vertexFunction = library.makeFunction(name: "vertex_debug")
         pipelineDescriptor.fragmentFunction = library.makeFunction(name: "fragment_debug")
@@ -137,6 +141,6 @@ public class DebugRendering {
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 //        pipelineDescriptor.sampleCount = 4
         
-        pipelineState = try! Renderer.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        pipelineState = try! Context.shared.graphics.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
 }

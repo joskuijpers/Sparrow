@@ -26,8 +26,6 @@ enum RenderPass {
 }
 
 class Renderer: NSObject {
-    static var device: MTLDevice!
-    static var library: MTLLibrary?
     static var textureLoader: TextureLoader!
     static var meshLoader: MeshLoader!
     static var sampleCount = 1 // MSAA
@@ -96,8 +94,6 @@ class Renderer: NSObject {
             fatalError("Metal GPU not available")
         }
         
-        Renderer.device = device
-        Renderer.library = device.makeDefaultLibrary()
         Renderer.textureLoader = TextureLoader(device: device)
         Renderer.meshLoader = MeshLoader(device: device, textureLoader: Renderer.textureLoader)
         
@@ -241,7 +237,7 @@ fileprivate extension Renderer {
     }
     
     static func buildLightCullComputeState(device: MTLDevice) -> MTLComputePipelineState {
-        guard let function = Renderer.library!.makeFunction(name: "lightculling") else {
+        guard let function = Context.shared.graphics.library.makeFunction(name: "lightculling") else {
             fatalError("Light culling kernel does not exist")
         }
         
@@ -294,11 +290,11 @@ fileprivate extension Renderer {
         
         descriptor.label = "FinalPipelineState"
         descriptor.sampleCount = 1
-        descriptor.vertexFunction = Renderer.library!.makeFunction(name: "FSQuadVertexShader")
-        descriptor.fragmentFunction = Renderer.library!.makeFunction(name: "resolveShader")
+        descriptor.vertexFunction = Context.shared.graphics.library.makeFunction(name: "FSQuadVertexShader")
+        descriptor.fragmentFunction = Context.shared.graphics.library.makeFunction(name: "resolveShader")
         descriptor.colorAttachments[0].pixelFormat = colorPixelFormat
         
-        return try! Renderer.device.makeRenderPipelineState(descriptor: descriptor)
+        return try! Context.shared.graphics.device.makeRenderPipelineState(descriptor: descriptor)
     }
     
     func resize(size: CGSize) {
@@ -314,7 +310,7 @@ fileprivate extension Renderer {
         depthTextureDescriptor.usage = [.renderTarget, .shaderRead]
         depthTextureDescriptor.sampleCount = Renderer.depthSampleCount
         
-        depthTexture = Renderer.device.makeTexture(descriptor: depthTextureDescriptor)
+        depthTexture = Context.shared.graphics.device.makeTexture(descriptor: depthTextureDescriptor)
         depthTexture?.label = "DepthTexture"
         
         let hdrLightingDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float,
@@ -328,7 +324,7 @@ fileprivate extension Renderer {
         hdrLightingDescriptor.usage = [.renderTarget, .shaderRead]
         hdrLightingDescriptor.sampleCount = Renderer.sampleCount
         
-        lightingRenderTarget = Renderer.device.makeTexture(descriptor: hdrLightingDescriptor)
+        lightingRenderTarget = Context.shared.graphics.device.makeTexture(descriptor: hdrLightingDescriptor)
         lightingRenderTarget?.label = "HDRLighting"
         
         // Update passes
@@ -343,9 +339,9 @@ fileprivate extension Renderer {
 
         // Space for every group, list of 256 lights
         let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride
-        culledLightsBufferOpaque = Renderer.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferOpaque = Context.shared.graphics.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
         culledLightsBufferOpaque.label = "opaqueLightIndices"
-        culledLightsBufferTransparent = Renderer.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferTransparent = Context.shared.graphics.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
         culledLightsBufferTransparent.label = "transparentLightIndices"
     }
 }

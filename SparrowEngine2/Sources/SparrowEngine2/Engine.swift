@@ -12,6 +12,8 @@ public protocol EngineApp {
 }
 
 public class Context {
+    public internal(set) static var shared: Context! = nil
+    
     public let graphics: GraphicsContext
     
     init() throws {
@@ -21,11 +23,15 @@ public class Context {
 
 
 public class GraphicsContext {
-    /**/public let device: MTLDevice
+    /**/ public let device: MTLDevice
+    /**/ public let library: MTLLibrary
     
     enum Error: Swift.Error {
         /// Could not create a Metal device
         case noDevice
+        
+        /// Could not load the default library
+        case invalidLibrary
     }
     
     init() throws {
@@ -33,7 +39,12 @@ public class GraphicsContext {
             throw Error.noDevice
         }
         
+        guard let library = device.makeDefaultLibrary() else {
+            throw Error.invalidLibrary
+        }
+        
         self.device = device
+        self.library = library
     }
     
     
@@ -60,6 +71,9 @@ public final class Engine {
         
         let world = World()
         let context = try Context()
+        
+        // An app will set this as default context
+        Context.shared = context
         
         return try appClass.init(world: world, context: context)
     }

@@ -47,7 +47,6 @@ public struct Submesh {
     /// Vertex descriptor from the mesh
     private let vertexDescriptor: MTLVertexDescriptor
     
-    
     private var shaderMaterialData: ShaderMaterialData!
     private var pipelineState: MTLRenderPipelineState!
     
@@ -75,17 +74,15 @@ private extension Submesh {
         shaderMaterialData = material.buildShaderData()
         
         do {
-            try rebuildPipelineState()
+            let gfx = Context.shared.graphics
+            try rebuildPipelineState(device: gfx.device, library: gfx.library)
         } catch {
             fatalError("Unable to regenerate pipeline state for new material \(material.name) in submesh \(name): \(error.localizedDescription)")
         }
     }
     
     /// Rebuild the pipeline state. Used when render properties change or when the mesh material changes.
-    private mutating func rebuildPipelineState() throws {
-        let library = Renderer.library!
-        let device = Renderer.device!
-        
+    private mutating func rebuildPipelineState(device: MTLDevice, library: MTLLibrary) throws {
         let functionConstants = buildFunctionConstants()
         
         depthPipelineState = try buildDepthPipelineState(device: device, library: library, functionConstants: functionConstants)
