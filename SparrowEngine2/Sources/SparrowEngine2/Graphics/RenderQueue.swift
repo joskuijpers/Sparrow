@@ -6,13 +6,12 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
-import SparrowEngine2
+import Metal
 
 /**
  A render queue with optimized render item storage.
  */
-struct RenderQueue {
+public struct RenderQueue {
     var store: ContiguousArray<RenderQueueItem>
     let growSize: Int
     var nextIndex: Int = 0
@@ -46,7 +45,7 @@ struct RenderQueue {
 
 /// Special iterator that stops at empty items
 extension RenderQueue {
-    func allItems() -> AnyIterator<RenderQueueItem> {
+    public func allItems() -> AnyIterator<RenderQueueItem> {
         var index = 0
         
         return AnyIterator({
@@ -69,19 +68,22 @@ extension RenderQueue {
  */
 public class RenderSet {
     /// Render queue of renderabels that have no translucency, but can have cutouts
-    var opaque = RenderQueue()
+    public var opaque = RenderQueue()
     
     /// Render queue of translucent meshes (alpha blending)
-    var translucent = RenderQueue()
+    public var translucent = RenderQueue()
     
-    /// Clear the set
-    func clear() {
+    /// Create a new renderset with empty queues.
+    public init() {}
+    
+    /// Clear the queues of the set.
+    public func clear() {
         opaque.clear()
         translucent.clear()
     }
     
     /// Add a  new render item using an inout closure to prevent copying of structures.
-    func add(_ mode: RenderMode, _ cb: (_ item: inout RenderQueueItem) -> Void) {
+    public func add(_ mode: RenderMode, _ cb: (_ item: inout RenderQueueItem) -> Void) {
         switch mode {
         case .opaque, .cutOut:
             let index = opaque.getNextIndex()
@@ -97,10 +99,10 @@ public class RenderSet {
  An item to render
  */
 public struct RenderQueueItem {
-    var depth: Float = 0
-    unowned var mesh: Mesh!
-    var submeshIndex: uint16 = 0
-    var worldTransform: float4x4 = .identity()
+    public var depth: Float = 0
+    public unowned var mesh: Mesh!
+    public var submeshIndex: uint16 = 0
+    public var worldTransform: float4x4 = .identity()
 
     // numTextures
     // textures: [TextureIdentifier] = [MAX TEXTURES]

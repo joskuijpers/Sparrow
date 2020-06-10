@@ -16,14 +16,7 @@ extension Nexus {
     }
 }
 
-enum RenderPass {
-    case depthPrePass
-    case ssao
-    case shadows
-    case opaqueLighting
-    case transparentLighting
-    case postfx
-}
+
 
 class Renderer: NSObject {
     static var textureLoader: TextureLoader!
@@ -89,7 +82,8 @@ class Renderer: NSObject {
     var threadgroupCount = MTLSize()
     
     
-    init(metalView: MTKView, device: MTLDevice, world: World, context: Context) {
+    init(metalView: MTKView, world: World, context: Context) {
+        let device = context.graphics.device
         guard let commandQueue = device.makeCommandQueue() else {
             fatalError("Metal GPU not available")
         }

@@ -22,7 +22,7 @@ public final class RenderMesh: Component {
     // enabled (Renderer)
     
     /// Init with a mesh
-    init(mesh: Mesh) {
+    public init(mesh: Mesh) {
         self.mesh = mesh
     }
 }

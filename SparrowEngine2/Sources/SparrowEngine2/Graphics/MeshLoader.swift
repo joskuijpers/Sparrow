@@ -8,13 +8,10 @@
 
 import Metal
 import SparrowMesh
-import SparrowEngine2
 
-/**
- Loader of meshes.
- 
- Gives fully built meshes. Might re-use resources when possible.
- */
+/// Loader of meshes.
+///
+/// Gives fully built meshes. Might re-use resources when possible.
 public class MeshLoader {
     private let device: MTLDevice
     private let textureLoader: TextureLoader
@@ -41,10 +38,8 @@ public class MeshLoader {
         case missingMaterial(Int)
     }
     
-    /**
-     Load a mesh with given name.
-     */
-    func load(name: String) throws -> Mesh {
+    /// Load a mesh with given name.
+    public func load(name: String) throws -> Mesh {
         let url = AssetLoader.url(forAsset: name)
         guard FileManager.default.fileExists(atPath: url.path) else {
             throw Error.fileNotFound(url)

@@ -8,15 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */ = {isa = PBXBuildFile; productRef = 804EE35A2485917F00ADD319 /* SparrowEngine2 */; };
-		804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804EE35C2485927300ADD319 /* MeshLoader.swift */; };
 		8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5B2427A9610089FE11 /* LightCulling.metal */; };
 		8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */; };
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
 		80821D3B24858A340047B192 /* SparrowECS in Frameworks */ = {isa = PBXBuildFile; productRef = 80821D3A24858A340047B192 /* SparrowECS */; };
-		809C90EC248AFA980034CCFA /* RenderQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809C90E8248AFA980034CCFA /* RenderQueue.swift */; };
-		809C90ED248AFA980034CCFA /* RenderMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809C90EB248AFA980034CCFA /* RenderMesh.swift */; };
-		809C90EE248AFA980034CCFA /* Submesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809C90E7248AFA980034CCFA /* Submesh.swift */; };
-		809C90EF248AFA980034CCFA /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 809C90E9248AFA980034CCFA /* Mesh.swift */; };
 		80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462C9238F0FB6009435EB /* AppDelegate.swift */; };
 		80A462CC238F0FB6009435EB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462CB238F0FB6009435EB /* ViewController.swift */; };
 		80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CD238F0FB9009435EB /* Assets.xcassets */; };
@@ -31,14 +26,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		804EE35C2485927300ADD319 /* MeshLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
 		8064AF5B2427A9610089FE11 /* LightCulling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LightCulling.metal; sourceTree = "<group>"; };
 		8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = DebugShaders.metal; sourceTree = "<group>"; };
 		8064AF60242960CC0089FE11 /* Resolve.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Resolve.metal; sourceTree = "<group>"; };
-		809C90E7248AFA980034CCFA /* Submesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Submesh.swift; sourceTree = "<group>"; };
-		809C90E8248AFA980034CCFA /* RenderQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderQueue.swift; sourceTree = "<group>"; };
-		809C90E9248AFA980034CCFA /* Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
-		809C90EB248AFA980034CCFA /* RenderMesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderMesh.swift; sourceTree = "<group>"; };
 		80A462C6238F0FB6009435EB /* SparrowEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SparrowEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A462C9238F0FB6009435EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80A462CB238F0FB6009435EB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -80,10 +70,6 @@
 		800604AE23F9EF2400B3FB7F /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
-				809C90EB248AFA980034CCFA /* RenderMesh.swift */,
-				809C90E9248AFA980034CCFA /* Mesh.swift */,
-				809C90E8248AFA980034CCFA /* RenderQueue.swift */,
-				809C90E7248AFA980034CCFA /* Submesh.swift */,
 			);
 			path = Graphics;
 			sourceTree = "<group>";
@@ -152,7 +138,6 @@
 				800604AD23F9EF1E00B3FB7F /* Scene */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80127EF52491340000FC25EC /* Systems */,
-				804EE35C2485927300ADD319 /* MeshLoader.swift */,
 				8064AF5D2427F63E0089FE11 /* Shaders */,
 				80438C1E2405DEB800099034 /* AppInfo */,
 				80C17203247A8B780097F2AE /* Assets */,
@@ -250,13 +235,8 @@
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
 				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
-				804EE35D2485927300ADD319 /* MeshLoader.swift in Sources */,
-				809C90EF248AFA980034CCFA /* Mesh.swift in Sources */,
-				809C90EC248AFA980034CCFA /* RenderQueue.swift in Sources */,
 				80D0B64C248EEA5B00D23EA8 /* RotatingMeshSystem.swift in Sources */,
-				809C90ED248AFA980034CCFA /* RenderMesh.swift in Sources */,
 				80A462CA238F0FB6009435EB /* AppDelegate.swift in Sources */,
-				809C90EE248AFA980034CCFA /* Submesh.swift in Sources */,
 				80A462ED238F14AC009435EB /* Shaders.metal in Sources */,
 				8064AF61242960CC0089FE11 /* Resolve.metal in Sources */,
 				80D0B64A248EE91100D23EA8 /* PlayerCameraSystem.swift in Sources */,

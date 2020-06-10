@@ -1,13 +1,12 @@
 //
 //  Submesh.swift
-//  ISOGame
+//  SparrowEngine
 //
 //  Created by Jos Kuijpers on 27/11/2019.
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
-import SparrowEngine2
+import Metal
 
 /**
  A submesh uses the vertex buffer from a mesh with its own index buffer. It has a single material.
@@ -128,7 +127,7 @@ private extension Submesh {
         pipelineDescriptor.vertexDescriptor = vertexDescriptor
         
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-        pipelineDescriptor.sampleCount = Renderer.depthSampleCount
+        pipelineDescriptor.sampleCount = 1//Renderer.depthSampleCount
 
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
@@ -145,7 +144,7 @@ private extension Submesh {
         pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba16Float
         
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-        pipelineDescriptor.sampleCount = Renderer.sampleCount
+        pipelineDescriptor.sampleCount = 1//Renderer.sampleCount
 
         // This might be useful for some dynamic data injection
 //        var reflection: MTLRenderPipelineReflection?

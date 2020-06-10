@@ -31,7 +31,7 @@ class ViewController: NSViewController {
             
             app.initialize()
             
-            renderer = Renderer(metalView: metalView, device: app.context.graphics.device, world: app.world, context: app.context)
+            renderer = Renderer(metalView: metalView, world: app.world, context: app.context)
         } catch {
             fatalError("Could not start engine: \(error)")
         }

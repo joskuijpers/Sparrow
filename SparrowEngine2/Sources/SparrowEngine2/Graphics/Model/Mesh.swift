@@ -7,13 +7,10 @@
 //
 
 import Metal
-import SparrowEngine2
 
-/**
- A mesh.
- 
- Contains submeshes and other info needed for rendering.
- */
+/// A mesh.
+///
+/// Contains submeshes and other info needed for rendering.
 public class Mesh {
     /// Name of the mesh. Usefull for debugging
     public let name: String
@@ -44,7 +41,7 @@ public class Mesh {
 
 extension Mesh {
     /// Ask the mesh to add to the render set if within frustum.
-    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
+    /**/public func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
         let bounds = self.bounds * worldTransform
         if frustum.intersects(bounds: bounds) == .outside {
             // Mesh is not in frustum
@@ -57,7 +54,7 @@ extension Mesh {
     }
     
     /// Render the submesh at given index.
-    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
+    /**/public func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
         // Set model vertex uniforms
         var uniforms = uniforms
         uniforms.modelMatrix = worldTransform
