@@ -95,17 +95,13 @@ public class RenderSet {
     }
 }
 
-/**
- An item to render
- */
+/// An item to render
 public struct RenderQueueItem {
     public var depth: Float = 0
     public unowned var mesh: Mesh!
     public var submeshIndex: uint16 = 0
     public var worldTransform: float4x4 = .identity()
 
-    // numTextures
-    // textures: [TextureIdentifier] = [MAX TEXTURES]
-    
-    // shaderIdentifier
+    // shaderIdentifier -> ptr
+    // materialIdentifier -> ptr
 }

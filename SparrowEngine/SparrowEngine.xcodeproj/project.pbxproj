@@ -67,13 +67,6 @@
 			path = Scene;
 			sourceTree = "<group>";
 		};
-		800604AE23F9EF2400B3FB7F /* Graphics */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Graphics;
-			sourceTree = "<group>";
-		};
 		80127EF52491340000FC25EC /* Systems */ = {
 			isa = PBXGroup;
 			children = (
@@ -134,7 +127,6 @@
 			isa = PBXGroup;
 			children = (
 				80A462DD238F10D7009435EB /* App */,
-				800604AE23F9EF2400B3FB7F /* Graphics */,
 				800604AD23F9EF1E00B3FB7F /* Scene */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80127EF52491340000FC25EC /* Systems */,

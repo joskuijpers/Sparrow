@@ -12,15 +12,30 @@ import MetalKit
 /// Creates pipelines, render textures, and everything else needed to render an empty frame.
 ///
 public final class MetalRenderer {
+    private let context: Context
     
-    
-    
-    // Setting up state
+    init(context: Context) {
+        self.context = context
+    }
 }
+
+// MARK: - Adjusting the rendering process
+
+extension MetalRenderer {
+    
+    // set/get debug options
+        // albedo/normals/metal/rough/ao
+        // wireframe
+    
+}
+
+// MARK: - Creating GPU state
 
 extension MetalRenderer {
     // Building state
 }
+
+// MARK: - Rendering a frame
 
 extension MetalRenderer {
 
