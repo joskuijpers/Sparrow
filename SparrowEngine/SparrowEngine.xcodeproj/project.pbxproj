@@ -24,6 +24,7 @@
 		80D0B64A248EE91100D23EA8 /* PlayerCameraSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0B649248EE91100D23EA8 /* PlayerCameraSystem.swift */; };
 		80D0B64C248EEA5B00D23EA8 /* RotatingSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0B64B248EEA5B00D23EA8 /* RotatingSystem.swift */; };
 		80F05964249251BB001C082F /* RotatingSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F05963249251BB001C082F /* RotatingSpeed.swift */; };
+		80F0596624925553001C082F /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F0596524925553001C082F /* Game.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		80D0B649248EE91100D23EA8 /* PlayerCameraSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerCameraSystem.swift; sourceTree = "<group>"; };
 		80D0B64B248EEA5B00D23EA8 /* RotatingSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingSystem.swift; sourceTree = "<group>"; };
 		80F05963249251BB001C082F /* RotatingSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingSpeed.swift; sourceTree = "<group>"; };
+		80F0596524925553001C082F /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80F05962249251AF001C082F /* Components */,
 				80127EF52491340000FC25EC /* Systems */,
+				80F0596524925553001C082F /* Game.swift */,
 				8064AF5D2427F63E0089FE11 /* Shaders */,
 				80438C1E2405DEB800099034 /* AppInfo */,
 				80C17203247A8B780097F2AE /* Assets */,
@@ -236,6 +239,7 @@
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
 				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
+				80F0596624925553001C082F /* Game.swift in Sources */,
 				80F05964249251BB001C082F /* RotatingSpeed.swift in Sources */,
 				8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */,
 				80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */,
