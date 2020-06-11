@@ -178,6 +178,8 @@ extension Submesh {
     
     /// Render the submesh. Mesh-wide state is already set.
     func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, buffers: [MTLBuffer]) {
+        // TODO: do not change pipeline state when it did not change with previous rendered item. We could accept a pipeline hash as input
+        // and return a hash as output of this function to determine if a change is needed.
         let useDepthOnly = (renderPass == .depthPrePass || renderPass == .shadows) && depthPipelineState != nil
         if useDepthOnly {
             renderEncoder.setRenderPipelineState(depthPipelineState!)

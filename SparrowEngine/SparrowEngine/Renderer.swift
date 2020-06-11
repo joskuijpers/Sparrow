@@ -19,17 +19,11 @@ extension Nexus {
 
 
 class Renderer: NSObject {
-    static var textureLoader: TextureLoader!
-    static var meshLoader: MeshLoader!
     static var sampleCount = 1 // MSAA
     static var depthSampleCount = 1 // MSAA
     
     let commandQueue: MTLCommandQueue!
 
-    
-    
-    
-    
     
     var scene: Scene
     
@@ -37,10 +31,6 @@ class Renderer: NSObject {
     
     fileprivate static var nexus: Nexus!
     
-    let rotatingBallSystem: RotatingSystem
-    let cameraUpdateSystem: CameraUpdateSystem
-    let playerCameraSystem: PlayerCameraSystem
-    let meshRenderSystem: MeshRenderSystem
     let lightSystem: LightSystem
     
     
@@ -88,9 +78,6 @@ class Renderer: NSObject {
             fatalError("Metal GPU not available")
         }
         
-        Renderer.textureLoader = TextureLoader(device: device)
-        Renderer.meshLoader = MeshLoader(device: device, textureLoader: Renderer.textureLoader)
-        
         // Configure view
         metalView.device = device
         metalView.depthStencilPixelFormat = .depth32Float
@@ -127,10 +114,7 @@ class Renderer: NSObject {
         
         Renderer.nexus = world.nexus
 
-        rotatingBallSystem = RotatingSystem(world: world)
-        cameraUpdateSystem = CameraUpdateSystem(world: world)
-        playerCameraSystem = PlayerCameraSystem(world: world)
-        meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
+
         lightSystem = LightSystem(nexus: Nexus.shared(), device: device)
         
         scene = Scene(screenSize: metalView.drawableSize)
@@ -147,35 +131,7 @@ class Renderer: NSObject {
     
         // Create textures
         resize(size: metalView.drawableSize)
-        
-        
-        // DEBUG: create a scene
-        buildScene()
-    }
-    
-    // For testing
-    private func buildScene() {
-        let camera = Nexus.shared().createEntity()
-        let t = camera.add(component: Transform())
-        t.localPosition = [-12.5, 1.4, -0.5]
-        t.eulerAngles = [0, Float(90.0).degreesToRadians, 0]
-        let cameraComp = camera.add(component: Camera())
-        scene.camera = cameraComp
-        
-        let skyLight = Nexus.shared().createEntity()
-        let tlight = skyLight.add(component: Transform())
-        tlight.rotation = simd_quatf(angle: Float(70).degreesToRadians, axis: [1, 0, 0])
-        let light = skyLight.add(component: Light(type: .directional))
-        light.color = float3(1, 1, 1)
-        
-        
-        let sponza = Nexus.shared().createEntity()
-        sponza.add(component: Transform())
-        
-//        let sponzaMesh = try! Renderer.meshLoader.load(name: "Sponza/sponza.spa")
-        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
-        sponza.add(component: RenderMesh(mesh: sponzaMesh))
-        sponza.add(component: RotationSpeed(seed: 1))
+
     }
     
 }
@@ -454,7 +410,6 @@ extension Renderer: MTKViewDelegate {
     
     func draw(in view: MTKView) {
         
-        cameraUpdateSystem.updateCameras()
         lightsBuffer = lightSystem.updateLightBuffer(buffer: lightsBuffer, lightsCount: &lightsBufferCount)
 
         // END UPDATE
@@ -497,7 +452,7 @@ extension Renderer: MTKViewDelegate {
         let camera = scene.camera!
         let frustum = camera.frustum!
         
-        meshRenderSystem.buildQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
+//        meshRenderSystem.buildQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
     }
     
     /**
@@ -524,38 +479,9 @@ extension Renderer: MTKViewDelegate {
             fatalError("Cannot render scene for render pass \(renderPass)")
         }
         
-        for item in renderQueue.allItems() {
-            item.mesh.render(renderEncoder: renderEncoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
-        }
-    }
-}
-
-
-class MeshRenderSystem {
-    let meshes: Group<Requires2<Transform, RenderMesh>>
-    
-    init(nexus: Nexus) {
-        meshes =  nexus.group(requiresAll: Transform.self, RenderMesh.self)
-    }
-    
-    /**
-     Build the render queue by filling it with the appropriate meshes
-     */
-    func buildQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
-        for (transform, renderer) in meshes {
-            guard let mesh = renderer.mesh else {
-                continue
-            }
-            
-            if renderPass == .shadows && !renderer.castShadows {
-                continue
-            }
-            
-            mesh.addToRenderSet(set: set,
-                                viewPosition: viewPosition,
-                                worldTransform: transform.localToWorldMatrix,
-                                frustum: frustum)
-        }
+//        for item in renderQueue.allItems() {
+//            item.mesh.render(renderEncoder: renderEncoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
+//        }
     }
 }
 

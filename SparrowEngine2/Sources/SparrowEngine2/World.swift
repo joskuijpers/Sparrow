@@ -25,6 +25,10 @@ open class World { // Note: note final so games can extend it.
         nexus.single(EngineTimeComponent.self).component
     }
     
+    // //////// SCENE?
+    public var camera: Entity?
+    
+    
     /// Create a new world.
     ///
     /// Initializes the Nexus.
@@ -46,6 +50,8 @@ open class World { // Note: note final so games can extend it.
         
         let x = CameraUpdateSystem(world: self)
         x.updateCameras()
+        
+        // After returning, the renderer starts
     }
     
     /// Update the world. Override this to implement custom functionality.
@@ -53,6 +59,10 @@ open class World { // Note: note final so games can extend it.
     /// This is the place to run systems.
     open func update() {}
     
+    open func fillRenderSet(frustum: Frustum, renderSet: RenderSet, viewPosition: float3) {
+        let x = MeshRenderSystem(world: self)
+        x.buildQueue(set: renderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: viewPosition)
+    }
     
     /// Set the shared world.
     public static func setShared(_ world: World) {

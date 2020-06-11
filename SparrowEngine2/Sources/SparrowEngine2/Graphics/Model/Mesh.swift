@@ -41,7 +41,7 @@ public class Mesh {
 
 extension Mesh {
     /// Ask the mesh to add to the render set if within frustum.
-    /**/public func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
+    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
         let bounds = self.bounds * worldTransform
         if frustum.intersects(bounds: bounds) == .outside {
             // Mesh is not in frustum
@@ -54,7 +54,7 @@ extension Mesh {
     }
     
     /// Render the submesh at given index.
-    /**/public func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
+    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
         // Set model vertex uniforms
         var uniforms = uniforms
         uniforms.modelMatrix = worldTransform
