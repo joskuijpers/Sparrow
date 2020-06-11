@@ -12,17 +12,36 @@ import MetalKit
 /// Creates pipelines, render textures, and everything else needed to render an empty frame.
 ///
 public final class MetalRenderer {
+    /// Graphics context
     private let context: GraphicsContext
+    
+    /// View we're drawing into
     private let view: SparrowMetalView
     
+    /// View delegate to get draw events
     private var delegate: MetalRendererDelegate?
+    
+    private let commandQueue: MTLCommandQueue!
+    
+    enum Error: Swift.Error {
+        /// Could not create a command queue
+        case commandQueueUnavailable
+    }
     
     public init(for view: SparrowMetalView) throws {
         context = try GraphicsContext()
 
+        guard let commandQueue = context.device.makeCommandQueue() else {
+            throw Error.commandQueueUnavailable
+        }
+        self.commandQueue = commandQueue
+        
         self.view = view
     }
     
+    /// Load the renderer for given world.
+    ///
+    /// The graphics context of this renderer will be assigned to the world.
     public func load(world: World) throws {
         world.graphics = context
         
@@ -34,6 +53,9 @@ public final class MetalRenderer {
         view.clearColor = MTLClearColor(red: 1, green: 0, blue: 0, alpha: 1)
         
         // Create the state by calling the state functions
+        let device = context.device
+        
+
         
         viewSizeChanged(to: view.frame.size)
     }
@@ -49,7 +71,7 @@ extension MetalRenderer {
     
     
     func viewSizeChanged(to size: CGSize) {
-        print("viewSizeChanged(\(size)")
+        print("viewSizeChanged\(size)")
     }
 }
 
@@ -63,11 +85,25 @@ extension MetalRenderer {
 
 extension MetalRenderer {
 
-    /// Render a single frame
+    /// Render a single frame using given world.
     fileprivate func renderFrame(world: World) {
         let time = world.time
         
         print("renderFrame \(time.frameIndex)")
+        
+        guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+            return
+        }
+        
+        
+        // Do passes
+        
+        
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        commandBuffer.present(drawable)
+        commandBuffer.commit()
     }
 }
 
