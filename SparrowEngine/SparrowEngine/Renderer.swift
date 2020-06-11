@@ -37,7 +37,7 @@ class Renderer: NSObject {
     
     fileprivate static var nexus: Nexus!
     
-    let rotatingBallSystem: RotatingBallSystem
+    let rotatingBallSystem: RotatingSystem
     let cameraUpdateSystem: CameraUpdateSystem
     let playerCameraSystem: PlayerCameraSystem
     let meshRenderSystem: MeshRenderSystem
@@ -127,7 +127,7 @@ class Renderer: NSObject {
         
         Renderer.nexus = world.nexus
 
-        rotatingBallSystem = RotatingBallSystem(world: world)
+        rotatingBallSystem = RotatingSystem(world: world)
         cameraUpdateSystem = CameraUpdateSystem(world: world)
         playerCameraSystem = PlayerCameraSystem(world: world)
         meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
@@ -453,22 +453,7 @@ extension Renderer: MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
-        // START BUILTIN PRE-LOOP
         
-        // Calculate the frame duration for normalizing animations and gameplay.
-        if lastFrameTime == nil {
-            lastFrameTime = CFAbsoluteTimeGetCurrent() - 1.0 / Double(view.preferredFramesPerSecond)
-        }
-        let currentTime = CFAbsoluteTimeGetCurrent()
-        let deltaTime = Float(currentTime - lastFrameTime!)
-        lastFrameTime = currentTime
-        
-        // END BUILTIN PRE-LOOP
-        
-        // START UPDATE
-        
-        playerCameraSystem.update(deltaTime: deltaTime)
-        rotatingBallSystem.update(deltaTime: deltaTime)
         cameraUpdateSystem.updateCameras()
         lightsBuffer = lightSystem.updateLightBuffer(buffer: lightsBuffer, lightsCount: &lightsBufferCount)
 

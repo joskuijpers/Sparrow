@@ -20,6 +20,7 @@ open class World { // Note: note final so games can extend it.
     public internal(set) var graphics: GraphicsContext!
     
     /// Time information
+    @inlinable
     public var time: EngineTimeComponent {
         nexus.single(EngineTimeComponent.self).component
     }
@@ -36,10 +37,15 @@ open class World { // Note: note final so games can extend it.
         // Update EngineTimeComponent
         time.deltaTime = deltaTime
         time.frameIndex += 1
-        
-        print("Game Tick \(deltaTime) (\(time.frameIndex))")
-        
+
+        // Custom game tick
         update()
+        
+        // Engine tick
+//        print("Update transforms, cameras")
+        
+        let x = CameraUpdateSystem(world: self)
+        x.updateCameras()
     }
     
     /// Update the world. Override this to implement custom functionality.

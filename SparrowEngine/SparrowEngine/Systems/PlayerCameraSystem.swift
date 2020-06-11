@@ -17,7 +17,9 @@ public final class PlayerCameraSystem: System {
         cameras =  world.nexus.group(requiresAll: Transform.self, Camera.self)
     }
     
-    func update(deltaTime: Float) {
+    func update(world: World) {
+        let deltaTime = world.time.deltaTime
+        
         for (transform, _) in cameras {
             var diff = float3.zero
             let speed: Float = 10.0

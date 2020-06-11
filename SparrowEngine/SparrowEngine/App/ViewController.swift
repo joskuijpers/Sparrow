@@ -29,25 +29,34 @@ class ViewController: NSViewController {
             try game.initialize(view: metalView)
             
             world = game
-            
-            //            renderer = Renderer(metalView: metalView, world: app.world, context: app.context)
         } catch {
             fatalError("Could not start engine: \(error)")
         }
     }
 }
 
+/// TestGame!
 class MyGameWorld: World {
     var renderer: MetalRenderer!
     
     // Systems
-    var fooSystem: MyFooSystem!
+    var playerCameraSystem: PlayerCameraSystem!
+    var rotatingSystem: RotatingSystem!
     
     func initialize(view: SparrowMetalView) throws {
         
-        // // Create initial entities
+        // Create initial entities
+        loadScene()
         
+        renderer = try MetalRenderer(for: view)
+        try renderer.load(world: self)
         
+        // Create systems
+        playerCameraSystem = PlayerCameraSystem(world: self)
+        rotatingSystem = RotatingSystem(world: self)
+    }
+    
+    private func loadScene() {
         // Load a model
         //        let sponza = try! loadModel("sponza.sps")
         
@@ -71,28 +80,10 @@ class MyGameWorld: World {
         //        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
         //        sponza.add(component: RenderMesh(mesh: sponzaMesh))
         
-        renderer = try MetalRenderer(for: view)
-        try renderer.load(world: self)
-        
-        // Create systems
-        fooSystem = MyFooSystem(world: self)
-        //        renderSystem = RenderSystem()
-        //        cameraSystem = CameraSystem()
     }
     
     override func update() {
-        fooSystem.doStuff(world: self)
-    }
-}
-
-
-class MyFooSystem: System {
-
-    required init(world: World) {
-        print("[FOO] Created")
-    }
-    
-    func doStuff(world: World) {
-//        print("[FOO] Do stuff in world \(world)")
+        playerCameraSystem.update(world: self)
+        rotatingSystem.update(world: self)
     }
 }
