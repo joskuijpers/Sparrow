@@ -13,8 +13,8 @@ import SparrowECS
 public final class PlayerCameraSystem: System {
     let cameras: Group<Requires2<Transform, Camera>>
     
-    public init(world: World, context: Context) {
-        cameras =  world.n.group(requiresAll: Transform.self, Camera.self)
+    public init(world: World) {
+        cameras =  world.nexus.group(requiresAll: Transform.self, Camera.self)
     }
     
     func update(deltaTime: Float) {

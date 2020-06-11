@@ -73,7 +73,7 @@ private extension Submesh {
         shaderMaterialData = material.buildShaderData()
         
         do {
-            let gfx = Context.shared.graphics
+            let gfx = World.shared!.graphics!
             try rebuildPipelineState(device: gfx.device, library: gfx.library)
         } catch {
             fatalError("Unable to regenerate pipeline state for new material \(material.name) in submesh \(name): \(error.localizedDescription)")

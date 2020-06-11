@@ -7,14 +7,63 @@
 
 import SparrowECS
 
-public final class World {
-    public let n: Nexus
+/// World the game lives in (not gameplay).
+///
+/// Contains the ECS store. Subclass to add new game functionality such as new systems.
+open class World { // Note: note final so games can extend it.
+    public internal(set) static var shared: World? = nil
+
+    /// ECS store
+    public let nexus: Nexus
     
-    init() {
-        n = Nexus()
+    /// Graphics context. Use with care.
+    public internal(set) var graphics: GraphicsContext!
+    
+    /// Time information
+    public var time: EngineTimeComponent {
+        nexus.single(EngineTimeComponent.self).component
     }
     
-    // We could also put the contexts here....
-    // And the deltaTime and frameNumber
-    // Then we only ened to pass around the World everywhere
+    /// Create a new world.
+    ///
+    /// Initializes the Nexus.
+    public required init() {
+        nexus = Nexus()
+    }
+
+    /// Run a game tick.
+    internal func tick(deltaTime: Float) {
+        // Update EngineTimeComponent
+        time.deltaTime = deltaTime
+        time.frameIndex += 1
+        
+        print("Game Tick \(deltaTime) (\(time.frameIndex))")
+        
+        update()
+    }
+    
+    /// Update the world. Override this to implement custom functionality.
+    ///
+    /// This is the place to run systems.
+    open func update() {}
+    
+    
+    /// Set the shared world.
+    public static func setShared(_ world: World) {
+        World.shared = world
+    }
+}
+
+/// Component that holds engine time.
+///
+/// Values in this component are only valid within a single frame.
+public class EngineTimeComponent: Component, SingleComponent {
+    /// Duration of the last frame in seconds.
+    public internal(set) var deltaTime: Float = 0
+    
+    /// Frame number, strictly increasing.
+    public internal(set) var frameIndex: UInt64 = 0
+    
+    // Required for SingleComponent
+    public required override init() {}
 }

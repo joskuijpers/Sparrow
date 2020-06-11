@@ -27,7 +27,7 @@ public class DebugRendering {
     /// Creates a new debug rendering interface
     private init() {
         let count = max(vertices.count, 64)
-        buffer = Context.shared.graphics.device.makeBuffer(bytes: &vertices, length: count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
+        buffer = World.shared!.graphics.device.makeBuffer(bytes: &vertices, length: count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
     }
 
     /// Draw a box
@@ -120,7 +120,7 @@ public class DebugRendering {
     private func updateBuffer() {
         let size = vertices.count * MemoryLayout<DebugRenderVertex>.stride
         if buffer.allocatedSize < size {
-            buffer = Context.shared.graphics.device.makeBuffer(bytes: &vertices, length: vertices.count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
+            buffer = World.shared!.graphics.device.makeBuffer(bytes: &vertices, length: vertices.count * MemoryLayout<DebugRenderVertex>.stride, options: [.storageModeShared])!
         } else if max(size, 64) < buffer.allocatedSize / 2 {
 //            print("TODO: SHRINK DEBUG VERTEX BUFFER")
             buffer.contents().copyMemory(from: &vertices, byteCount: size)
@@ -132,7 +132,7 @@ public class DebugRendering {
     /// Create a pipeline state with the debug shaders that simply draw colored vertices.
     private func makePipelineState() {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        let library = Context.shared.graphics.library
+        let library = World.shared!.graphics.library
         
         pipelineDescriptor.vertexFunction = library.makeFunction(name: "vertex_debug")
         pipelineDescriptor.fragmentFunction = library.makeFunction(name: "fragment_debug")
@@ -141,6 +141,6 @@ public class DebugRendering {
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 //        pipelineDescriptor.sampleCount = 4
         
-        pipelineState = try! Context.shared.graphics.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        pipelineState = try! World.shared!.graphics.device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
 }

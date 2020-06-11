@@ -82,8 +82,8 @@ class Renderer: NSObject {
     var threadgroupCount = MTLSize()
     
     
-    init(metalView: MTKView, world: World, context: Context) {
-        let device = context.graphics.device
+    init(metalView: MTKView, world: World) {
+        let device = World.shared!.graphics!.device
         guard let commandQueue = device.makeCommandQueue() else {
             fatalError("Metal GPU not available")
         }
@@ -125,11 +125,11 @@ class Renderer: NSObject {
         
         /// SCENE AS LONG AS SCENE MANAGER DOES NOT EXIST
         
-        Renderer.nexus = world.n
+        Renderer.nexus = world.nexus
 
-        rotatingBallSystem = RotatingBallSystem(world: world, context: context)
-        cameraUpdateSystem = CameraUpdateSystem(world: world, context: context)
-        playerCameraSystem = PlayerCameraSystem(world: world, context: context)
+        rotatingBallSystem = RotatingBallSystem(world: world)
+        cameraUpdateSystem = CameraUpdateSystem(world: world)
+        playerCameraSystem = PlayerCameraSystem(world: world)
         meshRenderSystem = MeshRenderSystem(nexus: Nexus.shared())
         lightSystem = LightSystem(nexus: Nexus.shared(), device: device)
         
@@ -231,7 +231,7 @@ fileprivate extension Renderer {
     }
     
     static func buildLightCullComputeState(device: MTLDevice) -> MTLComputePipelineState {
-        guard let function = Context.shared.graphics.library.makeFunction(name: "lightculling") else {
+        guard let function = World.shared!.graphics!.library.makeFunction(name: "lightculling") else {
             fatalError("Light culling kernel does not exist")
         }
         
@@ -284,11 +284,11 @@ fileprivate extension Renderer {
         
         descriptor.label = "FinalPipelineState"
         descriptor.sampleCount = 1
-        descriptor.vertexFunction = Context.shared.graphics.library.makeFunction(name: "FSQuadVertexShader")
-        descriptor.fragmentFunction = Context.shared.graphics.library.makeFunction(name: "resolveShader")
+        descriptor.vertexFunction = World.shared!.graphics!.library.makeFunction(name: "FSQuadVertexShader")
+        descriptor.fragmentFunction = World.shared!.graphics!.library.makeFunction(name: "resolveShader")
         descriptor.colorAttachments[0].pixelFormat = colorPixelFormat
         
-        return try! Context.shared.graphics.device.makeRenderPipelineState(descriptor: descriptor)
+        return try! World.shared!.graphics!.device.makeRenderPipelineState(descriptor: descriptor)
     }
     
     func resize(size: CGSize) {
@@ -304,7 +304,7 @@ fileprivate extension Renderer {
         depthTextureDescriptor.usage = [.renderTarget, .shaderRead]
         depthTextureDescriptor.sampleCount = Renderer.depthSampleCount
         
-        depthTexture = Context.shared.graphics.device.makeTexture(descriptor: depthTextureDescriptor)
+        depthTexture = World.shared!.graphics!.device.makeTexture(descriptor: depthTextureDescriptor)
         depthTexture?.label = "DepthTexture"
         
         let hdrLightingDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float,
@@ -318,7 +318,7 @@ fileprivate extension Renderer {
         hdrLightingDescriptor.usage = [.renderTarget, .shaderRead]
         hdrLightingDescriptor.sampleCount = Renderer.sampleCount
         
-        lightingRenderTarget = Context.shared.graphics.device.makeTexture(descriptor: hdrLightingDescriptor)
+        lightingRenderTarget = World.shared!.graphics!.device.makeTexture(descriptor: hdrLightingDescriptor)
         lightingRenderTarget?.label = "HDRLighting"
         
         // Update passes
@@ -333,9 +333,9 @@ fileprivate extension Renderer {
 
         // Space for every group, list of 256 lights
         let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride
-        culledLightsBufferOpaque = Context.shared.graphics.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferOpaque = World.shared!.graphics!.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
         culledLightsBufferOpaque.label = "opaqueLightIndices"
-        culledLightsBufferTransparent = Context.shared.graphics.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+        culledLightsBufferTransparent = World.shared!.graphics!.device.makeBuffer(length: bufferSize, options: .storageModePrivate)
         culledLightsBufferTransparent.label = "transparentLightIndices"
     }
 }

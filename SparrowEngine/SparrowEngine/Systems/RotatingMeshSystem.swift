@@ -21,8 +21,8 @@ final class RotationSpeed: Component {
 final class RotatingBallSystem: System {
     let entities: Group<Requires2<Transform, RotationSpeed>>
     
-    required init(world: World, context: Context) {
-        entities =  world.n.group(requiresAll: Transform.self, RotationSpeed.self)
+    required init(world: World) {
+        entities =  world.nexus.group(requiresAll: Transform.self, RotationSpeed.self)
     }
     
     func update(deltaTime: Float) {

@@ -12,101 +12,87 @@ import SparrowEngine2
 
 class ViewController: NSViewController {
     
-    var renderer: Renderer?
+    var world: MyGameWorld?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let metalView = view as? MTKView else {
-            fatalError("Metal view not set up in storyboard")
+        guard let metalView = view as? SparrowMetalView else {
+            fatalError("Sparrow Metal viewport view not set up in storyboard")
         }
         metalView.preferredFramesPerSecond = 60
-
         // Disable V-sync
         // (metalView.layer as! CAMetalLayer).displaySyncEnabled = false
         
         do {
-            let app = try Engine.create(MyGame.self, options: [])
-            print("Created app... calling it to test")
+            let game = Engine.create(MyGameWorld.self)
+            try game.initialize(view: metalView)
             
-            app.initialize()
+            world = game
             
-            renderer = Renderer(metalView: metalView, world: app.world, context: app.context)
+            //            renderer = Renderer(metalView: metalView, world: app.world, context: app.context)
         } catch {
             fatalError("Could not start engine: \(error)")
         }
-        
-        
     }
 }
 
-class MyGame: EngineApp {
-    /**/let world: World
-    /**/let context: Context
+class MyGameWorld: World {
+    var renderer: MetalRenderer!
     
-    let fooSystem: MyFooSystem
+    // Systems
+    var fooSystem: MyFooSystem!
     
-    required init(world: World, context: Context) throws {
-        print("INIT MYGAME")
+    func initialize(view: SparrowMetalView) throws {
         
-        self.world = world
-        self.context = context
-        
-        // What do I want to do...
-        
+        // // Create initial entities
         
         
         // Load a model
-//        let sponza = try! loadModel("sponza.sps")
+        //        let sponza = try! loadModel("sponza.sps")
         
         // Create camera
-        let camera = world.n.createEntity()
+        let camera = nexus.createEntity()
         let t = camera.add(component: Transform())
         t.localPosition = [-12.5, 1.4, -0.5]
         t.eulerAngles = [0, Float(90.0).degreesToRadians, 0]
         camera.add(component: Camera())
-//        scene.camera = cameraComp
+        //        scene.camera = cameraComp
         
-//        let skyLight = world.n.createEntity()
-//        let tlight = skyLight.add(component: Transform())
-//        tlight.rotation = simd_quatf(angle: Float(70).degreesToRadians, axis: [1, 0, 0])
-//        let light = skyLight.add(component: Light(type: .directional))
-//        light.color = float3(1, 1, 1)
-//
+        //        let skyLight = world.n.createEntity()
+        //        let tlight = skyLight.add(component: Transform())
+        //        tlight.rotation = simd_quatf(angle: Float(70).degreesToRadians, axis: [1, 0, 0])
+        //        let light = skyLight.add(component: Light(type: .directional))
+        //        light.color = float3(1, 1, 1)
+        //
         
-//        let sponza = world.n.createEntity()
-//        sponza.add(component: Transform())
-//        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
-//        sponza.add(component: RenderMesh(mesh: sponzaMesh))
+        //        let sponza = world.n.createEntity()
+        //        sponza.add(component: Transform())
+        //        let sponzaMesh = try! Renderer.meshLoader.load(name: "ironSphere/ironSphere.spm")
+        //        sponza.add(component: RenderMesh(mesh: sponzaMesh))
         
+        renderer = try MetalRenderer(for: view)
+        try renderer.load(world: self)
         
         // Create systems
-        fooSystem = MyFooSystem(world: world, context: context)
-//        renderSystem = RenderSystem()
-//        cameraSystem = CameraSystem()
+        fooSystem = MyFooSystem(world: self)
+        //        renderSystem = RenderSystem()
+        //        cameraSystem = CameraSystem()
     }
     
-    func initialize() {
-        print("CALLED initialize IN MYGAME")
+    override func update() {
+        fooSystem.doStuff(world: self)
     }
-    
-    func tick(timeInterval: TimeInterval) {
-//        renderSystem.update(timeInterval)
-        
-        fooSystem.doStuff(timeInterval: timeInterval)
-        
-    }
-    
-
 }
 
+
 class MyFooSystem: System {
-    
-    required init(world: World, context: Context) {
+
+    required init(world: World) {
         print("[FOO] Created")
     }
     
-    func doStuff(timeInterval: TimeInterval) {
-        print("[FOO] Do stuff")
+    func doStuff(world: World) {
+//        print("[FOO] Do stuff in world \(world)")
     }
 }

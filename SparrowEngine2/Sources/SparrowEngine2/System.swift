@@ -7,8 +7,11 @@
 
 import SparrowECS
 
+/// A system.
 public protocol System {
-    init(world: World, context: Context)
     
-    //func update(dt: Float)
+    /// Initialize a new system inside given world.
+    ///
+    /// `world` must _not_ be stored with a strong reference!
+    init(world: World)
 }

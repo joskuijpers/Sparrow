@@ -119,25 +119,6 @@ extension Entity {
     }
 }
 
-// MARK: - Instantiation and destruction
-extension Entity {
-    /// Instantiate a copy of this game object
-    public func instantiate() -> Self {
-        let entity = nexus.createEntity()
-        
-        // Add copies of all components
-        // TODO: XXX
-        
-        
-        return entity
-    }
-    
-    /// Destroy this entity.
-    public func destroy() {
-        nexus.destroy(entity: self)
-    }
-}
-
 // MARK: - Equatable
 extension Entity: Equatable {
     public static func == (lhs: Entity, rhs: Entity) -> Bool {
