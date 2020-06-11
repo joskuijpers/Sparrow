@@ -43,8 +43,11 @@ public final class MetalRenderer {
     private var depthStencilStateWriteLess: MTLDepthStencilState!
     private var depthStencilStateReadLessEqual: MTLDepthStencilState!
     private var depthPassDescriptor: MTLRenderPassDescriptor!
-    
     private var depthTexture: MTLTexture!
+    
+    private var lightingRenderTarget: MTLTexture!
+    private var resolvePipelineState: MTLRenderPipelineState!
+    private var resolvePassDescriptor: MTLRenderPassDescriptor!
     
     private var cameraRenderSet = RenderSet()
     private var uniforms = Uniforms()
@@ -61,12 +64,10 @@ public final class MetalRenderer {
         view.device = context.device
         view.depthStencilPixelFormat = .depth32Float
         view.sampleCount = 1
-        view.clearColor = MTLClearColor(red: 0.5, green: 1, blue: 0.5, alpha: 1)
+        view.clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
         
         // Create the state by calling the state functions
         let device = context.device
-        
-        buildDepthPassDescriptor(device: device)
         
         do {
             let descriptor = MTLDepthStencilDescriptor()
@@ -82,6 +83,8 @@ public final class MetalRenderer {
             depthStencilStateReadLessEqual = device.makeDepthStencilState(descriptor: descriptor)!
         }
         
+        buildDepthPassDescriptor()
+        
 //        buildLightCullComputeState(device: device)
 //        buildLightingPassDescriptor(device: device)
 //        buildViewRenderPassDescriptor(device: device)
@@ -90,11 +93,14 @@ public final class MetalRenderer {
 //        buildDepthStencilStateWrite(device: device)
 //        buildDepthStencilStateRead(device: device)
         
+        buildResolveRenderPassDescriptor()
+        try buildResolvePipelineState(device: device, library: context.library)
+        
         // Update render target textures
         viewSizeChanged(to: view.frame.size)
     }
     
-    private func buildDepthPassDescriptor(device: MTLDevice) {
+    private func buildDepthPassDescriptor() {
         let descriptor = MTLRenderPassDescriptor()
         
         descriptor.depthAttachment.clearDepth = 1.0
@@ -103,6 +109,37 @@ public final class MetalRenderer {
         descriptor.depthAttachment.slice = 0
         
         self.depthPassDescriptor = descriptor
+    }
+    
+    private func buildResolveRenderPassDescriptor() {
+        let descriptor = MTLRenderPassDescriptor()
+        
+        descriptor.colorAttachments[0].loadAction = .clear
+        descriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1)
+        
+        descriptor.depthAttachment.loadAction = .clear
+        descriptor.depthAttachment.storeAction = .dontCare
+        descriptor.depthAttachment.clearDepth = 1.0
+        
+        descriptor.stencilAttachment.loadAction = .clear
+        descriptor.stencilAttachment.storeAction = .dontCare
+        descriptor.stencilAttachment.clearStencil = 0
+        
+        descriptor.colorAttachments[0].storeAction = .store
+        
+        self.resolvePassDescriptor = descriptor
+    }
+    
+    private func buildResolvePipelineState(device: MTLDevice, library: MTLLibrary) throws {
+        let descriptor = MTLRenderPipelineDescriptor()
+        
+        descriptor.label = "ResolvePipelineState"
+        descriptor.sampleCount = 1
+        descriptor.vertexFunction = library.makeFunction(name: "FSQuadVertexShader")
+        descriptor.fragmentFunction = library.makeFunction(name: "resolveShader")
+        descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
+
+        self.resolvePipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
     }
 }
 
@@ -149,6 +186,23 @@ extension MetalRenderer {
             
             // Updates passes that use the texture
             depthPassDescriptor.depthAttachment.texture = depthTexture
+//            lightingPassDescriptor.depthAttachment.texture = depthTexture
+        }
+        
+        do {
+            let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float,
+                                                                             width: width,
+                                                                             height: height,
+                                                                             mipmapped: false)
+            
+            textureDescriptor.storageMode = .private
+            textureDescriptor.usage = [.renderTarget, .shaderRead]
+            textureDescriptor.sampleCount = 1
+            
+            lightingRenderTarget = device.makeTexture(descriptor: textureDescriptor)
+            lightingRenderTarget.label = "HDRTexture"
+            
+//            lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
         }
         
     }
@@ -173,7 +227,7 @@ extension MetalRenderer {
         }
         
         // Fill the render sets for this frame
-//        fillRenderSets(world: world)
+        fillRenderSets(world: world)
         
         // Do passes
 //        doDepthPrepass(commandBuffer: commandBuffer)
@@ -181,6 +235,8 @@ extension MetalRenderer {
         // lightingOpaque
         // lightingTranslucent
         // resolve
+        
+        doResolvePass(commandBuffer: commandBuffer)
         
         
         guard let drawable = view.currentDrawable else {
@@ -198,13 +254,35 @@ extension MetalRenderer {
             fatalError("Unable to create render encoder for depth prepass")
         }
         
-        renderEncoder.label = "DepthPrepass"
+        renderEncoder.label = "Depth"
 
         renderEncoder.setDepthStencilState(depthStencilStateWriteLess)
         renderEncoder.setFrontFacing(.clockwise)
 
         renderScene(on: renderEncoder, renderPass: .depthPrePass)
 
+        renderEncoder.endEncoding()
+    }
+    
+    /// Resolve the final image by working on the generated textures. Output to the screen.
+    private func doResolvePass(commandBuffer: MTLCommandBuffer) {
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        
+        resolvePassDescriptor.colorAttachments[0].texture = drawable.texture
+        
+        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: resolvePassDescriptor) else {
+            fatalError("Unable to create render encoder for resolve pass")
+        }
+        
+        renderEncoder.label = "Resolve"
+        
+        renderEncoder.setRenderPipelineState(resolvePipelineState)
+        renderEncoder.setFragmentTexture(lightingRenderTarget, index: 0)
+        
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        
         renderEncoder.endEncoding()
     }
     
@@ -302,7 +380,7 @@ private final class MetalRendererDelegate: NSObject, MTKViewDelegate {
 // MARK: - Graphics context (library and device store)
 
 /// Graphics context for Metal.
-public class GraphicsContext {
+public final class GraphicsContext {
     /**/ public let device: MTLDevice
     /**/ public let library: MTLLibrary
     

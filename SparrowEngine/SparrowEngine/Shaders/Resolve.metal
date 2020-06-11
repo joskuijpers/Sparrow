@@ -19,6 +19,7 @@ struct SimpleTexVertexOut
 };
 
 /// A very simple shader that creates a position and a texture coordinate. Used by post process passes.
+/// There is no input vertex data.
 vertex SimpleTexVertexOut FSQuadVertexShader(uint vid [[vertex_id]])
 {
     SimpleTexVertexOut out;
@@ -35,16 +36,16 @@ fragment half4 resolveShader(
                               texture2d<half, access::sample> hdrLightingTexture [[ texture(0) ]]
                               ) {
     constexpr sampler readSampler(mag_filter::nearest, min_filter::nearest, address::clamp_to_zero, coord::pixel);
-    
+
     float2 screenPos = in.position.xy;
-    
+
     half3 hdr = hdrLightingTexture.sample(readSampler, screenPos).rgb;
 
     // HDR Tone mapping
     half3 result = hdr / (hdr + half3(1.0));
-    
+
     // Gamma correction
     result = pow(result, half3(1.0 / 2.2));
-    
+
     return half4(result, 0);
 }

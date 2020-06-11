@@ -49,8 +49,6 @@ class Renderer: NSObject {
     let depthPassDescriptor: MTLRenderPassDescriptor
     let lightCullComputeState: MTLComputePipelineState
     let lightingPassDescriptor: MTLRenderPassDescriptor
-    let viewRenderPassDescriptor: MTLRenderPassDescriptor
-    let finalPipelineState: MTLRenderPipelineState
     
     let depthStencilStateWrite: MTLDepthStencilState
     let depthStencilStateNoWrite: MTLDepthStencilState
@@ -94,9 +92,6 @@ class Renderer: NSObject {
         lightCullComputeState = Renderer.buildLightCullComputeState(device: device)
         
         lightingPassDescriptor = Renderer.buildLightingPassDescriptor()
-        
-        viewRenderPassDescriptor = Renderer.buildViewRenderPassDescriptor()
-        finalPipelineState = Renderer.buildFinalPipelineState(colorPixelFormat: metalView.colorPixelFormat)
         
         // Create stencil states
         depthStencilStateWrite = Renderer.buildWriteDepthStencilState(device: device)
@@ -235,18 +230,6 @@ fileprivate extension Renderer {
         return passDescriptor
     }
     
-    static func buildFinalPipelineState(colorPixelFormat: MTLPixelFormat) -> MTLRenderPipelineState {
-        let descriptor = MTLRenderPipelineDescriptor()
-        
-        descriptor.label = "FinalPipelineState"
-        descriptor.sampleCount = 1
-        descriptor.vertexFunction = World.shared!.graphics!.library.makeFunction(name: "FSQuadVertexShader")
-        descriptor.fragmentFunction = World.shared!.graphics!.library.makeFunction(name: "resolveShader")
-        descriptor.colorAttachments[0].pixelFormat = colorPixelFormat
-        
-        return try! World.shared!.graphics!.device.makeRenderPipelineState(descriptor: descriptor)
-    }
-    
     func resize(size: CGSize) {
         let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float,
                                                                           width: Int(size.width),
@@ -308,7 +291,7 @@ extension Renderer {
         renderEncoder.setDepthStencilState(depthStencilStateWrite)
         renderEncoder.setFrontFacing(.clockwise)
         
-        renderScene(onEncoder: renderEncoder, renderPass: .depthPrePass)
+//        renderScene(onEncoder: renderEncoder, renderPass: .depthPrePass)
         
         renderEncoder.endEncoding()
     }
@@ -366,32 +349,12 @@ extension Renderer {
 //        renderEncoder.setFragmentTexture(ssaoTexture, index: 4)
 
         renderEncoder.setFragmentBuffer(culledLightsBufferOpaque, offset: 0, index: 17)
-        renderScene(onEncoder: renderEncoder, renderPass: .opaqueLighting)
+//        renderScene(onEncoder: renderEncoder, renderPass: .opaqueLighting)
 
         renderEncoder.setFragmentBuffer(culledLightsBufferTransparent, offset: 0, index: 17)
-        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
+//        renderScene(onEncoder: renderEncoder, renderPass: .transparentLighting)
         
         DebugRendering.shared.render(renderEncoder: renderEncoder)
-        
-        renderEncoder.endEncoding()
-    }
-    
-    func doResolvePass(commandBuffer: MTLCommandBuffer, view: MTKView) {
-        guard let drawable = view.currentDrawable else {
-            fatalError("Unable to get drawable")
-        }
-        
-        viewRenderPassDescriptor.colorAttachments[0].texture = drawable.texture
-        
-        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: viewRenderPassDescriptor) else {
-            fatalError("Unable to create render encoder for resolve pass")
-        }
-        renderEncoder.label = "Resolve"
-        
-        renderEncoder.setRenderPipelineState(finalPipelineState)
-        renderEncoder.setFragmentTexture(lightingRenderTarget, index: 0)
-        
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         
         renderEncoder.endEncoding()
     }
@@ -419,9 +382,6 @@ extension Renderer: MTKViewDelegate {
                 return
         }
         
-        // Fill render sets
-        fillRenderSets()
-        
         // Render into depth first, used for culling and AO
         doDepthPrepass(commandBuffer: commandBuffer)
 
@@ -430,9 +390,6 @@ extension Renderer: MTKViewDelegate {
         
         // Perform lighting with culled lights
         doLightingPass(commandBuffer: commandBuffer)
-        
-        // Resolve HDR buffer with tone mapping and gamma correction and draw to screen
-        doResolvePass(commandBuffer: commandBuffer, view: view)
         
         // END RENDER
         
@@ -443,45 +400,6 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.present(drawable)
         commandBuffer.commit()
         // END BUILTIN POST-LOOP
-    }
-  
-    /// Fill the render sets with meshes.
-    func fillRenderSets() {
-        cameraRenderSet.clear()
-        
-        let camera = scene.camera!
-        let frustum = camera.frustum!
-        
-//        meshRenderSystem.buildQueue(set: cameraRenderSet, renderPass: .opaqueLighting, frustum: frustum, viewPosition: camera.uniforms.cameraWorldPosition)
-    }
-    
-    /**
-     Render the scene on given render encoder for given pass.
-     
-     - Parameter renderPass: Pass determines the render queue to use.
-    */
-    func renderScene(onEncoder renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
-        var cameraUniforms = scene.camera!.uniforms
-        renderEncoder.setVertexBytes(&cameraUniforms,
-                                     length: MemoryLayout<CameraUniforms>.stride,
-                                     index: Int(BufferIndexCameraUniforms.rawValue))
-        renderEncoder.setFragmentBytes(&cameraUniforms,
-                                       length: MemoryLayout<CameraUniforms>.stride,
-                                       index: Int(BufferIndexCameraUniforms.rawValue))
-        
-        var renderQueue: RenderQueue!
-        switch renderPass {
-        case .opaqueLighting, .depthPrePass:
-            renderQueue = cameraRenderSet.opaque
-        case .transparentLighting:
-            renderQueue = cameraRenderSet.translucent
-        default:
-            fatalError("Cannot render scene for render pass \(renderPass)")
-        }
-        
-//        for item in renderQueue.allItems() {
-//            item.mesh.render(renderEncoder: renderEncoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
-//        }
     }
 }
 
