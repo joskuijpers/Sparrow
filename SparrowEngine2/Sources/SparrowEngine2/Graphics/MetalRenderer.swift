@@ -21,25 +21,8 @@ public final class MetalRenderer {
     
     /// View delegate to get draw events
     private var delegate: MetalRendererDelegate?
-    
-    private let commandQueue: MTLCommandQueue!
-    
-    enum Error: Swift.Error {
-        /// Could not create a command queue
-        case commandQueueUnavailable
-    }
-    
-    public init(for view: SparrowMetalView) throws {
-        context = try GraphicsContext()
-
-        guard let commandQueue = context.device.makeCommandQueue() else {
-            throw Error.commandQueueUnavailable
-        }
-        self.commandQueue = commandQueue
         
-        self.view = view
-    }
-    
+    private let commandQueue: MTLCommandQueue!
     
     private var depthStencilStateWriteLess: MTLDepthStencilState!
     private var depthStencilStateReadLessEqual: MTLDepthStencilState!
@@ -64,7 +47,22 @@ public final class MetalRenderer {
     private var cameraRenderSet = RenderSet()
     private var uniforms = Uniforms()
     
+    enum Error: Swift.Error {
+        /// Could not create a command queue
+        case commandQueueUnavailable
+    }
     
+    public init(for view: SparrowMetalView) throws {
+        context = try GraphicsContext()
+
+        guard let commandQueue = context.device.makeCommandQueue() else {
+            throw Error.commandQueueUnavailable
+        }
+        self.commandQueue = commandQueue
+        
+        self.view = view
+    }
+
     /// Load the renderer for given world.
     ///
     /// The graphics context of this renderer will be assigned to the world.
@@ -108,70 +106,6 @@ public final class MetalRenderer {
         // Update render target textures
         viewSizeChanged(to: view.frame.size)
     }
-    
-    private func buildDepthPassDescriptor() {
-        let descriptor = MTLRenderPassDescriptor()
-        
-        descriptor.depthAttachment.clearDepth = 1.0
-        descriptor.depthAttachment.loadAction = .clear
-        descriptor.depthAttachment.storeAction = .store
-        descriptor.depthAttachment.slice = 0
-        
-        self.depthPassDescriptor = descriptor
-    }
-    
-    private func buildResolveRenderPassDescriptor() {
-        let descriptor = MTLRenderPassDescriptor()
-        
-        descriptor.colorAttachments[0].loadAction = .clear
-        descriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1)
-        
-        descriptor.depthAttachment.loadAction = .clear
-        descriptor.depthAttachment.storeAction = .dontCare
-        descriptor.depthAttachment.clearDepth = 1.0
-        
-        descriptor.stencilAttachment.loadAction = .clear
-        descriptor.stencilAttachment.storeAction = .dontCare
-        descriptor.stencilAttachment.clearStencil = 0
-        
-        descriptor.colorAttachments[0].storeAction = .store
-        
-        self.resolvePassDescriptor = descriptor
-    }
-    
-    private func buildResolvePipelineState(device: MTLDevice, library: MTLLibrary) throws {
-        let descriptor = MTLRenderPipelineDescriptor()
-        
-        descriptor.label = "ResolvePipelineState"
-        descriptor.sampleCount = 1
-        descriptor.vertexFunction = library.makeFunction(name: "FSQuadVertexShader")
-        descriptor.fragmentFunction = library.makeFunction(name: "resolveShader")
-        descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
-
-        self.resolvePipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
-    }
-    
-    private func buildLightCullingComputeState(device: MTLDevice, library: MTLLibrary) throws {
-        guard let function = library.makeFunction(name: "lightculling") else {
-            fatalError("Light culling kernel 'lightculling' does not exist")
-        }
-        
-        lightCullingPipelineState = try device.makeComputePipelineState(function: function)
-    }
-    
-    private func buildLightingPassDescriptor() {
-        let descriptor = MTLRenderPassDescriptor()
-        
-        descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 1, alpha: 1)
-        descriptor.colorAttachments[0].loadAction = .clear
-        descriptor.colorAttachments[0].storeAction = .store
-        
-        descriptor.depthAttachment.loadAction = .load
-        descriptor.depthAttachment.storeAction = .store
-        descriptor.depthAttachment.slice = 0
-        
-        self.lightingPassDescriptor = descriptor
-    }
 }
 
 // MARK: - Adjusting the rendering process
@@ -193,9 +127,71 @@ extension MetalRenderer {
 
 // MARK: - Creating GPU state
 
-extension MetalRenderer {
-    // Building state
+private extension MetalRenderer {
+
+    func buildDepthPassDescriptor() {
+        let descriptor = MTLRenderPassDescriptor()
+        
+        descriptor.depthAttachment.clearDepth = 1.0
+        descriptor.depthAttachment.loadAction = .clear
+        descriptor.depthAttachment.storeAction = .store
+        descriptor.depthAttachment.slice = 0
+        
+        self.depthPassDescriptor = descriptor
+    }
     
+    func buildResolveRenderPassDescriptor() {
+        let descriptor = MTLRenderPassDescriptor()
+        
+        descriptor.colorAttachments[0].loadAction = .clear
+        descriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1)
+        
+        descriptor.depthAttachment.loadAction = .clear
+        descriptor.depthAttachment.storeAction = .dontCare
+        descriptor.depthAttachment.clearDepth = 1.0
+        
+        descriptor.stencilAttachment.loadAction = .clear
+        descriptor.stencilAttachment.storeAction = .dontCare
+        descriptor.stencilAttachment.clearStencil = 0
+        
+        descriptor.colorAttachments[0].storeAction = .store
+        
+        self.resolvePassDescriptor = descriptor
+    }
+    
+    func buildResolvePipelineState(device: MTLDevice, library: MTLLibrary) throws {
+        let descriptor = MTLRenderPipelineDescriptor()
+        
+        descriptor.label = "ResolvePipelineState"
+        descriptor.sampleCount = 1
+        descriptor.vertexFunction = library.makeFunction(name: "FSQuadVertexShader")
+        descriptor.fragmentFunction = library.makeFunction(name: "resolveShader")
+        descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
+
+        self.resolvePipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
+    func buildLightCullingComputeState(device: MTLDevice, library: MTLLibrary) throws {
+        guard let function = library.makeFunction(name: "lightculling") else {
+            fatalError("Light culling kernel 'lightculling' does not exist")
+        }
+        
+        lightCullingPipelineState = try device.makeComputePipelineState(function: function)
+    }
+    
+    func buildLightingPassDescriptor() {
+        let descriptor = MTLRenderPassDescriptor()
+        
+        descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 1, alpha: 1)
+        descriptor.colorAttachments[0].loadAction = .clear
+        descriptor.colorAttachments[0].storeAction = .store
+        
+        descriptor.depthAttachment.loadAction = .load
+        descriptor.depthAttachment.storeAction = .store
+        descriptor.depthAttachment.slice = 0
+        
+        self.lightingPassDescriptor = descriptor
+    }
     
     /// Update render targets.
     func updateRenderTargets(device: MTLDevice) {
@@ -256,14 +252,10 @@ extension MetalRenderer {
 }
 
 // MARK: - Rendering a frame
-extension MetalRenderer {
+private extension MetalRenderer {
 
     /// Render a single frame using given world.
-    fileprivate func renderFrame(world: World) {
-        let time = world.time
-        
-        print("renderFrame \(time.frameIndex)")
-        
+    func renderFrame(world: World) {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return
         }
@@ -278,9 +270,7 @@ extension MetalRenderer {
         // Do passes
         doDepthPrepass(commandBuffer: commandBuffer)
         doLightCulling(commandBuffer: commandBuffer,
-                       cameraUniforms: getCamera(world: world).uniforms,
-                       lightsBuffer: lightsBuffer,
-                       lightsBufferCount: lightsBufferCount)
+                       cameraUniforms: getCamera(world: world).uniforms)
         
         doLightingPass(commandBuffer: commandBuffer)
         doResolvePass(commandBuffer: commandBuffer)
@@ -296,7 +286,7 @@ extension MetalRenderer {
     /// Run the depth prepass render pass.
     ///
     /// Sets up a render encoder and renders the opaque scene into it.
-    private func doDepthPrepass(commandBuffer: MTLCommandBuffer) {
+    func doDepthPrepass(commandBuffer: MTLCommandBuffer) {
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: depthPassDescriptor) else {
             fatalError("Unable to create render encoder for depth prepass")
         }
@@ -311,7 +301,7 @@ extension MetalRenderer {
         encoder.endEncoding()
     }
     
-    private func doLightCulling(commandBuffer: MTLCommandBuffer, cameraUniforms: CameraUniforms, lightsBuffer: MTLBuffer, lightsBufferCount: UInt) {
+    func doLightCulling(commandBuffer: MTLCommandBuffer, cameraUniforms: CameraUniforms) {
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
             fatalError("Unable to create compute encoder for light culling pass")
         }
@@ -339,7 +329,7 @@ extension MetalRenderer {
         encoder.endEncoding()
     }
     
-    private func doLightingPass(commandBuffer: MTLCommandBuffer) {
+    func doLightingPass(commandBuffer: MTLCommandBuffer) {
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: lightingPassDescriptor) else {
             fatalError("Unable to create render encoder for lighting pass")
         }
@@ -371,7 +361,7 @@ extension MetalRenderer {
     }
     
     /// Resolve the final image by working on the generated textures. Output to the screen.
-    private func doResolvePass(commandBuffer: MTLCommandBuffer) {
+    func doResolvePass(commandBuffer: MTLCommandBuffer) {
         guard let drawable = view.currentDrawable else {
             return
         }
@@ -393,7 +383,7 @@ extension MetalRenderer {
     }
     
     /// Get the scene camera
-    private func getCamera(world: World) -> Camera {
+    func getCamera(world: World) -> Camera {
         guard let cameraEntity = world.camera else {
             fatalError("No camera set for the viewport")
         }
@@ -407,7 +397,7 @@ extension MetalRenderer {
     //  only need to add an item to a renderset once. But a renderset could be for shadows or for a camera.
     //  for shadows we thus need a mapping: [ShadowInfo], [RenderSet], where ShadowInfo is position and frustum
     //  We also need some way to support rendering of non Meshes I think, like 3D Text.
-    private func fillRenderSets(world: World) {
+    func fillRenderSets(world: World) {
         let camera = getCamera(world: world)
         let frustum = camera.frustum!
         
@@ -416,7 +406,7 @@ extension MetalRenderer {
         world.fillRenderSet(frustum: frustum, renderSet: cameraRenderSet, viewPosition: camera.uniforms.cameraWorldPosition)
     }
     
-    private func renderScene(on encoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
+    func renderScene(on encoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
         // TODO: wtf? And what when we want to render for shadow?
         let camera = getCamera(world: World.shared!)
         var cameraUniforms = camera.uniforms
