@@ -6,6 +6,7 @@
 //
 
 import MetalKit
+import CSparrowEngine
 
 /// Metal backed renderer.
 ///
@@ -46,8 +47,17 @@ public final class MetalRenderer {
     private var depthTexture: MTLTexture!
     
     private var lightingRenderTarget: MTLTexture!
+    private var lightsBuffer: MTLBuffer!
+    private var lightsBufferCount: UInt = 0
+    
     private var resolvePipelineState: MTLRenderPipelineState!
     private var resolvePassDescriptor: MTLRenderPassDescriptor!
+    
+    private var lightCullingPipelineState: MTLComputePipelineState!
+    private var threadgroupCount = MTLSizeMake(0, 0, 1)
+    private var threadgroupSize = MTLSizeMake(Int(LIGHT_CULLING_TILE_SIZE), Int(LIGHT_CULLING_TILE_SIZE), 1)
+    private var culledLightsBufferOpaque: MTLBuffer!
+    private var culledLightsBufferTranslucent: MTLBuffer!
     
     private var cameraRenderSet = RenderSet()
     private var uniforms = Uniforms()
@@ -84,17 +94,9 @@ public final class MetalRenderer {
         }
         
         buildDepthPassDescriptor()
-        
-//        buildLightCullComputeState(device: device)
-//        buildLightingPassDescriptor(device: device)
-//        buildViewRenderPassDescriptor(device: device)
-//        buildResolvePassPipelineState(device: device)
-//
-//        buildDepthStencilStateWrite(device: device)
-//        buildDepthStencilStateRead(device: device)
-        
         buildResolveRenderPassDescriptor()
         try buildResolvePipelineState(device: device, library: context.library)
+        try buildLightCullingComputeState(device: device, library: context.library)
         
         // Update render target textures
         viewSizeChanged(to: view.frame.size)
@@ -140,6 +142,14 @@ public final class MetalRenderer {
         descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
 
         self.resolvePipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
+    }
+    
+    private func buildLightCullingComputeState(device: MTLDevice, library: MTLLibrary) throws {
+        guard let function = library.makeFunction(name: "lightculling") else {
+            fatalError("Light culling kernel 'lightculling' does not exist")
+        }
+        
+        lightCullingPipelineState = try device.makeComputePipelineState(function: function)
     }
 }
 
@@ -205,6 +215,17 @@ extension MetalRenderer {
 //            lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
         }
         
+        // Culling
+        do {
+            threadgroupCount.width = (width + threadgroupSize.width - 1) / threadgroupSize.width
+            threadgroupCount.height = (height + threadgroupSize.height - 1) / threadgroupSize.height
+            
+            let bufferSize = threadgroupCount.width * threadgroupCount.height * Int(MAX_LIGHTS_PER_TILE) * MemoryLayout<UInt16>.stride
+            culledLightsBufferOpaque = device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+            culledLightsBufferOpaque.label = "CullingOpaqueIndices"
+            culledLightsBufferTranslucent = device.makeBuffer(length: bufferSize, options: .storageModePrivate)
+            culledLightsBufferTranslucent.label = "CullingTranslucentIndices"
+        }
     }
     
     /// Update the properties that rely on screen size, such as compute settings and buffers.
@@ -229,14 +250,20 @@ extension MetalRenderer {
         // Fill the render sets for this frame
         fillRenderSets(world: world)
         
+        // Find all lights
+        let lightSystem = LightSystem(world: world)
+        lightSystem.updateLightBuffer(device: world.graphics.device, buffer: &lightsBuffer, lightsCount: &lightsBufferCount)
+        
         // Do passes
         doDepthPrepass(commandBuffer: commandBuffer)
+        doLightCulling(commandBuffer: commandBuffer,
+                       cameraUniforms: getCamera(world: world).uniforms,
+                       lightsBuffer: lightsBuffer,
+                       lightsBufferCount: lightsBufferCount)
         
-        // lightCulling
         // lightingOpaque
         // lightingTranslucent
-        // resolve
-        
+
         doResolvePass(commandBuffer: commandBuffer)
         
         
@@ -263,6 +290,34 @@ extension MetalRenderer {
         renderScene(on: renderEncoder, renderPass: .depthPrePass)
 
         renderEncoder.endEncoding()
+    }
+    
+    private func doLightCulling(commandBuffer: MTLCommandBuffer, cameraUniforms: CameraUniforms, lightsBuffer: MTLBuffer, lightsBufferCount: UInt) {
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else {
+            fatalError("Unable to create compute encoder for light culling pass")
+        }
+        
+        encoder.label = "LightCulling"
+        
+        encoder.setComputePipelineState(lightCullingPipelineState)
+        
+        var uniforms = cameraUniforms
+        encoder.setBytes(&uniforms,
+                         length: MemoryLayout<CameraUniforms>.stride,
+                         index: 1)
+        
+        encoder.setBuffer(lightsBuffer, offset: 0, index: 2)
+        
+        var count = lightsBufferCount
+        encoder.setBytes(&count, length: MemoryLayout<UInt>.stride, index: 3)
+        encoder.setBuffer(culledLightsBufferOpaque, offset: 0, index: 4)
+        encoder.setBuffer(culledLightsBufferTranslucent, offset: 0, index: 5)
+        
+        encoder.setTexture(depthTexture, index: 0)
+        
+        encoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
+        
+        encoder.endEncoding()
     }
     
     /// Resolve the final image by working on the generated textures. Output to the screen.
