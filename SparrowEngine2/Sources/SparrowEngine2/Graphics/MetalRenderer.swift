@@ -477,8 +477,8 @@ private final class MetalRendererDelegate: NSObject, MTKViewDelegate {
 
 /// Graphics context for Metal.
 public final class GraphicsContext {
-    /**/ public let device: MTLDevice
-    /**/ public let library: MTLLibrary
+    /* */ public let device: MTLDevice
+    /* */ public let library: MTLLibrary
     
     enum Error: Swift.Error {
         /// Could not create a Metal device
