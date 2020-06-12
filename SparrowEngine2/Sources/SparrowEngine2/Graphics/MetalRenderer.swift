@@ -59,6 +59,8 @@ public final class MetalRenderer {
     private var culledLightsBufferOpaque: MTLBuffer!
     private var culledLightsBufferTranslucent: MTLBuffer!
     
+    private var lightingPassDescriptor: MTLRenderPassDescriptor!
+    
     private var cameraRenderSet = RenderSet()
     private var uniforms = Uniforms()
     
@@ -94,9 +96,14 @@ public final class MetalRenderer {
         }
         
         buildDepthPassDescriptor()
+
+        try buildLightCullingComputeState(device: device, library: context.library)
+        
+        buildLightingPassDescriptor()
+        
         buildResolveRenderPassDescriptor()
         try buildResolvePipelineState(device: device, library: context.library)
-        try buildLightCullingComputeState(device: device, library: context.library)
+        
         
         // Update render target textures
         viewSizeChanged(to: view.frame.size)
@@ -151,6 +158,20 @@ public final class MetalRenderer {
         
         lightCullingPipelineState = try device.makeComputePipelineState(function: function)
     }
+    
+    private func buildLightingPassDescriptor() {
+        let descriptor = MTLRenderPassDescriptor()
+        
+        descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.5, green: 0.5, blue: 1, alpha: 1)
+        descriptor.colorAttachments[0].loadAction = .clear
+        descriptor.colorAttachments[0].storeAction = .store
+        
+        descriptor.depthAttachment.loadAction = .load
+        descriptor.depthAttachment.storeAction = .store
+        descriptor.depthAttachment.slice = 0
+        
+        self.lightingPassDescriptor = descriptor
+    }
 }
 
 // MARK: - Adjusting the rendering process
@@ -196,7 +217,7 @@ extension MetalRenderer {
             
             // Updates passes that use the texture
             depthPassDescriptor.depthAttachment.texture = depthTexture
-//            lightingPassDescriptor.depthAttachment.texture = depthTexture
+            lightingPassDescriptor.depthAttachment.texture = depthTexture
         }
         
         do {
@@ -212,7 +233,7 @@ extension MetalRenderer {
             lightingRenderTarget = device.makeTexture(descriptor: textureDescriptor)
             lightingRenderTarget.label = "SceneHDRLighting"
             
-//            lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
+            lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
         }
         
         // Culling
@@ -261,9 +282,7 @@ extension MetalRenderer {
                        lightsBuffer: lightsBuffer,
                        lightsBufferCount: lightsBufferCount)
         
-        // lightingOpaque
-        // lightingTranslucent
-
+        doLightingPass(commandBuffer: commandBuffer)
         doResolvePass(commandBuffer: commandBuffer)
         
         
@@ -278,18 +297,18 @@ extension MetalRenderer {
     ///
     /// Sets up a render encoder and renders the opaque scene into it.
     private func doDepthPrepass(commandBuffer: MTLCommandBuffer) {
-        guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: depthPassDescriptor) else {
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: depthPassDescriptor) else {
             fatalError("Unable to create render encoder for depth prepass")
         }
         
-        renderEncoder.label = "Depth"
+        encoder.label = "Depth"
 
-        renderEncoder.setDepthStencilState(depthStencilStateWriteLess)
-        renderEncoder.setFrontFacing(.clockwise)
+        encoder.setDepthStencilState(depthStencilStateWriteLess)
+        encoder.setFrontFacing(.clockwise)
 
-        renderScene(on: renderEncoder, renderPass: .depthPrePass)
+        renderScene(on: encoder, renderPass: .depthPrePass)
 
-        renderEncoder.endEncoding()
+        encoder.endEncoding()
     }
     
     private func doLightCulling(commandBuffer: MTLCommandBuffer, cameraUniforms: CameraUniforms, lightsBuffer: MTLBuffer, lightsBufferCount: UInt) {
@@ -316,6 +335,37 @@ extension MetalRenderer {
         encoder.setTexture(depthTexture, index: 0)
         
         encoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
+        
+        encoder.endEncoding()
+    }
+    
+    private func doLightingPass(commandBuffer: MTLCommandBuffer) {
+        guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: lightingPassDescriptor) else {
+            fatalError("Unable to create render encoder for lighting pass")
+        }
+        
+        encoder.label = "Lighting"
+        
+        // Do not write to depth: we already have it
+        encoder.setDepthStencilState(depthStencilStateReadLessEqual)
+        encoder.setFrontFacing(.clockwise)
+        
+        // Light data: all lights, culled light indices, and horizontal tile count for finding the tile per pixel.
+        var count = UInt(threadgroupCount.width)
+        encoder.setFragmentBytes(&count, length: MemoryLayout<UInt>.stride, index: 15)
+        encoder.setFragmentBuffer(lightsBuffer, offset: 0, index: 16)
+        
+        //        renderEncoder.setFragmentTexture(ssaoTexture, index: 4)
+        
+        // Opaque pass
+        encoder.setFragmentBuffer(culledLightsBufferOpaque, offset: 0, index: 17)
+        renderScene(on: encoder, renderPass: .opaqueLighting)
+        
+        // Translucent pass
+        encoder.setFragmentBuffer(culledLightsBufferTranslucent, offset: 0, index: 17)
+        renderScene(on: encoder, renderPass: .transparentLighting)
+        
+//        DebugRendering.shared.render(renderEncoder: renderEncoder)
         
         encoder.endEncoding()
     }
