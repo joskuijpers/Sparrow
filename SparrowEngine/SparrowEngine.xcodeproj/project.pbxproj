@@ -17,7 +17,6 @@
 		80A462CE238F0FB9009435EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CD238F0FB9009435EB /* Assets.xcassets */; };
 		80A462D1238F0FB9009435EB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 80A462CF238F0FB9009435EB /* Main.storyboard */; };
 		80A462DC238F106B009435EB /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462DB238F106B009435EB /* Renderer.swift */; };
-		80A462E1238F1254009435EB /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A462E0238F1254009435EB /* Scene.swift */; };
 		80A462ED238F14AC009435EB /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A462EC238F14AC009435EB /* Shaders.metal */; };
 		80A6F8AE2456174400FE8CCF /* Depth.metal in Sources */ = {isa = PBXBuildFile; fileRef = 80A6F8AD2456174400FE8CCF /* Depth.metal */; };
 		80C17205247A8B900097F2AE /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 80C17203247A8B780097F2AE /* Assets */; };
@@ -39,7 +38,6 @@
 		80A462D2238F0FB9009435EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80A462D3238F0FB9009435EB /* ISOGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ISOGame.entitlements; sourceTree = "<group>"; };
 		80A462DB238F106B009435EB /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		80A462E0238F1254009435EB /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		80A462EC238F14AC009435EB /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
 		80A6F8AD2456174400FE8CCF /* Depth.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Depth.metal; sourceTree = "<group>"; };
@@ -63,14 +61,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		800604AD23F9EF1E00B3FB7F /* Scene */ = {
-			isa = PBXGroup;
-			children = (
-				80A462E0238F1254009435EB /* Scene.swift */,
-			);
-			path = Scene;
-			sourceTree = "<group>";
-		};
 		80127EF52491340000FC25EC /* Systems */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,7 +121,6 @@
 			isa = PBXGroup;
 			children = (
 				80A462DD238F10D7009435EB /* App */,
-				800604AD23F9EF1E00B3FB7F /* Scene */,
 				80A462DB238F106B009435EB /* Renderer.swift */,
 				80F05962249251AF001C082F /* Components */,
 				80127EF52491340000FC25EC /* Systems */,
@@ -237,7 +226,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				80A462DC238F106B009435EB /* Renderer.swift in Sources */,
-				80A462E1238F1254009435EB /* Scene.swift in Sources */,
 				80A462CC238F0FB6009435EB /* ViewController.swift in Sources */,
 				80F0596624925553001C082F /* Game.swift in Sources */,
 				80F05964249251BB001C082F /* RotatingSpeed.swift in Sources */,

@@ -231,6 +231,12 @@ private extension MetalRenderer {
             
             lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
         }
+    }
+    
+    /// Update the properties that rely on screen size, such as compute settings and buffers.
+    func updateScreenSpaceProperties(device: MTLDevice) {
+        let width = Int(view.frame.size.width)
+        let height = Int(view.frame.size.height)
         
         // Culling
         do {
@@ -243,11 +249,6 @@ private extension MetalRenderer {
             culledLightsBufferTranslucent = device.makeBuffer(length: bufferSize, options: .storageModePrivate)
             culledLightsBufferTranslucent.label = "CullingTranslucentIndices"
         }
-    }
-    
-    /// Update the properties that rely on screen size, such as compute settings and buffers.
-    func updateScreenSpaceProperties(device: MTLDevice) {
-        print("Update SSPs")
     }
 }
 
@@ -454,6 +455,9 @@ private final class MetalRendererDelegate: NSObject, MTKViewDelegate {
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        let cameraSystem = CameraUpdateSystem(world: world)
+        cameraSystem.updateViewportSize(to: size)
+        
         renderer.viewSizeChanged(to: size)
     }
     

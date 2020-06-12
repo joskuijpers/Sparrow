@@ -63,11 +63,4 @@ public final class Camera: Component {
     
     // TODO get rid of this stuff? ViewportSize?
     public var screenSize = (0,0)
-    
-    /// Screen size changed. Updates the aspect ratio
-    public func onScreenSizeWillChange(to size: (Int, Int)) {
-        aspect = Float(size.0) / Float(size.1)
-        screenSize = size
-        uniformsDirty = true
-    }
 }

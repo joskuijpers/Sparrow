@@ -17,15 +17,9 @@ public final class CameraUpdateSystem: System {
         cameras = world.nexus.group(requiresAll: Transform.self, Camera.self)
     }
     
-    /// Update camera with new uniform data
-    public func updateCameras() {
+    /// Update camera with new uniform data and frustums.
+    func updateCameras() {
         for (transform, camera) in cameras {
-            // View matrix changes whenever position or orientation of the camera changes
-//            let translateMatrix = float4x4(translation: transform.position)
-//            let rotateMatrix = float4x4(transform.quaternion)
-            
-            // TODO if has parent, take parent WorldMatrix and multiply
-//            let newViewMatrix = rotateMatrix * translateMatrix
             let newViewMatrix = transform.worldToLocalMatrix
             
             if newViewMatrix != camera.viewMatrix {
@@ -71,4 +65,14 @@ public final class CameraUpdateSystem: System {
         
     }
 
+    /// Update viewport size of cameras. Assumes all cameras are for sceen use only.
+    func updateViewportSize(to size: CGSize) {
+        let aspect = Float(size.width / size.height)
+        let pixelSize = (Int(size.width), Int(size.height))
+        
+        for (_, camera) in cameras {
+            camera.aspect = aspect
+            camera.screenSize = pixelSize
+        }
+    }
 }
