@@ -9,9 +9,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-
-
-
 struct SimpleTexVertexOut
 {
     float4 position [[position]];
@@ -36,7 +33,7 @@ fragment half4 resolveShader(
                               texture2d<half, access::sample> hdrLightingTexture [[ texture(0) ]]
                               ) {
     constexpr sampler readSampler(mag_filter::nearest, min_filter::nearest, address::clamp_to_zero, coord::pixel);
-
+    
     float2 screenPos = in.position.xy;
 
     half3 hdr = hdrLightingTexture.sample(readSampler, screenPos).rgb;

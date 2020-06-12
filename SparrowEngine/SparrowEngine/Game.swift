@@ -56,10 +56,14 @@ class GameWorld: World {
         let textureLoader = TextureLoader(device: device)
         let meshLoader = MeshLoader(device: device, textureLoader: textureLoader)
 
-        let sponza = nexus.createEntity()
-        sponza.add(component: Transform())
         let sponzaMesh = try! meshLoader.load(name: "ironSphere/ironSphere.spm")
-        sponza.add(component: RenderMesh(mesh: sponzaMesh))
+
+        for i in 1..<100 {
+            let sponza = nexus.createEntity()
+            let t = sponza.add(component: Transform())
+            t.position = [0, 0, (Float(i) - 50) * 2]
+            sponza.add(component: RenderMesh(mesh: sponzaMesh))
+        }
         
     }
     

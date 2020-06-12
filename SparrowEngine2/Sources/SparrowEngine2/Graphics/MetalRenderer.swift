@@ -182,7 +182,7 @@ extension MetalRenderer {
             textureDescriptor.sampleCount = 1
             
             depthTexture = device.makeTexture(descriptor: textureDescriptor)!
-            depthTexture.label = "DepthTexture"
+            depthTexture.label = "SceneDepth"
             
             // Updates passes that use the texture
             depthPassDescriptor.depthAttachment.texture = depthTexture
@@ -200,7 +200,7 @@ extension MetalRenderer {
             textureDescriptor.sampleCount = 1
             
             lightingRenderTarget = device.makeTexture(descriptor: textureDescriptor)
-            lightingRenderTarget.label = "HDRTexture"
+            lightingRenderTarget.label = "SceneHDRLighting"
             
 //            lightingPassDescriptor.colorAttachments[0].texture = lightingRenderTarget
         }
@@ -230,7 +230,8 @@ extension MetalRenderer {
         fillRenderSets(world: world)
         
         // Do passes
-//        doDepthPrepass(commandBuffer: commandBuffer)
+        doDepthPrepass(commandBuffer: commandBuffer)
+        
         // lightCulling
         // lightingOpaque
         // lightingTranslucent
@@ -313,7 +314,7 @@ extension MetalRenderer {
     private func renderScene(on encoder: MTLRenderCommandEncoder, renderPass: RenderPass) {
         // TODO: wtf? And what when we want to render for shadow?
         let camera = getCamera(world: World.shared!)
-        var cameraUniforms = camera
+        var cameraUniforms = camera.uniforms
         
         encoder.setVertexBytes(&cameraUniforms,
                                length: MemoryLayout<CameraUniforms>.stride,

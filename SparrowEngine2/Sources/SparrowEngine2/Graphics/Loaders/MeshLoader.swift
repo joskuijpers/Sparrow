@@ -201,7 +201,7 @@ public class MeshLoader {
         // TODO
         
         return Material(name: saMaterial.name,
-                        renderMode: saMaterial.alphaMode.renderMode(),
+                        renderMode: saMaterial.alphaMode.renderMode,
 
                         albedoTexture: albedoTexture,
                         normalTexture: normalTexture,
@@ -223,7 +223,7 @@ public class MeshLoader {
 fileprivate extension SPMAlphaMode {
     
     /// Render mode for this alpha mode.
-    func renderMode() -> RenderMode {
+    var renderMode: RenderMode {
         switch self {
         case .mask:
             return .cutOut
