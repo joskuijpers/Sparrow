@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "80A462C5238F0FB6009435EB"
-               BuildableName = "SparrowEngine.app"
-               BlueprintName = "SparrowEngine"
-               ReferencedContainer = "container:SparrowEngine.xcodeproj">
+               BuildableName = "TestGame.app"
+               BlueprintName = "TestGame"
+               ReferencedContainer = "container:TestGame.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "80A462C5238F0FB6009435EB"
-            BuildableName = "SparrowEngine.app"
-            BlueprintName = "SparrowEngine"
-            ReferencedContainer = "container:SparrowEngine.xcodeproj">
+            BuildableName = "TestGame.app"
+            BlueprintName = "TestGame"
+            ReferencedContainer = "container:TestGame.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "80A462C5238F0FB6009435EB"
-            BuildableName = "SparrowEngine.app"
-            BlueprintName = "SparrowEngine"
-            ReferencedContainer = "container:SparrowEngine.xcodeproj">
+            BuildableName = "TestGame.app"
+            BlueprintName = "TestGame"
+            ReferencedContainer = "container:TestGame.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

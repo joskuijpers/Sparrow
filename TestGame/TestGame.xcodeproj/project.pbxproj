@@ -31,13 +31,13 @@
 		8064AF5B2427A9610089FE11 /* LightCulling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = LightCulling.metal; sourceTree = "<group>"; };
 		8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = DebugShaders.metal; sourceTree = "<group>"; };
 		8064AF60242960CC0089FE11 /* Resolve.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Resolve.metal; sourceTree = "<group>"; };
-		80A462C6238F0FB6009435EB /* SparrowEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SparrowEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		80A462C6238F0FB6009435EB /* TestGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80A462C9238F0FB6009435EB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80A462CB238F0FB6009435EB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		80A462CD238F0FB9009435EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		80A462D0238F0FB9009435EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		80A462D2238F0FB9009435EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		80A462D3238F0FB9009435EB /* ISOGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ISOGame.entitlements; sourceTree = "<group>"; };
+		80A462D3238F0FB9009435EB /* TestGame.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestGame.entitlements; sourceTree = "<group>"; };
 		80A462DB238F106B009435EB /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		80A462EC238F14AC009435EB /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		80A462F7238F23AC009435EB /* ShaderCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderCommon.h; sourceTree = "<group>"; };
@@ -77,7 +77,7 @@
 			children = (
 				80A462CD238F0FB9009435EB /* Assets.xcassets */,
 				80A462D2238F0FB9009435EB /* Info.plist */,
-				80A462D3238F0FB9009435EB /* ISOGame.entitlements */,
+				80A462D3238F0FB9009435EB /* TestGame.entitlements */,
 			);
 			name = AppInfo;
 			sourceTree = "<group>";
@@ -105,7 +105,7 @@
 		80A462BD238F0FB6009435EB = {
 			isa = PBXGroup;
 			children = (
-				80A462C8238F0FB6009435EB /* SparrowEngine */,
+				80A462C8238F0FB6009435EB /* TestGame */,
 				80A462C7238F0FB6009435EB /* Products */,
 				8086963423B8D8BC0007E75D /* Frameworks */,
 			);
@@ -114,12 +114,12 @@
 		80A462C7238F0FB6009435EB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80A462C6238F0FB6009435EB /* SparrowEngine.app */,
+				80A462C6238F0FB6009435EB /* TestGame.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		80A462C8238F0FB6009435EB /* SparrowEngine */ = {
+		80A462C8238F0FB6009435EB /* TestGame */ = {
 			isa = PBXGroup;
 			children = (
 				80A462DD238F10D7009435EB /* App */,
@@ -131,7 +131,7 @@
 				80438C1E2405DEB800099034 /* AppInfo */,
 				80C17203247A8B780097F2AE /* Assets */,
 			);
-			path = SparrowEngine;
+			path = TestGame;
 			sourceTree = "<group>";
 		};
 		80A462DD238F10D7009435EB /* App */ = {
@@ -155,9 +155,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		80A462C5238F0FB6009435EB /* SparrowEngine */ = {
+		80A462C5238F0FB6009435EB /* TestGame */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "SparrowEngine" */;
+			buildConfigurationList = 80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "TestGame" */;
 			buildPhases = (
 				80A462C2238F0FB6009435EB /* Sources */,
 				80A462C3238F0FB6009435EB /* Frameworks */,
@@ -167,14 +167,14 @@
 			);
 			dependencies = (
 			);
-			name = SparrowEngine;
+			name = TestGame;
 			packageProductDependencies = (
 				80821D3A24858A340047B192 /* SparrowECS */,
 				804EE35A2485917F00ADD319 /* SparrowEngine2 */,
 				80FEB3FB24977051001A21A4 /* SparrowSafeBinaryCoder */,
 			);
 			productName = ISOGame;
-			productReference = 80A462C6238F0FB6009435EB /* SparrowEngine.app */;
+			productReference = 80A462C6238F0FB6009435EB /* TestGame.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -192,7 +192,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 80A462C1238F0FB6009435EB /* Build configuration list for PBXProject "SparrowEngine" */;
+			buildConfigurationList = 80A462C1238F0FB6009435EB /* Build configuration list for PBXProject "TestGame" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -205,7 +205,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				80A462C5238F0FB6009435EB /* SparrowEngine */,
+				80A462C5238F0FB6009435EB /* TestGame */,
 			);
 		};
 /* End PBXProject section */
@@ -375,21 +375,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = SparrowEngine/SparrowEngine.entitlements;
+				CODE_SIGN_ENTITLEMENTS = TestGame/TestGame.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 95XB3LMP34;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = SparrowEngine/Info.plist;
+				INFOPLIST_FILE = TestGame/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.SparrowEngine;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.TestGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = SparrowEngine/Shaders/ShaderCommon.h;
+				SWIFT_OBJC_BRIDGING_HEADER = TestGame/Shaders/ShaderCommon.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -398,21 +398,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = SparrowEngine/SparrowEngine.entitlements;
+				CODE_SIGN_ENTITLEMENTS = TestGame/TestGame.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 95XB3LMP34;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = SparrowEngine/Info.plist;
+				INFOPLIST_FILE = TestGame/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.SparrowEngine;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.joskuijpers.TestGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = SparrowEngine/Shaders/ShaderCommon.h;
+				SWIFT_OBJC_BRIDGING_HEADER = TestGame/Shaders/ShaderCommon.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -420,7 +420,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		80A462C1238F0FB6009435EB /* Build configuration list for PBXProject "SparrowEngine" */ = {
+		80A462C1238F0FB6009435EB /* Build configuration list for PBXProject "TestGame" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80A462D4238F0FB9009435EB /* Debug */,
@@ -429,7 +429,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "SparrowEngine" */ = {
+		80A462D6238F0FB9009435EB /* Build configuration list for PBXNativeTarget "TestGame" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80A462D7238F0FB9009435EB /* Debug */,
