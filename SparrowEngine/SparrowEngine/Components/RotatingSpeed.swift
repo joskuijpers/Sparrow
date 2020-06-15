@@ -20,8 +20,4 @@ final class RotationSpeed: Component {
     }
 }
 
-extension RotationSpeed: Codable, NexusStorable {
-    public static var stableIdentifier: StableIdentifier {
-        return 1001
-    }
-}
+extension RotationSpeed: Storable {}

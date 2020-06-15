@@ -65,16 +65,10 @@ public final class Camera: Component {
     public var screenSize = (0,0)
 }
 
-extension Camera: Codable {
+extension Camera: Storable {
     // Only use non-calculated properties.
     // Ideally we would put all other properties into a private component...
     private enum CodingKeys: String, CodingKey {
         case fovDegrees, near, far
-    }
-}
-
-extension Camera: NexusStorable {
-    public static var stableIdentifier: StableIdentifier {
-        return 1
     }
 }

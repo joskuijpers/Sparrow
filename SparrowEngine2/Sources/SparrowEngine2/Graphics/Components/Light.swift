@@ -52,10 +52,4 @@ public final class Light: Component {
     }
 }
 
-extension Light: Codable {}
-
-extension Light: NexusStorable {
-    public static var stableIdentifier: StableIdentifier {
-        return 3
-    }
-}
+extension Light: Storable {}

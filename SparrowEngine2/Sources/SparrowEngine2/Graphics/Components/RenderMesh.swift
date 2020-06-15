@@ -35,20 +35,14 @@ public final class RenderMesh: Component {
 
 }
 
-extension RenderMesh: Codable {
+extension RenderMesh: Storable, CustomComponentConvertable {
+
     // Omit the mesh parameter
     private enum CodingKeys: String, CodingKey {
         case castShadows, receiveShadows
         case meshResource
     }
-}
-
-extension RenderMesh: NexusStorable, CustomComponentConvertable {
-
-    public static var stableIdentifier: StableIdentifier {
-        return 4
-    }
-
+    
     public func willEncode(from world: World) throws {
         meshResource = "ironSphere/ironSphere.spm"//"res://sponza.spm"
     }

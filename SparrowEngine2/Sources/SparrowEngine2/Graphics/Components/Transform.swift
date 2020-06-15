@@ -198,19 +198,12 @@ public final class Transform: Component {
     internal weak var parent: Transform?
 }
 
-extension Transform: Codable {
+extension Transform: Storable {
     
     // Err, maybe move the parenting stuff into a different method? Link+Owner?
     private enum CodingKeys: String, CodingKey {
         case localPosition, localRotation, localScale
         
         // TODO: Ignore parent for now (needs fixing possibly in other component)
-    }
-    
-}
-
-extension Transform: NexusStorable {
-    public static var stableIdentifier: StableIdentifier {
-        return 2
     }
 }
