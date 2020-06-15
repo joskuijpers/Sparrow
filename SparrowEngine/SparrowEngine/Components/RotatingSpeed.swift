@@ -14,4 +14,14 @@ final class RotationSpeed: Component {
     init(seed: Int = 0) {
         speed = (Float(seed) * 35972.326365396643).truncatingRemainder(dividingBy: 180)
     }
+    
+    init(speed: Float) {
+        self.speed = speed
+    }
+}
+
+extension RotationSpeed: Codable, NexusStorable {
+    public static var stableIdentifier: StableIdentifier {
+        return 1001
+    }
 }

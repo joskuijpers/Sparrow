@@ -22,6 +22,8 @@ class GameWorld: World {
     var sphere: Entity!
     
     func initialize(view: SparrowMetalView) throws {
+        Nexus.register(component: RotationSpeed.self)
+        
         // Create renderer. Also creates devices needed for loading GPU assets
         renderer = try MetalRenderer(for: view)
         try renderer.load(world: self)
@@ -45,9 +47,7 @@ class GameWorld: World {
             
             try coding.save(entities: [sphere], in: self, to: url)
             nexus.destroy(entity: sphere)
-            
             let outputEntities = try coding.load(from: url, into: self)
-
             print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
         } catch {
             print("CODING ERROR \(error)")
@@ -97,7 +97,7 @@ class GameWorld: World {
         let transform = obj.add(component: Transform())
         transform.position = [0, 2, 0]
         obj.add(component: RenderMesh(mesh: objMesh))
-        obj.add(component: RotationSpeed(seed: 0))
+        obj.add(component: RotationSpeed(speed: 40))
 
         sphere = obj
     }
@@ -107,3 +107,4 @@ class GameWorld: World {
         rotatingSystem.update(world: self)
     }
 }
+
