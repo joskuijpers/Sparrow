@@ -31,10 +31,14 @@ public final class Nexus {
     static var storableComponentRegistry: [StableIdentifier:NexusStorable.Type] = [:]
     
     /// Register a new storable component.
-    public static func register(component: NexusStorable.Type) -> Void {        Self.storableComponentRegistry[component.stableIdentifier] = component
+    public static func register(component: NexusStorable.Type) -> Void {
+        Self.storableComponentRegistry[component.stableIdentifier] = component
     }
     
-    
+    /// Get a registrered component type based on the stable identifier.
+    public static func getRegistered(identifier: StableIdentifier) -> NexusStorable.Type? {
+        Self.storableComponentRegistry[identifier]
+    }
     
     public init() {
         entityStorage = UnorderedSparseSet<Entity>()

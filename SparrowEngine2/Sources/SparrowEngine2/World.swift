@@ -35,7 +35,7 @@ open class World { // Note: note final so games can extend it.
     public required init() {
         Nexus.register(component: Camera.self)
         Nexus.register(component: Light.self)
-//        Nexus.register(component: RenderMesh.self)
+        Nexus.register(component: RenderMesh.self)
         Nexus.register(component: Transform.self)
 
         nexus = Nexus()

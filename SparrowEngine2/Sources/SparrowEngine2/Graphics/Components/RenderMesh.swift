@@ -21,8 +21,39 @@ public final class RenderMesh: Component {
     
     // enabled (Renderer)
     
+    // Mesh resource name: used for coding.
+    private var meshResource: String = "<none>"
+    
     /// Init with a mesh
     public init(mesh: Mesh) {
         self.mesh = mesh
+    }
+    
+    public override init() {
+        self.mesh = nil
+    }
+
+}
+
+extension RenderMesh: Codable {
+    // Omit the mesh parameter
+    private enum CodingKeys: String, CodingKey {
+        case castShadows, receiveShadows
+        case meshResource
+    }
+}
+
+extension RenderMesh: NexusStorable, CustomComponentConvertable {
+
+    public static var stableIdentifier: StableIdentifier {
+        return 4
+    }
+
+    public func willEncode(from: World) throws {
+        meshResource = "res://sponza.spm"
+    }
+
+    public func didDecode(into: World) throws {
+        print("DID DECODE RenderMesh, LOAD \(meshResource)")
     }
 }

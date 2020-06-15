@@ -18,6 +18,9 @@ class GameWorld: World {
     var playerCameraSystem: PlayerCameraSystem!
     var rotatingSystem: RotatingSystem!
     
+    
+    var sphere: Entity!
+    
     func initialize(view: SparrowMetalView) throws {
         // Create renderer. Also creates devices needed for loading GPU assets
         renderer = try MetalRenderer(for: view)
@@ -35,8 +38,12 @@ class GameWorld: World {
         myTest.add(component: Transform())
 
         do {
-            let data = try nexus.encode(entities: [camera!, myTest])
-            let outputEntities = try nexus.decode(data: data)
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.sps")
+            print("URL \(url)")
+            
+            try SceneLoader().save(entities: [sphere, camera!, myTest], in: self, to: url)
+            
+            let outputEntities = try SceneLoader().load(from: url, into: self)
             
             print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
         } catch {
@@ -75,6 +82,7 @@ class GameWorld: World {
 
         let objMesh = try! meshLoader.load(name: "ironSphere/ironSphere.spm")
 
+        var first: Entity? = nil
         for x in -10..<10 {
             for z in -10..<10 {
                 let obj = nexus.createEntity()
@@ -82,13 +90,67 @@ class GameWorld: World {
                 t.position = [Float(x) * 3, 0, Float(z) * 3]
                 obj.add(component: RenderMesh(mesh: objMesh))
                 obj.add(component: RotationSpeed(seed: 22 * x + z))
+                
+                if first == nil {
+                    first = obj
+                }
             }
         }
         
+        
+        sphere = first!
     }
     
     override func update() {
         playerCameraSystem.update(world: self)
         rotatingSystem.update(world: self)
     }
+}
+
+import Foundation
+
+class SceneLoader {
+    
+    
+    func load(from path: URL, into world: World) throws -> [Entity] {
+        let data = try Data(contentsOf: path)
+        
+        let entities = try world.nexus.decode(data: [UInt8](data))
+
+        // Did decode notifications
+        for entity in entities {
+            for componentIdentifier in world.nexus.get(components: entity.identifier)! {
+
+                if let component = world.nexus.get(component: componentIdentifier, for: entity.identifier),
+                    let custom = component as? CustomComponentConvertable {
+                    try custom.didDecode(into: world)
+                }
+            }
+        }
+        
+        return entities
+    }
+    
+    func save(entities: [Entity], in world: World, to path: URL) throws {
+        // Will encode notifications
+        for entity in entities {
+            for componentIdentifier in world.nexus.get(components: entity.identifier)! {
+                if let component = world.nexus.get(component: componentIdentifier, for: entity.identifier),
+                    let storable = component as? NexusStorable,
+                    Nexus.getRegistered(identifier: storable.stableIdentifier) != nil,
+                    let custom = storable as? CustomComponentConvertable {
+                    
+                    try custom.willEncode(from: world)
+                }
+            }
+        }
+        
+        let bytes = try world.nexus.encode(entities: entities)
+        let data = Data(bytes)
+        
+        try data.write(to: path)
+        
+        print("ENCODED \(data)")
+    }
+    
 }
