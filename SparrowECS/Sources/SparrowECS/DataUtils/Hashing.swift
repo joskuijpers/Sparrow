@@ -63,6 +63,17 @@ public func hash<H: Sequence>(combine hashables: H) -> Int where H.Element: Hash
     return hashables.reduce(0) { hash(combine: $0, $1.hashValue) }
 }
 
+/// A stable string hash. Outputs the same value for the same string.
+public func hash(_ str: String) -> UInt64 {
+    // https://stackoverflow.com/questions/35882103/hash-value-of-string-that-would-be-stable-across-ios-releases/43149500
+    var result = UInt64(5381)
+    let buf = [UInt8](str.utf8)
+    for b in buf {
+        result = 127 * (result & 0x00ffffffffffffff) + UInt64(b)
+    }
+    return result
+}
+
 // MARK: - entity component hash
 extension EntityComponentHash {
     internal static func compose(entityId: EntityIdentifier, componentTypeHash: ComponentTypeHash) -> EntityComponentHash {

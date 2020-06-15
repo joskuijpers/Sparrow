@@ -23,8 +23,7 @@ public protocol NexusStorable: Component, Codable {
 extension NexusStorable {
     
     public static var stableIdentifier: StableIdentifier {
-        let str = String(describing: self)
-        return UInt64(truncatingIfNeeded: str.hashValue)
+        hash(String(describing: self))
     }
     
     // Implementation of instance identifier, returning type identifier.
@@ -35,4 +34,3 @@ extension NexusStorable {
 
 /// Alias, adding conformance to Codable and NexusStorable.
 public typealias Storable = NexusStorable & Codable
-
