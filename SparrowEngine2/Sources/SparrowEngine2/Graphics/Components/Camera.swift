@@ -64,3 +64,12 @@ public final class Camera: Component {
     // TODO get rid of this stuff? ViewportSize?
     public var screenSize = (0,0)
 }
+
+extension Camera: Codable {
+    // Only use non-calculated properties.
+    // Ideally we would put all other properties into a private component...
+    private enum CodingKeys: String, CodingKey {
+        case fovDegrees, near, far
+    }
+}
+

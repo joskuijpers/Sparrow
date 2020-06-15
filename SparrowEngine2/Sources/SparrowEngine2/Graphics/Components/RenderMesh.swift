@@ -14,10 +14,10 @@ public final class RenderMesh: Component {
     public var mesh: Mesh?
 
     /// Whether the mesh casts shadows
-    public let castShadows: Bool = false
+    public var castShadows: Bool = false
     
     /// Whether the mesh received shadows
-    public let receiveShadows: Bool = false
+    public var receiveShadows: Bool = false
     
     // enabled (Renderer)
     

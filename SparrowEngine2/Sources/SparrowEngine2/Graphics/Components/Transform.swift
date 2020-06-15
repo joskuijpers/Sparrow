@@ -197,3 +197,14 @@ public final class Transform: Component {
     @usableFromInline
     internal weak var parent: Transform?
 }
+
+extension Transform: Codable {
+    
+    // Err, maybe move the parenting stuff into a different method? Link+Owner?
+    private enum CodingKeys: String, CodingKey {
+        case localPosition, localRotation, localScale
+        
+        // TODO: Ignore parent for now (needs fixing possibly in other component)
+    }
+    
+}

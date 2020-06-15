@@ -43,7 +43,7 @@ public class SafeBinaryDecoder {
     /// - Parameter data: The data to decode.
     ///
     /// If the value is not a valid binary representation of given type, it throws one of the errors.
-    public static func decode<T: Decodable>(_ type: T.Type, data: [UInt8]) throws -> T? {
+    public static func decode<T: Decodable>(_ type: T.Type, data: [UInt8]) throws -> T {
         return try type.safeBinaryDecoded(from: data)
     }
 }

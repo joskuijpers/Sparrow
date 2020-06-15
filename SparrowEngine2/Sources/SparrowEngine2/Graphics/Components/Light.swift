@@ -9,7 +9,7 @@
 import SparrowECS
 
 /// Type of a light
-public enum LightType {
+public enum LightType: UInt8, Codable {
     /// A light source with a uniform direction and constant intensity.
     case directional
     
@@ -51,3 +51,5 @@ public final class Light: Component {
         self.type = type
     }
 }
+
+extension Light: Codable {}
