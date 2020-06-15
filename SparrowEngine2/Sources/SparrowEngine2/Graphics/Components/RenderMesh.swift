@@ -49,11 +49,17 @@ extension RenderMesh: NexusStorable, CustomComponentConvertable {
         return 4
     }
 
-    public func willEncode(from: World) throws {
-        meshResource = "res://sponza.spm"
+    public func willEncode(from world: World) throws {
+        meshResource = "ironSphere/ironSphere.spm"//"res://sponza.spm"
     }
 
-    public func didDecode(into: World) throws {
+    public func didDecode(into world: World) throws {
         print("DID DECODE RenderMesh, LOAD \(meshResource)")
+        
+        let device = world.graphics.device
+        let textureLoader = TextureLoader(device: device)
+        let meshLoader = MeshLoader(device: device, textureLoader: textureLoader)
+
+        self.mesh = try meshLoader.load(name: meshResource)
     }
 }
