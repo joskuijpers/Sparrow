@@ -44,13 +44,11 @@ class GameWorld: World {
             let coding = SceneCoding()
             
             try coding.save(entities: [sphere], in: self, to: url)
-//            nexus.destroy(entity: sphere)
-//            
-//            let outputEntities = try coding.load(from: url, into: self)
-//            
-//            print(outputEntities[0].get(component: Transform.self)?.localPosition)
-//            
-//            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
+            nexus.destroy(entity: sphere)
+            
+            let outputEntities = try coding.load(from: url, into: self)
+
+            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
         } catch {
             print("CODING ERROR \(error)")
         }

@@ -18,9 +18,9 @@ extension simd_quatf: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(angle)
-        try container.encode(axis.x)
-        try container.encode(axis.y)
-        try container.encode(axis.z)
+        try container.encode(axis.x.isNaN ? 0 : axis.x)
+        try container.encode(axis.y.isNaN ? 0 : axis.y)
+        try container.encode(axis.z.isNaN ? 0 : axis.z)
     }
     
     // Needed to supress compiler error about Codable
