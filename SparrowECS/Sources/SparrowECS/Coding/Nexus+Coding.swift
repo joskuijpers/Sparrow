@@ -15,7 +15,10 @@ extension Nexus {
         case componentNotInRegistry(StableIdentifier)
     }
     
-    public func encode(registry: [StableIdentifier:NexusStorable.Type], entities: [Entity]) throws -> [UInt8] {
+    /// Encode a list of entities and their components.
+    public func encode(entities: [Entity]) throws -> [UInt8] {
+        let registry = Self.storableComponentRegistry
+        
         // Create entity mapping
         var entityMapping: [EntityIdentifier: Int] = [:]
         for (index, entity) in entities.enumerated() {
@@ -51,7 +54,9 @@ extension Nexus {
         return try SafeBinaryEncoder.encode(container)
     }
     
-    public func decode(registry: [StableIdentifier:NexusStorable.Type], data: [UInt8]) throws -> [Entity] {
+    /// Decode bytes into entities and components and load them into the nexus.
+    public func decode(data: [UInt8]) throws -> [Entity] {
+        let registry = Self.storableComponentRegistry
         let storage = try SafeBinaryDecoder.decode(NexusStorage.self, data: data)
 
         // Create entities

@@ -34,16 +34,11 @@ class GameWorld: World {
         let myTest = nexus.createEntity()
         myTest.add(component: Transform())
 
-        // Register of stable IDs
-        var componentRegister: [StableIdentifier:NexusStorable.Type] = [:]
-        componentRegister[Camera.stableIdentifier] = Camera.self
-        componentRegister[Transform.stableIdentifier] = Transform.self
-        
         do {
-            let data = try nexus.encode(registry: componentRegister, entities: [camera!, myTest])
-            let outputEntities = try nexus.decode(registry: componentRegister, data: data)
+            let data = try nexus.encode(entities: [camera!, myTest])
+            let outputEntities = try nexus.decode(data: data)
             
-            print("DECODED \(outputEntities)")
+            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
         } catch {
             print("CODING ERROR \(error)")
         }

@@ -27,6 +27,15 @@ public final class Nexus {
     /// - Value: Tightly packed EntityIdentifiers that represent the association of an entity to the Group.
     @usableFromInline final var groupMembersByTraits: [GroupTraitSet: UnorderedSparseSet<EntityIdentifier>]
 
+    /// Registry of components that support coding.
+    static var storableComponentRegistry: [StableIdentifier:NexusStorable.Type] = [:]
+    
+    /// Register a new storable component.
+    public static func register(component: NexusStorable.Type) -> Void {        Self.storableComponentRegistry[component.stableIdentifier] = component
+    }
+    
+    
+    
     public init() {
         entityStorage = UnorderedSparseSet<Entity>()
         
