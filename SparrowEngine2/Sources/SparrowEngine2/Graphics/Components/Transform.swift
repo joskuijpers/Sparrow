@@ -208,3 +208,9 @@ extension Transform: Codable {
     }
     
 }
+
+extension Transform: NexusStorable {
+    public static var stableIdentifier: StableIdentifier {
+        return 2
+    }
+}

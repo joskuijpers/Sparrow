@@ -73,3 +73,8 @@ extension Camera: Codable {
     }
 }
 
+extension Camera: NexusStorable {
+    public static var stableIdentifier: StableIdentifier {
+        return 1
+    }
+}
