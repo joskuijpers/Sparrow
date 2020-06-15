@@ -29,7 +29,7 @@ public class SceneCoding {
             for componentIdentifier in world.nexus.get(components: entity.identifier)! {
 
                 if let component = world.nexus.get(component: componentIdentifier, for: entity.identifier),
-                    let custom = component as? CustomComponentConvertable {
+                    let custom = component as? ComponentStorageDelegate {
                     try custom.didDecode(into: world)
                 }
             }
@@ -46,7 +46,7 @@ public class SceneCoding {
                 if let component = world.nexus.get(component: componentIdentifier, for: entity.identifier),
                     let storable = component as? NexusStorable,
                     Nexus.getRegistered(identifier: storable.stableIdentifier) != nil,
-                    let custom = storable as? CustomComponentConvertable {
+                    let custom = storable as? ComponentStorageDelegate {
                     
                     try custom.willEncode(from: world)
                 }

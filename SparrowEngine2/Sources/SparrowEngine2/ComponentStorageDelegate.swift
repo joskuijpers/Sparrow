@@ -1,12 +1,12 @@
 //
-//  ComponentStorableInitializing.swift
+//  ComponentStorageDelegate.swift
 //  SparrowECS
 //
 //  Created by Jos Kuijpers on 15/06/2020.
 //
 
 /// Indicate that a didDecode step should be executed after decoding.
-public protocol CustomComponentConvertable {
+public protocol ComponentStorageDelegate {
     /// The component will be encoded.
     ///
     /// Set any properties that are to be encoded that depend on state.
@@ -19,7 +19,7 @@ public protocol CustomComponentConvertable {
 }
 
 // Default implementations
-extension CustomComponentConvertable {
+extension ComponentStorageDelegate {
     func willEncode(from world: World) {}
     func didDecode(into world: World) throws {}
 }

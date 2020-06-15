@@ -35,7 +35,7 @@ public final class RenderMesh: Component {
 
 }
 
-extension RenderMesh: Storable, CustomComponentConvertable {
+extension RenderMesh: Storable, ComponentStorageDelegate {
 
     // Omit the mesh parameter
     private enum CodingKeys: String, CodingKey {
