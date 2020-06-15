@@ -120,8 +120,8 @@ extension MetalRenderer {
     func viewSizeChanged(to size: CGSize) {
         let device = context.device
         
-        updateRenderTargets(device: device)
-        updateScreenSpaceProperties(device: device)
+        updateRenderTargets(device: device, with: size)
+        updateScreenSpaceProperties(device: device, with: size)
     }
 }
 
@@ -194,9 +194,9 @@ private extension MetalRenderer {
     }
     
     /// Update render targets.
-    func updateRenderTargets(device: MTLDevice) {
-        let width = Int(view.frame.size.width)
-        let height = Int(view.frame.size.height)
+    func updateRenderTargets(device: MTLDevice, with size: CGSize) {
+        let width = Int(size.width)
+        let height = Int(size.height)
         
         do {
             let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth32Float,
@@ -234,9 +234,9 @@ private extension MetalRenderer {
     }
     
     /// Update the properties that rely on screen size, such as compute settings and buffers.
-    func updateScreenSpaceProperties(device: MTLDevice) {
-        let width = Int(view.frame.size.width)
-        let height = Int(view.frame.size.height)
+    func updateScreenSpaceProperties(device: MTLDevice, with size: CGSize) {
+        let width = Int(size.width)
+        let height = Int(size.height)
         
         // Culling
         do {
