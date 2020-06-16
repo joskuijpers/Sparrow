@@ -1,5 +1,5 @@
 import XCTest
-@testable import SparrowEngine2
+@testable import SparrowEngine
 
 final class BoundsTests: XCTestCase {
     

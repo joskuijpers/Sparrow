@@ -8,7 +8,7 @@
       location = "group:SparrowSceneConverter/SparrowSceneConverter.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:SparrowEngine2">
+      location = "group:/Users/joskuijpers/Development/ISOGame/SparrowEngine">
    </FileRef>
    <FileRef
       location = "group:SparrowMesh">

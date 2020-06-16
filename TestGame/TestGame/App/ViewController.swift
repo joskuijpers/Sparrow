@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import SparrowEngine2
+import SparrowEngine
 
 class ViewController: NSViewController {
     

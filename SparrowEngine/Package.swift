@@ -3,14 +3,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "SparrowEngine2",
+    name: "SparrowEngine",
     platforms: [
         .macOS(.v10_13) // 13 for metal
     ],
     products: [
         .library(
-            name: "SparrowEngine2",
-            targets: ["CSparrowEngine", "SparrowEngine2"]
+            name: "SparrowEngine",
+            targets: ["CSparrowEngine", "SparrowEngine"]
         )
     ],
     dependencies: [
@@ -19,17 +19,17 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SparrowEngine2",
+            name: "SparrowEngine",
             dependencies: ["SparrowMesh", "SparrowECS", "CSparrowEngine"],
-            path: "Sources/SparrowEngine2"
+            path: "Sources/SparrowEngine"
         ),
         .target(
             name: "CSparrowEngine",
             path: "Sources/CSparrowEngine"
         ),
         .testTarget(
-            name: "SparrowEngine2Tests",
-            dependencies: ["SparrowEngine2"]
+            name: "SparrowEngineTests",
+            dependencies: ["SparrowEngine"]
         ),
     ]
 )

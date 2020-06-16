@@ -6,7 +6,7 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-import SparrowEngine2
+import SparrowEngine
 import SparrowECS
 import Foundation
 

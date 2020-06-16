@@ -1,4 +1,4 @@
-# SparrowEngine2
+# SparrowEngine
 
 The Sparrow Game Engine
 

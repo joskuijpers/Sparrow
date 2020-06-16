@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */ = {isa = PBXBuildFile; productRef = 804EE35A2485917F00ADD319 /* SparrowEngine2 */; };
 		8064AF5C2427A9610089FE11 /* LightCulling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5B2427A9610089FE11 /* LightCulling.metal */; };
 		8064AF5F2427FE7E0089FE11 /* DebugShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF5E2427FE7E0089FE11 /* DebugShaders.metal */; };
 		8064AF61242960CC0089FE11 /* Resolve.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8064AF60242960CC0089FE11 /* Resolve.metal */; };
@@ -22,6 +21,7 @@
 		80C17205247A8B900097F2AE /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 80C17203247A8B780097F2AE /* Assets */; };
 		80D0B64A248EE91100D23EA8 /* PlayerCameraSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0B649248EE91100D23EA8 /* PlayerCameraSystem.swift */; };
 		80D0B64C248EEA5B00D23EA8 /* RotatingSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80D0B64B248EEA5B00D23EA8 /* RotatingSystem.swift */; };
+		80EC96C62499233100E1763B /* SparrowEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 80EC96C52499233100E1763B /* SparrowEngine */; };
 		80F05964249251BB001C082F /* RotatingSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F05963249251BB001C082F /* RotatingSpeed.swift */; };
 		80F0596624925553001C082F /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F0596524925553001C082F /* Game.swift */; };
 		80FEB3FC24977051001A21A4 /* SparrowSafeBinaryCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 80FEB3FB24977051001A21A4 /* SparrowSafeBinaryCoder */; };
@@ -56,7 +56,7 @@
 			files = (
 				80FEB3FC24977051001A21A4 /* SparrowSafeBinaryCoder in Frameworks */,
 				80821D3B24858A340047B192 /* SparrowECS in Frameworks */,
-				804EE35B2485917F00ADD319 /* SparrowEngine2 in Frameworks */,
+				80EC96C62499233100E1763B /* SparrowEngine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,8 +170,8 @@
 			name = TestGame;
 			packageProductDependencies = (
 				80821D3A24858A340047B192 /* SparrowECS */,
-				804EE35A2485917F00ADD319 /* SparrowEngine2 */,
 				80FEB3FB24977051001A21A4 /* SparrowSafeBinaryCoder */,
+				80EC96C52499233100E1763B /* SparrowEngine */,
 			);
 			productName = ISOGame;
 			productReference = 80A462C6238F0FB6009435EB /* TestGame.app */;
@@ -441,13 +441,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		804EE35A2485917F00ADD319 /* SparrowEngine2 */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SparrowEngine2;
-		};
 		80821D3A24858A340047B192 /* SparrowECS */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SparrowECS;
+		};
+		80EC96C52499233100E1763B /* SparrowEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SparrowEngine;
 		};
 		80FEB3FB24977051001A21A4 /* SparrowSafeBinaryCoder */ = {
 			isa = XCSwiftPackageProductDependency;

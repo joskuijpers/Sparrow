@@ -1,7 +1,7 @@
 import XCTest
-@testable import SparrowEngine2
+@testable import SparrowEngine
 
-final class SparrowEngine2Tests: XCTestCase {
+final class SparrowEngineTests: XCTestCase {
     
     func testCameraShaderInfo() {
         let inf = CameraUniforms()
@@ -10,6 +10,6 @@ final class SparrowEngine2Tests: XCTestCase {
     }
 
     static var allTests = [
-    ("testCameraShaderInfo", testCameraShaderInfo),
+        ("testCameraShaderInfo", testCameraShaderInfo),
     ]
 }
