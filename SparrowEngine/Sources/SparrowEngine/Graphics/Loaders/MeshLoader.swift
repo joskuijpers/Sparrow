@@ -169,7 +169,7 @@ public class MeshLoader {
                     
                     return texture.mtlTexture
                 } catch {
-                    print("[meshLoader] Could not load texture \(saTexture.relativePath): \(error.localizedDescription)")
+                    print("[meshLoader] Could not load texture \(saTexture.relativePath): \(error)")
                     return nil
                 }
             default:

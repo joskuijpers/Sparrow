@@ -6,8 +6,10 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import MetalKit
-
+import Metal
+import Foundation
+import CoreGraphics
+import Cocoa
 import CSparrowEngine
 
 /// Texture loader that ensures any texture is only loaded once
@@ -15,11 +17,12 @@ import CSparrowEngine
 /// Note that this uses MTKTextureLoader internally, which also caches but seems to be much slower as
 /// it does not assume the same options for all.
 public class TextureLoader {
-    private var cache: [String : Texture] = [:]
+    private let device: MTLDevice
+//    private var cache: [String : Texture] = [:]
     
-    var allocatedSize: Int {
-        return cache.reduce(0) { $0 + $1.value.mtlTexture.allocatedSize }
-    }
+//    var allocatedSize: Int {
+//        return cache.reduce(0) { $0 + $1.value.mtlTexture.allocatedSize }
+//    }
     
     /// Loading options
     enum Option {
@@ -90,46 +93,56 @@ public class TextureLoader {
     }
     
     /// Errors returned by the texture loader.
-    enum Error: Swift.Error {
+    public enum Error: Swift.Error {
         /// Format not supported
         case unsupportedFormat
+        
+        /// Failed to create GPU texture
+        case uploadFailed
+        
+        /// There was no data to construct a texture from
+        case noImages
+        
+        /// Could not acquire storage for the texture on the GPU.
+        case noTextureStorage
     }
     
     /// Initialize a new texture loader.
     public init(device: MTLDevice) {
-//        mtkTextureLoader = MTKTextureLoader(device: device)
+        self.device = device
     }
 
     /// Load a texture with given image name. This can be a path or an asset name.
     public func load(from url: URL) throws -> Texture {
         // Get from cache
-        if let texture = cache[url.absoluteString] {
-            return texture
-        }
+//        if let texture = cache[url.absoluteString] {
+//            return texture
+//        }
         
         // Hardcode: try to find a better format than PNG
-        var url = url
-        if url.pathExtension == "png" {
-            let astcPath = url.deletingPathExtension().appendingPathExtension("astc")
-            if FileManager.default.fileExists(atPath: astcPath.path) {
-                url = astcPath
-            }
-        }
+//        var url = url
+//        if url.pathExtension == "png" {
+//            let astcPath = url.deletingPathExtension().appendingPathExtension("astc")
+//            if FileManager.default.fileExists(atPath: astcPath.path) {
+//                url = astcPath
+//            }
+//        }
         
         print("Loading \(url.lastPathComponent)...")
         
-        
         let data = try Data(contentsOf: url)
-        let format = findContainerFormat(for: data)
-        print("Found format \(format)")
         
+        let format = findContainerFormat(for: data)
         if format == .unknown {
             throw Error.unsupportedFormat
         }
         
-//
-//
-//        // Get new
+        print("Found format \(format)")
+        
+        let descriptor = try load(from: data, format: format)
+        let texture = try buildTexture(with: descriptor, name: AssetLoader.shortestName(for: url))
+        
+
 //        let options: [MTKTextureLoader.Option: Any] = [
 //            .origin: MTKTextureLoader.Origin.bottomLeft,
 //            .SRGB: false,
@@ -137,17 +150,8 @@ public class TextureLoader {
 //        ]
 //
 //        let imageName = AssetLoader.shortestName(for: url)
-//
-//        let mtlTexture = try mtkTextureLoader.newTexture(URL: url, options: options)
-//        let texture = Texture(name: imageName, mtlTexture: mtlTexture)
-//
-//        cache[url.absoluteString] = texture
-//
-//        print("[texture] Loaded \(texture.name) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
-//
-//        return texture
-        
-        throw Error.unsupportedFormat
+
+        return texture
     }
     
     /// Try to find the container that is used for given data.
@@ -166,19 +170,105 @@ public class TextureLoader {
     /// Load a texture from given data and format
     ///
     /// Forwards actual loading to the codec.
-    private func load(from data: Data, format: TextureContainerFormat) throws {
+    private func load(from data: Data, format: TextureContainerFormat) throws -> TextureDescriptor {
         switch format {
         case .notHardwareCompressed:
-            try UncompressedTextureCodec().load(from: data)
+            return try UncompressedTextureCodec().load(from: data)
         case .astc:
-            try ASTCTextureCodec().load(from: data)
+            return try ASTCTextureCodec().load(from: data)
         case .ktx:
-            try KTXTextureCodec().load(from: data)
+            return try KTXTextureCodec().load(from: data)
         case .unknown:
             throw Error.unsupportedFormat
         }
     }
 
+    private func pixelFormatIsColorRenderable(_ pixelFormat: MTLPixelFormat) -> Bool {
+//        BOOL isCompressedFormat = (pixelFormat >= MTLPixelFormatASTC_4x4_sRGB && pixelFormat <= MTLPixelFormatASTC_12x12_LDR) ||
+//                                  (pixelFormat >= MTLPixelFormatPVRTC_RGB_2BPP && pixelFormat <= MTLPixelFormatPVRTC_RGBA_4BPP_sRGB) ||
+//                                  (pixelFormat >= MTLPixelFormatEAC_R11Unorm && pixelFormat <= MTLPixelFormatETC2_RGB8A1_sRGB);
+//        BOOL is422Format = (pixelFormat == MTLPixelFormatGBGR422 || pixelFormat == MTLPixelFormatBGRG422);
+//
+//        return !isCompressedFormat && !is422Format && !(pixelFormat == MTLPixelFormatInvalid);
+        return false
+    }
+    
+    private func buildTexture(with descriptor: TextureDescriptor, name: String) throws -> Texture {
+        guard descriptor.levels.count > 0 else {
+            throw Error.noImages
+        }
+        
+        print("Make a new texture for \(name)!")
+        
+        let mipsLoaded = descriptor.levels.count > 1
+        let canGenerateMips = pixelFormatIsColorRenderable(descriptor.pixelFormat)
+        
+        var generateMipmaps = true
+        if mipsLoaded || !canGenerateMips {
+            generateMipmaps = false
+        }
+        
+        let needMipStorage = (generateMipmaps || mipsLoaded)
+        print("Has mips \(mipsLoaded) will generate mips \(generateMipmaps)")
+        
+        let mtlDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: descriptor.pixelFormat,
+                                                                     width: descriptor.width,
+                                                                     height: descriptor.height,
+                                                                     mipmapped: needMipStorage)
+        guard let texture = device.makeTexture(descriptor: mtlDescriptor) else {
+            throw Error.noTextureStorage
+        }
+        texture.label = name
+        
+        for (index, level) in descriptor.levels.enumerated() {
+            let levelWidth = descriptor.width / (2 ^ index)
+            let levelHeight = descriptor.height / (2 ^ index)
+            let levelBytesPerRow = max(descriptor.bytesPerRow / (2 ^ index), 16)
+            
+            print("Level \(index): \(levelWidth), \(levelHeight), \(levelBytesPerRow)")
+            
+            let region = MTLRegionMake2D(0, 0, levelWidth, levelHeight)
+            level.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Void in
+                texture.replace(region: region,
+                                mipmapLevel: index,
+                                withBytes: ptr.baseAddress!,
+                                bytesPerRow: levelBytesPerRow)
+            }
+        }
+        
+        if generateMipmaps {
+            print("Generate mipmaps!")
+//            generateMipmaps(texture: texture, commandQueue: )
+        }
+        
+        return Texture(name: name, mtlTexture: texture)
+    }
+    
+    /// Generate mipmaps on the GPU.
+    private func generateMipmaps(texture: MTLTexture, commandQueue: MTLCommandQueue) {
+        let commandBuffer = commandQueue.makeCommandBuffer()
+        let encoder = commandBuffer?.makeBlitCommandEncoder()
+        
+        encoder?.generateMipmaps(for: texture)
+        
+        encoder?.endEncoding()
+        commandBuffer?.commit()
+        
+        // Blocking!
+        commandBuffer?.waitUntilCompleted()
+    }
+    
+//    - (void)generateMipmapsForTexture:(id<MTLTexture>)texture commandQueue:(id<MTLCommandQueue>)commandQueue
+//    {
+//        id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+//        id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+//        [blitEncoder generateMipmapsForTexture:texture];
+//        [blitEncoder endEncoding];
+//        [commandBuffer commit];
+//
+//        // blocking call
+//        [commandBuffer waitUntilCompleted];
+//    }
     
 //
 //    /// Synchronously loads image data and creates a new Metal texture from a given URL.
@@ -198,19 +288,30 @@ public class TextureLoader {
 public class Texture {
     public let name: String
     public let mtlTexture: MTLTexture
-    
+
     init(name: String, mtlTexture: MTLTexture) {
         self.name = name
         self.mtlTexture = mtlTexture
     }
 }
 
+/// Texture information for building a GPU representation
+struct TextureDescriptor {
+    let pixelFormat: MTLPixelFormat
+    let width: Int
+    let height: Int
+    let mipmapCount: Int
+    let bytesPerRow: Int
+    let levels: [Data]
+}
+
+// A decoder for a texture format.
 protocol TextureCodec {
     /// Get whether the codec is used inside given data
     static func isContained(in data: Data) -> Bool
     
     /// Load a texture.
-    func load(from data: Data) throws
+    func load(from data: Data) throws -> TextureDescriptor
 }
 
 //const uint32_t MBEPVRLegacyMagic = 0x21525650;
@@ -232,8 +333,8 @@ struct ASTCTextureCodec: TextureCodec {
         return fileMagic == Self.magic
     }
     
-    func load(from data: Data) throws {
-        
+    func load(from data: Data) throws -> TextureDescriptor {
+        throw TextureLoader.Error.unsupportedFormat
     }
 }
 
@@ -257,12 +358,21 @@ struct KTXTextureCodec: TextureCodec {
             && header.identifier.6 == UInt8("1".utf8.first!)
     }
     
-    func load(from data: Data) throws {
-        
+    func load(from data: Data) throws -> TextureDescriptor {
+        throw TextureLoader.Error.unsupportedFormat
     }
 }
 
+/// Codec for loading system supported formats such as PNG and TIFF.
+///
+/// Normalizes the data to a known pixel format.
 struct UncompressedTextureCodec: TextureCodec {
+
+    enum Error: Swift.Error {
+        case readingFailed
+        case allocationFailed
+        case normalizationFailed
+    }
     
     static func isContained(in data: Data) -> Bool {
         if data.count < 1 {
@@ -278,8 +388,46 @@ struct UncompressedTextureCodec: TextureCodec {
         }
     }
     
-    func load(from data: Data) throws {
+    func load(from data: Data) throws -> TextureDescriptor {
+        guard let image = NSImage(data: data) else {
+            throw Error.readingFailed
+        }
         
+        var imageRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        guard let imageRef = image.cgImage(forProposedRect: &imageRect, context: nil, hints: nil) else {
+            throw Error.readingFailed
+        }
+        
+        let dataLength = imageRef.width * imageRef.height * 4
+        guard let buffer = calloc(dataLength, MemoryLayout<UInt8>.size) else {
+            throw Error.allocationFailed
+        }
+        
+        // Normalize the content
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = 4
+        let bytesPerRow = imageRef.width * bytesPerPixel
+        let bitsPerComponent = 8
+        
+        let context = CGContext(data: buffer,
+                                width: imageRef.width,
+                                height: imageRef.height,
+                                bitsPerComponent: bitsPerComponent,
+                                bytesPerRow: bytesPerRow,
+                                space: colorSpace,
+                                bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue)
+        guard context != nil else {
+            throw Error.normalizationFailed
+        }
+        context!.draw(imageRef, in: imageRect)
+
+        let level = Data(bytesNoCopy: buffer, count: dataLength, deallocator: .free)
+        return TextureDescriptor(pixelFormat: .rgba8Unorm,
+                                 width: Int(imageRect.width),
+                                 height: Int(imageRect.height),
+                                 mipmapCount: 1,
+                                 bytesPerRow: bytesPerRow,
+                                 levels: [level])
     }
 }
 
@@ -287,24 +435,6 @@ struct UncompressedTextureCodec: TextureCodec {
  
  ASTC texture loading
  https://metalbyexample.com/compressed-textures/
-
- typedef struct __attribute__((packed))
- {
-     uint8_t identifier[12];
-     uint32_t endianness;
-     uint32_t glType;
-     uint32_t glTypeSize;
-     uint32_t glFormat;
-     uint32_t glInternalFormat;
-     uint32_t glBaseInternalFormat;
-     uint32_t width;
-     uint32_t height;
-     uint32_t depth;
-     uint32_t arrayElementCount;
-     uint32_t faceCount;
-     uint32_t mipmapCount;
-     uint32_t keyValueDataLength;
- } MBEKTXHeader;
 
  typedef NS_ENUM(NSInteger, MBEKTXInternalFormat)
  {
