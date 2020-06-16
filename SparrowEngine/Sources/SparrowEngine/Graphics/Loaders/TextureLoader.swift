@@ -208,25 +208,28 @@ public class TextureLoader {
             generateMipmaps = false
         }
         
-        let needMipStorage = (generateMipmaps || mipsLoaded)
+        let needMipStorage = generateMipmaps || mipsLoaded
         print("Has mips \(mipsLoaded) will generate mips \(generateMipmaps)")
         
         let mtlDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: descriptor.pixelFormat,
                                                                      width: descriptor.width,
                                                                      height: descriptor.height,
                                                                      mipmapped: needMipStorage)
+        print("L \(mtlDescriptor.width) \(mtlDescriptor.height) \(mtlDescriptor.depth) ")
+//        mtlDescriptor.resourceOptions = .cpuCacheModeWriteCombined
+//        mtlDescriptor.mipmapLevelCount =
+//        mtlDescriptor.usage = .shaderRead
+//        mtlDescriptor.cpuCacheMode = .defaultCache
+        
         guard let texture = device.makeTexture(descriptor: mtlDescriptor) else {
             throw Error.noTextureStorage
         }
         texture.label = name
         
+        var levelWidth = descriptor.width
+        var levelHeight = descriptor.height
+        var levelBytesPerRow = descriptor.bytesPerRow
         for (index, level) in descriptor.levels.enumerated() {
-            let levelWidth = descriptor.width / (2 ^ index)
-            let levelHeight = descriptor.height / (2 ^ index)
-            let levelBytesPerRow = max(descriptor.bytesPerRow / (2 ^ index), 16)
-            
-            print("Level \(index): \(levelWidth), \(levelHeight), \(levelBytesPerRow)")
-            
             let region = MTLRegionMake2D(0, 0, levelWidth, levelHeight)
             level.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Void in
                 texture.replace(region: region,
@@ -234,6 +237,10 @@ public class TextureLoader {
                                 withBytes: ptr.baseAddress!,
                                 bytesPerRow: levelBytesPerRow)
             }
+            
+            levelWidth = max(descriptor.width / 2, 1)
+            levelHeight = max(descriptor.height / 2, 1)
+            levelBytesPerRow = max(descriptor.bytesPerRow / 2, 16)
         }
         
         if generateMipmaps {
@@ -257,19 +264,7 @@ public class TextureLoader {
         // Blocking!
         commandBuffer?.waitUntilCompleted()
     }
-    
-//    - (void)generateMipmapsForTexture:(id<MTLTexture>)texture commandQueue:(id<MTLCommandQueue>)commandQueue
-//    {
-//        id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-//        id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-//        [blitEncoder generateMipmapsForTexture:texture];
-//        [blitEncoder endEncoding];
-//        [commandBuffer commit];
-//
-//        // blocking call
-//        [commandBuffer waitUntilCompleted];
-//    }
-    
+
 //
 //    /// Synchronously loads image data and creates a new Metal texture from a given URL.
 //    func newTexture(URL: URL, options: [MTKTextureLoader.Option : Any]?) -> MTLTexture
@@ -392,18 +387,20 @@ struct UncompressedTextureCodec: TextureCodec {
         guard let image = NSImage(data: data) else {
             throw Error.readingFailed
         }
-        
+
         var imageRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        print("RECT \(imageRect)")
         guard let imageRef = image.cgImage(forProposedRect: &imageRect, context: nil, hints: nil) else {
             throw Error.readingFailed
         }
         
+        // Normalize the content
         let dataLength = imageRef.width * imageRef.height * 4
         guard let buffer = calloc(dataLength, MemoryLayout<UInt8>.size) else {
             throw Error.allocationFailed
         }
+        memset(buffer, 255, dataLength)
         
-        // Normalize the content
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = 4
         let bytesPerRow = imageRef.width * bytesPerPixel
@@ -470,113 +467,6 @@ struct UncompressedTextureCodec: TextureCodec {
  };
  
  
- + (MBETextureContainerFormat)inferredContainerFormatForData:(NSData *)data
- {
-     if ([self dataIsProbablyNotHardwareCompressed:data])
-     {
-         return MBETextureContainerFormatNotHardwareCompressed;
-     }
-     else if ([self dataIsPVRv2Container:data])
-     {
-         return MBETextureContainerFormatPVRv2;
-     }
-     else if ([self dataIsPVRv3Container:data])
-     {
-         return MBETextureContainerFormatPVRv3;
-     }
-     else if ([self dataIsASTCContainer:data])
-     {
-         return MBETextureContainerFormatASTC;
-     }
-     else if ([self dataIsKTXContainer:data])
-     {
-         return MBETextureContainerFormatKTX;
-     }
-
-     return MBETextureContainerFormatUnknown;
- }
- 
-
- + (BOOL)dataIsProbablyNotHardwareCompressed:(NSData *)data
- {
-     if (data.length == 0)
-         return YES;
-
-     uint8_t c = 0;
-     [data getBytes:&c length:1];
-
-     switch (c) {
-         case 0xFF: // JPEG
-         case 0x89: // PNG
-         case 0x47: // GIF
-         case 0x49: // TIFF
-         case 0x4D: // TIFF
-             return YES;
-         default:
-             return NO;
-     }
- }
- 
- - (BOOL)loadTextureData:(NSData *)data containerFormat:(MBETextureContainerFormat)containerFormat
- {
-     switch (containerFormat)
-     {
-         case MBETextureContainerFormatNotHardwareCompressed:
-             [self loadImageData:data];
-             break;
-         case MBETextureContainerFormatPVRv2:
-             [self loadPVRv2ImageData:data];
-             break;
-         case MBETextureContainerFormatPVRv3:
-             [self loadPVRv3ImageData:data];
-             break;
-         case MBETextureContainerFormatASTC:
-             [self loadASTCImageData:data];
-             break;
-         case MBETextureContainerFormatKTX:
-             [self loadKTXImageData:data];
-             break;
-         default:
-             break;
-     }
-
-     return NO;
- }
-
- - (BOOL)loadImageData:(NSData *)imageData
- {
-     UIImage *image = [UIImage imageWithData:imageData];
-     CGImageRef imageRef = image.CGImage;
-
-     // Create a suitable bitmap context for extracting the bits of the image
-     const NSUInteger width = CGImageGetWidth(imageRef);
-     const NSUInteger height = CGImageGetHeight(imageRef);
-     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-     const NSUInteger dataLength = height * width * 4;
-     uint8_t *rawData = (uint8_t *)calloc(dataLength, sizeof(uint8_t));
-     const NSUInteger bytesPerPixel = 4;
-     const NSUInteger bytesPerRow = bytesPerPixel * width;
-     const NSUInteger bitsPerComponent = 8;
-     CGContextRef context = CGBitmapContextCreate(rawData, width, height,
-                                                  bitsPerComponent, bytesPerRow, colorSpace,
-                                                  kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
-     CGColorSpaceRelease(colorSpace);
-
-     CGRect imageRect = CGRectMake(0, 0, width, height);
-     CGContextDrawImage(context, imageRect, imageRef);
-
-     CGContextRelease(context);
-
-     _pixelFormat = MTLPixelFormatRGBA8Unorm;
-     _width = width;
-     _height = height;
-     _bytesPerRow = bytesPerRow;
-     _mipmapCount = 1;
-     _levels = @[[NSData dataWithBytesNoCopy:rawData length:dataLength freeWhenDone:YES]];
-
-     return YES;
- }
-
  - (MTLPixelFormat)pixelFormatForASTCBlockWidth:(uint32_t)blockWidth
                                     blockHeight:(uint32_t)blockHeight
                                 colorSpaceIsLDR:(BOOL)colorSpaceIsLDR
@@ -906,76 +796,5 @@ struct UncompressedTextureCodec: TextureCodec {
      return YES;
  }
 
- 
- - (id<MTLTexture>)newTextureWithCommandQueue:(id<MTLCommandQueue>)commandQueue generateMipmaps:(BOOL)generateMipmaps
- {
-     if ([self.levels count] > 0)
-     {
-         BOOL mipsLoaded = ([self.levels count] > 1);
-         BOOL canGenerateMips = [self pixelFormatIsColorRenderable:self.pixelFormat];
-
-         if (mipsLoaded || !canGenerateMips)
-         {
-             generateMipmaps = NO;
-         }
-
-         BOOL needMipStorage = (generateMipmaps || mipsLoaded);
-
-         MTLTextureDescriptor *texDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.pixelFormat
-                                                                                                  width:self.width
-                                                                                                 height:self.height
-                                                                                              mipmapped:needMipStorage];
-         id<MTLTexture> texture = [[commandQueue device] newTextureWithDescriptor:texDescriptor];
-
-         __block NSInteger levelWidth = self.width;
-         __block NSInteger levelHeight = self.height;
-         __block NSInteger levelBytesPerRow = self.bytesPerRow;
-
-         [self.levels enumerateObjectsUsingBlock:^(NSData *levelData, NSUInteger level, BOOL *stop) {
-             MTLRegion region = MTLRegionMake2D(0, 0, levelWidth, levelHeight);
-             [texture replaceRegion:region mipmapLevel:level withBytes:[levelData bytes] bytesPerRow:levelBytesPerRow];
-
-             levelWidth = MAX(levelWidth / 2, 1);
-             levelHeight = MAX(levelHeight / 2, 1);
-             levelBytesPerRow = (levelBytesPerRow > 0) ? MAX(levelBytesPerRow / 2, 16) : 0;
-         }];
-
-         if (generateMipmaps)
-         {
-             [self generateMipmapsForTexture:texture commandQueue:commandQueue];
-         }
-
-         return texture;
-     }
-
-     return nil;
- }
-
- - (void)generateMipmapsForTexture:(id<MTLTexture>)texture commandQueue:(id<MTLCommandQueue>)commandQueue
- {
-     id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-     id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-     [blitEncoder generateMipmapsForTexture:texture];
-     [blitEncoder endEncoding];
-     [commandBuffer commit];
-
-     // blocking call
-     [commandBuffer waitUntilCompleted];
- }
- 
- typedef NS_ENUM(NSInteger, MBETextureContainerFormat)
- {
-     MBETextureContainerFormatUnknown = -1,
-     MBETextureContainerFormatNotHardwareCompressed, // PNG, JPG, etc.
-     MBETextureContainerFormatASTC,
-     MBETextureContainerFormatPVRv2,
-     MBETextureContainerFormatPVRv3,
-     MBETextureContainerFormatKTX,
- };
- 
- const uint32_t MBEPVRLegacyMagic = 0x21525650;
- const uint32_t MBEPVRv3Magic = 0x03525650;
- const uint32_t MBEASTCMagic = 0x5CA1AB13;
- const uint32_t MBEKTXMagic = 0xAB4B5458;
  
  */
