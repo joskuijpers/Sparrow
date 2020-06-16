@@ -8,9 +8,10 @@
 
 import Metal
 import Foundation
-import CoreGraphics
-import Cocoa
-import CSparrowEngine
+import MetalKit
+
+// TODO: optional Basis support https://metalbyexample.com/basis-universal/
+
 
 /// Texture loader that ensures any texture is only loaded once
 ///
@@ -83,10 +84,14 @@ public class TextureLoader {
     enum TextureContainerFormat {
         /// Not compressed for hardware (png)
         case notHardwareCompressed
-        /// ASTC format.
+        /// ASTC format. iOS only.
         case astc
         /// KTX format.
         case ktx
+        /// S3TC (BC1-3) format.
+        case s3tc
+        /// TGA format.
+//        case tga
         
         /// No known format
         case unknown
@@ -107,9 +112,17 @@ public class TextureLoader {
         case noTextureStorage
     }
     
+    #if os(iOS)
     private static let codecs: [TextureContainerFormat:TextureCodec.Type] = [
-        .notHardwareCompressed: UncompressedTextureCodec.self
+        .notHardwareCompressed: UncompressedTextureCodec.self,
+        .astc: ASTCTextureCodec.self,
     ]
+    #elseif os(OSX)
+    private static let codecs: [TextureContainerFormat:TextureCodec.Type] = [
+        .notHardwareCompressed: UncompressedTextureCodec.self,
+        .s3tc: S3TCTextureCodec.self,
+    ]
+    #endif
     
     /// Initialize a new texture loader.
     public init(device: MTLDevice) {
@@ -126,34 +139,37 @@ public class TextureLoader {
         // Hardcode: try to find a better format than PNG
         var url = url
         if url.pathExtension == "png" {
-            let astcPath = url.deletingPathExtension().appendingPathExtension("astc")
+            let astcPath = url.deletingPathExtension().appendingPathExtension("dds")
             if FileManager.default.fileExists(atPath: astcPath.path) {
                 url = astcPath
             }
         }
-        
+    
         print("Loading \(url.lastPathComponent)...")
         
         let data = try Data(contentsOf: url)
-        
-        let format = findContainerFormat(for: data)
-        if format == .unknown {
-            throw Error.unsupportedFormat
-        }
-        
-        print("Found format \(format)")
-        
-        let descriptor = try load(from: data, format: format)
-        let texture = try buildTexture(with: descriptor, name: AssetLoader.shortestName(for: url))
-        
+    
 
-//        let options: [MTKTextureLoader.Option: Any] = [
-//            .origin: MTKTextureLoader.Origin.bottomLeft,
-//            .SRGB: false,
-//            .generateMipmaps: true,
-//        ]
+        let loader = MTKTextureLoader(device: device)
+        let options: [MTKTextureLoader.Option: Any] = [
+            .origin: MTKTextureLoader.Origin.bottomLeft,
+            .SRGB: false,
+            .generateMipmaps: true,
+        ]
+        let mtlTexture = try loader.newTexture(data: data, options: options)
+        return Texture(name: AssetLoader.shortestName(for: url), mtlTexture: mtlTexture)
 
-        return texture
+//        let format = findContainerFormat(for: data)
+//        if format == .unknown {
+//            throw Error.unsupportedFormat
+//        }
+//
+//        print("Found format \(format)")
+//
+//        let descriptor = try load(from: data, format: format)
+//        let texture = try buildTexture(with: descriptor, name: AssetLoader.shortestName(for: url))
+//
+//        return texture
     }
     
     /// Try to find the container that is used for given data.
