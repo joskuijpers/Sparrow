@@ -8,73 +8,19 @@
 
 import MetalKit
 
+import CSparrowEngine
+
 /// Texture loader that ensures any texture is only loaded once
 ///
 /// Note that this uses MTKTextureLoader internally, which also caches but seems to be much slower as
 /// it does not assume the same options for all.
 public class TextureLoader {
     private var cache: [String : Texture] = [:]
-    private let mtkTextureLoader: MTKTextureLoader
     
     var allocatedSize: Int {
         return cache.reduce(0) { $0 + $1.value.mtlTexture.allocatedSize }
     }
     
-    /// Initialize a new texture loader.
-    public init(device: MTLDevice) {
-        mtkTextureLoader = MTKTextureLoader(device: device)
-    }
-    
-    /// Flush the cache by removing all cached textures. Textures keep alive
-    func flush() {
-        cache.removeAll(keepingCapacity: true)
-    }
-    
-    /// Load a texture with given image name. This can be a path or an asset name.
-    public func load(from url: URL) throws -> Texture {
-        // Get from cache
-        if let texture = cache[url.absoluteString] {
-            return texture
-        }
-        
-        // Get new
-        let options: [MTKTextureLoader.Option: Any] = [
-            .origin: MTKTextureLoader.Origin.bottomLeft,
-            .SRGB: false,
-            .generateMipmaps: true,
-        ]
-        
-        let imageName = AssetLoader.shortestName(for: url)
-        
-        let mtlTexture = try mtkTextureLoader.newTexture(URL: url, options: options)
-        let texture = Texture(name: imageName, mtlTexture: mtlTexture)
-        
-        cache[url.absoluteString] = texture
-        
-        print("[texture] Loaded \(texture.name) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
-
-        return texture
-    }
-    
-    /// Unload given texture from the cache. Data will only unload once the texture is released.
-    func unload(_ texture: Texture) {
-        cache.removeValue(forKey: texture.name)
-    }
-    
-    
-//
-//    /// Synchronously loads image data and creates a new Metal texture from a given URL.
-//    func newTexture(URL: URL, options: [MTKTextureLoader.Option : Any]?) -> MTLTexture
-//
-//    /// Asynchronously loads image data and creates a new Metal texture from a given URL.
-//    func newTexture(URL: URL, options: [MTKTextureLoader.Option : Any]?, completionHandler: MTKTextureLoader.Callback)
-//
-//    /// Synchronously loads image data and creates new Metal textures from the specified list of URLs.
-//    func newTextures(URLs: [URL], options: [MTKTextureLoader.Option : Any]?, error: NSErrorPointer) -> [MTLTexture]
-//
-//    /// Asynchronously loads image data and creates new Metal textures from the specified list of URLs.
-//    func newTextures(URLs: [URL], options: [MTKTextureLoader.Option : Any]?, completionHandler: MTKTextureLoader.ArrayCallback)
-
     /// Loading options
     enum Option {
         /// A key used to specify whether the texture loader should allocate memory for mipmaps in the texture.
@@ -124,17 +70,128 @@ public class TextureLoader {
         case flippedVertically
     }
     
-    
     /// Options for specifying how cube texture data is arranged in the source image.
     enum CubeLayout {
         /// Specifies that the source 2D image is a vertical arrangement of six cube faces.
         case vertical
     }
     
+    /// Texture container format
+    enum TextureContainerFormat {
+        /// Not compressed for hardware (png)
+        case notHardwareCompressed
+        /// ASTC format.
+        case astc
+        /// KTX format.
+        case ktx
+        
+        /// No known format
+        case unknown
+    }
+    
     /// Errors returned by the texture loader.
     enum Error: Swift.Error {
-        
+        /// Format not supported
+        case unsupportedFormat
     }
+    
+    /// Initialize a new texture loader.
+    public init(device: MTLDevice) {
+//        mtkTextureLoader = MTKTextureLoader(device: device)
+    }
+
+    /// Load a texture with given image name. This can be a path or an asset name.
+    public func load(from url: URL) throws -> Texture {
+        // Get from cache
+        if let texture = cache[url.absoluteString] {
+            return texture
+        }
+        
+        // Hardcode: try to find a better format than PNG
+        var url = url
+        if url.pathExtension == "png" {
+            let astcPath = url.deletingPathExtension().appendingPathExtension("astc")
+            if FileManager.default.fileExists(atPath: astcPath.path) {
+                url = astcPath
+            }
+        }
+        
+        print("Loading \(url.lastPathComponent)...")
+        
+        
+        let data = try Data(contentsOf: url)
+        let format = findContainerFormat(for: data)
+        print("Found format \(format)")
+        
+        if format == .unknown {
+            throw Error.unsupportedFormat
+        }
+        
+//
+//
+//        // Get new
+//        let options: [MTKTextureLoader.Option: Any] = [
+//            .origin: MTKTextureLoader.Origin.bottomLeft,
+//            .SRGB: false,
+//            .generateMipmaps: true,
+//        ]
+//
+//        let imageName = AssetLoader.shortestName(for: url)
+//
+//        let mtlTexture = try mtkTextureLoader.newTexture(URL: url, options: options)
+//        let texture = Texture(name: imageName, mtlTexture: mtlTexture)
+//
+//        cache[url.absoluteString] = texture
+//
+//        print("[texture] Loaded \(texture.name) (\(Float(mtlTexture.allocatedSize) / 1024 / 1024) MiB)")
+//
+//        return texture
+        
+        throw Error.unsupportedFormat
+    }
+    
+    /// Try to find the container that is used for given data.
+    private func findContainerFormat(for data: Data) -> TextureContainerFormat {
+        if UncompressedTextureCodec.isContained(in: data) {
+            return .notHardwareCompressed
+        } else if ASTCTextureCodec.isContained(in: data) {
+            return .astc
+        } else if KTXTextureCodec.isContained(in: data) {
+            return .ktx
+        }
+        
+        return .unknown
+    }
+    
+    /// Load a texture from given data and format
+    ///
+    /// Forwards actual loading to the codec.
+    private func load(from data: Data, format: TextureContainerFormat) throws {
+        switch format {
+        case .notHardwareCompressed:
+            try UncompressedTextureCodec().load(from: data)
+        case .astc:
+            try ASTCTextureCodec().load(from: data)
+        case .ktx:
+            try KTXTextureCodec().load(from: data)
+        case .unknown:
+            throw Error.unsupportedFormat
+        }
+    }
+
+    
+//
+//    /// Synchronously loads image data and creates a new Metal texture from a given URL.
+//    func newTexture(URL: URL, options: [MTKTextureLoader.Option : Any]?) -> MTLTexture
+//
+//    /// Asynchronously loads image data and creates a new Metal texture from a given URL.
+//    func newTexture(URL: URL, options: [MTKTextureLoader.Option : Any]?, completionHandler: MTKTextureLoader.Callback)
+//
+//    /// Synchronously loads image data and creates new Metal textures from the specified list of URLs.
+//    func newTextures(URLs: [URL], options: [MTKTextureLoader.Option : Any]?, error: NSErrorPointer) -> [MTLTexture]
+//
+//    /// Asynchronously loads image data and creates new Metal textures from the specified list of URLs.
+//    func newTextures(URLs: [URL], options: [MTKTextureLoader.Option : Any]?, completionHandler: MTKTextureLoader.ArrayCallback)
 }
 
 /// A texture.
@@ -148,22 +205,88 @@ public class Texture {
     }
 }
 
+protocol TextureCodec {
+    /// Get whether the codec is used inside given data
+    static func isContained(in data: Data) -> Bool
+    
+    /// Load a texture.
+    func load(from data: Data) throws
+}
+
+//const uint32_t MBEPVRLegacyMagic = 0x21525650;
+//const uint32_t MBEPVRv3Magic = 0x03525650;
+
+struct ASTCTextureCodec: TextureCodec {
+    static let magic: UInt32 = 0x5CA1AB13
+    
+    static func isContained(in data: Data) -> Bool {
+        if data.count < MemoryLayout<ASTCHeader>.size {
+            return false
+        }
+        
+        let header = data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> ASTCHeader in
+            ptr.load(as: ASTCHeader.self)
+        }
+        
+        let fileMagic = CFSwapInt32LittleToHost(header.magic)
+        return fileMagic == Self.magic
+    }
+    
+    func load(from data: Data) throws {
+        
+    }
+}
+
+struct KTXTextureCodec: TextureCodec {
+    static let magic: UInt32 = 0xAB4B5458
+    
+    static func isContained(in data: Data) -> Bool {
+        if data.count < MemoryLayout<KTXHeader>.size {
+            return false
+        }
+        
+        let header = data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> KTXHeader in
+            ptr.load(as: KTXHeader.self)
+        }
+
+        return header.identifier.1 == UInt8("K".utf8.first!)
+            && header.identifier.2 == UInt8("T".utf8.first!)
+            && header.identifier.3 == UInt8("X".utf8.first!)
+            && header.identifier.4 == UInt8(" ".utf8.first!)
+            && header.identifier.5 == UInt8("1".utf8.first!)
+            && header.identifier.6 == UInt8("1".utf8.first!)
+    }
+    
+    func load(from data: Data) throws {
+        
+    }
+}
+
+struct UncompressedTextureCodec: TextureCodec {
+    
+    static func isContained(in data: Data) -> Bool {
+        if data.count < 1 {
+            return false
+        }
+        
+        let firstByte = data.first!
+        switch firstByte {
+        case 0xff, 0x89, 0x47, 0x49, 0x4d: // JPEG, PNG, GIF, TIFF, TIFF
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func load(from data: Data) throws {
+        
+    }
+}
 
 /*
  
  ASTC texture loading
  https://metalbyexample.com/compressed-textures/
- 
- struct ASTCHeader {
-     uint32_t magic;
-     unsigned char blockDimX;
-     unsigned char blockDimY;
-     unsigned char blockDimZ;
-     unsigned char xSize[3];
-     unsigned char ySize[3];
-     unsigned char zSize[3];
- };
- 
 
  typedef struct __attribute__((packed))
  {
@@ -216,29 +339,6 @@ public class Texture {
      MBEKTXInternalFormatASTC_12x12_sRGB = 37853,
  };
  
- + (BOOL)dataIsASTCContainer:(NSData *)data
- {
-     if ([data length] < sizeof(MBEASTCHeader))
-     {
-         return NO;
-     }
-
-     MBEASTCHeader *header = (MBEASTCHeader *)[data bytes];
-     uint32_t fileMagic = CFSwapInt32LittleToHost(header->magic);
-     return (fileMagic == MBEASTCMagic);
- }
-
- + (BOOL)dataIsKTXContainer:(NSData *)data
- {
-     if ([data length] < sizeof(MBEKTXHeader))
-     {
-         return NO;
-     }
-
-     MBEKTXHeader *header = (MBEKTXHeader *)[data bytes];
-     char *format = (char *)(header->identifier + 1);
-     return strncmp(format, "KTX 11", 6) == 0;
- }
  
  + (MBETextureContainerFormat)inferredContainerFormatForData:(NSData *)data
  {

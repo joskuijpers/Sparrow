@@ -36,22 +36,22 @@ class GameWorld: World {
         rotatingSystem = RotatingSystem(world: self)
         
         
-        let myTest = nexus.createEntity()
-        myTest.add(component: Transform())
-
-        do {
-            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.sps")
-            print("URL \(url)")
-            
-            let coding = SceneCoding()
-            
-            try coding.save(entities: [sphere], in: self, to: url)
-            nexus.destroy(entity: sphere)
-            let outputEntities = try coding.load(from: url, into: self)
-            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
-        } catch {
-            print("CODING ERROR \(error)")
-        }
+//        let myTest = nexus.createEntity()
+//        myTest.add(component: Transform())
+//
+//        do {
+//            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.sps")
+//            print("URL \(url)")
+//            
+//            let coding = SceneCoding()
+//            
+//            try coding.save(entities: [sphere], in: self, to: url)
+//            nexus.destroy(entity: sphere)
+//            let outputEntities = try coding.load(from: url, into: self)
+//            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
+//        } catch {
+//            print("CODING ERROR \(error)")
+//        }
     }
     
     private func loadScene() {

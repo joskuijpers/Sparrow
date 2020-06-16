@@ -14,6 +14,7 @@ extern "C"  {
 #endif
 
 #include "ShaderShared.h"
+#include "TextureCodecs.h"
 
 #ifdef __cplusplus
 }
