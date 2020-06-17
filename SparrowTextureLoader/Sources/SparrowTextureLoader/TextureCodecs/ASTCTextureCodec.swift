@@ -6,7 +6,7 @@
 //
 
 import Metal
-import CSparrowEngine
+import CSparrowTextureLoader
 
 #if os(iOS)
 

@@ -1,9 +1,11 @@
 //
 //  TextureCodecs.h
-//  SparrowEngine
+//  SparrowTextureLoader
 //
 //  Created by Jos Kuijpers on 16/06/2020.
 //
+
+#include <stdint.h>
 
 typedef struct __attribute__((packed)) {
     uint32_t magic;

@@ -5,7 +5,7 @@
 //  Created by Jos Kuijpers on 16/06/2020.
 //
 
-import CSparrowEngine
+import CSparrowTextureLoader
 import Foundation
 
 struct KTXTextureCodec: TextureCodec {
@@ -29,7 +29,7 @@ struct KTXTextureCodec: TextureCodec {
     }
     
     func load(from data: Data) throws -> TextureDescriptor {
-        throw TextureLoader.Error.unsupportedFormat
+        throw SparrowTextureLoader.Error.unsupportedFormat
     }
 }
 

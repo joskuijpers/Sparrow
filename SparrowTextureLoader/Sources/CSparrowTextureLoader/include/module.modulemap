@@ -1,0 +1,17 @@
+//
+//  module.modulemap
+//  SparrowTextureLoader
+//
+//  Created by Jos Kuijpers on 7/6/2020
+//  Copyright © 2020 Jos Kuijpers. All rights reserved.
+//
+
+module CSparrowTextureLoader {
+    header "CSparrowTextureLoader.h"
+    export *
+
+    explicit module Shims {
+        header "TextureCodecs.h"
+        export *
+    }
+}

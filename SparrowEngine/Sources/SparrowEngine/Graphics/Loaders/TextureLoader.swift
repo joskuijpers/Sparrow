@@ -6,27 +6,22 @@
 //  Copyright © 2019 Jos Kuijpers. All rights reserved.
 //
 
-import Metal
-import Foundation
 import MetalKit
-
-// TODO: optional Basis support https://metalbyexample.com/basis-universal/
-
 
 /// Texture loader that ensures any texture is only loaded once
 ///
 /// Note that this uses MTKTextureLoader internally, which also caches but seems to be much slower as
 /// it does not assume the same options for all.
 public class TextureLoader {
-    private let device: MTLDevice
+    private let mtkLoader: MTKTextureLoader
 //    private var cache: [String : Texture] = [:]
-    
+//
 //    var allocatedSize: Int {
 //        return cache.reduce(0) { $0 + $1.value.mtlTexture.allocatedSize }
 //    }
-    
+//
     /// Loading options
-    enum Option {
+    public enum Option {
         /// A key used to specify whether the texture loader should allocate memory for mipmaps in the texture.
         case allocateMipmaps(Bool)
         
@@ -47,12 +42,12 @@ public class TextureLoader {
         /// A key used to specify when to flip the pixel coordinates of the texture.
         ///
         /// If you omit this option, the texture loader doesn’t flip loaded textures.
-        case origin(Origin)
+        case origin(MTKTextureLoader.Origin)
         
         /// A key used to specify how cube texture data is arranged in the source image.
         ///
         /// If this option is omitted, the texture loader does not create a cube texture.
-        case cubeLayout(CubeLayout)
+        case cubeLayout(MTKTextureLoader.CubeLayout)
 
         /// A key used to specify whether the texture data is stored as sRGB image data.
         ///
@@ -62,216 +57,39 @@ public class TextureLoader {
         case SRGB(Bool)
     }
     
-    /// Options for specifying when to flip the pixel coordinates of the texture.
-    enum Origin {
-        /// An option for specifying images that should be flipped only to put their origin in the top-left corner.
-        case topLeft
-        
-        /// An option for specifying images that should be flipped only to put their origin in the bottom-left corner.
-        case bottomLeft
-        
-        /// An option that specifies that images should always be flipped.
-        case flippedVertically
-    }
-    
-    /// Options for specifying how cube texture data is arranged in the source image.
-    enum CubeLayout {
-        /// Specifies that the source 2D image is a vertical arrangement of six cube faces.
-        case vertical
-    }
-    
-    /// Texture container format
-    enum TextureContainerFormat {
-        /// Not compressed for hardware (png)
-        case notHardwareCompressed
-        /// ASTC format. iOS only.
-        case astc
-        /// KTX format.
-        case ktx
-        /// S3TC (BC1-3) format.
-        case s3tc
-        /// TGA format.
-//        case tga
-        
-        /// No known format
-        case unknown
-    }
-    
-    /// Errors returned by the texture loader.
-    public enum Error: Swift.Error {
-        /// Format not supported
-        case unsupportedFormat
-        
-        /// Failed to create GPU texture
-        case uploadFailed
-        
-        /// There was no data to construct a texture from
-        case noImages
-        
-        /// Could not acquire storage for the texture on the GPU.
-        case noTextureStorage
-    }
-    
-    #if os(iOS)
-    private static let codecs: [TextureContainerFormat:TextureCodec.Type] = [
-        .notHardwareCompressed: UncompressedTextureCodec.self,
-        .astc: ASTCTextureCodec.self,
-    ]
-    #elseif os(OSX)
-    private static let codecs: [TextureContainerFormat:TextureCodec.Type] = [
-        .notHardwareCompressed: UncompressedTextureCodec.self,
-        .s3tc: S3TCTextureCodec.self,
-    ]
-    #endif
-    
     /// Initialize a new texture loader.
     public init(device: MTLDevice) {
-        self.device = device
+        self.mtkLoader = MTKTextureLoader(device: device)
     }
 
     /// Load a texture with given image name. This can be a path or an asset name.
-    public func load(from url: URL) throws -> Texture {
+    public func load(from url: URL, options: [Option] = []) throws -> Texture {
+        let url = optimizedFormat(url)
+    
         // Get from cache
 //        if let texture = cache[url.absoluteString] {
 //            return texture
 //        }
         
-        // Hardcode: try to find a better format than PNG
-        var url = url
-        if url.pathExtension == "png" {
-            let astcPath = url.deletingPathExtension().appendingPathExtension("dds")
-            if FileManager.default.fileExists(atPath: astcPath.path) {
-                url = astcPath
-            }
-        }
-    
         print("Loading \(url.lastPathComponent)...")
-        
+
         let data = try Data(contentsOf: url)
-    
-
-        let loader = MTKTextureLoader(device: device)
-        let options: [MTKTextureLoader.Option: Any] = [
-            .origin: MTKTextureLoader.Origin.bottomLeft,
-            .SRGB: false,
-            .generateMipmaps: true,
-        ]
-        let mtlTexture = try loader.newTexture(data: data, options: options)
-        return Texture(name: AssetLoader.shortestName(for: url), mtlTexture: mtlTexture)
-
-//        let format = findContainerFormat(for: data)
-//        if format == .unknown {
-//            throw Error.unsupportedFormat
-//        }
-//
-//        print("Found format \(format)")
-//
-//        let descriptor = try load(from: data, format: format)
-//        let texture = try buildTexture(with: descriptor, name: AssetLoader.shortestName(for: url))
-//
-//        return texture
+        let texture = try mtkLoader.newTexture(data: data, options: options.mtkOptions)
+        
+        print("Texture size \(texture.allocatedSize / 1024) kib")
+        
+        return Texture(name: AssetLoader.shortestName(for: url), mtlTexture: texture)
     }
     
-    /// Try to find the container that is used for given data.
-    private func findContainerFormat(for data: Data) -> TextureContainerFormat {
-        for (format, codec) in Self.codecs {
-            if codec.isContained(in: data) {
-                return format
+    /// Try to load DDS if available
+    private func optimizedFormat(_ url: URL) -> URL {
+        if url.pathExtension == "png" {
+            let ddsUrl = url.deletingPathExtension().appendingPathExtension("dds")
+            if FileManager.default.fileExists(atPath: ddsUrl.path) {
+                return ddsUrl
             }
         }
-        
-        return .unknown
-    }
-    
-    /// Load a texture from given data and format
-    ///
-    /// Forwards actual loading to the codec.
-    private func load(from data: Data, format: TextureContainerFormat) throws -> TextureDescriptor {
-        guard let codec = Self.codecs[format] else {
-            throw Error.unsupportedFormat
-        }
-        
-        return try codec.init().load(from: data)
-    }
-
-    /// Get whether we can generate mipmaps from a texture with given format.
-    private func pixelFormatIsColorRenderable(_ pixelFormat: MTLPixelFormat) -> Bool {
-//        BOOL isCompressedFormat = (pixelFormat >= MTLPixelFormatASTC_4x4_sRGB && pixelFormat <= MTLPixelFormatASTC_12x12_LDR) ||
-//                                  (pixelFormat >= MTLPixelFormatPVRTC_RGB_2BPP && pixelFormat <= MTLPixelFormatPVRTC_RGBA_4BPP_sRGB) ||
-//                                  (pixelFormat >= MTLPixelFormatEAC_R11Unorm && pixelFormat <= MTLPixelFormatETC2_RGB8A1_sRGB);
-        let is422Format = pixelFormat == .gbgr422 || pixelFormat == .bgrg422
-
-        return /*!isCompressedFormat &&*/ !is422Format && pixelFormat != .invalid
-    }
-    
-    /// Build a texture using a descriptor.
-    private func buildTexture(with descriptor: TextureDescriptor, name: String) throws -> Texture {
-        guard descriptor.levels.count > 0 else {
-            throw Error.noImages
-        }
-
-        let mipsLoaded = descriptor.levels.count > 1
-        let canGenerateMips = pixelFormatIsColorRenderable(descriptor.pixelFormat)
-        
-        var generateMipmaps = true
-        if mipsLoaded || !canGenerateMips {
-            generateMipmaps = false
-        }
-        
-        let needMipStorage = generateMipmaps || mipsLoaded
-        print("Has mips \(mipsLoaded) will generate mips \(generateMipmaps)")
-        
-        let mtlDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: descriptor.pixelFormat,
-                                                                     width: descriptor.width,
-                                                                     height: descriptor.height,
-                                                                     mipmapped: needMipStorage)
-//        mtlDescriptor.resourceOptions = .cpuCacheModeWriteCombined
-//        mtlDescriptor.mipmapLevelCount =
-//        mtlDescriptor.usage = .shaderRead
-//        mtlDescriptor.cpuCacheMode = .defaultCache
-        
-        guard let texture = device.makeTexture(descriptor: mtlDescriptor) else {
-            throw Error.noTextureStorage
-        }
-        texture.label = name
-        
-        var levelWidth = descriptor.width
-        var levelHeight = descriptor.height
-        var levelBytesPerRow = descriptor.bytesPerRow
-        for (index, level) in descriptor.levels.enumerated() {
-            let region = MTLRegionMake2D(0, 0, levelWidth, levelHeight)
-            level.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Void in
-                texture.replace(region: region,
-                                mipmapLevel: index,
-                                withBytes: ptr.baseAddress!,
-                                bytesPerRow: levelBytesPerRow)
-            }
-            
-            levelWidth = max(descriptor.width / 2, 1)
-            levelHeight = max(descriptor.height / 2, 1)
-            levelBytesPerRow = max(descriptor.bytesPerRow / 2, 16)
-        }
-        
-        if generateMipmaps {
-            print("Generate mipmaps!")
-//            generateMipmaps(texture: texture, commandQueue: )
-        }
-        
-        return Texture(name: name, mtlTexture: texture)
-    }
-    
-    /// Generate mipmaps on the GPU.
-    private func generateMipmaps(texture: MTLTexture, commandQueue: MTLCommandQueue) {
-        let commandBuffer = commandQueue.makeCommandBuffer()
-        let encoder = commandBuffer?.makeBlitCommandEncoder()
-        
-        encoder?.generateMipmaps(for: texture)
-        
-        encoder?.endEncoding()
-        commandBuffer?.commit()
-        
-        // Blocking!
-        commandBuffer?.waitUntilCompleted()
+        return url
     }
 
 //
@@ -288,23 +106,54 @@ public class TextureLoader {
 //    func newTextures(URLs: [URL], options: [MTKTextureLoader.Option : Any]?, completionHandler: MTKTextureLoader.ArrayCallback)
 }
 
+extension Array where Element == TextureLoader.Option {
+    var mtkOptions: [MTKTextureLoader.Option:Any] {
+        var output: [MTKTextureLoader.Option: Any] = [:]
+
+        for option in self {
+            switch option {
+            case .allocateMipmaps(let yes):
+                output[.allocateMipmaps] = yes
+            case .generateMipmaps(let yes):
+                output[.generateMipmaps] = yes
+            case .textureCPUCacheMode(let mode):
+                output[.textureCPUCacheMode] = mode
+            case .textureUsage(let usage):
+                output[.textureUsage] = usage
+            case .textureStorageMode(let mode):
+                output[.textureStorageMode] = mode
+            case .origin(let origin):
+                output[.origin] = origin
+            case .cubeLayout(let layout):
+                output[.cubeLayout] = layout
+            case .SRGB(let yes):
+                output[.SRGB] = yes
+            }
+        }
+        
+        if output[.origin] == nil {
+            output[.origin] = MTKTextureLoader.Origin.bottomLeft
+        }
+        if output[.SRGB] == nil {
+           output[.SRGB] = false
+        }
+        if output[.generateMipmaps] == nil {
+           output[.generateMipmaps] = true
+        }
+        
+        print(output)
+        
+        return output
+    }
+}
+
 /// A texture.
 public class Texture {
     public let name: String
     public let mtlTexture: MTLTexture
 
-    init(name: String, mtlTexture: MTLTexture) {
+    fileprivate init(name: String, mtlTexture: MTLTexture) {
         self.name = name
         self.mtlTexture = mtlTexture
     }
-}
-
-/// Texture information for building a GPU representation
-struct TextureDescriptor {
-    let pixelFormat: MTLPixelFormat
-    let width: Int
-    let height: Int
-    let mipmapCount: Int
-    let bytesPerRow: Int
-    let levels: [Data]
 }

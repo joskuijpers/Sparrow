@@ -1,0 +1,18 @@
+//
+// module.modulemap
+// SparrowEngine
+//
+// Created by Jos Kuijpers on 6/7/20.
+// Copyright © 2020 Jos Kuijpers. All rights reserved.
+//
+
+framework module SparrowTextureLoader {
+    header "SparrowTextureLoader.h"
+
+    module CSparrowTextureLoader {
+        header "CSparrowTextureLoader.h"
+        export *
+    }
+
+    export *
+}

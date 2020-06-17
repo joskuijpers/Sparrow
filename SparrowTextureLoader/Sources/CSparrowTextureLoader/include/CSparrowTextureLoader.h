@@ -6,17 +6,17 @@
 //  Copyright © 2020 Jos Kuijpers. All rights reserved.
 //
 
-#ifndef CSparrowEngine_h
-#define CSparrowEngine_h
+#ifndef CSparrowTextureLoader_h
+#define CSparrowTextureLoader_h
 
 #ifdef __cplusplus
 extern "C"  {
 #endif
 
-#include "ShaderShared.h"
+#include "TextureCodecs.h"
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* CSparrowEngine_h */
+#endif /* CSparrowTextureLoader_h */
