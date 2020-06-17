@@ -19,7 +19,7 @@ class GameWorld: World {
     var rotatingSystem: RotatingSystem!
     
     
-    var sphere: Entity!
+    var spheres: [Entity] = []
     
     func initialize(view: SparrowMetalView) throws {
         Nexus.register(component: RotationSpeed.self)
@@ -35,23 +35,25 @@ class GameWorld: World {
         playerCameraSystem = PlayerCameraSystem(world: self)
         rotatingSystem = RotatingSystem(world: self)
         
-        
-//        let myTest = nexus.createEntity()
-//        myTest.add(component: Transform())
-//
-//        do {
-//            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.sps")
-//            print("URL \(url)")
-//            
-//            let coding = SceneCoding()
-//            
-//            try coding.save(entities: [sphere], in: self, to: url)
-//            nexus.destroy(entity: sphere)
-//            let outputEntities = try coding.load(from: url, into: self)
-//            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
-//        } catch {
-//            print("CODING ERROR \(error)")
-//        }
+        do {
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.sps")
+            print("URL \(url)")
+            
+            let coding = SceneCoding()
+            
+//            303kb
+            
+            try coding.save(entities: spheres, in: self, to: url)
+            
+            for entity in spheres {
+                nexus.destroy(entity: entity)
+            }
+
+            let outputEntities = try coding.load(from: url, into: self)
+            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
+        } catch {
+            print("CODING ERROR \(error)")
+        }
     }
     
     private func loadScene() {
@@ -83,23 +85,25 @@ class GameWorld: World {
 
         let objMesh = try! meshLoader.load(name: "ironSphere/ironSphere.spm")
 
-//        for x in -10..<10 {
-//            for z in -10..<10 {
-//                let obj = nexus.createEntity()
-//                let t = obj.add(component: Transform())
-//                t.position = [Float(x) * 3, 0, Float(z) * 3]
-//                obj.add(component: RenderMesh(mesh: objMesh))
-//                obj.add(component: RotationSpeed(seed: 22 * x + z))
-//            }
-//        }
+        for x in -10..<10 {
+            for z in -10..<10 {
+                let obj = nexus.createEntity()
+                let t = obj.add(component: Transform())
+                t.position = [Float(x) * 3, 0, Float(z) * 3]
+                obj.add(component: RenderMesh(mesh: objMesh))
+                obj.add(component: RotationSpeed(seed: 22 * x + z))
+                
+                spheres.append(obj)
+            }
+        }
         
         let obj = nexus.createEntity()
         let transform = obj.add(component: Transform())
-        transform.position = [0, 2, 0]
+        transform.position = [0, 5, 0]
         obj.add(component: RenderMesh(mesh: objMesh))
         obj.add(component: RotationSpeed(speed: 40))
 
-        sphere = obj
+        spheres.append(obj)
     }
     
     override func update() {

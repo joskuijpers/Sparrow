@@ -141,8 +141,6 @@ extension Array where Element == TextureLoader.Option {
            output[.generateMipmaps] = true
         }
         
-        print(output)
-        
         return output
     }
 }

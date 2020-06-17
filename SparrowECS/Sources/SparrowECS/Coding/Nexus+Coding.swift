@@ -38,11 +38,10 @@ extension Nexus {
                 // Only support storable components that are registered.
                 if let storable = component as? NexusStorable,
                     registry[storable.stableIdentifier] != nil {
-                    let encodedComponentData = try SafeBinaryEncoder.encode(storable)
                     
                     let compStorage = ComponentStorage(entity: entityPosition,
                                                        id: storable.stableIdentifier,
-                                                       data: encodedComponentData)
+                                                       component: storable)
                     components.append(compStorage)
                 }
             }
@@ -74,8 +73,9 @@ extension Nexus {
                 throw Error.componentNotInRegistry(componentStorage.id)
             }
 
-            // Try to decode the component
-            let component = try componentType.init(_data: componentStorage.data)
+            // We can downcast here because the code that decodes the component also uses the component type.
+            // This cast is not strictly neccessary but it makes the program trip if something went wrong.
+            let component = unsafeDowncast(componentStorage.component, to: componentType)
             
             entity.add(component: component)
         }

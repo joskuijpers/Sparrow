@@ -71,6 +71,9 @@ public class SceneCoding {
         file.updateChecksum()
         
         let data = Data(try SafeBinaryEncoder.encode(file))
+        
+        print("Coding size: \(data.count / 1024) KiB")
+        
         try data.write(to: path)
     }
     
