@@ -9,6 +9,7 @@ Documents/
 #/*.xcodeproj
 xcuserdata/
 docs/
+Package.resolved
 
 # Xcode
 #
