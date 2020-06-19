@@ -74,7 +74,7 @@ public class TextureLoader {
         let data = try Data(contentsOf: url)
         let texture = try mtkLoader.newTexture(data: data, options: options.mtkOptions)
         
-        print("Loaded \(url.lastPathComponent)... (texture.allocatedSize / 1024) KiB")
+        print("Loaded \(url.lastPathComponent)... \(texture.allocatedSize / 1024) KiB")
         
         return Texture(name: ResourceManager.resourcePath(for: url), mtlTexture: texture)
     }
