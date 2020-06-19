@@ -40,16 +40,16 @@ class GameWorld: World {
             print("URL \(url)")
 
             let coding = SceneCoding()
-            try coding.save(entities: spheres, in: self, to: url)
-
-            for entity in spheres {
-                nexus.destroy(entity: entity)
-            }
+//            try coding.save(entities: spheres, in: self, to: url)
+//
+//            for entity in spheres {
+//                nexus.destroy(entity: entity)
+//            }
 
             let outputEntities = try coding.load(from: url, into: self)
-            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
+            print("Loaded \(outputEntities.count) entities with a total of \(outputEntities.reduce(0) {$0 + $1.numComponents}) components")
         } catch {
-            print("CODING ERROR \(error)")
+            print("Encoding/Decoding error \(error)")
         }
     }
     
@@ -75,10 +75,8 @@ class GameWorld: World {
         let light = skyLight.add(component: Light(type: .directional))
         light.color = float3(1, 1, 1)
 
-//        self.resourceManager
-        
-        let objMesh = try! resourceManager.loadMesh(resourcePath: "ironSphere/ironSphere.spmesh")
-
+//        let objMesh = try! resourceManager.loadMesh(resourcePath: "ironSphere/ironSphere.spmesh")
+//
 //        for x in -10..<10 {
 //            for z in -10..<10 {
 //                let obj = nexus.createEntity()
@@ -90,14 +88,14 @@ class GameWorld: World {
 //                spheres.append(obj)
 //            }
 //        }
-        
-        let obj = nexus.createEntity()
-        let transform = obj.add(component: Transform())
-        transform.position = [0, 5, 0]
-        obj.add(component: RenderMesh(mesh: objMesh))
-        obj.add(component: RotationSpeed(speed: 40))
-
-        spheres.append(obj)
+//
+//        let obj = nexus.createEntity()
+//        let transform = obj.add(component: Transform())
+//        transform.position = [0, 5, 0]
+//        obj.add(component: RenderMesh(mesh: objMesh))
+//        obj.add(component: RotationSpeed(speed: 40))
+//
+//        spheres.append(obj)
     }
     
     override func update() {
