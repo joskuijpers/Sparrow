@@ -3,16 +3,16 @@
 rm -r ./Docs
 mkdir Docs
 
-cd SparrowEngine2
-jazzy --module SparrowEngine2 --swift-build-tool spm --output ../Docs/SparrowEngine2
+cd SparrowEngine
+jazzy --module SparrowEngine --swift-build-tool spm --output ../Docs/SparrowEngine
 cd ..
 
 cd SparrowECS
 jazzy --module SparrowECS --swift-build-tool spm --output ../Docs/SparrowECS
 cd ..
 
-cd SparrowAsset
-jazzy --module SparrowAsset --swift-build-tool spm --output ../Docs/SparrowAsset
+cd SparrowMesh
+jazzy --module SparrowMesh --swift-build-tool spm --output ../Docs/SparrowMesh
 cd ..
 
 cd SparrowBinaryCoder
