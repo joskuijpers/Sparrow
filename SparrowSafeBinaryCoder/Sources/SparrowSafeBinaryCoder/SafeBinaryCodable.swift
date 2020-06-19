@@ -1,12 +1,13 @@
 //
-//  File.swift
-//  
+//  SafeBinaryCodable.swift
+//  SparrowSafeBinaryCoder
 //
 //  Created by Jos Kuijpers on 01/06/2020.
 //
 
 import Foundation
 import CBORCoding
+//import StickyEncoding
 
 fileprivate extension Encodable {
     

@@ -45,12 +45,12 @@ class GameWorld: World {
             
             try coding.save(entities: spheres, in: self, to: url)
             
-            for entity in spheres {
-                nexus.destroy(entity: entity)
-            }
+//            for entity in spheres {
+//                nexus.destroy(entity: entity)
+//            }
 
-            let outputEntities = try coding.load(from: url, into: self)
-            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
+//            let outputEntities = try coding.load(from: url, into: self)
+//            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
         } catch {
             print("CODING ERROR \(error)")
         }
