@@ -7,6 +7,7 @@
 //
 
 import SparrowSafeBinaryCoder
+import Foundation
 
 extension Nexus {
     
@@ -16,7 +17,7 @@ extension Nexus {
     }
     
     /// Encode a list of entities and their components.
-    public func encode(entities: [Entity]) throws -> [UInt8] {
+    public func encode(entities: [Entity]) throws -> Data {
         let registry = Self.storableComponentRegistry
         
         // Create entity mapping
@@ -54,7 +55,7 @@ extension Nexus {
     }
     
     /// Decode bytes into entities and components and load them into the nexus.
-    public func decode(data: [UInt8]) throws -> [Entity] {
+    public func decode(data: Data) throws -> [Entity] {
         let registry = Self.storableComponentRegistry
         let storage = try SafeBinaryDecoder.decode(NexusStorage.self, data: data)
 
@@ -81,14 +82,5 @@ extension Nexus {
         }
 
         return Array(entityMapping.values)
-    }
-}
-
-
-extension Decodable {
-    
-    /// Decode with some extra typing state.
-    fileprivate init(_data: [UInt8]) throws {
-        self = try SafeBinaryDecoder.decode(Self.self, data: _data)
     }
 }

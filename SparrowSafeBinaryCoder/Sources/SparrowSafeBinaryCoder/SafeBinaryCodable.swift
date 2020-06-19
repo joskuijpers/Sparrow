@@ -7,13 +7,11 @@
 
 import Foundation
 import CBORCoding
-//import StickyEncoding
 
 fileprivate extension Encodable {
     
-    func safeBinaryEncoded() throws -> [UInt8] {
-        let data = try CBOREncoder().encode(self)
-        return [UInt8](data)
+    func safeBinaryEncoded() throws -> Data {
+        return try CBOREncoder().encode(self)
     }
 }
 
@@ -30,7 +28,7 @@ public class SafeBinaryEncoder {
     /// Returns a binary representation of the object specified.
     ///
     /// - Parameter value: The object to encode into binary.
-    public static func encode(_ value: Encodable) throws -> [UInt8] {
+    public static func encode(_ value: Encodable) throws -> Data {
         return try value.safeBinaryEncoded()
     }
 }
@@ -44,7 +42,7 @@ public class SafeBinaryDecoder {
     /// - Parameter data: The data to decode.
     ///
     /// If the value is not a valid binary representation of given type, it throws one of the errors.
-    public static func decode<T: Decodable>(_ type: T.Type, data: [UInt8]) throws -> T {
-        return try type.safeBinaryDecoded(from: data)
+    public static func decode<T: Decodable>(_ type: T.Type, data: Data) throws -> T {
+        return try type.safeBinaryDecoded(from: [UInt8](data))
     }
 }

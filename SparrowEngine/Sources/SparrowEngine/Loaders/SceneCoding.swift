@@ -38,7 +38,7 @@ public class SceneCoding {
             throw Error.invalidChecksum
         }
 
-        let entities = try world.nexus.decode(data: [UInt8](file.nexus))
+        let entities = try world.nexus.decode(data: file.nexus)
 
         // Did decode notifications
         for entity in entities {
@@ -81,7 +81,7 @@ public class SceneCoding {
     }
     
     /// Read data from the url and decompress it.
-    private func readCompressed(url: URL) throws -> [UInt8] {
+    private func readCompressed(url: URL) throws -> Data {
 //        print("SCRATCH", compression_encode_scratch_buffer_size(COMPRESSION_LZFSE))
         // TODO: We could pre-allocate a scratch buffer during the lifetime of the game
         
@@ -101,7 +101,7 @@ public class SceneCoding {
         let destinationBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: decompressedSize)
         
         // Decompress and gain final size
-        let compressedSize = compressedData.withUnsafeBytes { (ptr) -> Int in
+        let size = compressedData.withUnsafeBytes { (ptr) -> Int in
             compression_decode_buffer(destinationBuffer,
                                       decompressedSize,
                                       ptr.bindMemory(to: UInt8.self).baseAddress!,
@@ -110,16 +110,20 @@ public class SceneCoding {
                                       COMPRESSION_LZFSE)
         }
         
+        if size == 0 {
+            throw Error.compressionFailed
+        }
+        
         // Make a Data
-        let encodedData = Data(bytesNoCopy: destinationBuffer, count: compressedSize, deallocator: .custom({ (_, _) in
+        let decompressedData = Data(bytesNoCopy: destinationBuffer, count: size, deallocator: .custom({ (_, _) in
             destinationBuffer.deallocate()
         }))
-        
-        return [UInt8](encodedData)
+
+        return decompressedData
     }
     
     /// Write the data compressed to given  url
-    private func writeCompressed(url: URL, data: [UInt8]) throws {
+    private func writeCompressed(url: URL, data: Data) throws {
         let decompressedSize = data.count
 
         // We are compressing and assume we never go larger than our original size
@@ -128,10 +132,10 @@ public class SceneCoding {
         // print(compression_decode_scratch_buffer_size(COMPRESSION_LZFSE))
         // TODO: We could pre-allocate a scratch buffer during the lifetime of the game
         
-        let size = data.withUnsafeBufferPointer { (ptr) -> Int in
+        let size = data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Int in
             compression_encode_buffer(destinationBuffer,
                                       decompressedSize,
-                                      ptr.baseAddress!,
+                                      ptr.bindMemory(to: UInt8.self).baseAddress!,
                                       decompressedSize,
                                       nil,
                                       COMPRESSION_LZFSE)
@@ -142,16 +146,16 @@ public class SceneCoding {
         }
 
         // Make a Data
-        var encodedData = Data(bytesNoCopy: destinationBuffer, count: size, deallocator: .custom({ (_, _) in
+        var compressedData = Data(bytesNoCopy: destinationBuffer, count: size, deallocator: .custom({ (_, _) in
             destinationBuffer.deallocate()
         }))
         
         // Append the size of the decompressed data
         withUnsafeBytes(of: decompressedSize) {
-            encodedData.append(contentsOf: $0)
+            compressedData.append(contentsOf: $0)
         }
         
-        try encodedData.write(to: url)
+        try compressedData.write(to: url)
     }
 }
 
