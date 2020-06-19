@@ -11,7 +11,8 @@ let package = Package(
             targets: ["SparrowSafeBinaryCoder"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/SomeRandomiOSDev/CBORCoding.git", from: "1.0.0")
+//        .package(url: "https://github.com/SomeRandomiOSDev/CBORCoding.git", from: "1.0.0")
+        .package(path: "../../CBORCoding")
     ],
     targets: [
         .target(

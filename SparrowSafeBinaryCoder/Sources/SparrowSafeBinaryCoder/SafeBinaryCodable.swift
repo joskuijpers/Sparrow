@@ -17,8 +17,8 @@ fileprivate extension Encodable {
 
 fileprivate extension Decodable {
     
-    static func safeBinaryDecoded(from: [UInt8]) throws -> Self {
-        return try CBORDecoder().decode(self, from: Data(from))
+    static func safeBinaryDecoded(from data: Data) throws -> Self {
+        return try CBORDecoder().decode(self, from: data)
     }
 }
 
@@ -43,6 +43,6 @@ public class SafeBinaryDecoder {
     ///
     /// If the value is not a valid binary representation of given type, it throws one of the errors.
     public static func decode<T: Decodable>(_ type: T.Type, data: Data) throws -> T {
-        return try type.safeBinaryDecoded(from: [UInt8](data))
+        return try type.safeBinaryDecoded(from: data)
     }
 }

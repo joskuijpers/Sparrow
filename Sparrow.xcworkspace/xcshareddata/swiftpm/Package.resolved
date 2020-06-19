@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "CBORCoding",
-        "repositoryURL": "https://github.com/SomeRandomiOSDev/CBORCoding.git",
-        "state": {
-          "branch": null,
-          "revision": "f4583199f028030d56de6ba20d397722e6f11407",
-          "version": "1.2.0"
-        }
-      },
-      {
         "package": "Half",
         "repositoryURL": "https://github.com/SomeRandomiOSDev/Half",
         "state": {
