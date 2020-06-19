@@ -19,6 +19,9 @@ open class World { // Note: note final so games can extend it.
     /// Graphics context. Use with care.
     public internal(set) var graphics: GraphicsContext!
     
+    /// The resource manager
+    public let resourceManager: ResourceManager
+    
     /// Time information
     @inlinable
     public var time: EngineTimeComponent {
@@ -39,6 +42,7 @@ open class World { // Note: note final so games can extend it.
         Nexus.register(component: Transform.self)
 
         nexus = Nexus()
+        resourceManager = ResourceManager()
     }
 
     /// Run a game tick.

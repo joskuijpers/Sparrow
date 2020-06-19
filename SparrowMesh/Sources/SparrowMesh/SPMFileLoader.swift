@@ -74,7 +74,7 @@ public class SPMFileLoader {
     
     /// Load an asset from given URL.
     public static func load(from url: URL) throws -> SPMFileRef {
-        if url.pathExtension != "spm" {
+        if url.pathExtension != "spmesh" {
             throw Error.invalidExtension(url.pathExtension)
         }
         

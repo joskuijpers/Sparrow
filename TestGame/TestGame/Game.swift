@@ -35,25 +35,22 @@ class GameWorld: World {
         playerCameraSystem = PlayerCameraSystem(world: self)
         rotatingSystem = RotatingSystem(world: self)
         
-        do {
-            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.sps")
-            print("URL \(url)")
-            
-            let coding = SceneCoding()
-            
-//            303kb
-            
-            try coding.save(entities: spheres, in: self, to: url)
-            
+//        do {
+//            let url = FileManager.default.temporaryDirectory.appendingPathComponent("testscene.spscene")
+//            print("URL \(url)")
+//
+//            let coding = SceneCoding()
+//            try coding.save(entities: spheres, in: self, to: url)
+//
 //            for entity in spheres {
 //                nexus.destroy(entity: entity)
 //            }
-
+//
 //            let outputEntities = try coding.load(from: url, into: self)
 //            print("DECODED \(outputEntities.count) \(outputEntities.reduce(0) {$0 + $1.numComponents})")
-        } catch {
-            print("CODING ERROR \(error)")
-        }
+//        } catch {
+//            print("CODING ERROR \(error)")
+//        }
     }
     
     private func loadScene() {
@@ -78,19 +75,16 @@ class GameWorld: World {
         let light = skyLight.add(component: Light(type: .directional))
         light.color = float3(1, 1, 1)
 
+//        self.resourceManager
         
-        let device = self.graphics.device
-        let textureLoader = TextureLoader(device: device)
-        let meshLoader = MeshLoader(device: device, textureLoader: textureLoader)
-
-        let objMesh = try! meshLoader.load(name: "ironSphere/ironSphere.spm")
+        let objMesh = try! resourceManager.loadMesh(resourcePath: "ironSphere/ironSphere.spmesh")
 
         for x in -10..<10 {
             for z in -10..<10 {
                 let obj = nexus.createEntity()
                 let t = obj.add(component: Transform())
                 t.position = [Float(x) * 3, 0, Float(z) * 3]
-                obj.add(component: RenderMesh(mesh: objMesh))
+                obj.add(component: RenderMesh(mesh: try! resourceManager.loadMesh(resourcePath: "ironSphere/ironSphere.spmesh")))
                 obj.add(component: RotationSpeed(seed: 22 * x + z))
                 
                 spheres.append(obj)

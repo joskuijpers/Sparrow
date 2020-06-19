@@ -5,7 +5,7 @@
 //  Created by Jos Kuijpers on 15/06/2020.
 //
 
-/// Indicate that a didDecode step should be executed after decoding.
+/// Events called when the component is encoded or decoded.
 public protocol ComponentStorageDelegate {
     /// The component will be encoded.
     ///

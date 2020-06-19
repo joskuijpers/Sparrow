@@ -22,7 +22,7 @@ public final class RenderMesh: Component {
     // enabled (Renderer)
     
     // Mesh resource name: used for coding.
-    private var meshResource: String = "<none>"
+    private var meshResource: String? = nil
     
     /// Init with a mesh
     public init(mesh: Mesh) {
@@ -44,16 +44,18 @@ extension RenderMesh: Storable, ComponentStorageDelegate {
     }
     
     public func willEncode(from world: World) throws {
-        meshResource = "ironSphere/ironSphere.spm"//"res://sponza.spm"
+        if let mesh = mesh {
+            meshResource = world.resourceManager.resourcePathFor(mesh: mesh)
+        } else {
+            meshResource = nil
+        }
     }
 
     public func didDecode(into world: World) throws {
-        print("DID DECODE RenderMesh, LOAD \(meshResource)")
-        
-        let device = world.graphics.device
-        let textureLoader = TextureLoader(device: device)
-        let meshLoader = MeshLoader(device: device, textureLoader: textureLoader)
-
-        self.mesh = try meshLoader.load(name: meshResource)
+        if let meshResource = meshResource {
+            mesh = try world.resourceManager.loadMesh(resourcePath: meshResource)
+        } else {
+            mesh = nil
+        }
     }
 }

@@ -70,15 +70,13 @@ public class TextureLoader {
 //        if let texture = cache[url.absoluteString] {
 //            return texture
 //        }
-        
-        print("Loading \(url.lastPathComponent)...")
 
         let data = try Data(contentsOf: url)
         let texture = try mtkLoader.newTexture(data: data, options: options.mtkOptions)
         
-        print("Texture size \(texture.allocatedSize / 1024) kib")
+        print("Loaded \(url.lastPathComponent)... (texture.allocatedSize / 1024) KiB")
         
-        return Texture(name: AssetLoader.shortestName(for: url), mtlTexture: texture)
+        return Texture(name: ResourceManager.resourcePath(for: url), mtlTexture: texture)
     }
     
     /// Try to load DDS if available

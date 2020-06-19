@@ -39,8 +39,7 @@ public class MeshLoader {
     }
     
     /// Load a mesh with given name.
-    public func load(name: String) throws -> Mesh {
-        let url = AssetLoader.url(forAsset: name)
+    public func load(url: URL) throws -> Mesh {
         guard FileManager.default.fileExists(atPath: url.path) else {
             throw Error.fileNotFound(url)
         }
