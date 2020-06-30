@@ -256,17 +256,19 @@ private extension MetalRenderer {
 private extension MetalRenderer {
 
     /// Render a single frame using given world.
-    func renderFrame(world: World) {
+    func renderFrame(world: World) { // camera, [light], [mesh+transform+materials],
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return
         }
+        
+        // Make sure pipeline state exists properly
+        PipelineStateSystem(world: world).update()
         
         // Fill the render sets for this frame
         fillRenderSets(world: world)
         
         // Find all lights
-        let lightSystem = LightSystem(world: world)
-        lightSystem.updateLightBuffer(device: world.graphics.device, buffer: &lightsBuffer, lightsCount: &lightsBufferCount)
+        LightSystem(world: world).updateLightBuffer(device: world.graphics.device, buffer: &lightsBuffer, lightsCount: &lightsBufferCount)
         
         // Do passes
         doDepthPrepass(commandBuffer: commandBuffer)
@@ -430,7 +432,13 @@ private extension MetalRenderer {
         }
 
         for item in renderQueue.allItems() {
-            item.mesh.render(renderEncoder: encoder, renderPass: renderPass, uniforms: uniforms, submeshIndex: item.submeshIndex, worldTransform: item.worldTransform)
+            item.mesh.render(renderEncoder: encoder,
+                             renderPass: renderPass,
+                             uniforms: uniforms,
+                             submeshIndex: item.submeshIndex,
+                             worldTransform: item.worldTransform,
+                             pipelineState: item.pipelineState,
+                             material: item.material)
         }
     }
 }

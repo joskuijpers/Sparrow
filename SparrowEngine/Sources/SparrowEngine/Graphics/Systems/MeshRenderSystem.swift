@@ -17,18 +17,25 @@ final class MeshRenderSystem: System {
     /// Build the render queue by filling it with the appropriate meshes
     func buildQueue(set: RenderSet, renderPass: RenderPass, frustum: Frustum, viewPosition: float3) {
         for (transform, renderer) in meshes {
-            guard let mesh = renderer.mesh else {
+            guard let mesh = renderer.mesh, let materials = renderer.materials else {
                 continue
             }
             
             if renderPass == .shadows && !renderer.castShadows {
                 continue
             }
-            
-            mesh.addToRenderSet(set: set,
-                                viewPosition: viewPosition,
-                                worldTransform: transform.localToWorldMatrix,
-                                frustum: frustum)
+  
+            print("Add to render set")
+//            mesh.addToRenderSet(set: set,
+//                                viewPosition: viewPosition,
+//                                worldTransform: transform.localToWorldMatrix,
+//                                frustum: frustum,
+//                                pipelineStates: pipelineState.pipelineStates,
+//                                materials: materials)
         }
+    }
+    
+    func render(queue: RenderQueue) {
+        
     }
 }

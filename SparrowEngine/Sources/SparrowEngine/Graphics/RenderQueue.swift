@@ -45,7 +45,7 @@ public struct RenderQueue {
 
 /// Special iterator that stops at empty items
 extension RenderQueue {
-    public func allItems() -> AnyIterator<RenderQueueItem> {
+    func allItems() -> AnyIterator<RenderQueueItem> {
         var index = 0
         
         return AnyIterator({
@@ -83,7 +83,7 @@ public class RenderSet {
     }
     
     /// Add a  new render item using an inout closure to prevent copying of structures.
-    public func add(_ mode: RenderMode, _ cb: (_ item: inout RenderQueueItem) -> Void) {
+    func add(_ mode: RenderMode, _ cb: (_ item: inout RenderQueueItem) -> Void) {
         switch mode {
         case .opaque, .cutOut:
             let index = opaque.getNextIndex()
@@ -96,12 +96,11 @@ public class RenderSet {
 }
 
 /// An item to render
-public struct RenderQueueItem {
+struct RenderQueueItem {
     public var depth: Float = 0
     public unowned var mesh: Mesh!
     public var submeshIndex: uint16 = 0
     public var worldTransform: float4x4 = .identity()
-
-    // shaderIdentifier -> ptr
-    // materialIdentifier -> ptr
+    public var pipelineState: MetalSubmeshPipelineState!
+    public var material: Material!
 }

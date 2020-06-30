@@ -76,3 +76,29 @@ public final class CameraUpdateSystem: System {
         }
     }
 }
+
+/*
+ 
+ 
+ Current Camera (transform and projection matrix)
+    -> Turn into CameraUniforms (if dirty?)
+    -> do not store in Camera
+ 
+ 
+ RENDER(camera, viewportSize
+ 
+ Prepare
+    build lights
+    build camera uniforms -> with viewpoerSize as aspect?
+    object culling
+ 
+ Render
+    for object in culled result
+        render
+ 
+ 
+ 
+ 
+ 
+ 
+ */

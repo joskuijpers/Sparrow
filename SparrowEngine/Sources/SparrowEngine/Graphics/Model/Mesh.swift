@@ -41,7 +41,7 @@ public class Mesh {
 
 extension Mesh {
     /// Ask the mesh to add to the render set if within frustum.
-    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum) {
+    func addToRenderSet(set: RenderSet, viewPosition: float3, worldTransform: float4x4, frustum: Frustum, pipelineStates: [MetalSubmeshPipelineState], materials: [Material]) {
         let bounds = self.bounds * worldTransform
         if frustum.intersects(bounds: bounds) == .outside {
             // Mesh is not in frustum
@@ -49,12 +49,25 @@ extension Mesh {
         }
         
         for (index, submesh) in submeshes.enumerated() {
-            submesh.addToRenderSet(set: set, viewPosition: viewPosition, worldTransform: worldTransform, frustum: frustum, mesh: self, submeshIndex: index)
+            submesh.addToRenderSet(set: set,
+                                   viewPosition: viewPosition,
+                                   worldTransform: worldTransform,
+                                   frustum: frustum,
+                                   mesh: self,
+                                   submeshIndex: index,
+                                   pipelineState: pipelineStates[index],
+                                   material: materials[index])
         }
     }
     
     /// Render the submesh at given index.
-    func render(renderEncoder: MTLRenderCommandEncoder, renderPass: RenderPass, uniforms: Uniforms, submeshIndex: UInt16, worldTransform: float4x4) {
+    func render(renderEncoder: MTLRenderCommandEncoder,
+                renderPass: RenderPass,
+                uniforms: Uniforms,
+                submeshIndex: UInt16,
+                worldTransform: float4x4,
+                pipelineState: MetalSubmeshPipelineState,
+                material: Material) {
         // Set model vertex uniforms
         var uniforms = uniforms
         uniforms.modelMatrix = worldTransform
@@ -70,6 +83,10 @@ extension Mesh {
         }
         
         let submesh = submeshes[Int(submeshIndex)]
-        submesh.render(renderEncoder: renderEncoder, renderPass: renderPass, buffers: buffers)
+        submesh.render(renderEncoder: renderEncoder,
+                       renderPass: renderPass,
+                       buffers: buffers,
+                       pipelineState: pipelineState,
+                       material: material)
     }
 }

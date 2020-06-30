@@ -108,7 +108,6 @@ public class MeshLoader {
             try createSubmesh(saAsset: saAsset,
                               saSubmesh: $0,
                               bufferIndexMapping: bufferIndexMapping,
-                              vertexDescriptor: vertexDescriptor,
                               materials: materials)
         }
         
@@ -122,7 +121,6 @@ public class MeshLoader {
     private func createSubmesh(saAsset: SPMFile,
                                saSubmesh: SPMSubmesh,
                                bufferIndexMapping: [Int:Int],
-                               vertexDescriptor: MTLVertexDescriptor,
                                materials: [Int:Material]) throws -> Submesh {
         let bounds = Bounds(from: saSubmesh.bounds)
     
@@ -144,8 +142,6 @@ public class MeshLoader {
         
         return Submesh(name: saSubmesh.name,
                        bounds: bounds,
-                       material: material,
-                       vertexDescriptor: vertexDescriptor,
                        indexBufferInfo: indexBufferInfo)
     }
 

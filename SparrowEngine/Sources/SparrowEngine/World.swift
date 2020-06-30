@@ -55,7 +55,6 @@ open class World { // Note: note final so games can extend it.
         update()
         
         // Engine tick
-//        print("Update transforms, cameras")
         
         let x = CameraUpdateSystem(world: self)
         x.updateCameras()

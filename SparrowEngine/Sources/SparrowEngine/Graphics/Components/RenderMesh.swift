@@ -12,6 +12,9 @@ import SparrowECS
 public final class RenderMesh: Component {
     /// The mesh to render
     public var mesh: Mesh?
+    
+    /// Materials to use for each submesh in the mesh.
+    public var materials: [Material]?
 
     /// Whether the mesh casts shadows
     public var castShadows: Bool = false
@@ -21,12 +24,18 @@ public final class RenderMesh: Component {
     
     // enabled (Renderer)
     
-    // Mesh resource name: used for coding.
+    /// Mesh resource name: used for coding.
     private var meshResource: String? = nil
-    
+
     /// Init with a mesh
     public init(mesh: Mesh) {
         self.mesh = mesh
+    }
+    
+    /// Init with a mesh and materials
+    public init(mesh: Mesh, materials: [Material]) {
+        self.mesh = mesh
+        self.materials = materials
     }
     
     public override init() {

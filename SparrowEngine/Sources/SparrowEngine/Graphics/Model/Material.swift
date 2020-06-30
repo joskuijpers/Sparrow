@@ -8,7 +8,6 @@
 
 import Metal
 
-
 /*
  This whole struct needs a lot of work.
  Do we want to allow changes? We should keep the number of materials to a minimum
@@ -94,19 +93,11 @@ public final class Material {
         self.doubleSided = doubleSided
     }
     
-    /// Build the shader uniform data for this material.
-    public func buildShaderData() -> ShaderMaterialData {
-        ShaderMaterialData(albedo: albedo,
-                           emission: emission,
-                           metallic: metalness,
-                           roughness: roughness)
-    }
-    
     /// Create the default material.
     public static var `default`: Material = {
         Material(name: "default", renderMode: .opaque,
                  albedoTexture: nil, normalTexture: nil, roughnessMetalnessOcclusionTexture: nil, emissionTexture: nil,
-                 albedo: [0.5,0.5,0.5], roughness: 1, metalness: 0, emission: float3.zero,
+                 albedo: [1,0.5,0.5], roughness: 1, metalness: 0, emission: float3.zero,
                  alphaCutoff: 0.2, alpha: 1,
                  doubleSided: false)
     }()
