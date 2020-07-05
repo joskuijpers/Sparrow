@@ -28,14 +28,6 @@ public struct SPMSphereBounds: BinaryCodable {
         self.radius = radius
     }
     
-    public init(box: SPMBounds) {
-        self.center = (box.min + box.max) / 2
-        
-        self.radius = max(
-            length(self.center, )
-        )
-    }
-    
     /// Create a new bounds containing all given spheres
     public static func containing(_ others: [SPMSphereBounds]) -> SPMSphereBounds {
         // TODO: how?
@@ -45,6 +37,19 @@ public struct SPMSphereBounds: BinaryCodable {
     /// Create a new bounds containing all given points
     public static func containing(_ points: [SIMD3<Float>]) -> SPMSphereBounds {
         // TODO https://en.wikipedia.org/wiki/Bounding_sphere
-        return SPMSphereBounds()
+        
+        // Inefficient implementation: loop over all items, find average. use as center
+        // loop over all points, expending radius until all points fit.
+        
+        let total = points.reduce(SIMD3<Float>(0, 0, 0), +)
+        let median = SIMD3<Float>(total.x / Float(points.count), total.y / Float(points.count), total.z / Float(points.count))
+        
+        var radiusSquared: Float = 0
+        for point in points {
+            radiusSquared = max(radiusSquared, length_squared(point - median))
+        }
+        let radius = sqrt(radiusSquared)
+        
+        return SPMSphereBounds(center: median, radius: radius)
     }
 }

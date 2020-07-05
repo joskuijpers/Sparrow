@@ -20,6 +20,7 @@
 		806CA4952480526800EAD6AC /* VertexFormats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806CA4942480526800EAD6AC /* VertexFormats.swift */; };
 		8086960523B8D2B20007E75D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8086960423B8D2B20007E75D /* main.swift */; };
 		808C0F1A2479624700EE0659 /* TextureTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808C0F192479624700EE0659 /* TextureTool.swift */; };
+		80905FFC24B27245005BF91B /* SphereBoundsBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80905FFB24B27245005BF91B /* SphereBoundsBuilder.swift */; };
 		80C1720B247ABBD30097F2AE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720A247ABBD30097F2AE /* JobQueue.swift */; };
 		80C1720D247AF32A0097F2AE /* TextureToolSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720C247AF32A0097F2AE /* TextureToolSync.swift */; };
 		80C1720F247AF3310097F2AE /* TextureToolAsync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C1720E247AF3310097F2AE /* TextureToolAsync.swift */; };
@@ -68,6 +69,7 @@
 		8086960123B8D2B20007E75D /* SparrowSceneConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SparrowSceneConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8086960423B8D2B20007E75D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		808C0F192479624700EE0659 /* TextureTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureTool.swift; sourceTree = "<group>"; };
+		80905FFB24B27245005BF91B /* SphereBoundsBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereBoundsBuilder.swift; sourceTree = "<group>"; };
 		80C1720A247ABBD30097F2AE /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		80C1720C247AF32A0097F2AE /* TextureToolSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureToolSync.swift; sourceTree = "<group>"; };
 		80C1720E247AF3310097F2AE /* TextureToolAsync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureToolAsync.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 				80E216E2245DD18600269C56 /* MathLib.swift */,
 				80C1720A247ABBD30097F2AE /* JobQueue.swift */,
 				80C17210247AF3880097F2AE /* TextureTool */,
+				80905FFB24B27245005BF91B /* SphereBoundsBuilder.swift */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 				80C1720D247AF32A0097F2AE /* TextureToolSync.swift in Sources */,
 				808C0F1A2479624700EE0659 /* TextureTool.swift in Sources */,
 				801E844A246829510021CEAD /* ObjParser.swift in Sources */,
+				80905FFC24B27245005BF91B /* SphereBoundsBuilder.swift in Sources */,
 				80C1720F247AF3310097F2AE /* TextureToolAsync.swift in Sources */,
 				80E216DE245DBA7600269C56 /* ObjImporter.swift in Sources */,
 				80E216C3245C205100269C56 /* CPlusPlusLinkage.cpp in Sources */,
